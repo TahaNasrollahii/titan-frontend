@@ -91,6 +91,28 @@
   box-shadow: 0 0 16px rgba(226, 69, 63, 0.6);
 }
 
+.tour-sec-h a.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 18px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
+.tour-sec-h a.arrow:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(-4px);
+}
+
 /* Base Glass Effect applied to cards */
 .tour-stat-card,
 .match-card,
@@ -796,6 +818,67 @@
   border-radius: 4px;
 }
 
+.lb-games-tabs {
+  display: inline-flex;
+  gap: 6px;
+  background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 12px 24px -8px rgba(0,0,0,0.6);
+}
+
+.lb-game-btn {
+  padding: 12px 32px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.4);
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lb-game-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--red) 0%, #a12b27 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.lb-game-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.lb-game-btn.active {
+  color: #fff;
+  border-color: rgba(255, 200, 200, 0.4);
+  box-shadow: 0 8px 20px -4px rgba(226, 69, 63, 0.5), inset 0 2px 6px rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+.lb-game-btn.active::before {
+  opacity: 1;
+}
+
+.tour-table-controls {
+  margin-top: -24px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: flex-start;
+}
+
 .lb-tabs-new {
   display: inline-flex;
   gap: 4px;
@@ -803,7 +886,6 @@
   padding: 6px;
   border-radius: 100px;
   border: 1px solid rgba(255,255,255,0.08);
-  margin-top: 16px;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
 

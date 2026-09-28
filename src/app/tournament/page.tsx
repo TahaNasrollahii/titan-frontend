@@ -8,6 +8,7 @@ import { ScoreWidget } from '@/components/ScoreWidget';
 
 export default function TournamentPage() {
   const [activeTab, setActiveTab] = useState('teams');
+  const [activeGame, setActiveGame] = useState('Valorant');
 
   // Mouse tracking for parallax and spot hover effects on cards
   useEffect(() => {
@@ -118,6 +119,9 @@ export default function TournamentPage() {
       {/* 3. Upcoming Matches */}
       <div className="tour-sec-h reveal" style={{ '--d': 4 } as any}>
         <h3>مسابقات پیش‌رو</h3>
+        <a href="/tournaments" className="arrow" aria-label="مشاهده تمام مسابقات">
+          <Icon name="arrow" />
+        </a>
       </div>
       <div className="tour-matches">
         {[
@@ -202,13 +206,21 @@ export default function TournamentPage() {
       {/* 5. Leaderboard (Tables Redesign) */}
       <div className="tour-sec-h reveal" style={{ '--d': 9, marginTop: '48px' } as any}>
         <h3>جدول رتبه‌بندی فصل</h3>
+        <div className="lb-games-tabs">
+          <button className={`lb-game-btn ${activeGame === 'Valorant' ? 'active' : ''}`} onClick={() => setActiveGame('Valorant')}>Valorant</button>
+          <button className={`lb-game-btn ${activeGame === 'Apex Legends' ? 'active' : ''}`} onClick={() => setActiveGame('Apex Legends')}>Apex Legends</button>
+          <button className={`lb-game-btn ${activeGame === 'Fortnite' ? 'active' : ''}`} onClick={() => setActiveGame('Fortnite')}>Fortnite</button>
+        </div>
+      </div>
+
+      <div className="tour-table-controls reveal" style={{ '--d': 10 } as any}>
         <div className="lb-tabs-new">
           <button className={`lb-tab-btn ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>برترین تیم‌ها</button>
           <button className={`lb-tab-btn ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>برترین بازیکنان</button>
         </div>
       </div>
 
-      <div className="tour-table-wrapper spot spot-track reveal" style={{ '--d': 10 } as any}>
+      <div className="tour-table-wrapper spot spot-track reveal" style={{ '--d': 11 } as any}>
         {activeTab === 'teams' ? (
           <table className="tour-table">
             <thead>
@@ -222,16 +234,22 @@ export default function TournamentPage() {
             </thead>
             <tbody>
               {[
-                { r: 1, n: 'Shadow Wolves', tag: 'SW', w: 12, prize: '۱۵۰ میلیون تومان', pts: '9,240' },
-                { r: 2, n: 'Crimson Fangs', tag: 'CF', w: 9, prize: '۱۱۰ میلیون تومان', pts: '8,910' },
-                { r: 3, n: 'Night Phantoms', tag: 'NP', w: 7, prize: '۸۵ میلیون تومان', pts: '8,470' },
-                { r: 4, n: 'Iron Falcons', tag: 'IF', w: 5, prize: '۶۰ میلیون تومان', pts: '7,930' },
-                { r: 5, n: 'Neon Riders', tag: 'NR', w: 4, prize: '۴۵ میلیون تومان', pts: '7,120' },
-              ].map(lb => (
-                <tr key={lb.r} className={lb.r <= 3 ? `top-rank-${lb.r}` : ''}>
+                { n: 'Shadow Wolves', tag: 'SW', w: 12, prize: '۱۵۰ میلیون تومان', pts: '9,240', g: 'Valorant' },
+                { n: 'Viper Squad', tag: 'VS', w: 11, prize: '۱۳۰ میلیون تومان', pts: '9,100', g: 'Valorant' },
+                { n: 'Aim Bots', tag: 'AB', w: 9, prize: '۱۱۰ میلیون تومان', pts: '8,900', g: 'Valorant' },
+                { n: 'Crimson Fangs', tag: 'CF', w: 9, prize: '۱۱۰ میلیون تومان', pts: '8,910', g: 'Apex Legends' },
+                { n: 'Apex Predators', tag: 'AP', w: 8, prize: '۱۰۰ میلیون تومان', pts: '8,500', g: 'Apex Legends' },
+                { n: 'Legends Club', tag: 'LC', w: 7, prize: '۹۰ میلیون تومان', pts: '8,100', g: 'Apex Legends' },
+                { n: 'Night Phantoms', tag: 'NP', w: 7, prize: '۸۵ میلیون تومان', pts: '8,470', g: 'Fortnite' },
+                { n: 'Storm Chasers', tag: 'SC', w: 6, prize: '۷۰ میلیون تومان', pts: '8,000', g: 'Fortnite' },
+                { n: 'Build Masters', tag: 'BM', w: 5, prize: '۶۰ میلیون تومان', pts: '7,500', g: 'Fortnite' },
+              ].filter(t => t.g === activeGame).map((lb, index) => {
+                const r = index + 1;
+                return (
+                <tr key={r} className={r <= 3 ? `top-rank-${r}` : ''}>
                   <td>
                     <div className="lb-rank-badge">
-                      {lb.r <= 3 ? <Icon name="trophy" /> : <span>{lb.r}</span>}
+                      {r <= 3 ? <Icon name="trophy" /> : <span>{r}</span>}
                     </div>
                   </td>
                   <td>
@@ -244,7 +262,7 @@ export default function TournamentPage() {
                   <td><span className="lb-prize-stat">{lb.prize}</span></td>
                   <td><strong className="lb-pts-stat">{lb.pts}</strong></td>
                 </tr>
-              ))}
+              ); })}
             </tbody>
           </table>
         ) : (
@@ -255,22 +273,27 @@ export default function TournamentPage() {
                 <th>بازیکن</th>
                 <th>بازی تخصصی</th>
                 <th>نسبت برد (K/D)</th>
-                <th>ساعت بازی</th>
                 <th>امتیاز کل</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { r: 1, n: 'Ali_Gamer99', game: 'Valorant', kd: '2.4', hr: '1,200', pts: '12,450' },
-                { r: 2, n: 'ProSniper_IR', game: 'CS 2', kd: '2.1', hr: '980', pts: '11,200' },
-                { r: 3, n: 'DarkKnight', game: 'Dota 2', kd: '1.9', hr: '2,400', pts: '10,850' },
-                { r: 4, n: 'NoobMaster', game: 'Fortnite', kd: '1.7', hr: '650', pts: '9,400' },
-                { r: 5, n: 'Apex_Predator', game: 'Apex Legends', kd: '1.8', hr: '890', pts: '8,900' },
-              ].map(lb => (
-                <tr key={lb.r} className={lb.r <= 3 ? `top-rank-${lb.r}` : ''}>
+                { n: 'Ali_Gamer99', game: 'Valorant', kd: '2.4', pts: '12,450' },
+                { n: 'HeadshotKing', game: 'Valorant', kd: '2.2', pts: '11,800' },
+                { n: 'ProSniper_IR', game: 'Valorant', kd: '2.1', pts: '11,200' },
+                { n: 'Apex_Predator', game: 'Apex Legends', kd: '1.8', pts: '8,900' },
+                { n: 'WraithMain', game: 'Apex Legends', kd: '1.7', pts: '8,500' },
+                { n: 'OctaneRush', game: 'Apex Legends', kd: '1.6', pts: '8,100' },
+                { n: 'NoobMaster', game: 'Fortnite', kd: '1.7', pts: '9,400' },
+                { n: 'NinjaWannaBe', game: 'Fortnite', kd: '1.5', pts: '8,900' },
+                { n: 'BuildGod', game: 'Fortnite', kd: '1.4', pts: '8,400' },
+              ].filter(p => p.game === activeGame).map((lb, index) => {
+                const r = index + 1;
+                return (
+                <tr key={r} className={r <= 3 ? `top-rank-${r}` : ''}>
                   <td>
                     <div className="lb-rank-badge">
-                      {lb.r <= 3 ? <Icon name="trophy" /> : <span>{lb.r}</span>}
+                      {r <= 3 ? <Icon name="trophy" /> : <span>{r}</span>}
                     </div>
                   </td>
                   <td>
@@ -281,10 +304,9 @@ export default function TournamentPage() {
                   </td>
                   <td><span className="lb-game-tag">{lb.game}</span></td>
                   <td><span className="lb-stat">{lb.kd}</span></td>
-                  <td><span className="lb-stat">{lb.hr}h</span></td>
                   <td><strong className="lb-pts-stat">{lb.pts}</strong></td>
                 </tr>
-              ))}
+              ); })}
             </tbody>
           </table>
         )}
