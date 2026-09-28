@@ -187,7 +187,7 @@ export default function TournamentPage() {
           { num: '۳', icon: 'game', t: 'تکمیل ثبت‌نام', d: 'اطلاعات تیم و شناسه‌ی درون‌بازی بازیکن‌ها را وارد کرده و مبلغ ورودی را پرداخت کنید.' },
           { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: '۴۸ ساعت قبل از شروع مسابقات، جدول قرعه‌کشی و حریف خود را در همین صفحه می‌بینید.' }
         ].map((st, i) => (
-          <div key={st.num} className="tour-step-card spot spot-track" style={{ '--d': 8 + i } as any}>
+          <div key={st.num} className="tour-step-card spot spot-track" data-step={st.num} style={{ '--d': 8 + i } as any}>
             <div className="tsc-icon"><Icon name={st.icon} /></div>
             <div className="tsc-content">
               <span className="tsc-step">مرحله {st.num}</span>
@@ -199,35 +199,95 @@ export default function TournamentPage() {
         ))}
       </div>
 
-      {/* 5. Leaderboard (Full Width or Centered) */}
+      {/* 5. Leaderboard (Tables Redesign) */}
       <div className="tour-sec-h reveal" style={{ '--d': 9, marginTop: '48px' } as any}>
         <h3>جدول رتبه‌بندی فصل</h3>
+        <div className="lb-tabs-new">
+          <button className={`lb-tab-btn ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>برترین تیم‌ها</button>
+          <button className={`lb-tab-btn ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>برترین بازیکنان</button>
+        </div>
       </div>
-      <div className="tour-lb-card full-width spot spot-track reveal" style={{ '--d': 10 } as any}>
-        <div className="lb-tabs">
-          <button className={`lb-tab ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>برترین تیم‌ها</button>
-          <button className={`lb-tab ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>برترین بازیکنان</button>
-        </div>
-        <div className="lb-list-grid">
-          {[
-            { r: 1, n: 'Shadow Wolves', pts: '9,240', w: 42, icon: 'swords' },
-            { r: 2, n: 'Crimson Fangs', pts: '8,910', w: 39, icon: 'flame' },
-            { r: 3, n: 'Night Phantoms', pts: '8,470', w: 35, icon: 'steam' },
-            { r: 4, n: 'Iron Falcons', pts: '7,930', w: 31, icon: 'epic' },
-            { r: 5, n: 'Neon Riders', pts: '7,120', w: 28, icon: 'play' },
-            { r: 6, n: 'Dark Eagles', pts: '6,800', w: 25, icon: 'skull' }
-          ].map(lb => (
-            <div key={lb.r} className={`lb-row ${lb.r <= 3 ? 'top-' + lb.r : ''}`}>
-              <div className="lb-rank">{lb.r}</div>
-              <div className="lb-avatar"><Icon name={lb.icon} /></div>
-              <div className="lb-name">{lb.n}</div>
-              <div className="lb-stats">
-                <span className="lb-w">{lb.w} برد</span>
-                <span className="lb-pts">{lb.pts} امتیاز</span>
-              </div>
-            </div>
-          ))}
-        </div>
+
+      <div className="tour-table-wrapper spot spot-track reveal" style={{ '--d': 10 } as any}>
+        {activeTab === 'teams' ? (
+          <table className="tour-table">
+            <thead>
+              <tr>
+                <th>رتبه</th>
+                <th>تیم</th>
+                <th>قهرمانی‌ها</th>
+                <th>مجموع جوایز</th>
+                <th>امتیاز فصل</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { r: 1, n: 'Shadow Wolves', tag: 'SW', w: 12, prize: '۱۵۰ میلیون تومان', pts: '9,240' },
+                { r: 2, n: 'Crimson Fangs', tag: 'CF', w: 9, prize: '۱۱۰ میلیون تومان', pts: '8,910' },
+                { r: 3, n: 'Night Phantoms', tag: 'NP', w: 7, prize: '۸۵ میلیون تومان', pts: '8,470' },
+                { r: 4, n: 'Iron Falcons', tag: 'IF', w: 5, prize: '۶۰ میلیون تومان', pts: '7,930' },
+                { r: 5, n: 'Neon Riders', tag: 'NR', w: 4, prize: '۴۵ میلیون تومان', pts: '7,120' },
+              ].map(lb => (
+                <tr key={lb.r} className={lb.r <= 3 ? `top-rank-${lb.r}` : ''}>
+                  <td>
+                    <div className="lb-rank-badge">
+                      {lb.r <= 3 ? <Icon name="trophy" /> : <span>{lb.r}</span>}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="lb-team-cell">
+                      <div className="lb-crest">{lb.n.substring(0,2).toUpperCase()}</div>
+                      <strong>{lb.n}</strong>
+                    </div>
+                  </td>
+                  <td><span className="lb-stat">{lb.w}</span></td>
+                  <td><span className="lb-prize-stat">{lb.prize}</span></td>
+                  <td><strong className="lb-pts-stat">{lb.pts}</strong></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <table className="tour-table table-players">
+            <thead>
+              <tr>
+                <th>رتبه</th>
+                <th>بازیکن</th>
+                <th>بازی تخصصی</th>
+                <th>نسبت برد (K/D)</th>
+                <th>ساعت بازی</th>
+                <th>امتیاز کل</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { r: 1, n: 'Ali_Gamer99', game: 'Valorant', kd: '2.4', hr: '1,200', pts: '12,450' },
+                { r: 2, n: 'ProSniper_IR', game: 'CS 2', kd: '2.1', hr: '980', pts: '11,200' },
+                { r: 3, n: 'DarkKnight', game: 'Dota 2', kd: '1.9', hr: '2,400', pts: '10,850' },
+                { r: 4, n: 'NoobMaster', game: 'Fortnite', kd: '1.7', hr: '650', pts: '9,400' },
+                { r: 5, n: 'Apex_Predator', game: 'Apex Legends', kd: '1.8', hr: '890', pts: '8,900' },
+              ].map(lb => (
+                <tr key={lb.r} className={lb.r <= 3 ? `top-rank-${lb.r}` : ''}>
+                  <td>
+                    <div className="lb-rank-badge">
+                      {lb.r <= 3 ? <Icon name="trophy" /> : <span>{lb.r}</span>}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="lb-player-cell">
+                      <div className="lb-avatar"><Icon name="users" /></div>
+                      <strong>{lb.n}</strong>
+                    </div>
+                  </td>
+                  <td><span className="lb-game-tag">{lb.game}</span></td>
+                  <td><span className="lb-stat">{lb.kd}</span></td>
+                  <td><span className="lb-stat">{lb.hr}h</span></td>
+                  <td><strong className="lb-pts-stat">{lb.pts}</strong></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
     </div>
