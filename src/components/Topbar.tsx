@@ -5,6 +5,7 @@ import { Icon, Avatar } from './Icons';
 import { useAppContext } from '@/context/AppContext';
 import { games } from '@/data/games';
 import { tournaments } from '@/data/tournaments';
+import { ProfileAvatar } from './ProfileAvatar';
 
 const CATALOG = [
   ...games.map(g => ({ t: g.title, k: g.genre || 'Game' })),
@@ -108,7 +109,7 @@ export function Topbar() {
         </button>
         
         <button className="me" aria-label="پروفایل شما">
-          <span className="face"><Avatar seed={5} /></span>
+          <ProfileAvatar seed={5} score={1500} />
           <b id="userName">طاها</b>
         </button>
       </div>

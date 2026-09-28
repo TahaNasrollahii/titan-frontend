@@ -121,91 +121,113 @@ export default function TournamentPage() {
       </div>
       <div className="tour-matches">
         {[
-          { id: 1, team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز' },
-          { id: 2, team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: '۲ روز دیگر' }
+          { id: 1, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۵۰,۰۰۰,۰۰۰ تومان', team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز' },
+          { id: 2, game: 'Apex Legends', image: '/images/games/apexlegends-background.png', prize: '۳۰,۰۰۰,۰۰۰ تومان', team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: '۲ روز دیگر' },
+          { id: 3, game: 'Fortnite', image: '/images/games/fortnite-background.png', prize: '۲۰,۰۰۰,۰۰۰ تومان', team1: 'Neon Riders', tag1: 'قهرمان فصل قبل', team2: 'Dark Eagles', tag2: 'رتبه ۵', time: 'جمعه · ۱۸:۰۰', status: 'تکمیل ظرفیت' }
         ].map((m, i) => (
-          <article key={m.id} className="match-card spot spot-track reveal" style={{ '--d': 5 + i } as any}>
-            <div className="mc-bg"></div>
-            <div className="mc-status">
-              <span className="mc-status-dot"></span> {m.status}
-            </div>
-            <div className="mc-body">
-              <div className="mc-team">
-                <div className="mc-crest">{m.team1.substring(0, 2).toUpperCase()}</div>
-                <div className="mc-team-info">
+          <article key={m.id} className="match-card-premium spot spot-track reveal" style={{ '--d': 5 + i } as any}>
+            <div className="mc-hero" style={{ backgroundImage: `url(${m.image})` }}>
+              <div className="mc-hero-overlay"></div>
+              
+              <div className="mc-status-bar">
+                <span className="mc-game">{m.game}</span>
+                <div className={`mc-status ${m.status === 'ثبت‌نام باز' ? 'open' : ''}`}>
+                  <span className="mc-status-dot"></span> {m.status}
+                </div>
+              </div>
+
+              <div className="mc-teams">
+                <div className="mc-team-side">
+                  <div className="mc-crest">{m.team1.substring(0, 2).toUpperCase()}</div>
                   <h4>{m.team1}</h4>
-                  <p>{m.tag1}</p>
+                  <span>{m.tag1}</span>
                 </div>
-              </div>
-              <div className="mc-center">
-                <span className="mc-vs">VS</span>
-                <span className="mc-time">{m.time}</span>
-              </div>
-              <div className="mc-team mc-team-right">
-                <div className="mc-team-info">
+                
+                <div className="mc-vs-badge">VS</div>
+                
+                <div className="mc-team-side">
+                  <div className="mc-crest crest-alt">{m.team2.substring(0, 2).toUpperCase()}</div>
                   <h4>{m.team2}</h4>
-                  <p>{m.tag2}</p>
+                  <span>{m.tag2}</span>
                 </div>
-                <div className="mc-crest crest-alt">{m.team2.substring(0, 2).toUpperCase()}</div>
               </div>
+            </div>
+
+            <div className="mc-content">
+              <div className="mc-info-row">
+                <div className="mc-info-item">
+                  <div className="mc-info-icon"><Icon name="clock" /></div>
+                  <div className="mc-info-text">
+                    <span className="mc-lbl">زمان شروع</span>
+                    <strong className="mc-val">{m.time}</strong>
+                  </div>
+                </div>
+                <div className="mc-info-item">
+                  <div className="mc-info-icon prize"><Icon name="trophy" /></div>
+                  <div className="mc-info-text">
+                    <span className="mc-lbl">جایزه مسابقه</span>
+                    <strong className="mc-val text-cream">{m.prize}</strong>
+                  </div>
+                </div>
+              </div>
+              <button className="mc-btn-full">ثبت‌نام و مشاهده جزئیات <Icon name="arrow" /></button>
             </div>
           </article>
         ))}
       </div>
 
-      {/* 4. Steps & About */}
-      <div className="tour-cols cols">
-        <section className="col col-a reveal" style={{ '--d': 7 } as any}>
-          <div className="tour-sec-h">
-            <h3>چطور ثبت‌نام کنم؟</h3>
+      {/* 4. Steps & About (Full Width Redesign) */}
+      <div className="tour-sec-h reveal" style={{ '--d': 7, marginTop: '48px' } as any}>
+        <h3>چطور در مسابقات شرکت کنم؟</h3>
+      </div>
+      <div className="tour-steps-grid reveal" style={{ '--d': 8 } as any}>
+        {[
+          { num: '۱', icon: 'users', t: 'تیم خود را بسازید', d: 'یک تیم جدید با دوستان خود بسازید یا با کد دعوت به تیمی که قبلاً ساخته شده ملحق شوید.' },
+          { num: '۲', icon: 'search', t: 'مسابقه را انتخاب کنید', d: 'به لیست مسابقات فعال بروید و تورنومنتی که با زمان و بازی شما همخوانی دارد را انتخاب کنید.' },
+          { num: '۳', icon: 'game', t: 'تکمیل ثبت‌نام', d: 'اطلاعات تیم و شناسه‌ی درون‌بازی بازیکن‌ها را وارد کرده و مبلغ ورودی را پرداخت کنید.' },
+          { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: '۴۸ ساعت قبل از شروع مسابقات، جدول قرعه‌کشی و حریف خود را در همین صفحه می‌بینید.' }
+        ].map((st, i) => (
+          <div key={st.num} className="tour-step-card spot spot-track" style={{ '--d': 8 + i } as any}>
+            <div className="tsc-icon"><Icon name={st.icon} /></div>
+            <div className="tsc-content">
+              <span className="tsc-step">مرحله {st.num}</span>
+              <h4>{st.t}</h4>
+              <p>{st.d}</p>
+            </div>
+            <div className="tsc-glow"></div>
           </div>
-          <div className="tour-steps">
-            {[
-              { num: '۱', t: 'تیم بساز یا بپیوند', d: 'یه تیم جدید بساز یا با کد دعوت به تیم دوستات ملحق شو.' },
-              { num: '۲', t: 'مسابقه رو انتخاب کن', d: 'از بین مسابقات باز، اونی که بازی و بازه‌ی زمانیش مناسبته رو انتخاب کن.' },
-              { num: '۳', t: 'ثبت‌نام رو تکمیل کن', d: 'اطلاعات تیم و شناسه بازیکن‌ها رو وارد و پرداخت رو انجام بده.' },
-              { num: '۴', t: 'منتظر قرعه‌کشی باش', d: '۴۸ ساعت قبل از شروع، جدول و حریفت رو توی همین صفحه می‌بینی.' }
-            ].map((st, i) => (
-              <div key={st.num} className="tour-step spot spot-track">
-                <div className="ts-num">{st.num}</div>
-                <div className="ts-text">
-                  <h4>{st.t}</h4>
-                  <p>{st.d}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        ))}
+      </div>
 
-        <section className="col col-b reveal" style={{ '--d': 8 } as any}>
-          <div className="tour-sec-h">
-            <h3>جدول رتبه‌بندی</h3>
-          </div>
-          <div className="tour-lb-card spot spot-track">
-            <div className="lb-tabs">
-              <button className={`lb-tab ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>برترین تیم‌ها</button>
-              <button className={`lb-tab ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>برترین بازیکنان</button>
+      {/* 5. Leaderboard (Full Width or Centered) */}
+      <div className="tour-sec-h reveal" style={{ '--d': 9, marginTop: '48px' } as any}>
+        <h3>جدول رتبه‌بندی فصل</h3>
+      </div>
+      <div className="tour-lb-card full-width spot spot-track reveal" style={{ '--d': 10 } as any}>
+        <div className="lb-tabs">
+          <button className={`lb-tab ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>برترین تیم‌ها</button>
+          <button className={`lb-tab ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>برترین بازیکنان</button>
+        </div>
+        <div className="lb-list-grid">
+          {[
+            { r: 1, n: 'Shadow Wolves', pts: '9,240', w: 42, icon: 'swords' },
+            { r: 2, n: 'Crimson Fangs', pts: '8,910', w: 39, icon: 'flame' },
+            { r: 3, n: 'Night Phantoms', pts: '8,470', w: 35, icon: 'steam' },
+            { r: 4, n: 'Iron Falcons', pts: '7,930', w: 31, icon: 'epic' },
+            { r: 5, n: 'Neon Riders', pts: '7,120', w: 28, icon: 'play' },
+            { r: 6, n: 'Dark Eagles', pts: '6,800', w: 25, icon: 'skull' }
+          ].map(lb => (
+            <div key={lb.r} className={`lb-row ${lb.r <= 3 ? 'top-' + lb.r : ''}`}>
+              <div className="lb-rank">{lb.r}</div>
+              <div className="lb-avatar"><Icon name={lb.icon} /></div>
+              <div className="lb-name">{lb.n}</div>
+              <div className="lb-stats">
+                <span className="lb-w">{lb.w} برد</span>
+                <span className="lb-pts">{lb.pts} امتیاز</span>
+              </div>
             </div>
-            <div className="lb-list">
-              {[
-                { r: 1, n: 'Shadow Wolves', pts: '9,240', w: 42 },
-                { r: 2, n: 'Crimson Fangs', pts: '8,910', w: 39 },
-                { r: 3, n: 'Night Phantoms', pts: '8,470', w: 35 },
-                { r: 4, n: 'Iron Falcons', pts: '7,930', w: 31 }
-              ].map(lb => (
-                <div key={lb.r} className={`lb-row ${lb.r <= 3 ? 'top-' + lb.r : ''}`}>
-                  <div className="lb-rank">{lb.r}</div>
-                  <div className="lb-avatar"></div>
-                  <div className="lb-name">{lb.n}</div>
-                  <div className="lb-stats">
-                    <span className="lb-w">{lb.w} برد</span>
-                    <span className="lb-pts">{lb.pts} امتیاز</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          ))}
+        </div>
       </div>
 
     </div>
