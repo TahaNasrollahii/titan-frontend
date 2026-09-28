@@ -16,7 +16,7 @@ export function ProfileAvatar({ seed = 5, score = 0 }: { seed?: number; score?: 
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(0.85)',
+          transform: 'translate(-50%, -50%) scale(0.62)',
           pointerEvents: 'none',
           zIndex: 10
         } as any}

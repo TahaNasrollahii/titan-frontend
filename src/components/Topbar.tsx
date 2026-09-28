@@ -109,7 +109,7 @@ export function Topbar() {
         </button>
         
         <button className="me" aria-label="پروفایل شما">
-          <ProfileAvatar seed={5} score={1500} />
+          <ProfileAvatar seed={5} score={0} />
           <b id="userName">طاها</b>
         </button>
       </div>
