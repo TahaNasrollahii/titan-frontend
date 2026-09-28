@@ -1,3 +1,4 @@
+ه
 /* Tournaments Page - Liquid Glass Redesign */
 
 .tour-wrapper {
@@ -55,9 +56,17 @@
 }
 
 @keyframes float-liq {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(30px, -50px) scale(1.1); }
-  100% { transform: translate(-40px, 30px) scale(0.9); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  100% {
+    transform: translate(-40px, 30px) scale(0.9);
+  }
 }
 
 /* Common Header */
@@ -123,8 +132,8 @@
   -webkit-backdrop-filter: blur(45px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15),
-              inset 0 -1px 1px rgba(0, 0, 0, 0.3),
-              0 24px 48px -12px rgba(0, 0, 0, 0.5);
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3),
+    0 24px 48px -12px rgba(0, 0, 0, 0.5);
   position: relative;
   z-index: 1;
 }
@@ -152,7 +161,7 @@
   inset: 0;
   border-radius: 32px;
   overflow: hidden;
-  background: repeating-radial-gradient(circle at 55% 50%, transparent 0, transparent 40px, rgba(255,255,255,0.04) 41px, rgba(255,255,255,0.04) 42px);
+  background: repeating-radial-gradient(circle at 55% 50%, transparent 0, transparent 40px, rgba(255, 255, 255, 0.04) 41px, rgba(255, 255, 255, 0.04) 42px);
   pointer-events: none;
   z-index: 1;
 }
@@ -164,7 +173,7 @@
   inset: 0;
   border-radius: 32px;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.02) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 30%, transparent 70%, rgba(255, 255, 255, 0.02) 100%);
   z-index: 5;
 }
 
@@ -208,8 +217,13 @@
 }
 
 @keyframes pulse-op {
-  from { opacity: 0.7; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.7;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .th-badge.dark {
@@ -218,6 +232,7 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
+
 .th-content h1 {
   font-size: 32px;
   font-weight: 700;
@@ -255,14 +270,14 @@
   font-weight: 800;
   font-size: 14px;
   transition: all 0.4s var(--spring);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), inset 0 -3px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), inset 0 -3px 0 rgba(0, 0, 0, 0.1);
   border: none;
 }
 
 .th-btn-primary:hover {
   transform: translateY(-4px) scale(1.05);
   background: #fff;
-  box-shadow: 0 16px 40px rgba(255, 255, 255, 0.2), inset 0 -3px 0 rgba(0,0,0,0.05);
+  box-shadow: 0 16px 40px rgba(255, 255, 255, 0.2), inset 0 -3px 0 rgba(0, 0, 0, 0.05);
 }
 
 .th-dots {
@@ -304,66 +319,44 @@
   object-position: bottom left;
   transform: translate(calc(var(--px) * 15px), calc(var(--py) * 15px));
   transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
 }
 
-/* 2. Global Stats */
-.tour-stats-row {
+/* 2. Ranks */
+.tour-ranks-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  direction: ltr;
 }
 
-.tour-stat-card {
+.tour-rank-card {
   border-radius: 24px;
-  padding: 20px;
+  padding: 24px 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.4s var(--spring);
 }
 
-.tour-stat-card.spot::before {
+.tour-rank-card.spot::before {
   border-radius: 24px;
 }
 
-.tour-stat-card:hover {
+.tour-rank-card:hover {
   transform: translateY(-4px) scale(1.02);
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.15);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 30px 50px -15px rgba(0, 0, 0, 0.6);
 }
 
-.ts-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  font-size: 20px;
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 8px 16px rgba(0,0,0,0.2);
-  backdrop-filter: blur(8px);
-}
 
-.ts-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.ts-val {
-  font-size: 22px;
-  font-weight: 900;
-  color: #fff;
-  line-height: 1.1;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-.ts-lbl {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
-  margin-top: 2px;
-}
 
 /* 3. Upcoming Matches (Premium Redesign) */
 .tour-matches {
@@ -380,14 +373,16 @@
   -webkit-backdrop-filter: blur(45px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15),
-              0 24px 48px -12px rgba(0, 0, 0, 0.5);
+    0 24px 48px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   transition: all 0.5s var(--spring);
   display: flex;
   flex-direction: column;
 }
 
-.match-card-premium.spot::before { border-radius: 28px; }
+.match-card-premium.spot::before {
+  border-radius: 28px;
+}
 
 .match-card-premium:hover {
   transform: translateY(-8px) scale(1.02);
@@ -409,7 +404,7 @@
 .mc-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
   z-index: 1;
 }
 
@@ -425,13 +420,13 @@
   font-size: 11px;
   font-weight: 900;
   color: #fff;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   padding: 6px 12px;
   border-radius: 8px;
   letter-spacing: 0.5px;
   backdrop-filter: blur(8px);
   text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .mc-status {
@@ -458,7 +453,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .mc-status.open .mc-status-dot {
@@ -492,20 +487,20 @@
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(0,0,0,0.5));
-  border: 1px solid rgba(255,255,255,0.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.25);
   display: grid;
   place-items: center;
   font-weight: 900;
   font-size: 15px;
   color: #fff;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   margin-bottom: 4px;
 }
 
 .mc-crest.crest-alt {
-  background: linear-gradient(135deg, rgba(226, 69, 63, 0.3), rgba(0,0,0,0.5));
+  background: linear-gradient(135deg, rgba(226, 69, 63, 0.3), rgba(0, 0, 0, 0.5));
   border-color: rgba(255, 180, 180, 0.3);
 }
 
@@ -514,15 +509,15 @@
   font-weight: 900;
   color: #fff;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
 }
 
 .mc-team-side span {
   font-size: 11px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .mc-vs-badge {
@@ -534,7 +529,7 @@
   font-weight: 900;
   font-style: italic;
   margin-bottom: 8px;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
 }
 
 .mc-content {
@@ -542,7 +537,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background: rgba(255,255,255,0.01);
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .mc-info-row {
@@ -565,7 +560,7 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   display: grid;
   place-items: center;
   color: #fff;
@@ -586,7 +581,7 @@
 
 .mc-lbl {
   font-size: 11px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 600;
 }
 
@@ -636,15 +631,19 @@
 }
 
 @media (max-width: 1024px) {
-  .tour-steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .tour-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 600px) {
-  .tour-steps-grid { grid-template-columns: 1fr; }
+  .tour-steps-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tour-step-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
   backdrop-filter: blur(40px) saturate(150%);
   -webkit-backdrop-filter: blur(40px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -657,18 +656,20 @@
   flex-direction: column;
   gap: 24px;
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 20px 40px -10px rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 40px -10px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
-.tour-step-card.spot::before { border-radius: 28px; }
+.tour-step-card.spot::before {
+  border-radius: 28px;
+}
 
 .tour-step-card:hover {
   transform: translateY(-8px);
-  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
   border-color: rgba(255, 255, 255, 0.15);
   border-top-color: rgba(255, 255, 255, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 30px 50px -15px rgba(0,0,0,0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 30px 50px -15px rgba(0, 0, 0, 0.6);
 }
 
 /* Watermark Number */
@@ -679,7 +680,7 @@
   right: -10px;
   font-size: 140px;
   font-weight: 900;
-  color: rgba(255,255,255,0.02);
+  color: rgba(255, 255, 255, 0.02);
   z-index: 0;
   pointer-events: none;
   line-height: 1;
@@ -687,7 +688,7 @@
 }
 
 .tour-step-card:hover::after {
-  color: rgba(255,255,255,0.04);
+  color: rgba(255, 255, 255, 0.04);
 }
 
 .tsc-icon {
@@ -702,7 +703,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.4), inset 0 4px 12px rgba(255,255,255,0.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), inset 0 4px 12px rgba(255, 255, 255, 0.05);
   position: relative;
   z-index: 2;
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -725,7 +726,7 @@
   background: linear-gradient(135deg, var(--red) 0%, #8c201c 100%);
   color: #fff;
   border-color: rgba(255, 200, 200, 0.6);
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 20px 40px rgba(226, 69, 63, 0.5);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 20px 40px rgba(226, 69, 63, 0.5);
   transform: scale(1.15) translateY(-6px) rotate(-8deg);
 }
 
@@ -749,21 +750,23 @@
   gap: 6px;
   font-size: 11px;
   font-weight: 900;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
+
 .tsc-step::before {
   content: '';
   display: block;
   width: 20px;
   height: 2px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .tour-step-card:hover .tsc-step {
   color: var(--red);
 }
+
 .tour-step-card:hover .tsc-step::before {
   background: var(--red);
 }
@@ -773,20 +776,22 @@
   font-weight: 800;
   color: #fff;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .tsc-content p {
   font-size: 13.5px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
   line-height: 1.7;
 }
 
 .tsc-glow {
   position: absolute;
-  bottom: 0; right: 0;
-  width: 200px; height: 200px;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
   background: radial-gradient(circle, rgba(226, 69, 63, 0.1) 0%, transparent 70%);
   border-radius: 50%;
   filter: blur(24px);
@@ -802,7 +807,7 @@
 
 /* 5. Leaderboard (Tables Redesign) */
 .tour-table-wrapper {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 32px;
@@ -813,8 +818,9 @@
 .tour-table-wrapper::-webkit-scrollbar {
   height: 8px;
 }
+
 .tour-table-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
 }
 
@@ -824,16 +830,17 @@
   background: rgba(0, 0, 0, 0.25);
   padding: 6px;
   border-radius: 100px;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .lb-game-btn {
-  padding: 10px 32px; /* Slightly wider padding for game titles */
+  padding: 10px 32px;
+  /* Slightly wider padding for game titles */
   border-radius: 100px;
   font-size: 14px;
   font-weight: 800;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   background: transparent;
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   border: 1px solid transparent;
@@ -841,7 +848,7 @@
 }
 
 .lb-game-btn:hover {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .lb-game-btn.active {
@@ -864,8 +871,8 @@
   background: rgba(0, 0, 0, 0.25);
   padding: 6px;
   border-radius: 100px;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .lb-tab-btn {
@@ -873,7 +880,7 @@
   border-radius: 100px;
   font-size: 13.5px;
   font-weight: 800;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   background: transparent;
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   border: 1px solid transparent;
@@ -881,7 +888,7 @@
 }
 
 .lb-tab-btn:hover {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .lb-tab-btn.active {
@@ -904,9 +911,9 @@
   font-size: 14px;
   font-weight: 900;
   color: #fff;
-  background: rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .tour-table thead tr th:first-child {
@@ -920,23 +927,23 @@
 
 .tour-table td {
   padding: 18px 24px;
-  background: rgba(255,255,255,0.02);
-  border-top: 1px solid rgba(255,255,255,0.03);
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   transition: all 0.3s ease;
   vertical-align: middle;
 }
 
 .tour-table tr td:first-child {
   border-radius: 0 20px 20px 0;
-  border-right: 1px solid rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
   width: 80px;
   text-align: center;
 }
 
 .tour-table tr td:last-child {
   border-radius: 20px 0 0 20px;
-  border-left: 1px solid rgba(255,255,255,0.03);
+  border-left: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .tour-table tbody tr {
@@ -944,21 +951,22 @@
 }
 
 .tour-table tbody tr:hover td {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .lb-rank-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   font-weight: 900;
   font-size: 15px;
-  color: rgba(255,255,255,0.4);
-  border: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .top-rank-1 .lb-rank-badge {
@@ -968,12 +976,14 @@
   box-shadow: 0 0 16px rgba(240, 200, 102, 0.2);
   font-size: 18px;
 }
+
 .top-rank-2 .lb-rank-badge {
   background: rgba(207, 211, 218, 0.15);
   color: #cfd3da;
   border: 1px solid rgba(207, 211, 218, 0.3);
   font-size: 18px;
 }
+
 .top-rank-3 .lb-rank-badge {
   background: rgba(214, 154, 99, 0.15);
   color: #d69a63;
@@ -981,17 +991,30 @@
   font-size: 18px;
 }
 
-.top-rank-1 td { background: rgba(240, 200, 102, 0.03); border-color: rgba(240, 200, 102, 0.1); }
-.top-rank-2 td { background: rgba(207, 211, 218, 0.03); border-color: rgba(207, 211, 218, 0.1); }
-.top-rank-3 td { background: rgba(214, 154, 99, 0.03); border-color: rgba(214, 154, 99, 0.1); }
+.top-rank-1 td {
+  background: rgba(240, 200, 102, 0.03);
+  border-color: rgba(240, 200, 102, 0.1);
+}
 
-.lb-team-cell, .lb-player-cell {
+.top-rank-2 td {
+  background: rgba(207, 211, 218, 0.03);
+  border-color: rgba(207, 211, 218, 0.1);
+}
+
+.top-rank-3 td {
+  background: rgba(214, 154, 99, 0.03);
+  border-color: rgba(214, 154, 99, 0.1);
+}
+
+.lb-team-cell,
+.lb-player-cell {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.lb-team-cell strong, .lb-player-cell strong {
+.lb-team-cell strong,
+.lb-player-cell strong {
   font-size: 16px;
   font-weight: 800;
   color: #fff;
@@ -999,38 +1022,40 @@
 }
 
 .lb-crest {
-  width: 48px; height: 48px;
+  width: 48px;
+  height: 48px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.4));
-  border: 1px solid rgba(255,255,255,0.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: grid;
   place-items: center;
   font-size: 16px;
   font-weight: 900;
   color: #fff;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .lb-avatar {
-  width: 48px; height: 48px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(226, 69, 63, 0.2), rgba(0,0,0,0.4));
-  border: 1px solid rgba(255,180,180,0.2);
+  background: linear-gradient(135deg, rgba(226, 69, 63, 0.2), rgba(0, 0, 0, 0.4));
+  border: 1px solid rgba(255, 180, 180, 0.2);
   display: grid;
   place-items: center;
   color: #fff;
   font-size: 20px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .lb-tag {
   font-size: 11px;
   font-weight: 800;
   padding: 6px 12px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .lb-game-tag {
@@ -1046,7 +1071,7 @@
 .lb-stat {
   font-size: 15px;
   font-weight: 700;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .lb-prize-stat {

@@ -5,6 +5,7 @@ import './tournament.css';
 import { Icon } from '@/components/Icons';
 
 import { ScoreWidget } from '@/components/ScoreWidget';
+import { RANKS, getRingSVG, getOrnamentSVGWrapper } from '@/utils/ranks';
 
 export default function TournamentPage() {
   const [activeTab, setActiveTab] = useState('teams');
@@ -91,33 +92,28 @@ export default function TournamentPage() {
         </section>
       </div>
 
-      {/* 2. Global Stats */}
-      <div className="tour-stats-row reveal" style={{ '--d': 3 } as any}>
-        <div className="tour-stat-card spot spot-track">
-          <div className="ts-icon" style={{ background: 'rgba(226, 69, 63, 0.15)', color: 'var(--red)' }}><Icon name="trophy" /></div>
-          <div className="ts-info">
-            <span className="ts-val">۴۸۵</span>
-            <span className="ts-lbl">مجموع مسابقات</span>
+      {/* 2. Ranks */}
+      <div className="tour-ranks-row reveal" style={{ '--d': 3, marginTop: '48px' } as any}>
+        {RANKS.map((r, i) => (
+          <div key={r.id} className="tour-rank-card spot spot-track" style={{ '--d': 3 + i } as any}>
+            <div className="rank-frame-wrap" data-tier={r.id} style={{ '--tier-glow': r.glow } as any}>
+              <span className="rank-frame-glow" aria-hidden="true"></span>
+              <span className="rank-frame-ring">{getRingSVG(r)}</span>
+              <span className="rank-frame-ornament">{getOrnamentSVGWrapper(r)}</span>
+              <div className="rank-inner-circle">
+                {i + 1}
+              </div>
+            </div>
+            <div className="rank-name-wrap">
+              <div className="rank-name">{r.name}</div>
+              <div className="rank-points">{r.pts}</div>
+            </div>
           </div>
-        </div>
-        <div className="tour-stat-card spot spot-track">
-          <div className="ts-icon" style={{ background: 'rgba(61, 220, 132, 0.15)', color: 'var(--green)' }}><Icon name="game" /></div>
-          <div className="ts-info">
-            <span className="ts-val">۳ زنده</span>
-            <span className="ts-lbl">مسابقات در جریان</span>
-          </div>
-        </div>
-        <div className="tour-stat-card spot spot-track">
-          <div className="ts-icon" style={{ background: 'rgba(255, 240, 179, 0.15)', color: 'var(--cream)' }}><Icon name="users" /></div>
-          <div className="ts-info">
-            <span className="ts-val">۱۲۴۰</span>
-            <span className="ts-lbl">تیم ثبت‌نام کرده</span>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* 3. Upcoming Matches */}
-      <div className="tour-sec-h reveal" style={{ '--d': 4 } as any}>
+      <div className="tour-sec-h reveal" style={{ '--d': 4, marginTop: '48px' } as any}>
         <h3>مسابقات پیش‌رو</h3>
         <a href="/tournaments" className="arrow" aria-label="مشاهده تمام مسابقات">
           <Icon name="arrow" />
