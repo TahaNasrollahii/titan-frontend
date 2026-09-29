@@ -16,7 +16,9 @@ export function Sidebar() {
   let activeKey = pathname;
   if (pathname.startsWith('/product/')) {
     activeKey = '/store';
-  } else if (pathname !== '/' && pathname !== '/store' && pathname !== '/tournament') {
+  } else if (pathname.startsWith('/tournament')) {
+    activeKey = '/tournament';
+  } else if (pathname !== '/' && pathname !== '/store') {
     activeKey = '/';
   }
 
@@ -73,7 +75,7 @@ export function Sidebar() {
         <Link 
           href="/tournament" 
           className={`nav-item ${activeKey === '/tournament' ? 'active' : ''}`} 
-          data-label="تورنومنتها" 
+          data-label="تورنومنت" 
           ref={el => { navRefs.current['/tournament'] = el; }}
         >
           <Icon name="trophy"/>

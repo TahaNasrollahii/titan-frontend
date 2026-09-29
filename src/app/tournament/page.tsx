@@ -92,24 +92,31 @@ export default function TournamentPage() {
         </section>
       </div>
 
-      {/* 2. Ranks */}
-      <div className="tour-ranks-row reveal" style={{ '--d': 3, marginTop: '48px' } as any}>
-        {RANKS.map((r, i) => (
-          <div key={r.id} className="tour-rank-card spot spot-track" style={{ '--d': 3 + i } as any}>
-            <div className="rank-frame-wrap" data-tier={r.id} style={{ '--tier-glow': r.glow } as any}>
-              <span className="rank-frame-glow" aria-hidden="true"></span>
-              <span className="rank-frame-ring">{getRingSVG(r)}</span>
-              <span className="rank-frame-ornament">{getOrnamentSVGWrapper(r)}</span>
-              <div className="rank-inner-circle">
-                {i + 1}
+      {/* 2. Ranks Timeline */}
+      <div className="tour-sec-h reveal" style={{ '--d': 3, marginTop: '48px' } as any}>
+        <h3>مسیر پیشرفت و رنک‌ها</h3>
+      </div>
+      <div className="tour-timeline-wrap reveal" style={{ '--d': 4 } as any}>
+
+        <div className="tour-ranks-row">
+          {RANKS.map((r, i) => (
+            <div key={r.id} className="tour-rank-card spot spot-track" style={{ '--d': 4 + i } as any}>
+              <div className="rank-frame-wrap" data-tier={r.id} style={{ '--tier-glow': r.glow } as any}>
+                <span className="rank-frame-glow" aria-hidden="true"></span>
+                <span className="rank-frame-ring">{getRingSVG(r)}</span>
+                <span className="rank-frame-ornament">{getOrnamentSVGWrapper(r)}</span>
+                <div className="rank-inner-circle">
+                  {i + 1}
+                </div>
+              </div>
+              <div className="rank-name-wrap">
+                <div className="rank-name" style={{ color: r.from }}>{r.name}</div>
+                <div className="rank-points">{r.pts}</div>
+                <div className="rank-desc">{r.desc}</div>
               </div>
             </div>
-            <div className="rank-name-wrap">
-              <div className="rank-name">{r.name}</div>
-              <div className="rank-points">{r.pts}</div>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* 3. Upcoming Matches */}
@@ -211,8 +218,12 @@ export default function TournamentPage() {
 
       <div className="tour-table-controls reveal" style={{ '--d': 10 } as any}>
         <div className="lb-tabs-new">
-          <button className={`lb-tab-btn ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>برترین تیم‌ها</button>
-          <button className={`lb-tab-btn ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>برترین بازیکنان</button>
+          <button className={`lb-tab-btn ${activeTab === 'teams' ? 'active' : ''}`} onClick={() => setActiveTab('teams')}>
+            <Icon name="users" /> برترین تیم‌ها
+          </button>
+          <button className={`lb-tab-btn ${activeTab === 'players' ? 'active' : ''}`} onClick={() => setActiveTab('players')}>
+            <Icon name="user" /> برترین بازیکنان
+          </button>
         </div>
       </div>
 

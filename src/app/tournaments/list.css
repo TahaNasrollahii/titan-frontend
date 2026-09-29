@@ -63,36 +63,100 @@
   gap: 12px;
 }
 
-.filter-dropdowns select {
-  appearance: none;
-  background: rgba(255, 255, 255, 0.05) url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat left 12px center;
-  background-size: 16px;
+.custom-dropdown {
+  position: relative;
+  user-select: none;
+}
+
+.cd-trigger {
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 10px 16px 10px 36px; /* Left padding for icon in RTL */
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: rgba(255, 255, 255, 0.8);
   font-size: 13.5px;
-  font-family: inherit;
   font-weight: 700;
   cursor: pointer;
-  outline: none;
   transition: all 0.3s;
 }
 
-.filter-dropdowns select:hover {
+.custom-dropdown.open .cd-trigger,
+.cd-trigger:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
 
-.filter-dropdowns select:focus {
-  border-color: var(--red);
-  box-shadow: 0 0 0 2px rgba(226, 69, 63, 0.2);
+.custom-dropdown.open .cd-trigger svg {
+  transform: rotate(180deg);
 }
 
-.filter-dropdowns select option {
-  background: #120c14;
+.cd-trigger svg {
+  transition: transform 0.3s;
+}
+
+.cd-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(40px) saturate(150%) brightness(65%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%) brightness(65%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Invisible bridge so mouse doesn't leave when crossing the gap */
+.cd-menu::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 12px;
+}
+
+.custom-dropdown.open .cd-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.cd-item {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.cd-item:hover {
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
+}
+
+.cd-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .empty-state {

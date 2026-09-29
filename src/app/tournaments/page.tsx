@@ -15,6 +15,49 @@ const ALL_TOURNAMENTS = [
   { id: 6, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۱۰,۰۰۰,۰۰۰ تومان', team1: 'Aim Bots', tag1: 'تازه‌وارد', team2: 'Wall Hackers', tag2: 'آماتور', time: 'فردا · ۱۰:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 1, prizeNum: 10000000 },
 ];
 
+const gameOptions = [
+  { value: 'All', label: 'همه بازی‌ها' },
+  { value: 'Valorant', label: 'Valorant' },
+  { value: 'Apex Legends', label: 'Apex Legends' },
+  { value: 'Fortnite', label: 'Fortnite' },
+  { value: 'CS 2', label: 'CS 2' },
+  { value: 'Dota 2', label: 'Dota 2' }
+];
+
+const statusOptions = [
+  { value: 'All', label: 'همه وضعیت‌ها' },
+  { value: 'ثبت‌نام باز', label: 'ثبت‌نام باز' },
+  { value: 'در جریان', label: 'در جریان' },
+  { value: 'به‌زودی', label: 'به‌زودی' },
+  { value: 'تکمیل ظرفیت', label: 'تکمیل ظرفیت' }
+];
+
+const sortOptions = [
+  { value: 'Soonest', label: 'نزدیک‌ترین زمان' },
+  { value: 'Prize High-Low', label: 'بیشترین جایزه' }
+];
+
+const Dropdown = ({ value, options, onChange }: { value: string, options: {label: string, value: string}[], onChange: (val: string) => void }) => {
+  const [open, setOpen] = useState(false);
+  const selectedLabel = options.find(o => o.value === value)?.label || value;
+
+  return (
+    <div className={`custom-dropdown ${open ? 'open' : ''}`} onMouseLeave={() => setOpen(false)}>
+      <div className="cd-trigger" onClick={() => setOpen(!open)}>
+        <span>{selectedLabel}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+      <div className="cd-menu">
+        {options.map(o => (
+          <div key={o.value} className={`cd-item ${value === o.value ? 'active' : ''}`} onClick={() => { onChange(o.value); setOpen(false); }}>
+            {o.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default function TournamentsListPage() {
   const [filterGame, setFilterGame] = useState('All');
   const [filterStatus, setFilterStatus] = useState('All');
@@ -62,27 +105,9 @@ export default function TournamentsListPage() {
         </div>
         
         <div className="filter-dropdowns">
-          <select value={filterGame} onChange={e => setFilterGame(e.target.value)}>
-            <option value="All">همه بازی‌ها</option>
-            <option value="Valorant">Valorant</option>
-            <option value="Apex Legends">Apex Legends</option>
-            <option value="Fortnite">Fortnite</option>
-            <option value="CS 2">CS 2</option>
-            <option value="Dota 2">Dota 2</option>
-          </select>
-
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-            <option value="All">همه وضعیت‌ها</option>
-            <option value="ثبت‌نام باز">ثبت‌نام باز</option>
-            <option value="در جریان">در جریان</option>
-            <option value="به‌زودی">به‌زودی</option>
-            <option value="تکمیل ظرفیت">تکمیل ظرفیت</option>
-          </select>
-
-          <select value={sortMethod} onChange={e => setSortMethod(e.target.value)}>
-            <option value="Soonest">نزدیک‌ترین زمان</option>
-            <option value="Prize High-Low">بیشترین جایزه</option>
-          </select>
+          <Dropdown value={filterGame} options={gameOptions} onChange={setFilterGame} />
+          <Dropdown value={filterStatus} options={statusOptions} onChange={setFilterStatus} />
+          <Dropdown value={sortMethod} options={sortOptions} onChange={setSortMethod} />
         </div>
       </div>
 

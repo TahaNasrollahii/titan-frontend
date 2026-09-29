@@ -1,11 +1,11 @@
 import React from 'react';
 
 export const RANKS = [
-  { id: 'bronze', name: 'Bronze', pts: '۰ امتیاز', from: '#c97a3d', to: '#7a4118', glow: 'rgba(201,122,61,.55)', ornament: 'lozenge' },
-  { id: 'silver', name: 'Silver', pts: '+۱,۵۰۰ امتیاز', from: '#e7ebf0', to: '#9aa0aa', glow: 'rgba(200,208,220,.55)', ornament: 'star' },
-  { id: 'gold', name: 'Gold', pts: '+۵,۰۰۰ امتیاز', from: '#ffe07a', to: '#c9932c', glow: 'rgba(255,205,90,.6)', ornament: 'crown' },
-  { id: 'platinum', name: 'Platinum', pts: '+۱۰,۰۰۰ امتیاز', from: '#c9a6ff', to: '#6b3fa0', glow: 'rgba(157,110,224,.6)', ornament: 'gem' },
-  { id: 'titan', name: 'Titan', pts: '+۲۰,۰۰۰ امتیاز', from: '#ff3b30', to: '#3a0000', glow: 'rgba(255,40,30,.75)', ornament: 'titan' }
+  { id: 'bronze', name: 'Bronze', pts: '۰ امتیاز', desc: 'تولد یک جنگجو در میدان', from: '#c97a3d', to: '#7a4118', glow: 'rgba(201,122,61,.55)', ornament: 'lozenge' },
+  { id: 'silver', name: 'Silver', pts: '+۱,۵۰۰ امتیاز', desc: 'خروج از سایه‌ها و شکار رقبا', from: '#e7ebf0', to: '#9aa0aa', glow: 'rgba(200,208,220,.55)', ornament: 'star' },
+  { id: 'gold', name: 'Gold', pts: '+۵,۰۰۰ امتیاز', desc: 'کابوس حریفان؛ درخشش در اوج', from: '#ffe07a', to: '#c9932c', glow: 'rgba(255,205,90,.6)', ornament: 'crown' },
+  { id: 'platinum', name: 'Platinum', pts: '+۱۰,۰۰۰ امتیاز', desc: 'ارباب بی‌نقص مسابقات؛ تشنه‌ی جاودانگی', from: '#c9a6ff', to: '#6b3fa0', glow: 'rgba(157,110,224,.6)', ornament: 'gem' },
+  { id: 'titan', name: 'Titan', pts: '+۲۰,۰۰۰ امتیاز', desc: 'خدای بی‌رقیب میدان؛ اسطوره تایتان‌ها', from: '#ff3b30', to: '#3a0000', glow: 'rgba(255,40,30,.75)', ornament: 'titan' }
 ];
 
 export const getTierByScore = (score: number) => {
