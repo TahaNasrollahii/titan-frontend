@@ -18,6 +18,8 @@ export function Sidebar() {
     activeKey = '/store';
   } else if (pathname.startsWith('/tournament')) {
     activeKey = '/tournament';
+  } else if (pathname.startsWith('/contact')) {
+    activeKey = '/contact';
   } else if (pathname !== '/' && pathname !== '/store') {
     activeKey = '/';
   }
@@ -80,14 +82,22 @@ export function Sidebar() {
         >
           <Icon name="trophy"/>
         </Link>
+        <Link 
+          href="/contact" 
+          className={`nav-item ${activeKey === '/contact' ? 'active' : ''}`} 
+          data-label="ارتباط با ما" 
+          ref={el => { navRefs.current['/contact'] = el; }}
+        >
+          <Icon name="chat"/>
+        </Link>
         <a className="nav-item" href="#" data-label="گیفت کارت" onClick={e => e.preventDefault()}>
           <Icon name="gift"/>
         </a>
         <a className="nav-item" href="#" data-label="آمار" onClick={e => e.preventDefault()}>
           <Icon name="chart"/>
         </a>
-        <a className="nav-item" href="#" data-label="پیام‌ها" onClick={e => e.preventDefault()}>
-          <Icon name="chat"/>
+        <a className="nav-item" href="#" data-label="تنظیمات" onClick={e => e.preventDefault()}>
+          <Icon name="sliders"/>
         </a>
       </nav>
       <button className="add-btn" aria-label="ساخت تیم" data-label="ساخت تیم" onClick={handleAddSquad}>

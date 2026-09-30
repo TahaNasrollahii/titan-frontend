@@ -1,0 +1,318 @@
+.contactMain {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+/* Background Patterns & Watermarks */
+.bgGrid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+}
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) skewY(-5deg);
+  font-size: 25vw;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.015);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+  letter-spacing: -5px;
+}
+
+.ambientGlow1, .ambientGlow2 {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.ambientGlow1 {
+  top: -10%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(226, 69, 63, 0.2), transparent 70%);
+  animation: pulse 10s ease-in-out infinite alternate;
+}
+
+.ambientGlow2 {
+  bottom: -20%;
+  left: -20%;
+  background: radial-gradient(circle, rgba(122, 80, 230, 0.15), transparent 70%);
+  animation: pulse 12s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.2) translate(20px, 30px); }
+}
+
+/* Main Panel Layout */
+.contactPanel {
+  position: relative;
+  z-index: 10;
+  padding: 50px 40px;
+  background: rgba(15, 4, 6, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin-top: 20px;
+}
+
+.headerBox {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.headerBox h2 {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+
+.headerBox h2 span {
+  color: transparent;
+  background: linear-gradient(135deg, #ff4b4b, #bd312c);
+  -webkit-background-clip: text;
+  text-shadow: 0 0 30px rgba(226, 69, 63, 0.4);
+}
+
+.headerBox p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+/* Cards Layout */
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dualGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 800px) {
+  .dualGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Advanced Interactive Cards */
+.glitchCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 30px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  isolation: isolate;
+}
+
+.glitchCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.7s;
+  z-index: 1;
+}
+
+.glitchCard:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.glitchCard:hover::before {
+  transform: translateX(100%) skewX(-15deg);
+}
+
+.cardHighlight {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-color, rgba(255,255,255,0.2)), transparent 70%);
+  filter: blur(40px);
+  top: -100px;
+  left: -100px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  z-index: 0;
+}
+
+.glitchCard:hover .cardHighlight {
+  opacity: 1;
+}
+
+.cardContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.iconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  color: var(--accent-color, #fff);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.05);
+  transition: all 0.4s var(--spring);
+  flex-shrink: 0;
+}
+
+.glitchCard:hover .iconWrap {
+  transform: scale(1.1) rotate(5deg);
+  background: var(--accent-color, rgba(255,255,255,0.1));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 20px var(--accent-glow, rgba(0,0,0,0.5));
+}
+
+.textWrap h3 {
+  font-size: 22px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  transition: color 0.3s;
+}
+
+.textWrap p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.glitchCard:hover .textWrap h3 {
+  color: var(--accent-color, #fff);
+  text-shadow: 0 0 15px var(--accent-glow, transparent);
+}
+
+/* Specific Card Styling */
+.discord {
+  --accent-color: #5865F2;
+  --accent-glow: rgba(88, 101, 242, 0.4);
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.08) 0%, rgba(0, 0, 0, 0.4) 100%);
+  padding: 40px;
+}
+
+.discord .iconWrap {
+  width: 80px;
+  height: 80px;
+  font-size: 34px;
+}
+
+.discord .textWrap h3 {
+  font-size: 28px;
+}
+
+.discord .actionBtn {
+  margin-right: auto;
+  padding: 14px 28px;
+  border-radius: 14px;
+  background: rgba(88, 101, 242, 0.2);
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(88, 101, 242, 0.4);
+  transition: all 0.3s;
+}
+
+.discord:hover .actionBtn {
+  background: #5865F2;
+  box-shadow: 0 10px 20px rgba(88, 101, 242, 0.4);
+  transform: translateX(-5px);
+}
+
+.teleChannel {
+  --accent-color: #2aabee;
+  --accent-glow: rgba(42, 171, 238, 0.4);
+}
+
+.teleSupport {
+  --accent-color: #ff8a5c;
+  --accent-glow: rgba(255, 138, 92, 0.4);
+}
+
+.onlineSupport {
+  --accent-color: #ebbb40;
+  --accent-glow: rgba(235, 187, 64, 0.4);
+}
+
+.email {
+  --accent-color: #e2453f;
+  --accent-glow: rgba(226, 69, 63, 0.4);
+}
+
+.phone {
+  --accent-color: #3ac977;
+  --accent-glow: rgba(58, 201, 119, 0.4);
+  padding: 35px 40px;
+}
+
+.phone .cardContent {
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .contactPanel {
+    padding: 30px 20px;
+  }
+  
+  .cardContent {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .discord .actionBtn {
+    margin: 10px auto 0;
+  }
+  
+  .watermark {
+    font-size: 40vw;
+  }
+}
