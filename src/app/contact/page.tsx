@@ -23,7 +23,7 @@ export default function ContactPage() {
 
       <div className={`panel reveal ${styles.contactPanel}`} style={{ '--d': 1 } as React.CSSProperties}>
         <div className={styles.headerBox}>
-          <h2>ارتباط <span>مستقیم</span> با هسته تایتان</h2>
+          <h2>ارتباط <span>مستقیم</span> با تایتان</h2>
           <p>تایتان فقط یک پلتفرم نیست؛ یک خانواده است. از طریق کانال‌های ویژه زیر با ما همراه شوید.</p>
         </div>
 
