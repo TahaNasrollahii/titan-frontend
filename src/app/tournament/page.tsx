@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './tournament.css';
 import { Icon } from '@/components/Icons';
 
@@ -10,6 +10,18 @@ import { RANKS, getRingSVG, getOrnamentSVGWrapper } from '@/utils/ranks';
 export default function TournamentPage() {
   const [activeTab, setActiveTab] = useState('teams');
   const [activeGame, setActiveGame] = useState('Valorant');
+  const [gameTabIndStyle, setGameTabIndStyle] = useState({});
+  const gameTabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const el = gameTabRefs.current[activeGame];
+    if (el) {
+      setGameTabIndStyle({
+        transform: `translateX(${el.offsetLeft}px)`,
+        width: `${el.offsetWidth}px`
+      });
+    }
+  }, [activeGame]);
 
   // Mouse tracking for parallax and spot hover effects on cards
   useEffect(() => {
@@ -112,7 +124,6 @@ export default function TournamentPage() {
               <div className="rank-name-wrap">
                 <div className="rank-name" style={{ color: r.from }}>{r.name}</div>
                 <div className="rank-points">{r.pts}</div>
-                <div className="rank-desc">{r.desc}</div>
               </div>
             </div>
           ))}
@@ -210,9 +221,35 @@ export default function TournamentPage() {
       <div className="tour-sec-h reveal" style={{ '--d': 9, marginTop: '48px' } as any}>
         <h3>جدول رتبه‌بندی فصل</h3>
         <div className="lb-games-tabs">
-          <button className={`lb-game-btn ${activeGame === 'Valorant' ? 'active' : ''}`} onClick={() => setActiveGame('Valorant')}>Valorant</button>
-          <button className={`lb-game-btn ${activeGame === 'Apex Legends' ? 'active' : ''}`} onClick={() => setActiveGame('Apex Legends')}>Apex Legends</button>
-          <button className={`lb-game-btn ${activeGame === 'Fortnite' ? 'active' : ''}`} onClick={() => setActiveGame('Fortnite')}>Fortnite</button>
+          <span className="lb-game-tab-ind" style={gameTabIndStyle}></span>
+          {['Valorant', 'Apex Legends', 'Fortnite'].map(game => {
+            const tabImages: Record<string, string> = {
+              'Fortnite': '/images/categories/fortnite.png',
+              'Valorant': '/images/categories/valorant.png',
+              'Apex Legends': '/images/categories/apex.png',
+            };
+            const gameNamesFa: Record<string, string> = {
+              'Valorant': 'ولورانت',
+              'Apex Legends': 'ایپکس لجندز',
+              'Fortnite': 'فورتنایت'
+            };
+            return (
+              <button
+                key={game}
+                ref={el => { gameTabRefs.current[game] = el; }}
+                className={`lb-game-tab ${activeGame === game ? 'active' : ''}`}
+                onClick={() => setActiveGame(game)}
+              >
+                {tabImages[game] && (
+                  <img
+                    src={tabImages[game]}
+                    alt={gameNamesFa[game]}
+                  />
+                )}
+                {gameNamesFa[game]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
