@@ -31,7 +31,8 @@ export const ICONS: Record<string, [string, boolean?]> = {
   epic: ['<path d="M6 3.5h12v12.6L12 20.5l-6-4.4z"/><path d="M10 8h4M10 8v5.5h4M10 10.7h3"/>'],
   cursor: ['<path d="M5 3l14 7-6 2-2 6z"/>', true],
   skull: ['<circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="M12.5 17l-.5-1-.5 1h1z"/><path d="M12 5a7 7 0 0 0-7 7v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3a7 7 0 0 0-7-7z"/>'],
-  swords: ['<path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/>']
+  swords: ['<path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/>'],
+  phone: ['<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>']
 };
 
 export function Icon({ name, className = '', style }: { name: string, className?: string, style?: React.CSSProperties }) {

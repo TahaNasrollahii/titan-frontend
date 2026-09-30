@@ -88,7 +88,7 @@ export function Sidebar() {
           data-label="ارتباط با ما" 
           ref={el => { navRefs.current['/contact'] = el; }}
         >
-          <Icon name="chat"/>
+          <Icon name="phone"/>
         </Link>
         <a className="nav-item" href="#" data-label="گیفت کارت" onClick={e => e.preventDefault()}>
           <Icon name="gift"/>
