@@ -13,7 +13,6 @@ export default function ContactPage() {
     <main className={`main ${styles.contactMain}`}>
       {/* Background Elements */}
       <div className={styles.bgGrid}></div>
-      <div className={styles.watermark}>CONTACT</div>
       <div className={styles.ambientGlow1}></div>
       <div className={styles.ambientGlow2}></div>
 

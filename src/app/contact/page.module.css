@@ -18,19 +18,6 @@
   -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
 }
 
-.watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) skewY(-5deg);
-  font-size: 25vw;
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.015);
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 0;
-  letter-spacing: -5px;
-}
 
 .ambientGlow1, .ambientGlow2 {
   position: absolute;
@@ -310,9 +297,5 @@
   
   .discord .actionBtn {
     margin: 10px auto 0;
-  }
-  
-  .watermark {
-    font-size: 40vw;
   }
 }
