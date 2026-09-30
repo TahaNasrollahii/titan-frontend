@@ -271,22 +271,22 @@ export default function TournamentPage() {
               <tr>
                 <th>رتبه</th>
                 <th>تیم</th>
-                <th>قهرمانی‌ها</th>
-                <th>مجموع جوایز</th>
-                <th>امتیاز فصل</th>
+                <th>تعداد برد</th>
+                <th>تعداد باخت</th>
+                <th>امتیاز کلی</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { n: 'Shadow Wolves', tag: 'SW', w: 12, prize: '۱۵۰ میلیون تومان', pts: '9,240', g: 'Valorant' },
-                { n: 'Viper Squad', tag: 'VS', w: 11, prize: '۱۳۰ میلیون تومان', pts: '9,100', g: 'Valorant' },
-                { n: 'Aim Bots', tag: 'AB', w: 9, prize: '۱۱۰ میلیون تومان', pts: '8,900', g: 'Valorant' },
-                { n: 'Crimson Fangs', tag: 'CF', w: 9, prize: '۱۱۰ میلیون تومان', pts: '8,910', g: 'Apex Legends' },
-                { n: 'Apex Predators', tag: 'AP', w: 8, prize: '۱۰۰ میلیون تومان', pts: '8,500', g: 'Apex Legends' },
-                { n: 'Legends Club', tag: 'LC', w: 7, prize: '۹۰ میلیون تومان', pts: '8,100', g: 'Apex Legends' },
-                { n: 'Night Phantoms', tag: 'NP', w: 7, prize: '۸۵ میلیون تومان', pts: '8,470', g: 'Fortnite' },
-                { n: 'Storm Chasers', tag: 'SC', w: 6, prize: '۷۰ میلیون تومان', pts: '8,000', g: 'Fortnite' },
-                { n: 'Build Masters', tag: 'BM', w: 5, prize: '۶۰ میلیون تومان', pts: '7,500', g: 'Fortnite' },
+                { n: 'Shadow Wolves', tag: 'SW', wins: 28, losses: 4, pts: '9,240', g: 'Valorant' },
+                { n: 'Viper Squad', tag: 'VS', wins: 25, losses: 6, pts: '9,100', g: 'Valorant' },
+                { n: 'Aim Bots', tag: 'AB', wins: 20, losses: 9, pts: '8,900', g: 'Valorant' },
+                { n: 'Crimson Fangs', tag: 'CF', wins: 19, losses: 10, pts: '8,910', g: 'Apex Legends' },
+                { n: 'Apex Predators', tag: 'AP', wins: 17, losses: 12, pts: '8,500', g: 'Apex Legends' },
+                { n: 'Legends Club', tag: 'LC', wins: 15, losses: 14, pts: '8,100', g: 'Apex Legends' },
+                { n: 'Night Phantoms', tag: 'NP', wins: 16, losses: 8, pts: '8,470', g: 'Fortnite' },
+                { n: 'Storm Chasers', tag: 'SC', wins: 14, losses: 10, pts: '8,000', g: 'Fortnite' },
+                { n: 'Build Masters', tag: 'BM', wins: 12, losses: 13, pts: '7,500', g: 'Fortnite' },
               ].filter(t => t.g === activeGame).map((lb, index) => {
                 const r = index + 1;
                 return (
@@ -302,8 +302,8 @@ export default function TournamentPage() {
                       <strong>{lb.n}</strong>
                     </div>
                   </td>
-                  <td><span className="lb-stat">{lb.w}</span></td>
-                  <td><span className="lb-prize-stat">{lb.prize}</span></td>
+                  <td><span className="lb-stat">{lb.wins}</span></td>
+                  <td><span className="lb-stat" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>{lb.losses}</span></td>
                   <td><strong className="lb-pts-stat">{lb.pts}</strong></td>
                 </tr>
               ); })}
@@ -315,22 +315,22 @@ export default function TournamentPage() {
               <tr>
                 <th>رتبه</th>
                 <th>بازیکن</th>
-                <th>بازی تخصصی</th>
-                <th>نسبت برد (K/D)</th>
-                <th>امتیاز کل</th>
+                <th>تعداد برد</th>
+                <th>تعداد باخت</th>
+                <th>امتیاز کلی</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { n: 'Ali_Gamer99', game: 'Valorant', kd: '2.4', pts: '12,450' },
-                { n: 'HeadshotKing', game: 'Valorant', kd: '2.2', pts: '11,800' },
-                { n: 'ProSniper_IR', game: 'Valorant', kd: '2.1', pts: '11,200' },
-                { n: 'Apex_Predator', game: 'Apex Legends', kd: '1.8', pts: '8,900' },
-                { n: 'WraithMain', game: 'Apex Legends', kd: '1.7', pts: '8,500' },
-                { n: 'OctaneRush', game: 'Apex Legends', kd: '1.6', pts: '8,100' },
-                { n: 'NoobMaster', game: 'Fortnite', kd: '1.7', pts: '9,400' },
-                { n: 'NinjaWannaBe', game: 'Fortnite', kd: '1.5', pts: '8,900' },
-                { n: 'BuildGod', game: 'Fortnite', kd: '1.4', pts: '8,400' },
+                { n: 'Ali_Gamer99', game: 'Valorant', wins: 64, losses: 18, pts: '12,450' },
+                { n: 'HeadshotKing', game: 'Valorant', wins: 58, losses: 21, pts: '11,800' },
+                { n: 'ProSniper_IR', game: 'Valorant', wins: 55, losses: 25, pts: '11,200' },
+                { n: 'Apex_Predator', game: 'Apex Legends', wins: 45, losses: 14, pts: '8,900' },
+                { n: 'WraithMain', game: 'Apex Legends', wins: 40, losses: 16, pts: '8,500' },
+                { n: 'OctaneRush', game: 'Apex Legends', wins: 38, losses: 19, pts: '8,100' },
+                { n: 'NoobMaster', game: 'Fortnite', wins: 48, losses: 15, pts: '9,400' },
+                { n: 'NinjaWannaBe', game: 'Fortnite', wins: 42, losses: 18, pts: '8,900' },
+                { n: 'BuildGod', game: 'Fortnite', wins: 39, losses: 20, pts: '8,400' },
               ].filter(p => p.game === activeGame).map((lb, index) => {
                 const r = index + 1;
                 return (
@@ -342,12 +342,12 @@ export default function TournamentPage() {
                   </td>
                   <td>
                     <div className="lb-player-cell">
-                      <div className="lb-avatar"><Icon name="users" /></div>
+                      <div className="lb-avatar"><Icon name="user" /></div>
                       <strong>{lb.n}</strong>
                     </div>
                   </td>
-                  <td><span className="lb-game-tag">{lb.game}</span></td>
-                  <td><span className="lb-stat">{lb.kd}</span></td>
+                  <td><span className="lb-stat">{lb.wins}</span></td>
+                  <td><span className="lb-stat" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>{lb.losses}</span></td>
                   <td><strong className="lb-pts-stat">{lb.pts}</strong></td>
                 </tr>
               ); })}
