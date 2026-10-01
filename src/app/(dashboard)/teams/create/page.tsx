@@ -10,7 +10,6 @@ export default function CreateTeamPage() {
     <div className={styles.manageWrapper}>
       <div className={styles.pageHeader}>
         <h1>ساخت تیم جدید</h1>
-        <p>تیم خود را تشکیل دهید و برای مسابقات آماده شوید</p>
       </div>
 
       <div className={styles.panel}>

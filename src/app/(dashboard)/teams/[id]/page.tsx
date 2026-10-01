@@ -9,20 +9,16 @@ import Link from 'next/link';
 export default function TeamDetailsPage({ params }: { params: { id: string } }) {
   return (
     <div className={styles.teamWrapper}>
-      {/* Banner & Logo */}
-      <div className={styles.banner}>
-        <div className={styles.logoWrapper}>
-          <div className={styles.logo}>IR</div>
-        </div>
-      </div>
-
       {/* Header Info */}
-      <div className={styles.headerInfo}>
-        <h1 className={styles.teamName}>
-          Iran Titans <span className={styles.teamTag}>IR</span>
-        </h1>
-        <div className={styles.gameLabel}>
-          <Icon name="game" /> تیم اختصاصی Valorant
+      <div className={styles.teamHeader}>
+        <div className={styles.logo}>IR</div>
+        <div className={styles.teamInfo}>
+          <h1 className={styles.teamName}>
+            Iran Titans <span className={styles.teamTag}>IR</span>
+          </h1>
+          <div className={styles.gameLabel}>
+            <Icon name="game" /> تیم اختصاصی Valorant
+          </div>
         </div>
       </div>
 

@@ -11,7 +11,6 @@ export default function TeamManagePage({ params }: { params: { id: string } }) {
     <div className={styles.manageWrapper}>
       <div className={styles.pageHeader}>
         <h1>تنظیمات تیم Iran Titans</h1>
-        <p>مدیریت اعضا، اطلاعات و دسترسی‌های تیم</p>
       </div>
 
       <div className={styles.panel}>
