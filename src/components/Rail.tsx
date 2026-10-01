@@ -14,11 +14,7 @@ export function Rail() {
     { n: 'سندیکا', s: 'away', seed: 30 }
   ];
 
-  const chats = [
-    { n: 'گروه اصلی', group: true, unread: true },
-    { n: 'نیما', seed: 41 },
-    { n: 'لیلا', seed: 47, unread: true }
-  ];
+
 
   const getTip = (f: any) => `${f.n} · ${f.s === 'game' ? 'در بازی — ' + f.g : f.s === 'online' ? 'آنلاین' : 'آفلاین'}`;
 
@@ -39,20 +35,7 @@ export function Rail() {
           ))}
         </div>
       </div>
-      
-      <div className="panel p2 reveal" style={{ '--d': 3 } as any}>
-        <i className="rail-ic"><Icon name="chat" /></i>
-        <div className="list">
-          {chats.map((c, i) => (
-            <div key={i} className={`av ${c.group ? 'group' : ''}`} data-tip={c.n}>
-              <div className="face">
-                {c.group ? 'گ' : <Avatar seed={c.seed!} />}
-              </div>
-              {c.unread && <span className="nt"></span>}
-            </div>
-          ))}
-        </div>
-      </div>
+
     </aside>
   );
 }
