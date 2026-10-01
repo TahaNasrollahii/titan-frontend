@@ -5,12 +5,22 @@ import styles from './page.module.css';
 import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
 import Link from 'next/link';
+import { DashboardSidebar } from '@/components/DashboardSidebar';
+import { useEffect } from 'react';
 
-type ModalType = 'newAddress' | 'editAddress' | 'createTeam' | 'manageTeam' | 'viewTeam' | 'enterBracket' | 'tournamentDetails' | null;
+type ModalType = 'newAddress' | 'editAddress' | null;
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -30,46 +40,7 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.dashboardWrapper}>
-      {/* Inner Sidebar */}
-      <aside className={styles.sidebar}>
-        <div className={styles.menuHeader}>
-          <h2>پنل کاربری طاها</h2>
-        </div>
-        
-        <button className={`${styles.menuItem} ${activeTab === 'overview' ? styles.active : ''}`} onClick={() => setActiveTab('overview')}>
-          <Icon name="home" /> پیشخوان
-        </button>
-        <button className={`${styles.menuItem} ${activeTab === 'profile' ? styles.active : ''}`} onClick={() => setActiveTab('profile')}>
-          <Icon name="user" /> اطلاعات حساب کاربری
-        </button>
-        <button className={`${styles.menuItem} ${activeTab === 'orders' ? styles.active : ''}`} onClick={() => setActiveTab('orders')}>
-          <Icon name="bag" /> سفارش‌های من
-        </button>
-        <button className={`${styles.menuItem} ${activeTab === 'addresses' ? styles.active : ''}`} onClick={() => setActiveTab('addresses')}>
-          <Icon name="cursor" /> آدرس‌های من
-        </button>
-        <button className={`${styles.menuItem} ${activeTab === 'favorites' ? styles.active : ''}`} onClick={() => setActiveTab('favorites')}>
-          <Icon name="heart" /> لیست علاقه‌مندی‌ها
-        </button>
-        
-        <div className={styles.menuDivider}></div>
-        
-        <button className={`${styles.menuItem} ${activeTab === 'teams' ? styles.active : ''}`} onClick={() => setActiveTab('teams')}>
-          <Icon name="users" /> تیم‌های من
-        </button>
-        <button className={`${styles.menuItem} ${activeTab === 'tournaments' ? styles.active : ''}`} onClick={() => setActiveTab('tournaments')}>
-          <Icon name="trophy" /> تورنومنت‌های من
-        </button>
-        <button className={`${styles.menuItem} ${activeTab === 'notifications' ? styles.active : ''}`} onClick={() => setActiveTab('notifications')}>
-          <Icon name="bell" /> پیام‌ها و اعلان‌ها
-        </button>
-        
-        <div className={styles.menuDivider}></div>
-        
-        <button className={`${styles.menuItem} ${styles.logoutBtn}`}>
-          <Icon name="x" /> خروج از حساب
-        </button>
-      </aside>
+      <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content Area */}
       <main className={styles.contentArea}>
@@ -99,11 +70,6 @@ function getModalTitle(type: ModalType) {
   switch (type) {
     case 'newAddress': return 'افزودن آدرس جدید';
     case 'editAddress': return 'ویرایش آدرس';
-    case 'createTeam': return 'ساخت تیم جدید';
-    case 'manageTeam': return 'مدیریت تیم';
-    case 'viewTeam': return 'اطلاعات تیم';
-    case 'enterBracket': return 'براکت تورنومنت';
-    case 'tournamentDetails': return 'جزئیات تورنومنت';
     default: return '';
   }
 }
@@ -125,77 +91,6 @@ function renderModalBody(type: ModalType, closeModal: () => void) {
           <div style={{ marginTop: '8px' }}>
             <button className={styles.btnPrimary} style={{ width: '100%' }} onClick={closeModal}>ثبت آدرس</button>
           </div>
-        </div>
-      );
-    case 'createTeam':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className={styles.formGroup}>
-            <label>نام تیم</label>
-            <input type="text" className={styles.input} placeholder="Titan Slayers" />
-          </div>
-          <div className={styles.formGroup}>
-            <label>تگ تیم</label>
-            <input type="text" className={styles.input} placeholder="TS" maxLength={4} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>بازی اصلی</label>
-            <select className={styles.input} style={{ appearance: 'none' }}>
-              <option value="valorant">Valorant</option>
-              <option value="cs2">Counter-Strike 2</option>
-              <option value="dota2">Dota 2</option>
-            </select>
-          </div>
-          <div style={{ marginTop: '8px' }}>
-            <button className={styles.btnPrimary} style={{ width: '100%' }} onClick={closeModal}>ایجاد تیم</button>
-          </div>
-        </div>
-      );
-    case 'manageTeam':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: 'var(--muted)' }}>
-          <p>شما کاپیتان تیم <strong>Iran Titans</strong> هستید.</p>
-          <div className={styles.formGroup}>
-            <label>لینک دعوت اعضا (ارسال برای دوستان)</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input type="text" className={styles.input} value="https://titan.ir/invite/t-1x9a2" readOnly />
-              <button className={styles.btnSecondary}>کپی</button>
-            </div>
-          </div>
-          <div style={{ marginTop: '8px', display: 'flex', gap: '12px' }}>
-            <button className={styles.btnPrimary} style={{ flex: 1 }} onClick={closeModal}>ذخیره تغییرات</button>
-            <button className={styles.btnSecondary} style={{ color: '#ff6a6a', borderColor: 'rgba(226,69,63,0.3)' }} onClick={closeModal}>انحلال تیم</button>
-          </div>
-        </div>
-      );
-    case 'viewTeam':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: 'var(--muted)' }}>
-          <p>تیم <strong>Sniper Elite</strong> در حال حاضر ۳ عضو دارد و نیازمند ۲ بازیکن برای شرکت در تورنومنت CS2 است.</p>
-          <button className={styles.btnSecondary} style={{ width: '100%', color: '#ff6a6a' }} onClick={closeModal}>خروج از تیم</button>
-        </div>
-      );
-    case 'enterBracket':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', color: 'var(--muted)' }}>
-          <Icon name="swords" />
-          <p style={{ fontSize: '15px', color: '#fff' }}>مسابقه بعدی شما: امشب ساعت ۲۱:۰۰</p>
-          <p>شما در مرحله نیمه‌نهایی در مقابل تیم <strong>Dark Phoenix</strong> قرار خواهید گرفت.</p>
-          <div style={{ marginTop: '8px', width: '100%' }}>
-            <button className={styles.btnPrimary} style={{ width: '100%' }} onClick={closeModal}>ورود به صفحه مسابقه (لابی)</button>
-          </div>
-        </div>
-      );
-    case 'tournamentDetails':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: 'var(--muted)' }}>
-          <p><strong>جام قهرمانان دوتا ۲</strong></p>
-          <ul style={{ listStyle: 'inside', lineHeight: '1.8' }}>
-            <li>شروع مسابقات: پس‌فردا ساعت ۱۸:۰۰</li>
-            <li>جایزه تیم اول: ۲۰ میلیون تومان</li>
-            <li>تیم‌های ثبت‌نام کرده: ۳۲ / ۳۲</li>
-          </ul>
-          <button className={styles.btnSecondary} style={{ width: '100%', marginTop: '8px' }} onClick={closeModal}>انصراف از تورنومنت</button>
         </div>
       );
     default:
@@ -375,7 +270,7 @@ function TeamsTab({ openModal }: { openModal: (t: ModalType) => void }) {
     <div className={styles.panel}>
       <div className={styles.panelHeader}>
         <h3>تیم‌های من</h3>
-        <button className={styles.btnPrimary} style={{ padding: '8px 16px' }} onClick={() => openModal('createTeam')}><Icon name="plus" /> ساخت تیم</button>
+        <Link href="/teams/create" className={styles.btnPrimary} style={{ padding: '8px 16px', textDecoration: 'none' }}><Icon name="plus" /> ساخت تیم</Link>
       </div>
       
       <div className={styles.listItem}>
@@ -386,7 +281,7 @@ function TeamsTab({ openModal }: { openModal: (t: ModalType) => void }) {
             <p>بازی: Valorant • ۵ عضو • نقش: کاپیتان</p>
           </div>
         </div>
-        <button className={styles.btnSecondary} onClick={() => openModal('manageTeam')}>مدیریت تیم</button>
+        <Link href="/teams/1/manage" className={styles.btnSecondary} style={{ textDecoration: 'none' }}>مدیریت تیم</Link>
       </div>
 
       <div className={styles.listItem}>
@@ -397,7 +292,7 @@ function TeamsTab({ openModal }: { openModal: (t: ModalType) => void }) {
             <p>بازی: CS2 • ۳ عضو • نقش: بازیکن</p>
           </div>
         </div>
-        <button className={styles.btnSecondary} onClick={() => openModal('viewTeam')}>مشاهده</button>
+        <Link href="/teams/2" className={styles.btnSecondary} style={{ textDecoration: 'none' }}>مشاهده</Link>
       </div>
     </div>
   );
@@ -418,7 +313,7 @@ function TournamentsTab({ openModal }: { openModal: (t: ModalType) => void }) {
             <p>وضعیت: در حال برگزاری • مرحله: نیمه‌نهایی</p>
           </div>
         </div>
-        <button className={styles.btnPrimary} onClick={() => openModal('enterBracket')}>ورود به براکت</button>
+        <Link href="/tournaments/1/bracket" className={styles.btnPrimary} style={{ textDecoration: 'none' }}>ورود به براکت</Link>
       </div>
 
       <div className={styles.listItem}>
@@ -429,7 +324,7 @@ function TournamentsTab({ openModal }: { openModal: (t: ModalType) => void }) {
             <p>وضعیت: ثبت‌نام شده • شروع: ۲ روز دیگر</p>
           </div>
         </div>
-        <button className={styles.btnSecondary} onClick={() => openModal('tournamentDetails')}>جزئیات</button>
+        <Link href="/tournaments/2" className={styles.btnSecondary} style={{ textDecoration: 'none' }}>جزئیات</Link>
       </div>
     </div>
   );
