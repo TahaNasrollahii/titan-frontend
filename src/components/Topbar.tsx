@@ -5,7 +5,6 @@ import { Icon, Avatar } from './Icons';
 import { useAppContext } from '@/context/AppContext';
 import { games } from '@/data/games';
 import { tournaments } from '@/data/tournaments';
-import { ProfileAvatar } from './ProfileAvatar';
 
 const CATALOG = [
   ...games.map(g => ({ t: g.title, k: g.genre || 'Game' })),
@@ -106,11 +105,6 @@ export function Topbar() {
         <button className="round" aria-label="سبد خرید" id="cartBtn">
           <Icon name="cart"/>
           <span className={`badge ${cartPop ? 'pop' : ''}`} hidden={cartCount === 0}>{cartCount}</span>
-        </button>
-        
-        <button className="me" aria-label="پروفایل شما">
-          <ProfileAvatar seed={5} score={0} />
-          <b id="userName">طاها</b>
         </button>
       </div>
     </header>

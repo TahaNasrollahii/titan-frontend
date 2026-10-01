@@ -288,11 +288,20 @@ export default function TournamentDetailsPage({ params }: { params: { id: string
                 <Icon name="play" /> {isTeamTournament ? 'پرداخت و ثبت‌نام تیم' : 'پرداخت و ثبت‌نام'}
               </button>
 
-              <ul className={styles.widgetMeta}>
-                 <li><CheckIcon /> پشتیبانی اختصاصی مسابقات</li>
-                 <li><CheckIcon /> سرور اختصاصی خاورمیانه</li>
-                 <li><CheckIcon /> سیستم آنتی‌چیت پیشرفته</li>
-              </ul>
+              <div className={styles.widgetMeta}>
+                 <div className={styles.trustItem}>
+                    <div className={styles.trustIcon}><Icon name="chat" /></div>
+                    <span>پشتیبانی اختصاصی</span>
+                 </div>
+                 <div className={styles.trustItem}>
+                    <div className={styles.trustIcon}><Icon name="globe" /></div>
+                    <span>سرور اختصاصی خاورمیانه</span>
+                 </div>
+                 <div className={styles.trustItem}>
+                    <div className={styles.trustIcon}><Icon name="shield" /></div>
+                    <span>سیستم آنتی‌چیت پیشرفته</span>
+                 </div>
+              </div>
            </div>
         </aside>
       </div>

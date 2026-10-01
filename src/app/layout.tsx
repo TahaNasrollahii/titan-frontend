@@ -4,6 +4,7 @@ import { AppProvider } from "@/context/AppContext";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { ToastContainer } from "@/components/ToastContainer";
+import { Rail } from "@/components/Rail";
 
 export const metadata: Metadata = {
   title: "TITAN — پلتفرم گیمینگ و اسپورت",
@@ -25,6 +26,7 @@ export default function RootLayout({
               <Topbar />
               {children}
             </main>
+            <Rail />
             <ToastContainer />
           </div>
         </AppProvider>
@@ -32,3 +34,4 @@ export default function RootLayout({
     </html>
   );
 }
+
