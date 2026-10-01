@@ -26,6 +26,7 @@ function DashboardContent() {
     switch (activeTab) {
       case 'overview': return <OverviewTab />;
       case 'profile': return <ProfileTab />;
+      case 'accounts': return <AccountsTab />;
       case 'orders': return <OrdersTab />;
       case 'favorites': return <FavoritesTab />;
       case 'teams': return <TeamsTab openModal={setActiveModal} />;
@@ -170,6 +171,73 @@ function ProfileTab() {
   );
 }
 
+function AccountsTab() {
+  const [accounts, setAccounts] = useState([
+    { id: 1, name: 'اکانت اصلی', email: 'taha@example.com' }
+  ]);
+  const [isAdding, setIsAdding] = useState(false);
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <h3>اکانت‌های من</h3>
+        {!isAdding && (
+          <button className={styles.btnPrimary} style={{ padding: '8px 16px' }} onClick={() => setIsAdding(true)}>
+            <Icon name="plus" /> افزودن اکانت
+          </button>
+        )}
+      </div>
+
+      {isAdding && (
+        <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <h4 style={{ marginBottom: '16px', fontSize: '15px' }}>افزودن اکانت جدید</h4>
+          <div className={styles.grid2}>
+            <div className={styles.formGroup}>
+              <label>نام اکانت (مثلا: اکانت استیم)</label>
+              <input type="text" className={styles.input} placeholder="نام اکانت" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>ایمیل یا نام کاربری</label>
+              <input type="text" className={styles.input} placeholder="ایمیل" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>رمز عبور</label>
+              <input type="password" className={styles.input} placeholder="رمز عبور" />
+            </div>
+          </div>
+          <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
+            <button className={styles.btnPrimary} onClick={() => setIsAdding(false)}>ذخیره اکانت</button>
+            <button className={styles.btnSecondary} onClick={() => setIsAdding(false)}>انصراف</button>
+          </div>
+        </div>
+      )}
+
+      {accounts.map(acc => (
+        <div key={acc.id} className={styles.listItem}>
+          <div className={styles.listItemInfo}>
+            <div className={styles.itemIcon} style={{ background: '#222' }}><Icon name="key" /></div>
+            <div className={styles.itemDetails}>
+              <h4>{acc.name}</h4>
+              <p>ایمیل: {acc.email} • رمز عبور: ••••••••</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button className={styles.btnSecondary} style={{ padding: '6px 12px' }}>ویرایش</button>
+            <button className={styles.btnSecondary} style={{ padding: '6px 12px', color: '#ff4d4f', borderColor: 'rgba(255,77,79,0.3)' }}>حذف</button>
+          </div>
+        </div>
+      ))}
+
+      {accounts.length === 0 && !isAdding && (
+        <div className={styles.emptyState}>
+          <Icon name="key" />
+          <p>شما هنوز هیچ اکانتی اضافه نکرده‌اید.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function OrdersTab() {
   return (
     <div className={styles.panel}>
@@ -178,9 +246,11 @@ function OrdersTab() {
       </div>
       <div className={styles.listItem}>
         <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon}><Icon name="game" /></div>
+          <div className={styles.itemImageContainer} style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
+            <img src="/images/products/vbucks.png" alt="ویباکس فورتنایت" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
           <div className={styles.itemDetails}>
-            <h4>گیفت کارت استیم 50 دلاری</h4>
+            <h4>گیفت کارت ۲۸۰۰ ویباکس فورتنایت</h4>
             <p>کد سفارش: ORD-12345 • تاریخ: ۲ روز پیش</p>
           </div>
         </div>
@@ -190,7 +260,9 @@ function OrdersTab() {
       </div>
       <div className={styles.listItem}>
         <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon}><Icon name="cursor" /></div>
+          <div className={styles.itemImageContainer} style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
+            <img src="/images/products/p-mouse.jpg" alt="موس گیمینگ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
           <div className={styles.itemDetails}>
             <h4>موس گیمینگ لاجیتک G Pro</h4>
             <p>کد سفارش: ORD-12344 • تاریخ: ۵ روز پیش</p>

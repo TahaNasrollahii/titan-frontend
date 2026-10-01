@@ -45,6 +45,9 @@ function DashboardSidebarContent() {
       <button className={`${styles.menuItem} ${activeTab === 'profile' ? styles.active : ''}`} onClick={() => handleTabClick('profile')}>
         <Icon name="user" /> اطلاعات حساب کاربری
       </button>
+      <button className={`${styles.menuItem} ${activeTab === 'accounts' ? styles.active : ''}`} onClick={() => handleTabClick('accounts')}>
+        <Icon name="key" /> اکانت‌های من
+      </button>
       <button className={`${styles.menuItem} ${activeTab === 'orders' ? styles.active : ''}`} onClick={() => handleTabClick('orders')}>
         <Icon name="bag" /> سفارش‌های من
       </button>
@@ -67,7 +70,7 @@ function DashboardSidebarContent() {
       <div className={styles.menuDivider}></div>
       
       <button className={`${styles.menuItem} ${styles.logoutBtn}`}>
-        <Icon name="x" /> خروج از حساب
+        <Icon name="logout" /> خروج از حساب
       </button>
     </aside>
   );
