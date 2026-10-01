@@ -88,6 +88,7 @@ export default function TitanPage() {
         bag: ['<path d="M5 8.5h14l-1 11.5H6z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/>'],
         chat: ['<path d="M4 5.5h16v11H10l-4.5 4v-4H4z"/><path d="M8 10h8M8 13h5"/>'],
         like: ['<path d="M2.5 10.5h4v10h-4z"/><path d="M6.5 10.5 10.5 3c1.9 0 3 1.4 2.6 3.3L12.4 9.5h6.3a2 2 0 0 1 2 2.4l-1.4 6.6a2 2 0 0 1-2 1.5H6.5z"/>', true],
+        shield: ['<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'],
         trophy: ['<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a1.5 1.5 0 0 0 0 3H8M16 6h2.5a1.5 1.5 0 0 1 0 3H16"/><path d="M12 13v4M8.5 20.5h7M10 17h4v3.5h-4z"/>'],
         arrow: ['<path d="M4 12h15.5M13.5 6l6 6-6 6"/>']
       };
@@ -560,7 +561,7 @@ export default function TitanPage() {
             </div>
             <div class="trust-divider"></div>
             <div class="trust-item">
-              <div class="trust-icon"><i data-icon="bag"></i><div class="glow"></div></div>
+              <div class="trust-icon"><i data-icon="shield"></i><div class="glow"></div></div>
               <div class="trust-text">
                 <span>پرداخت امن</span>
                 <small>از طریق درگاه‌های معتبر</small>
@@ -568,18 +569,10 @@ export default function TitanPage() {
             </div>
             <div class="trust-divider"></div>
             <div class="trust-item">
-              <div class="trust-icon"><i data-icon="chat"></i><div class="glow"></div></div>
-              <div class="trust-text">
-                <span>پشتیبانی ۲۴/۷</span>
-                <small>پاسخگویی سریع تیم ما</small>
-              </div>
-            </div>
-            <div class="trust-divider"></div>
-            <div class="trust-item">
               <div class="trust-icon"><i data-icon="like"></i><div class="glow"></div></div>
               <div class="trust-text">
-                <span>ضمانت</span>
-                <small>بازگشت وجه </small>
+                <span>ضمانت اصالت کالا</span>
+                <small>۱۰۰٪ قانونی و اورجینال</small>
               </div>
             </div>
           </div>

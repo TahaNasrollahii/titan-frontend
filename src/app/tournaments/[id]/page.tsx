@@ -5,13 +5,7 @@ import { Icon, Avatar } from '@/components/Icons';
 import styles from './details.module.css';
 import '../../tournament/tournament.css';
 
-const CheckIcon = () => (
-  <span className={styles.checkIcon}>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12"></polyline>
-    </svg>
-  </span>
-);
+
 
 export default function TournamentDetailsPage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -140,12 +134,23 @@ export default function TournamentDetailsPage({ params }: { params: { id: string
                 <div className={styles.overviewPane}>
                   <h3>قوانین و مقررات</h3>
                   <p>تمامی بازیکنان موظف به رعایت قوانین مسابقات هستند. استفاده از هرگونه چیت، گلیچ یا رفتار غیرورزشی منجر به حذف تیم از مسابقات و بن شدن حساب کاربری خواهد شد.</p>
-                  <ul className={styles.widgetMeta} style={{ marginTop: '20px' }}>
-                    <li><CheckIcon /> داشتن حداقل سطح (Level) ۲۰ در بازی الزامی است.</li>
-                    <li><CheckIcon /> تمامی بازیکنان باید کلاینت آنتی‌چیت را نصب و فعال داشته باشند.</li>
-                    <li><CheckIcon /> حضور تیم‌ها ۱۵ دقیقه قبل از شروع مسابقه در لابی الزامی است.</li>
-                    <li><CheckIcon /> هر تیم می‌تواند حداکثر یک بازیکن ذخیره (Sub) داشته باشد.</li>
-                  </ul>
+                  <div className="dl-content trust-content" style={{ marginTop: '20px', padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div className="trust-item">
+                      <div className="trust-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="shield" /><div className="glow"></div></div>
+                      <div className="trust-text">
+                        <span>قوانین بازی جوانمردانه</span>
+                        <small>آنتی‌چیت و عدم استفاده از گلیچ</small>
+                      </div>
+                    </div>
+                    <div className="trust-divider"></div>
+                    <div className="trust-item">
+                      <div className="trust-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="clock" /><div className="glow"></div></div>
+                      <div className="trust-text">
+                        <span>حضور به‌موقع</span>
+                        <small>۱۵ دقیقه قبل از شروع مسابقه</small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
