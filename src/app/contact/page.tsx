@@ -16,7 +16,7 @@ export default function ContactPage() {
       <div className={styles.ambientGlow1}></div>
       <div className={styles.ambientGlow2}></div>
 
-      <div className="sec-h reveal" style={{ '--d': 0 } as React.CSSProperties, { position: 'relative', zIndex: 10 } as any}>
+      <div className="sec-h reveal" style={{ '--d': 0, position: 'relative', zIndex: 10 } as any}>
         <h3>ارتباط با ما</h3>
       </div>
 

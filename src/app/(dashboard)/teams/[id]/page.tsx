@@ -5,16 +5,10 @@ import styles from './page.module.css';
 import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
 import Link from 'next/link';
-import { DashboardSidebar } from '@/components/DashboardSidebar';
-import dashboardStyles from '@/app/dashboard/page.module.css';
 
 export default function TeamDetailsPage({ params }: { params: { id: string } }) {
   return (
-    <div className={dashboardStyles.dashboardWrapper}>
-      <DashboardSidebar activeTab="teams" />
-      
-      <main className={dashboardStyles.contentArea}>
-        <div className={styles.teamWrapper}>
+    <div className={styles.teamWrapper}>
       {/* Banner & Logo */}
       <div className={styles.banner}>
         <div className={styles.logoWrapper}>
@@ -108,7 +102,7 @@ export default function TeamDetailsPage({ params }: { params: { id: string } }) 
             </p>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

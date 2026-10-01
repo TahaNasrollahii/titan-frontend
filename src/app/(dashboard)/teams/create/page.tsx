@@ -4,20 +4,11 @@ import React from 'react';
 import styles from '../[id]/manage/page.module.css'; // Reusing manage styles
 import { Icon } from '@/components/Icons';
 import Link from 'next/link';
-import { DashboardSidebar } from '@/components/DashboardSidebar';
-import dashboardStyles from '@/app/dashboard/page.module.css';
 
 export default function CreateTeamPage() {
   return (
-    <div className={dashboardStyles.dashboardWrapper}>
-      <DashboardSidebar activeTab="teams" />
-      
-      <main className={dashboardStyles.contentArea}>
-        <div className={styles.manageWrapper}>
+    <div className={styles.manageWrapper}>
       <div className={styles.pageHeader}>
-        <Link href="/dashboard" style={{ color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px', textDecoration: 'none' }}>
-          <Icon name="arrow-right" /> بازگشت به داشبورد
-        </Link>
         <h1>ساخت تیم جدید</h1>
         <p>تیم خود را تشکیل دهید و برای مسابقات آماده شوید</p>
       </div>
@@ -66,7 +57,6 @@ export default function CreateTeamPage() {
           <Link href="/dashboard" className={styles.btnPrimary} style={{ textDecoration: 'none' }}>ایجاد تیم و دریافت لینک دعوت</Link>
         </div>
       </div>
-      </main>
     </div>
   );
 }

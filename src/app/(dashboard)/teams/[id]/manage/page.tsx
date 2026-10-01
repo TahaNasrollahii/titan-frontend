@@ -5,20 +5,11 @@ import styles from './page.module.css';
 import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
 import Link from 'next/link';
-import { DashboardSidebar } from '@/components/DashboardSidebar';
-import dashboardStyles from '@/app/dashboard/page.module.css';
 
 export default function TeamManagePage({ params }: { params: { id: string } }) {
   return (
-    <div className={dashboardStyles.dashboardWrapper}>
-      <DashboardSidebar activeTab="teams" />
-      
-      <main className={dashboardStyles.contentArea}>
-        <div className={styles.manageWrapper}>
+    <div className={styles.manageWrapper}>
       <div className={styles.pageHeader}>
-        <Link href="/dashboard" style={{ color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px', textDecoration: 'none' }}>
-          <Icon name="arrow-right" /> بازگشت به داشبورد
-        </Link>
         <h1>تنظیمات تیم Iran Titans</h1>
         <p>مدیریت اعضا، اطلاعات و دسترسی‌های تیم</p>
       </div>
@@ -122,7 +113,6 @@ export default function TeamManagePage({ params }: { params: { id: string } }) {
         </p>
         <button className={styles.btnDanger}>انحلال کامل تیم</button>
       </div>
-      </main>
     </div>
   );
 }

@@ -16,11 +16,13 @@ export function Sidebar() {
   let activeKey = pathname;
   if (pathname.startsWith('/product/')) {
     activeKey = '/store';
-  } else if (pathname.startsWith('/tournament')) {
+  } else if (pathname.startsWith('/tournaments') && pathname.includes('/bracket')) {
+    activeKey = '/dashboard';
+  } else if (pathname.startsWith('/tournament') || pathname.startsWith('/tournaments')) {
     activeKey = '/tournament';
   } else if (pathname.startsWith('/contact')) {
     activeKey = '/contact';
-  } else if (pathname.startsWith('/dashboard')) {
+  } else if (pathname.startsWith('/dashboard') || pathname.startsWith('/teams')) {
     activeKey = '/dashboard';
   } else if (pathname !== '/' && pathname !== '/store') {
     activeKey = '/';

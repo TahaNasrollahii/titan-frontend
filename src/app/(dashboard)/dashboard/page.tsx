@@ -1,26 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import styles from './page.module.css';
 import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
 import Link from 'next/link';
-import { DashboardSidebar } from '@/components/DashboardSidebar';
-import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 type ModalType = 'newAddress' | 'editAddress' | null;
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [activeModal, setActiveModal] = useState<ModalType>(null);
+  return (
+    <Suspense fallback={<div style={{ padding: '20px', color: '#fff' }}>در حال بارگذاری...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tabParam = params.get('tab');
-    if (tabParam) {
-      setActiveTab(tabParam);
-    }
-  }, []);
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -39,13 +39,8 @@ export default function DashboardPage() {
   const closeModal = () => setActiveModal(null);
 
   return (
-    <div className={styles.dashboardWrapper}>
-      <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* Main Content Area */}
-      <main className={styles.contentArea}>
-        {renderContent()}
-      </main>
+    <>
+      {renderContent()}
 
       {/* Global Modals */}
       {activeModal && (
@@ -59,7 +54,7 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
