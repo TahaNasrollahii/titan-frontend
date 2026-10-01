@@ -240,8 +240,18 @@ export default function TournamentDetailsPage({ params }: { params: { id: string
            <div className={`${styles.registrationWidget} spot spot-track reveal`} style={{ '--d': 2 } as any}>
               <h3>ثبت‌نام در تورنومنت</h3>
               <div className={styles.priceTag}>
-                 <span className={styles.priceOld}>۱۵۰,۰۰۰ تومان</span>
-                 <span className={styles.priceNew}>۵۰,۰۰۰ <span>تومان / هر {isTeamTournament ? 'تیم' : 'نفر'}</span></span>
+                 <div className={styles.priceHeader}>
+                    <span className={styles.priceLabel}>هزینه ورودی</span>
+                    <span className={styles.discountBadge}>۶۶٪ تخفیف</span>
+                 </div>
+                 <div className={styles.priceValues}>
+                    <span className={styles.priceOld}>۱۵۰,۰۰۰ تومان</span>
+                    <span className={styles.priceNew}>
+                       ۵۰,۰۰۰ 
+                       <span className={styles.currency}>تومان</span>
+                       <span className={styles.perUnit}>/ هر {isTeamTournament ? 'تیم' : 'نفر'}</span>
+                    </span>
+                 </div>
               </div>
               
               <div className={styles.capacityBar}>
