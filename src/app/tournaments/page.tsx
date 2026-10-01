@@ -7,12 +7,12 @@ import { Icon } from '@/components/Icons';
 
 // Dummy data for tournaments
 const ALL_TOURNAMENTS = [
-  { id: 1, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۵۰,۰۰۰,۰۰۰ تومان', team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000, prizeNum: 50000000 },
-  { id: 2, game: 'Apex Legends', image: '/images/games/apexlegends-background.png', prize: '۳۰,۰۰۰,۰۰۰ تومان', team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 3, prizeNum: 30000000 },
-  { id: 3, game: 'Fortnite', image: '/images/games/fortnite-background.png', prize: '۲۰,۰۰۰,۰۰۰ تومان', team1: 'Neon Riders', tag1: 'قهرمان فصل قبل', team2: 'Dark Eagles', tag2: 'رتبه ۵', time: 'جمعه · ۱۸:۰۰', status: 'تکمیل ظرفیت', dateMs: Date.now() + 86400000 * 4, prizeNum: 20000000 },
-  { id: 4, game: 'CS 2', image: '/images/games/cs-background.png', prize: '۱۰۰,۰۰۰,۰۰۰ تومان', team1: 'TBA', tag1: 'آزاد', team2: 'TBA', tag2: 'آزاد', time: 'هفته آینده', status: 'به‌زودی', dateMs: Date.now() + 86400000 * 7, prizeNum: 100000000 },
-  { id: 5, game: 'Dota 2', image: '/images/games/dota-background.png', prize: '۸۰,۰۰۰,۰۰۰ تومان', team1: 'Dire Force', tag1: 'سطح ۱', team2: 'Radiant Glow', tag2: 'سطح ۲', time: 'دوشنبه · ۱۶:۰۰', status: 'در جریان', dateMs: Date.now() - 86400000, prizeNum: 80000000 },
-  { id: 6, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۱۰,۰۰۰,۰۰۰ تومان', team1: 'Aim Bots', tag1: 'تازه‌وارد', team2: 'Wall Hackers', tag2: 'آماتور', time: 'فردا · ۱۰:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 1, prizeNum: 10000000 },
+  { id: 1, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۵۰,۰۰۰,۰۰۰ تومان', team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000, prizeNum: 50000000, isSolo: false },
+  { id: 2, game: 'Apex Legends', image: '/images/games/apexlegends-background.png', prize: '۳۰,۰۰۰,۰۰۰ تومان', team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 3, prizeNum: 30000000, isSolo: true },
+  { id: 3, game: 'Fortnite', image: '/images/games/fortnite-background.png', prize: '۲۰,۰۰۰,۰۰۰ تومان', team1: 'Neon Riders', tag1: 'قهرمان فصل قبل', team2: 'Dark Eagles', tag2: 'رتبه ۵', time: 'جمعه · ۱۸:۰۰', status: 'تکمیل ظرفیت', dateMs: Date.now() + 86400000 * 4, prizeNum: 20000000, isSolo: false },
+  { id: 4, game: 'CS 2', image: '/images/games/cs-background.png', prize: '۱۰۰,۰۰۰,۰۰۰ تومان', team1: 'TBA', tag1: 'آزاد', team2: 'TBA', tag2: 'آزاد', time: 'هفته آینده', status: 'به‌زودی', dateMs: Date.now() + 86400000 * 7, prizeNum: 100000000, isSolo: false },
+  { id: 5, game: 'Dota 2', image: '/images/games/dota-background.png', prize: '۸۰,۰۰۰,۰۰۰ تومان', team1: 'Dire Force', tag1: 'سطح ۱', team2: 'Radiant Glow', tag2: 'سطح ۲', time: 'دوشنبه · ۱۶:۰۰', status: 'در جریان', dateMs: Date.now() - 86400000, prizeNum: 80000000, isSolo: false },
+  { id: 6, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۱۰,۰۰۰,۰۰۰ تومان', team1: 'Aim Bots', tag1: 'تازه‌وارد', team2: 'Wall Hackers', tag2: 'آماتور', time: 'فردا · ۱۰:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 1, prizeNum: 10000000, isSolo: false },
 ];
 
 const gameOptions = [
@@ -119,7 +119,10 @@ export default function TournamentsListPage() {
                 <div className="mc-hero-overlay"></div>
                 
                 <div className="mc-status-bar">
-                  <span className="mc-game">{m.game}</span>
+                  <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+                    <span className="mc-game">{m.game}</span>
+                    <span className="mc-type"><Icon name={m.isSolo ? "user" : "users"} /> {m.isSolo ? 'تک نفره' : 'تیمی'}</span>
+                  </div>
                   <div className={`mc-status ${m.status === 'ثبت‌نام باز' ? 'open' : ''}`}>
                     <span className="mc-status-dot"></span> {m.status}
                   </div>
@@ -159,7 +162,7 @@ export default function TournamentsListPage() {
                     </div>
                   </div>
                 </div>
-                <button className="mc-btn-full">ثبت‌نام و مشاهده جزئیات <Icon name="arrow" /></button>
+                <a href={`/tournaments/${m.id}`} className="mc-btn-full" style={{textDecoration: 'none'}}>ثبت‌نام و مشاهده جزئیات <Icon name="arrow" /></a>
               </div>
             </article>
           ))

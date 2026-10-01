@@ -139,16 +139,19 @@ export default function TournamentPage() {
       </div>
       <div className="tour-matches">
         {[
-          { id: 1, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۵۰,۰۰۰,۰۰۰ تومان', team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز' },
-          { id: 2, game: 'Apex Legends', image: '/images/games/apexlegends-background.png', prize: '۳۰,۰۰۰,۰۰۰ تومان', team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: '۲ روز دیگر' },
-          { id: 3, game: 'Fortnite', image: '/images/games/fortnite-background.png', prize: '۲۰,۰۰۰,۰۰۰ تومان', team1: 'Neon Riders', tag1: 'قهرمان فصل قبل', team2: 'Dark Eagles', tag2: 'رتبه ۵', time: 'جمعه · ۱۸:۰۰', status: 'تکمیل ظرفیت' }
+          { id: 1, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۵۰,۰۰۰,۰۰۰ تومان', team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز', isSolo: false },
+          { id: 2, game: 'Apex Legends', image: '/images/games/apexlegends-background.png', prize: '۳۰,۰۰۰,۰۰۰ تومان', team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: '۲ روز دیگر', isSolo: true },
+          { id: 3, game: 'Fortnite', image: '/images/games/fortnite-background.png', prize: '۲۰,۰۰۰,۰۰۰ تومان', team1: 'Neon Riders', tag1: 'قهرمان فصل قبل', team2: 'Dark Eagles', tag2: 'رتبه ۵', time: 'جمعه · ۱۸:۰۰', status: 'تکمیل ظرفیت', isSolo: false }
         ].map((m, i) => (
           <article key={m.id} className="match-card-premium spot spot-track reveal" style={{ '--d': 5 + i } as any}>
             <div className="mc-hero" style={{ backgroundImage: `url(${m.image})` }}>
               <div className="mc-hero-overlay"></div>
               
               <div className="mc-status-bar">
-                <span className="mc-game">{m.game}</span>
+                <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+                  <span className="mc-game">{m.game}</span>
+                  <span className="mc-type"><Icon name={m.isSolo ? "user" : "users"} /> {m.isSolo ? 'تک نفره' : 'تیمی'}</span>
+                </div>
                 <div className={`mc-status ${m.status === 'ثبت‌نام باز' ? 'open' : ''}`}>
                   <span className="mc-status-dot"></span> {m.status}
                 </div>
@@ -188,7 +191,7 @@ export default function TournamentPage() {
                   </div>
                 </div>
               </div>
-              <button className="mc-btn-full">ثبت‌نام و مشاهده جزئیات <Icon name="arrow" /></button>
+              <a href={`/tournaments/${m.id}`} className="mc-btn-full" style={{textDecoration: 'none'}}>ثبت‌نام و مشاهده جزئیات <Icon name="arrow" /></a>
             </div>
           </article>
         ))}
