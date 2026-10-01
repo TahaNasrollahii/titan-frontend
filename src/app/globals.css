@@ -2246,22 +2246,7 @@ html[dir="rtl"] .hero-live {
   background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1) 50%, transparent);
 }
 
-@media (max-width: 1536px) {
-  .trust-badges .trust-content {
-    flex-wrap: wrap;
-    gap: 24px;
-    padding: 20px 0;
-  }
 
-  .trust-item {
-    min-width: 45%;
-    justify-content: flex-start;
-  }
-
-  .trust-divider {
-    display: none;
-  }
-}
 
 @media (max-width: 600px) {
   .trust-item {
