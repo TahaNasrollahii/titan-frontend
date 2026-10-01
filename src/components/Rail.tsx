@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Icon, Avatar } from './Icons';
 import { ProfileAvatar } from './ProfileAvatar';
 
@@ -21,9 +22,9 @@ export function Rail() {
   return (
     <aside className="rail" aria-label="تیم‌ها">
       <div className="panel p1 reveal" style={{ '--d': 1 } as any}>
-        <button className="me" aria-label="پروفایل شما">
+        <Link href="/dashboard" className="me" aria-label="پروفایل شما">
           <ProfileAvatar seed={5} score={0} />
-        </button>
+        </Link>
         <i className="rail-ic"><Icon name="users" /></i>
         <div className="list">
           {teams.map((f, i) => (

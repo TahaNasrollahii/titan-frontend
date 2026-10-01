@@ -20,6 +20,8 @@ export function Sidebar() {
     activeKey = '/tournament';
   } else if (pathname.startsWith('/contact')) {
     activeKey = '/contact';
+  } else if (pathname.startsWith('/dashboard')) {
+    activeKey = '/dashboard';
   } else if (pathname !== '/' && pathname !== '/store') {
     activeKey = '/';
   }
@@ -93,9 +95,14 @@ export function Sidebar() {
         <a className="nav-item" href="#" data-label="گیفت کارت" onClick={e => e.preventDefault()}>
           <Icon name="gift"/>
         </a>
-        <a className="nav-item" href="#" data-label="آمار" onClick={e => e.preventDefault()}>
+        <Link 
+          href="/dashboard" 
+          className={`nav-item ${activeKey === '/dashboard' ? 'active' : ''}`} 
+          data-label="داشبورد" 
+          ref={el => { navRefs.current['/dashboard'] = el; }}
+        >
           <Icon name="chart"/>
-        </a>
+        </Link>
         <a className="nav-item" href="#" data-label="تنظیمات" onClick={e => e.preventDefault()}>
           <Icon name="sliders"/>
         </a>

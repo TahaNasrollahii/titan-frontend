@@ -29,7 +29,7 @@ export function ProfileAvatar({ seed = 5, score = 0 }: { seed?: number; score?: 
       </div>
 
       {/* عکس خود آواتار */}
-      <span className="face" style={{ position: 'relative', zIndex: 2 }}>
+      <span className="face" style={{ position: 'relative', zIndex: 2, width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', display: 'block' }}>
         <Avatar seed={seed} />
       </span>
     </div>
