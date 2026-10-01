@@ -38,9 +38,6 @@ export function DashboardSidebar({ activeTab, onTabChange }: Props) {
       <button className={`${styles.menuItem} ${activeTab === 'orders' ? styles.active : ''}`} onClick={() => handleTabClick('orders')}>
         <Icon name="bag" /> سفارش‌های من
       </button>
-      <button className={`${styles.menuItem} ${activeTab === 'addresses' ? styles.active : ''}`} onClick={() => handleTabClick('addresses')}>
-        <Icon name="cursor" /> آدرس‌های من
-      </button>
       <button className={`${styles.menuItem} ${activeTab === 'favorites' ? styles.active : ''}`} onClick={() => handleTabClick('favorites')}>
         <Icon name="heart" /> لیست علاقه‌مندی‌ها
       </button>

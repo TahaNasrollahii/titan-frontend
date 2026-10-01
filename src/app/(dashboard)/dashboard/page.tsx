@@ -7,7 +7,7 @@ import { ProfileAvatar } from '@/components/ProfileAvatar';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-type ModalType = 'newAddress' | 'editAddress' | null;
+type ModalType = string | null;
 
 export default function DashboardPage() {
   return (
@@ -27,7 +27,6 @@ function DashboardContent() {
       case 'overview': return <OverviewTab />;
       case 'profile': return <ProfileTab />;
       case 'orders': return <OrdersTab />;
-      case 'addresses': return <AddressesTab openModal={setActiveModal} />;
       case 'favorites': return <FavoritesTab />;
       case 'teams': return <TeamsTab openModal={setActiveModal} />;
       case 'tournaments': return <TournamentsTab openModal={setActiveModal} />;
@@ -63,31 +62,12 @@ function DashboardContent() {
 ========================================= */
 function getModalTitle(type: ModalType) {
   switch (type) {
-    case 'newAddress': return 'افزودن آدرس جدید';
-    case 'editAddress': return 'ویرایش آدرس';
     default: return '';
   }
 }
 
 function renderModalBody(type: ModalType, closeModal: () => void) {
   switch (type) {
-    case 'newAddress':
-    case 'editAddress':
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className={styles.formGroup}>
-            <label>عنوان آدرس</label>
-            <input type="text" className={styles.input} placeholder="مثلا: خانه، محل کار" defaultValue={type === 'editAddress' ? 'خانه (تهران)' : ''} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>آدرس کامل</label>
-            <textarea className={styles.input} rows={3} placeholder="استان، شهر، خیابان، پلاک، واحد" defaultValue={type === 'editAddress' ? 'تهران، خیابان ولیعصر، کوچه فلان، پلاک ۱۲، واحد ۳' : ''}></textarea>
-          </div>
-          <div style={{ marginTop: '8px' }}>
-            <button className={styles.btnPrimary} style={{ width: '100%' }} onClick={closeModal}>ثبت آدرس</button>
-          </div>
-        </div>
-      );
     default:
       return null;
   }
@@ -219,27 +199,6 @@ function OrdersTab() {
         <div>
           <span className={`${styles.badge} ${styles.badgeWarning}`}>در حال ارسال</span>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function AddressesTab({ openModal }: { openModal: (t: ModalType) => void }) {
-  return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <h3>آدرس‌های من</h3>
-        <button className={styles.btnSecondary} style={{ padding: '6px 12px' }} onClick={() => openModal('newAddress')}><Icon name="plus" /> آدرس جدید</button>
-      </div>
-      <div className={styles.listItem}>
-        <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon}><Icon name="home" /></div>
-          <div className={styles.itemDetails}>
-            <h4>خانه (تهران)</h4>
-            <p>تهران، خیابان ولیعصر، کوچه فلان، پلاک ۱۲، واحد ۳</p>
-          </div>
-        </div>
-        <button className={styles.btnSecondary} style={{ padding: '6px' }} onClick={() => openModal('editAddress')}><Icon name="sliders" /></button>
       </div>
     </div>
   );
