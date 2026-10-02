@@ -32,7 +32,7 @@ export default function ContactPage() {
             <div className={styles.cardHighlight}></div>
             <div className={styles.cardContent}>
               <div className={styles.iconWrap}>
-                <Icon name="users" />
+                <img src="/icons/discord.png" alt="دیسکورد" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
               </div>
               <div className={styles.textWrap}>
                 <h3>سرور دیسکورد تایتان</h3>
@@ -48,7 +48,7 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2z"></path></svg>
+                  <img src="/icons/speaker.png" alt="کانال تلگرام" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>کانال تلگرام</h3>
@@ -62,7 +62,7 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <Icon name="chat" />
+                  <img src="/icons/telegram.png" alt="پشتیبانی تلگرام" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>پشتیبانی تلگرام</h3>
@@ -78,7 +78,7 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <Icon name="play" />
+                  <img src="/icons/support.png" alt="پشتیبانی زنده" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>پشتیبانی زنده</h3>
@@ -92,7 +92,7 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  <img src="/icons/email.png" alt="ایمیل" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>ایمیل سازمانی</h3>
@@ -107,7 +107,7 @@ export default function ContactPage() {
             <div className={styles.cardHighlight}></div>
             <div className={styles.cardContent}>
               <div className={styles.iconWrap}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <img src="/icons/telephon-call.png" alt="تلفن" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
               </div>
               <div className={styles.textWrap}>
                 <h3>پشتیبانی تلفنی</h3>
