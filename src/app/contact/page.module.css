@@ -3,51 +3,7 @@
   z-index: 1;
 }
 
-/* Background Patterns & Watermarks */
-.bgGrid {
-  position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.5;
-  z-index: 0;
-  pointer-events: none;
-  mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
-  -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
-}
 
-
-.ambientGlow1, .ambientGlow2 {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  filter: blur(100px);
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-.ambientGlow1 {
-  top: -10%;
-  right: -10%;
-  background: radial-gradient(circle, rgba(226, 69, 63, 0.2), transparent 70%);
-  animation: pulse 10s ease-in-out infinite alternate;
-}
-
-.ambientGlow2 {
-  bottom: -20%;
-  left: -20%;
-  background: radial-gradient(circle, rgba(122, 80, 230, 0.15), transparent 70%);
-  animation: pulse 12s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.2) translate(20px, 30px); }
-}
 
 /* Main Panel Layout */
 .contactPanel {

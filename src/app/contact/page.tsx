@@ -11,12 +11,9 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className={`main ${styles.contactMain}`}>
-      {/* Background Elements */}
-      <div className={styles.bgGrid}></div>
-      <div className={styles.ambientGlow1}></div>
-      <div className={styles.ambientGlow2}></div>
 
-      <div className={`panel reveal ${styles.contactPanel}`} style={{ '--d': 1 } as React.CSSProperties}>
+
+      <div className={`reveal ${styles.contactPanel}`} style={{ '--d': 1 } as React.CSSProperties}>
         <div className={styles.topSection}>
           <div className={styles.headerContent}>
             <div className={styles.onlineBadge}>
@@ -60,7 +57,6 @@ export default function ContactPage() {
                 <div className={styles.textWrap}>
                   <h3>کانال تلگرام</h3>
                   <p>اخبار آپدیت‌ها، تخفیف‌ها و تورنمنت‌ها</p>
-                  <span className={styles.cardLink}>&larr; دنبال کردن</span>
                 </div>
               </div>
             </a>
@@ -75,7 +71,6 @@ export default function ContactPage() {
                 <div className={styles.textWrap}>
                   <h3>پشتیبانی تلگرام</h3>
                   <p>پیگیری سریع سفارش‌ها و مشکلات اکانت</p>
-                  <span className={styles.cardLink}>&larr; شروع گفتگو</span>
                 </div>
               </div>
             </a>
@@ -95,7 +90,6 @@ export default function ContactPage() {
                     <span className={styles.liveBadge}><span className={styles.dot}></span> آنلاین</span>
                   </h3>
                   <p>چت مستقیم در سایت با کارشناسان ما</p>
-                  <span className={styles.cardLink}>&larr; چت کنید</span>
                 </div>
               </div>
             </a>
@@ -110,7 +104,6 @@ export default function ContactPage() {
                 <div className={styles.textWrap}>
                   <h3>ایمیل سازمانی</h3>
                   <p>ارتباطات رسمی، پیشنهادها و انتقادها</p>
-                  <span className={styles.cardLink}>&larr; ارسال ایمیل</span>
                 </div>
               </div>
             </a>
@@ -126,7 +119,6 @@ export default function ContactPage() {
               <div className={styles.textWrap}>
                 <h3>پشتیبانی تلفنی</h3>
                 <p>همه روزه از ۹ صبح تا ۱۰ شب</p>
-                <span className={styles.cardLink}>&larr; تماس</span>
               </div>
             </div>
           </a>
