@@ -4,11 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from './Icons';
-import { useAppContext } from '@/context/AppContext';
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { addToast } = useAppContext();
 
   const [navIndStyle, setNavIndStyle] = useState({});
   const navRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -36,14 +34,6 @@ export function Sidebar() {
       });
     }
   }, [pathname, activeKey]);
-
-  const handleAddSquad = () => {
-    addToast({
-      title: 'تیم جدید',
-      text: 'دوستان خود را به لابی دعوت کنید',
-      icon: 'users'
-    });
-  };
 
   return (
     <aside className="nav panel reveal" style={{ '--d': 0 } as React.CSSProperties} aria-label="منوی اصلی">
@@ -106,8 +96,8 @@ export function Sidebar() {
           </Link>
 
         </nav>
-        <button className="add-btn" aria-label="ساخت تیم" data-label="ساخت تیم" onClick={handleAddSquad}>
-          <span className="plus"><Icon name="plus" /></span>
+        <button className="add-btn scroll-top-btn" aria-label="برو به بالا" data-label="برو به بالا" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <span className="plus"><Icon name="arrow-up" /></span>
         </button>
       </div>
     </aside>

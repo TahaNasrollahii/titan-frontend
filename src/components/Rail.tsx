@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Icon, Avatar } from './Icons';
 import { ProfileAvatar } from './ProfileAvatar';
+import { useAppContext } from '@/context/AppContext';
 
 export function Rail() {
   const teams = [
@@ -14,6 +15,16 @@ export function Rail() {
     { n: 'عقاب‌های سرخ', s: 'online', seed: 25 },
     { n: 'سندیکا', s: 'away', seed: 30 }
   ];
+
+  const { addToast } = useAppContext();
+
+  const handleAddSquad = () => {
+    addToast({
+      title: 'تیم جدید',
+      text: 'دوستان خود را به لابی دعوت کنید',
+      icon: 'users'
+    });
+  };
 
 
 
@@ -36,6 +47,9 @@ export function Rail() {
               </div>
             ))}
           </div>
+          <button className="add-btn" aria-label="ساخت تیم" data-label="ساخت تیم" onClick={handleAddSquad}>
+            <span className="plus"><Icon name="plus" /></span>
+          </button>
         </div>
       </div>
 
