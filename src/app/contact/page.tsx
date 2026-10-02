@@ -24,6 +24,10 @@ export default function ContactPage() {
             <p>تایتان فقط یک پلتفرم نیست؛ یک خانواده است. از طریق کانال‌های زیر همیشه در کنار ما باشید.</p>
           </div>
           <div className={styles.robotImageWrapper}>
+            <div className={styles.robotBackglow}></div>
+            <div className={styles.spinRing}></div>
+            <div className={styles.floatParticle1}></div>
+            <div className={styles.floatParticle2}></div>
             <img src="/images/support-robot.png" alt="پشتیبانی تایتان" className={styles.robotImage} />
           </div>
         </div>
