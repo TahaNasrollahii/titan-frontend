@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import './store.css';
 import { Icon, Avatar } from '@/components/Icons';
 import { useAppContext } from '@/context/AppContext';
@@ -66,12 +67,20 @@ const PRODUCTS = [
   { id: '6', title: 'گیفت کارت تایتان', subtitle: '۵۰ دلار اعتبار', price: 2500000, originalPrice: undefined, badges: [], rating: 5.0, image: '/images/products/p-controller.jpg', type: 'پرمیوم', platform: '', genre: '', popularity: 110 },
 ];
 
-export default function StorePage() {
+function StorePageContent() {
   const { addToCart } = useAppContext();
+  const searchParams = useSearchParams();
+  const cat = searchParams.get('category');
 
-  const [activeTab, setActiveTab] = useState('همه');
+  const [activeTab, setActiveTab] = useState(cat && TABS.includes(cat) ? cat : 'همه');
   const [tabIndStyle, setTabIndStyle] = useState({});
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    if (cat && TABS.includes(cat)) {
+      setActiveTab(cat);
+    }
+  }, [cat]);
 
   const [priceMax, setPriceMax] = useState(10000000);
   const [priceOpen, setPriceOpen] = useState(false);
@@ -438,5 +447,13 @@ export default function StorePage() {
 
       </div>
     </>
+  );
+}
+
+export default function StorePage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '100px', textAlign: 'center', color: 'white' }}>در حال بارگذاری فروشگاه...</div>}>
+      <StorePageContent />
+    </Suspense>
   );
 }

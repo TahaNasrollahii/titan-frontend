@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { Icon, Avatar } from './Icons';
 import { useAppContext } from '@/context/AppContext';
 import { games } from '@/data/games';
@@ -100,12 +101,10 @@ export function Topbar() {
           <span className="dot" hidden={!hasUnreadNotifications}></span>
         </button>
         
-        {/* We use a static cart button here, but the active cart function can be wired to cart logic.
-            Currently cartCount is global. */}
-        <button className="round" aria-label="سبد خرید" id="cartBtn">
+        <Link href="/cart" className="round" aria-label="سبد خرید" id="cartBtn" style={{ textDecoration: 'none' }}>
           <Icon name="cart"/>
           <span className={`badge ${cartPop ? 'pop' : ''}`} hidden={cartCount === 0}>{cartCount}</span>
-        </button>
+        </Link>
       </div>
     </header>
   );

@@ -5,10 +5,22 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import styles from './product.module.css';
 import { Play, Heart, ShieldCheck, RefreshCcw, Truck, Share2, Plus, Minus, Flame, Trophy, Eye, LayoutGrid, MonitorPlay, MessageSquare, Monitor, ArrowLeft } from 'lucide-react';
+import { useAppContext } from '@/context/AppContext';
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useAppContext();
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: params.id || 'vbucks-2800',
+      title: '۲۸۰۰ وی‌باکس فورتنایت (V-Bucks)',
+      price: 1450000,
+      image: '/images/products/vbucks.png',
+      quantity: quantity
+    });
+  };
 
   return (
     <div className={styles.container} dir="rtl">
@@ -92,7 +104,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 style={{ transition: 'all 0.3s ease', transform: isLiked ? 'scale(1.1)' : 'scale(1)' }}
               />
             </button>
-            <button className={styles.addToCartBtn}>
+            <button className={styles.addToCartBtn} onClick={handleAddToCart}>
               <Plus size={20} />
               افزودن به سبد
             </button>

@@ -295,10 +295,21 @@ export default function TitanPage() {
         if (dragMoved) sc.scrollLeft = startL - dx;
       });
       addEventListener('pointerup', () => { dragging = false; sc.classList.remove('drag'); });
+      const getCategoryFromTitle = (t: string) => {
+        if (t.includes('فورتنایت') || t.includes('Fortnite') || t.includes('fortnite')) return 'فورتنایت';
+        if (t.includes('ولورنت') || t.includes('ولورانت') || t.includes('Valorant')) return 'ولورانت';
+        if (t.includes('ایپکس') || t.includes('Apex')) return 'ایپکس لجندز';
+        if (t.includes('پریمیوم') || t.includes('پرمیوم') || t.includes('Premium')) return 'پرمیوم';
+        return 'همه';
+      };
+
       sc.addEventListener('click', e => {
         if (dragMoved) { dragMoved = false; return; }
-        const view = e.target.closest('[data-view]');
-        if (view) toast({ title: GAMES[view.dataset.view].t, text: 'در حال بارگذاری...', icon: 'play' });
+        const view = (e.target as HTMLElement).closest('[data-view]') as HTMLElement;
+        if (view) {
+           const tab = getCategoryFromTitle(GAMES[parseInt(view.dataset.view!)].t);
+           window.location.href = '/store?category=' + encodeURIComponent(tab);
+        }
       });
       $('#nextBtn').addEventListener('click', () => {
         const end = sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 8;

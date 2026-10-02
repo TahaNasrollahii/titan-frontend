@@ -9,10 +9,21 @@ export type Toast = {
   icon?: string;
 };
 
+export type CartItem = {
+  id: string;
+  title: string;
+  price: number;
+  image?: string;
+  quantity: number;
+};
+
 type AppContextType = {
+  cartItems: CartItem[];
   cartCount: number;
   cartPop: boolean;
-  addToCart: (name?: string) => void;
+  addToCart: (item: Partial<CartItem> | string) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   toasts: Toast[];
   addToast: (toast: Omit<Toast, 'id'>) => void;
   removeToast: (id: number) => void;
@@ -23,11 +34,13 @@ type AppContextType = {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [cartCount, setCartCount] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartPop, setCartPop] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastIdCounter, setToastIdCounter] = useState(0);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
+
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     setToastIdCounter(prev => {
@@ -45,16 +58,46 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setToasts(current => current.filter(t => t.id !== id));
   }, []);
 
-  const addToCart = useCallback((name?: string) => {
-    setCartCount(c => c + 1);
+  const addToCart = useCallback((itemData: Partial<CartItem> | string) => {
+    setCartItems(current => {
+      let title = typeof itemData === 'string' ? itemData : itemData.title || 'محصول ناشناس';
+      let price = typeof itemData === 'string' ? 2500000 : itemData.price || 2500000;
+      let id = typeof itemData === 'string' ? Math.random().toString(36).substring(7) : itemData.id || Math.random().toString(36).substring(7);
+      let image = typeof itemData === 'string' ? '/images/games/valorant-character.png' : itemData.image || '/images/games/valorant-character.png';
+      let qty = typeof itemData === 'string' ? 1 : itemData.quantity || 1;
+
+      const existingIndex = current.findIndex(i => i.title === title || i.id === id);
+      if (existingIndex > -1) {
+        const newItems = [...current];
+        newItems[existingIndex].quantity += qty;
+        return newItems;
+      } else {
+        return [...current, { id, title, price, image, quantity: qty }];
+      }
+    });
+
     setCartPop(false);
     setTimeout(() => setCartPop(true), 10);
     addToast({
       title: 'به سبد خرید اضافه شد',
-      text: name || '',
+      text: typeof itemData === 'string' ? itemData : itemData.title || '',
       icon: 'cart'
     });
   }, [addToast]);
+
+  const removeFromCart = useCallback((id: string) => {
+    setCartItems(current => current.filter(item => item.id !== id));
+  }, []);
+
+  const updateQuantity = useCallback((id: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(id);
+      return;
+    }
+    setCartItems(current => 
+      current.map(item => item.id === id ? { ...item, quantity } : item)
+    );
+  }, [removeFromCart]);
 
   const clearNotifications = useCallback(() => {
     setHasUnreadNotifications(false);
@@ -73,9 +116,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        cartItems,
         cartCount,
         cartPop,
         addToCart,
+        removeFromCart,
+        updateQuantity,
         toasts,
         addToast,
         removeToast,
