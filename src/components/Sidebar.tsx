@@ -66,7 +66,7 @@ export function Sidebar() {
           data-label="خانه" 
           ref={el => { navRefs.current['/'] = el; }}
         >
-          <Icon name="home"/>
+          <img src="/icons/home.png" alt="home" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
         </Link>
         
         <Link 
@@ -75,7 +75,7 @@ export function Sidebar() {
           data-label="فروشگاه" 
           ref={el => { navRefs.current['/store'] = el; }}
         >
-          <Icon name="bag"/>
+          <img src="/icons/store.png" alt="store" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
         </Link>
         
         <Link 
@@ -84,7 +84,7 @@ export function Sidebar() {
           data-label="تورنومنت" 
           ref={el => { navRefs.current['/tournament'] = el; }}
         >
-          <Icon name="trophy"/>
+          <img src="/icons/tournament.png" alt="tournament" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
         </Link>
         <Link 
           href="/contact" 
@@ -92,22 +92,18 @@ export function Sidebar() {
           data-label="ارتباط با ما" 
           ref={el => { navRefs.current['/contact'] = el; }}
         >
-          <Icon name="phone"/>
+          <img src="/icons/contact-us.png" alt="contact-us" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
         </Link>
-        <a className="nav-item" href="#" data-label="گیفت کارت" onClick={e => e.preventDefault()}>
-          <Icon name="gift"/>
-        </a>
+
         <Link 
           href="/dashboard" 
           className={`nav-item ${activeKey === '/dashboard' ? 'active' : ''}`} 
           data-label="داشبورد" 
           ref={el => { navRefs.current['/dashboard'] = el; }}
         >
-          <Icon name="chart"/>
+          <img src="/icons/dashboard.png" alt="dashboard" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
         </Link>
-        <a className="nav-item" href="#" data-label="تنظیمات" onClick={e => e.preventDefault()}>
-          <Icon name="sliders"/>
-        </a>
+
       </nav>
       <button className="add-btn" aria-label="ساخت تیم" data-label="ساخت تیم" onClick={handleAddSquad}>
         <span className="plus"><Icon name="plus"/></span>
