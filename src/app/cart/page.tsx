@@ -73,7 +73,9 @@ export default function CartPage() {
               <div className="summary-divider"></div>
               <div className="summary-row total">
                 <span>مبلغ قابل پرداخت:</span>
-                <span>{totalPrice.toLocaleString('fa-IR')} تومان</span>
+                <span className="total-val">
+                  {totalPrice.toLocaleString('fa-IR')} <small>تومان</small>
+                </span>
               </div>
               <Link href="/checkout" className="cart-btn primary block">
                 تکمیل سفارش
