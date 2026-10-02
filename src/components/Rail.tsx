@@ -22,18 +22,20 @@ export function Rail() {
   return (
     <aside className="rail" aria-label="تیم‌ها">
       <div className="panel p1 reveal" style={{ '--d': 1 } as any}>
-        <Link href="/dashboard" className="me" aria-label="پروفایل شما">
-          <ProfileAvatar seed={5} score={0} />
-        </Link>
-        <i className="rail-ic"><Icon name="users" /></i>
-        <div className="list">
-          {teams.map((f, i) => (
-            <div key={i} className={`av ${f.s === 'game' ? 'game' : ''}`} data-tip={getTip(f)}>
-              <div className="face"><Avatar seed={f.seed} /></div>
-              <span className={`st ${f.s}`}></span>
-              {f.s === 'game' && <span className="ingame">در بازی</span>}
-            </div>
-          ))}
+        <div className="sticky-nav-inner">
+          <Link href="/dashboard" className="me" aria-label="پروفایل شما">
+            <ProfileAvatar seed={5} score={0} />
+          </Link>
+          <i className="rail-ic"><Icon name="users" /></i>
+          <div className="list">
+            {teams.map((f, i) => (
+              <div key={i} className={`av ${f.s === 'game' ? 'game' : ''}`} data-tip={getTip(f)}>
+                <div className="face"><Avatar seed={f.seed} /></div>
+                <span className={`st ${f.s}`}></span>
+                {f.s === 'game' && <span className="ingame">در بازی</span>}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
