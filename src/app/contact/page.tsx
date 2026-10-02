@@ -16,14 +16,19 @@ export default function ContactPage() {
       <div className={styles.ambientGlow1}></div>
       <div className={styles.ambientGlow2}></div>
 
-      <div className="sec-h reveal" style={{ '--d': 0, position: 'relative', zIndex: 10 } as any}>
-        <h3>ارتباط با ما</h3>
-      </div>
-
       <div className={`panel reveal ${styles.contactPanel}`} style={{ '--d': 1 } as React.CSSProperties}>
-        <div className={styles.headerBox}>
-          <h2>ارتباط <span>مستقیم</span> با تایتان</h2>
-          <p>تایتان فقط یک پلتفرم نیست؛ یک خانواده است. از طریق کانال‌های ویژه زیر با ما همراه شوید.</p>
+        <div className={styles.topSection}>
+          <div className={styles.headerContent}>
+            <div className={styles.onlineBadge}>
+              <span className={styles.dot}></span>
+              تیم پشتیبانی آنلاین است
+            </div>
+            <h2>ارتباط <span>مستقیم</span> با تایتان</h2>
+            <p>تایتان فقط یک پلتفرم نیست؛ یک خانواده است. از طریق کانال‌های زیر همیشه در کنار ما باشید.</p>
+          </div>
+          <div className={styles.robotImageWrapper}>
+            <img src="/images/support-robot.png" alt="پشتیبانی تایتان" className={styles.robotImage} />
+          </div>
         </div>
 
         <div className={styles.cardContainer}>
@@ -31,14 +36,16 @@ export default function ContactPage() {
           <a href="#" className={`${styles.glitchCard} ${styles.discord}`}>
             <div className={styles.cardHighlight}></div>
             <div className={styles.cardContent}>
-              <div className={styles.iconWrap}>
-                <img src="/icons/discord.png" alt="دیسکورد" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+              <div className={styles.rightContent}>
+                <div className={styles.iconWrap}>
+                  <img src="/icons/discord.png" alt="دیسکورد" />
+                </div>
+                <div className={styles.textWrap}>
+                  <h3>سرور دیسکورد تایتان</h3>
+                  <p>پیوستن به هزاران گیمر، پیدا کردن هم‌تیمی و گفتگو با تیم مدیریت</p>
+                </div>
               </div>
-              <div className={styles.textWrap}>
-                <h3>سرور دیسکورد تایتان</h3>
-                <p>پیوستن به هزاران گیمر، پیدا کردن هم‌تیمی و ارتباط مستقیم با تیم مدیریت.</p>
-              </div>
-              <div className={styles.actionBtn}>عضویت <Icon name="arrow" /></div>
+              <div className={styles.actionBtn}><Icon name="arrow" style={{transform: 'rotate(180deg)'}} /> عضویت</div>
             </div>
           </a>
 
@@ -48,11 +55,12 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <img src="/icons/speaker.png" alt="کانال تلگرام" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                  <img src="/icons/speaker.png" alt="کانال تلگرام" />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>کانال تلگرام</h3>
                   <p>اخبار آپدیت‌ها، تخفیف‌ها و تورنمنت‌ها</p>
+                  <span className={styles.cardLink}>&larr; دنبال کردن</span>
                 </div>
               </div>
             </a>
@@ -62,11 +70,12 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <img src="/icons/telegram.png" alt="پشتیبانی تلگرام" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                  <img src="/icons/telegram.png" alt="پشتیبانی تلگرام" />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>پشتیبانی تلگرام</h3>
                   <p>پیگیری سریع سفارش‌ها و مشکلات اکانت</p>
+                  <span className={styles.cardLink}>&larr; شروع گفتگو</span>
                 </div>
               </div>
             </a>
@@ -78,11 +87,15 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <img src="/icons/support.png" alt="پشتیبانی زنده" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                  <img src="/icons/support.png" alt="پشتیبانی زنده" />
                 </div>
                 <div className={styles.textWrap}>
-                  <h3>پشتیبانی زنده</h3>
+                  <h3>
+                    پشتیبانی زنده 
+                    <span className={styles.liveBadge}><span className={styles.dot}></span> آنلاین</span>
+                  </h3>
                   <p>چت مستقیم در سایت با کارشناسان ما</p>
+                  <span className={styles.cardLink}>&larr; چت کنید</span>
                 </div>
               </div>
             </a>
@@ -92,11 +105,12 @@ export default function ContactPage() {
               <div className={styles.cardHighlight}></div>
               <div className={styles.cardContent}>
                 <div className={styles.iconWrap}>
-                  <img src="/icons/email.png" alt="ایمیل" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                  <img src="/icons/email.png" alt="ایمیل" />
                 </div>
                 <div className={styles.textWrap}>
                   <h3>ایمیل سازمانی</h3>
-                  <p>ارتباطات رسمی، پیشنهادات و انتقادات</p>
+                  <p>ارتباطات رسمی، پیشنهادها و انتقادها</p>
+                  <span className={styles.cardLink}>&larr; ارسال ایمیل</span>
                 </div>
               </div>
             </a>
@@ -107,11 +121,12 @@ export default function ContactPage() {
             <div className={styles.cardHighlight}></div>
             <div className={styles.cardContent}>
               <div className={styles.iconWrap}>
-                <img src="/icons/telephon-call.png" alt="تلفن" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                <img src="/icons/telephon-call.png" alt="تلفن" />
               </div>
               <div className={styles.textWrap}>
                 <h3>پشتیبانی تلفنی</h3>
-                <p>تماس در ساعات اداری (۹ الی ۱۸) - ۰۲۱-۱۲۳۴۵۶۷۸</p>
+                <p>همه روزه از ۹ صبح تا ۱۰ شب</p>
+                <span className={styles.cardLink}>&larr; تماس</span>
               </div>
             </div>
           </a>
