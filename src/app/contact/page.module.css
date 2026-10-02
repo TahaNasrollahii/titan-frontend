@@ -51,7 +51,33 @@
   height: 8px;
   border-radius: 50%;
   background: #3ac977;
-  box-shadow: 0 0 10px #3ac977;
+  box-shadow: 0 0 8px #3ac977;
+  position: relative;
+}
+
+.dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: #3ac977;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripplePulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+@keyframes ripplePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  70%, 100% {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
 }
 
 .headerContent h2 {
@@ -96,13 +122,14 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 120%;
-  height: 120%;
+  width: 250%;
+  height: 250%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(226, 69, 63, 0.25), transparent 60%);
+  background: radial-gradient(circle, rgba(226, 69, 63, 0.4) 0%, rgba(226, 69, 63, 0.1) 40%, transparent 70%);
   z-index: 0;
   animation: pulseGlow 4s infinite alternate ease-in-out;
   pointer-events: none;
+  filter: blur(20px);
 }
 
 .spinRing {

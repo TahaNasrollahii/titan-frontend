@@ -227,24 +227,28 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: transparent;
-  color: #a09fa5;
+  background: #e2453f;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   cursor: pointer;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(226, 69, 63, 0.3);
 }
 
 .cart-item-remove:hover {
-  background: rgba(226, 69, 63, 0.1);
-  color: var(--red);
-  border-color: rgba(226, 69, 63, 0.3);
+  background: #c9352f;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 15px rgba(226, 69, 63, 0.5);
+  transform: translateY(-2px);
 }
 
 .cart-item-remove:active {
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(0);
+  box-shadow: 0 2px 5px rgba(226, 69, 63, 0.3);
 }
 
 .cart-sidebar {
