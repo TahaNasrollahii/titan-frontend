@@ -143,12 +143,12 @@ i[data-icon] svg {
 
 .sticky-nav-inner {
   position: sticky;
-  top: 18px;
+  top: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 100px);
 }
 
 .panel {
