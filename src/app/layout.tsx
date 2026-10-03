@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
@@ -19,19 +20,20 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <AppProvider>
-          <div className="frame" id="frame">
-            <Sidebar />
-            <main className="main">
-              <Topbar />
-              {children}
-            </main>
-            <Rail />
-            <ToastContainer />
-          </div>
-        </AppProvider>
+        <AuthProvider>
+          <AppProvider>
+            <div className="frame" id="frame">
+              <Sidebar />
+              <main className="main">
+                <Topbar />
+                {children}
+              </main>
+              <Rail />
+              <ToastContainer />
+            </div>
+          </AppProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
-

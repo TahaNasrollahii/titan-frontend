@@ -1,62 +1,327 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Icon, Avatar } from '@/components/Icons';
-import styles from './details.module.css';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
+import { BracketView } from '@/components/BracketView';
+import { Avatar, Icon } from '@/components/Icons';
+import { Empty, ErrorState, Loading } from '@/components/ui/State';
+import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { errorMessage } from '@/lib/api/client';
+import { tournamentsApi, walletApi } from '@/lib/api/endpoints';
+import type { PaymentMethod, Tournament } from '@/lib/api/types';
+import { faNumber, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS, toman } from '@/lib/format';
+import { useApi } from '@/lib/hooks/useApi';
+import { useSpotlight } from '@/lib/hooks/useSpotlight';
+
 import '../../tournament/tournament.css';
+import styles from './details.module.css';
 
+type Tab = 'overview' | 'rules' | 'participants' | 'bracket';
 
+const PLACE_COLORS = ['#ffd700', '#c0c0c0', '#cd7f32'];
 
-export default function TournamentDetailsPage({ params }: { params: { id: string } }) {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament; onChanged: () => void }) {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const { addToast } = useAppContext();
+  const isTeam = tournament.participantType === 'team';
+  const canRegister = tournament.status === 'registration_open' && !tournament.isFull && !tournament.myRegistration;
 
-  // Consider tournament ID '2' as a Solo tournament, and others as Team tournaments
-  const isTeamTournament = params.id !== '2';
+  const teams = useApi(isAuthenticated && isTeam && canRegister ? () => tournamentsApi.eligibleTeams(tournament.slug) : null, [
+    isAuthenticated,
+    tournament.slug,
+    canRegister,
+  ]);
+  const wallet = useApi(isAuthenticated && !tournament.isFree && canRegister ? walletApi.get : null, [
+    isAuthenticated,
+    canRegister,
+  ]);
 
-  // Mouse tracking for parallax and spot hover effects on cards
-  useEffect(() => {
-    const handlePointerMove = (e: Event) => {
-      const pe = e as PointerEvent;
-      const el = pe.currentTarget as HTMLElement;
-      const rect = el.getBoundingClientRect();
-      const x = pe.clientX - rect.left;
-      const y = pe.clientY - rect.top;
+  const [chosenTeamId, setTeamId] = useState<number | null>(null);
+  const teamId = chosenTeamId ?? teams.data?.[0]?.id ?? null;
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gateway');
+  const [busy, setBusy] = useState(false);
 
-      const px = (x / rect.width) * 2 - 1;
-      const py = (y / rect.height) * 2 - 1;
+  const unit = isTeam ? 'تیم' : 'نفر';
+  const fillPercent = Math.min(100, (tournament.participantsCount / tournament.maxParticipants) * 100);
+  const walletCovers = (wallet.data?.balance ?? 0) >= tournament.entryFee;
 
-      el.style.setProperty('--px', px.toString());
-      el.style.setProperty('--py', py.toString());
-      el.style.setProperty('--mx', x + 'px');
-      el.style.setProperty('--my', y + 'px');
-    };
-
-    const handlePointerLeave = (e: Event) => {
-      const el = e.currentTarget as HTMLElement;
-      el.style.setProperty('--px', '0');
-      el.style.setProperty('--py', '0');
-      el.style.setProperty('--mx', '50%');
-      el.style.setProperty('--my', '50%');
-    };
-
-    const elements = document.querySelectorAll('.spot-track');
-    elements.forEach(el => {
-      el.addEventListener('pointermove', handlePointerMove, { passive: true });
-      el.addEventListener('pointerleave', handlePointerLeave, { passive: true });
-    });
-
-    return () => {
-      elements.forEach(el => {
-        el.removeEventListener('pointermove', handlePointerMove);
-        el.removeEventListener('pointerleave', handlePointerLeave);
+  const register = async () => {
+    if (!isAuthenticated) {
+      router.push(`/login?next=/tournaments/${tournament.slug}`);
+      return;
+    }
+    if (isTeam && !teamId) {
+      addToast({ title: 'یک تیم انتخاب کنید', icon: 'users' });
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await tournamentsApi.register(tournament.slug, {
+        team: isTeam ? teamId : null,
+        paymentMethod: tournament.isFree ? null : paymentMethod,
       });
-    };
-  }, [activeTab]); // re-bind when tabs change
+      if (result.paymentUrl) {
+        window.location.assign(result.paymentUrl);
+        return;
+      }
+      addToast({ title: 'ثبت‌نام انجام شد', text: tournament.title, icon: 'trophy' });
+      onChanged();
+    } catch (error) {
+      addToast({ title: 'ثبت‌نام انجام نشد', text: errorMessage(error), icon: 'info' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const withdraw = async () => {
+    if (!window.confirm('از انصراف در این تورنمنت مطمئن هستید؟ هزینه ورودی به کیف پول بازگردانده می‌شود.')) return;
+    setBusy(true);
+    try {
+      await tournamentsApi.withdraw(tournament.slug);
+      addToast({ title: 'انصراف ثبت شد', icon: 'check' });
+      onChanged();
+    } catch (error) {
+      addToast({ title: 'انصراف انجام نشد', text: errorMessage(error), icon: 'info' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const registration = tournament.myRegistration;
+  let blockedReason: string | null = null;
+  if (!registration && !canRegister) {
+    blockedReason = tournament.isFull ? 'ظرفیت تکمیل است' : TOURNAMENT_STATUS_LABELS[tournament.status];
+  }
+
+  return (
+    <div className={`${styles.registrationWidget} spot spot-track reveal`} style={{ '--d': 2 } as React.CSSProperties}>
+      <h3>ثبت‌نام در تورنومنت</h3>
+      <div className={styles.priceTag}>
+        <div className={styles.priceHeader}>
+          <span className={styles.priceLabel}>هزینه ورودی</span>
+          {tournament.entryDiscountPercent > 0 && (
+            <span className={styles.discountBadge}>٪{faNumber(tournament.entryDiscountPercent)} تخفیف</span>
+          )}
+        </div>
+        <div className={styles.priceValues}>
+          {tournament.entryFeeOriginal && <span className={styles.priceOld}>{toman(tournament.entryFeeOriginal)}</span>}
+          <span className={styles.priceNew}>
+            {tournament.isFree ? 'رایگان' : faNumber(tournament.entryFee)}
+            {!tournament.isFree && <span className={styles.currency}>تومان</span>}
+            <span className={styles.perUnit}>/ هر {unit}</span>
+          </span>
+        </div>
+      </div>
+
+      <div className={styles.capacityBar}>
+        <div className={styles.capLabels}>
+          <span>ظرفیت</span>
+          <span>
+            {faNumber(tournament.participantsCount)} / {faNumber(tournament.maxParticipants)} {unit}
+          </span>
+        </div>
+        <div className={styles.capTrack}>
+          <div className={styles.capFill} style={{ width: `${fillPercent}%` }}></div>
+        </div>
+      </div>
+
+      {registration ? (
+        <>
+          <div className={styles.teamSelection}>
+            <div className={styles.teamSelectionLabel}>
+              {registration.status === 'confirmed' ? 'ثبت‌نام شما تایید شده است' : 'در انتظار پرداخت'}
+              {registration.team && ` — تیم ${registration.team.name}`}
+            </div>
+          </div>
+          {tournament.status !== 'live' && tournament.status !== 'completed' && (
+            <button className={styles.btnRegister} onClick={withdraw} disabled={busy}>
+              <Icon name="x" /> انصراف از تورنمنت
+            </button>
+          )}
+          {tournament.status === 'live' && (
+            <Link href={`/tournaments/${tournament.slug}/bracket`} className={styles.btnRegister}>
+              <Icon name="play" /> ورود به براکت
+            </Link>
+          )}
+        </>
+      ) : blockedReason ? (
+        <button className={styles.btnRegister} disabled>
+          {blockedReason}
+        </button>
+      ) : (
+        <>
+          {isTeam && isAuthenticated && (
+            <div className={styles.teamSelection}>
+              <div className={styles.teamSelectionLabel}>انتخاب تیم برای شرکت در مسابقه:</div>
+              {teams.loading && <Loading />}
+              {teams.data?.length === 0 && (
+                <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8 }}>
+                  تیمی با بازی {tournament.game.title} که کاپیتان آن باشید ندارید.{' '}
+                  <Link href="/teams/create">ساخت تیم</Link>
+                </p>
+              )}
+              {teams.data?.map(team => (
+                <div
+                  key={team.id}
+                  className={`${styles.teamOption} ${teamId === team.id ? styles.selected : ''}`}
+                  onClick={() => setTeamId(team.id)}
+                >
+                  <div className={styles.teamOptionCrest}>{team.tag}</div>
+                  <div className={styles.teamOptionName}>
+                    {team.name} · {faNumber(team.memberCount)} عضو
+                  </div>
+                  <div className={styles.radioCircle}></div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!tournament.isFree && isAuthenticated && (
+            <div className={styles.teamSelection}>
+              <div className={styles.teamSelectionLabel}>روش پرداخت:</div>
+              <div
+                className={`${styles.teamOption} ${paymentMethod === 'gateway' ? styles.selected : ''}`}
+                onClick={() => setPaymentMethod('gateway')}
+              >
+                <div className={styles.teamOptionName}>درگاه زرین‌پال</div>
+                <div className={styles.radioCircle}></div>
+              </div>
+              <div
+                className={`${styles.teamOption} ${paymentMethod === 'wallet' ? styles.selected : ''}`}
+                style={walletCovers ? undefined : { opacity: 0.5, cursor: 'not-allowed' }}
+                onClick={() => walletCovers && setPaymentMethod('wallet')}
+              >
+                <div className={styles.teamOptionName}>کیف پول ({toman(wallet.data?.balance ?? 0)})</div>
+                <div className={styles.radioCircle}></div>
+              </div>
+            </div>
+          )}
+
+          <button
+            className={styles.btnRegister}
+            onClick={register}
+            disabled={busy || (isTeam && isAuthenticated && !teams.data?.length)}
+          >
+            <Icon name="play" />{' '}
+            {!isAuthenticated
+              ? 'ورود و ثبت‌نام'
+              : tournament.isFree
+                ? 'ثبت‌نام رایگان'
+                : isTeam
+                  ? 'پرداخت و ثبت‌نام تیم'
+                  : 'پرداخت و ثبت‌نام'}
+          </button>
+        </>
+      )}
+
+      <div className={styles.widgetMeta}>
+        <div className={styles.trustItem}>
+          <div className={styles.trustIcon}>
+            <Icon name="chat" />
+          </div>
+          <span>پشتیبانی اختصاصی</span>
+        </div>
+        <div className={styles.trustItem}>
+          <div className={styles.trustIcon}>
+            <Icon name="shield" />
+          </div>
+          <span>سیستم آنتی‌چیت پیشرفته</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Participants({ slug }: { slug: string }) {
+  const participants = useApi(() => tournamentsApi.participants(slug), [slug]);
+  if (participants.loading) return <Loading />;
+  if (!participants.data?.length) return <Empty icon="users">هنوز شرکت‌کننده‌ای ثبت‌نام نکرده است.</Empty>;
+
+  return (
+    <div className={styles.participantsList}>
+      {participants.data.map((p, i) => {
+        const row = (
+          <div className={`${styles.participantListRow} spot spot-track`} style={{ '--d': i } as React.CSSProperties}>
+            <div className={styles.participantIndex}>{String(i + 1).padStart(2, '0')}</div>
+            <div className={`${styles.participantAvatar} ${p.kind === 'team' ? styles.participantCrest : ''}`}>
+              {p.logo ? (
+                <img src={p.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : p.kind === 'team' ? (
+                p.tag
+              ) : (
+                <Avatar seed={p.avatarSeed ?? 1} />
+              )}
+            </div>
+            <div className={styles.participantDetails}>
+              <div className={styles.participantName}>{p.name}</div>
+              <div className={styles.participantRank}>
+                <Icon name="chart" />{' '}
+                {p.finalPlacement
+                  ? `رتبه نهایی: ${faNumber(p.finalPlacement)}`
+                  : p.seed
+                    ? `سید ${faNumber(p.seed)}`
+                    : p.rank
+                      ? `رنک: ${p.rank}`
+                      : 'ثبت‌نام شده'}
+              </div>
+            </div>
+            <div className={styles.participantStats}>
+              <div className={styles.statGroup}>
+                <span className={styles.statLabel}>امتیاز کلی</span>
+                <span className={styles.statScore}>{faNumber(p.points)}</span>
+              </div>
+              <div className={styles.participantAction}>
+                <Icon name="chevron-left" />
+              </div>
+            </div>
+          </div>
+        );
+        return p.teamId ? (
+          <Link key={p.id} href={`/teams/${p.teamId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            {row}
+          </Link>
+        ) : (
+          <div key={p.id}>{row}</div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Bracket({ slug }: { slug: string }) {
+  const bracket = useApi(() => tournamentsApi.bracket(slug), [slug]);
+  if (bracket.loading) return <Loading />;
+  if (!bracket.data?.length) {
+    return (
+      <div className={styles.emptyTab}>
+        <Icon name="chart" />
+        <p>براکت و جدول مسابقات پس از بسته شدن ثبت‌نام و قرعه‌کشی منتشر می‌شود.</p>
+      </div>
+    );
+  }
+  return <BracketView rounds={bracket.data} />;
+}
+
+export default function TournamentDetailsPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const tournament = useApi(() => tournamentsApi.get(slug), [slug]);
+  const [tab, setTab] = useState<Tab>('overview');
+
+  useSpotlight('.spot-track', [tab, tournament.data]);
+
+  if (tournament.loading && !tournament.data) return <Loading />;
+  const t = tournament.data;
+  if (!t) return <ErrorState error={tournament.error} onRetry={tournament.reload} />;
+
+  const isTeam = t.participantType === 'team';
+  const isOpen = t.status === 'registration_open' && !t.isFull;
 
   return (
     <main className={styles.wrapper}>
-      {/* Liquid Background Blobs */}
       <div className="liquid-bg" aria-hidden="true">
         <div className="l-blob blob-1"></div>
         <div className="l-blob blob-2"></div>
@@ -64,29 +329,33 @@ export default function TournamentDetailsPage({ params }: { params: { id: string
       </div>
 
       <div className={styles.topLayout}>
-        <div className={`${styles.heroSection} spot spot-track reveal`} style={{ '--d': 1 } as any}>
-          <img src="/images/games/valorant-background.png" alt="Valorant" className={styles.heroImage} />
+        <div className={`${styles.heroSection} spot spot-track reveal`} style={{ '--d': 1 } as React.CSSProperties}>
+          {t.coverImage && <img src={t.coverImage} alt={t.game.titleEn} className={styles.heroImage} />}
           <div className={styles.heroOverlay}></div>
           <div className={styles.heroContent}>
             <div className={styles.titleArea}>
               <div className={styles.badges}>
-                 <span className={`${styles.badge} ${styles.badgePrimary}`}><Icon name="game" /> Valorant</span>
-                 <span className={styles.badge}>فصل ۳ مسابقات</span>
-                 <span className={`${styles.badge} ${styles.badgeOpen}`}>ثبت‌نام باز</span>
+                <span className={`${styles.badge} ${styles.badgePrimary}`}>
+                  <Icon name="game" /> {t.game.titleEn}
+                </span>
+                <span className={styles.badge}>{t.season.name}</span>
+                <span className={`${styles.badge} ${isOpen ? styles.badgeOpen : ''}`}>
+                  {t.isFull && t.status === 'registration_open' ? 'تکمیل ظرفیت' : TOURNAMENT_STATUS_LABELS[t.status]}
+                </span>
               </div>
-              <h1 className={styles.title}>{isTeamTournament ? 'مسابقات قهرمانی ولورانت - تایتان' : 'تورنومنت انفرادی ایپکس - تایتان'}</h1>
-              <p className={styles.subtitle}>{isTeamTournament ? 'بزرگترین رقابت تیمی ایران با جایزه نقدی ۵۰ میلیون تومانی. تیم خود را آماده کنید و مهارت‌های خود را در بالاترین سطح به چالش بکشید.' : 'بزرگترین رقابت تک‌نفره ایران. مهارت‌های فردی خود را در بالاترین سطح به چالش بکشید و قهرمان شوید.'}</p>
-              
+              <h1 className={styles.title}>{t.title}</h1>
+              <p className={styles.subtitle}>{t.description}</p>
+
               <div className={styles.quickStats}>
-                 <div className={styles.statItem}>
-                   <Icon name={isTeamTournament ? "users" : "user"} /> {isTeamTournament ? '۵v۵ (تیمی)' : 'تک نفره (Solo)'}
-                 </div>
-                 <div className={styles.statItem}>
-                   <Icon name="clock" /> ۲۵ شهریور · ۲۱:۰۰
-                 </div>
-                 <div className={styles.statItem}>
-                   <Icon name="trophy" /> ۵۰,۰۰۰,۰۰۰ تومان جایزه
-                 </div>
+                <div className={styles.statItem}>
+                  <Icon name={isTeam ? 'users' : 'user'} /> {t.formatLabel || (isTeam ? 'تیمی' : 'تک نفره')}
+                </div>
+                <div className={styles.statItem}>
+                  <Icon name="clock" /> {jalaliDateTime(t.startsAt)}
+                </div>
+                <div className={styles.statItem}>
+                  <Icon name="trophy" /> {prize(t.prizePool, t.prizeCurrency)} جایزه
+                </div>
               </div>
             </div>
           </div>
@@ -95,222 +364,82 @@ export default function TournamentDetailsPage({ params }: { params: { id: string
 
       <div className={styles.mainLayout}>
         <div className={styles.contentArea}>
-           {/* Tabs */}
-           <div className={`${styles.tabs} reveal`} style={{ '--d': 2 } as any}>
-              <button className={`${styles.tabBtn} ${activeTab === 'overview' ? styles.activeTab : ''}`} onClick={() => setActiveTab('overview')}>اطلاعات کلی</button>
-              <button className={`${styles.tabBtn} ${activeTab === 'rules' ? styles.activeTab : ''}`} onClick={() => setActiveTab('rules')}>قوانین و مقررات</button>
-              <button className={`${styles.tabBtn} ${activeTab === 'teams' ? styles.activeTab : ''}`} onClick={() => setActiveTab('teams')}>شرکت‌کنندگان</button>
-              <button className={`${styles.tabBtn} ${activeTab === 'bracket' ? styles.activeTab : ''}`} onClick={() => setActiveTab('bracket')}>جدول مسابقات</button>
-           </div>
+          <div className={`${styles.tabs} reveal`} style={{ '--d': 2 } as React.CSSProperties}>
+            {(
+              [
+                ['overview', 'اطلاعات کلی'],
+                ['rules', 'قوانین و مقررات'],
+                ['participants', 'شرکت‌کنندگان'],
+                ['bracket', 'جدول مسابقات'],
+              ] as [Tab, string][]
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                className={`${styles.tabBtn} ${tab === key ? styles.activeTab : ''}`}
+                onClick={() => setTab(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
 
-           <div className={`${styles.tabContent} reveal spot spot-track`} style={{ '--d': 3 } as any}>
-              {activeTab === 'overview' && (
-                <div className={styles.overviewPane}>
-                  <h3>درباره تورنومنت</h3>
-                  <p>این تورنومنت به صورت حذفی و در قالب {isTeamTournament ? '۵ در مقابل ۵' : 'تک‌نفره'} برگزار می‌شود. مسابقات از مرحله مقدماتی آغاز شده و به صورت آنلاین انجام خواهد شد. مراحل نیمه‌نهایی و فینال به صورت Best of 3 و با پخش زنده همراه با گزارشگر اختصاصی تایتان برگزار می‌شود.</p>
-                  <p>تیم‌های برتر علاوه بر جوایز نقدی، امتیاز رنکینگ فصل ۳ را دریافت می‌کنند که برای صعود به مسابقات جایزه بزرگ پایان سال حیاتی است.</p>
-                  
+          <div className={`${styles.tabContent} reveal spot spot-track`} style={{ '--d': 3 } as React.CSSProperties}>
+            {tab === 'overview' && (
+              <div className={styles.overviewPane}>
+                <h3>درباره تورنومنت</h3>
+                <p>{t.description}</p>
+                <p>
+                  شروع ثبت‌نام: {jalaliDateTime(t.registrationOpensAt)} · پایان ثبت‌نام:{' '}
+                  {jalaliDateTime(t.registrationClosesAt)}
+                  {t.bestOf > 1 && ` · مسابقات Best of ${faNumber(t.bestOf)}`}
+                </p>
+
+                {t.prizes.length > 0 && (
                   <div className={styles.prizePool}>
-                     <h4>توزیع جوایز</h4>
-                     <div className={styles.prizeList}>
-                        <div className={styles.prizeRow}>
-                           <span className={styles.prizeRank}><Icon name="trophy" style={{color: '#ffd700'}}/> تیم اول (قهرمان)</span>
-                           <span className={styles.prizeAmount}>۳۰,۰۰۰,۰۰۰ تومان</span>
-                        </div>
-                        <div className={styles.prizeRow}>
-                           <span className={styles.prizeRank}><Icon name="trophy" style={{color: '#c0c0c0'}}/> تیم دوم (نایب قهرمان)</span>
-                           <span className={styles.prizeAmount}>۱۵,۰۰۰,۰۰۰ تومان</span>
-                        </div>
-                        <div className={styles.prizeRow}>
-                           <span className={styles.prizeRank}><Icon name="trophy" style={{color: '#cd7f32'}}/> تیم سوم</span>
-                           <span className={styles.prizeAmount}>۵,۰۰۰,۰۰۰ تومان</span>
-                        </div>
-                     </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'rules' && (
-                <div className={styles.overviewPane}>
-                  <h3>قوانین و مقررات</h3>
-                  <p>تمامی بازیکنان موظف به رعایت قوانین مسابقات هستند. استفاده از هرگونه چیت، گلیچ یا رفتار غیرورزشی منجر به حذف تیم از مسابقات و بن شدن حساب کاربری خواهد شد.</p>
-                  <div className="dl-content trust-content" style={{ marginTop: '20px', padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div className="trust-item">
-                      <div className="trust-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="shield" /><div className="glow"></div></div>
-                      <div className="trust-text">
-                        <span>قوانین بازی جوانمردانه</span>
-                        <small>آنتی‌چیت و عدم استفاده از گلیچ</small>
-                      </div>
-                    </div>
-                    <div className="trust-divider"></div>
-                    <div className="trust-item">
-                      <div className="trust-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="clock" /><div className="glow"></div></div>
-                      <div className="trust-text">
-                        <span>حضور به‌موقع</span>
-                        <small>۱۵ دقیقه قبل از شروع مسابقه</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'teams' && (
-                <div className={styles.participantsList}>
-                  {isTeamTournament ? (
-                    <>
-                      {[
-                        { n: 'Shadow Wolves', tag: 'SW', rank: 'رده‌بندی جهانی: ۲', pts: '9,240' },
-                        { n: 'Viper Squad', tag: 'VS', rank: 'رده‌بندی جهانی: ۵', pts: '9,100' },
-                        { n: 'Aim Bots', tag: 'AB', rank: 'رده‌بندی جهانی: ۱۲', pts: '8,900' },
-                        { n: 'Crimson Fangs', tag: 'CF', rank: 'رده‌بندی جهانی: ۱۹', pts: '8,400' },
-                      ].map((t, i) => (
-                        <div key={i} className={`${styles.participantListRow} spot spot-track`} style={{ '--d': i } as any}>
-                          <div className={styles.participantIndex}>
-                            {String(i + 1).padStart(2, '0')}
-                          </div>
-                          
-                          <div className={`${styles.participantAvatar} ${styles.participantCrest}`}>
-                            {t.tag}
-                          </div>
-                          
-                          <div className={styles.participantDetails}>
-                            <div className={styles.participantName}>{t.n}</div>
-                            <div className={styles.participantRank}>
-                              <Icon name="chart" /> {t.rank}
-                            </div>
-                          </div>
-                          
-                          <div className={styles.participantStats}>
-                            <div className={styles.statGroup}>
-                              <span className={styles.statLabel}>امتیاز کلی</span>
-                              <span className={styles.statScore}>{t.pts}</span>
-                            </div>
-                            <div className={styles.participantAction}>
-                              <Icon name="chevron-left" />
-                            </div>
-                          </div>
+                    <h4>توزیع جوایز</h4>
+                    <div className={styles.prizeList}>
+                      {t.prizes.map(p => (
+                        <div key={p.place} className={styles.prizeRow}>
+                          <span className={styles.prizeRank}>
+                            <Icon name="trophy" style={{ color: PLACE_COLORS[p.place - 1] ?? 'var(--muted)' }} />{' '}
+                            {p.label || `رتبه ${faNumber(p.place)}`}
+                          </span>
+                          <span className={styles.prizeAmount}>
+                            {prize(p.amount, t.prizeCurrency)}
+                            {p.points > 0 && ` + ${faNumber(p.points)} امتیاز`}
+                          </span>
                         </div>
                       ))}
-                    </>
-                  ) : (
-                    <>
-                      {[
-                        { n: 'Ali_Gamer99', rank: 'رنک: تایتان', pts: '12,450', seed: 42 },
-                        { n: 'ProSniper_IR', rank: 'رنک: پلاتینیوم', pts: '11,200', seed: 15 },
-                        { n: 'HeadshotKing', rank: 'رنک: گلد', pts: '9,800', seed: 7 },
-                        { n: 'Apex_Predator', rank: 'رنک: دایموند', pts: '9,100', seed: 10 },
-                      ].map((p, i) => (
-                        <div key={i} className={`${styles.participantListRow} spot spot-track`} style={{ '--d': i } as any}>
-                          <div className={styles.participantIndex}>
-                            {String(i + 1).padStart(2, '0')}
-                          </div>
-                          
-                          <div className={styles.participantAvatar}>
-                            <Avatar seed={p.seed} />
-                          </div>
-                          
-                          <div className={styles.participantDetails}>
-                            <div className={styles.participantName}>{p.n}</div>
-                            <div className={styles.participantRank}>
-                              <Icon name="chart" /> {p.rank}
-                            </div>
-                          </div>
-                          
-                          <div className={styles.participantStats}>
-                            <div className={styles.statGroup}>
-                              <span className={styles.statLabel}>امتیاز کلی</span>
-                              <span className={styles.statScore}>{p.pts}</span>
-                            </div>
-                            <div className={styles.participantAction}>
-                              <Icon name="chevron-left" />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </div>
-              )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
-              {activeTab === 'bracket' && (
-                <div className={styles.emptyTab}>
-                  <Icon name="chart" />
-                  <p>براکت و جدول مسابقات پس از قرعه‌کشی نهایی تیم‌ها در دسترس قرار می‌گیرد.</p>
-                </div>
-              )}
-           </div>
+            {tab === 'rules' && (
+              <div className={styles.overviewPane}>
+                <h3>قوانین و مقررات</h3>
+                {t.rules.length ? (
+                  <ul style={{ paddingRight: 20, lineHeight: 2.2 }}>
+                    {t.rules.map(rule => (
+                      <li key={rule}>{rule}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>قوانین این تورنمنت به‌زودی منتشر می‌شود.</p>
+                )}
+              </div>
+            )}
+
+            {tab === 'participants' && <Participants slug={t.slug} />}
+            {tab === 'bracket' && <Bracket slug={t.slug} />}
+          </div>
         </div>
 
         <aside className={styles.sidebar}>
-           <div className={`${styles.registrationWidget} spot spot-track reveal`} style={{ '--d': 2 } as any}>
-              <h3>ثبت‌نام در تورنومنت</h3>
-              <div className={styles.priceTag}>
-                 <div className={styles.priceHeader}>
-                    <span className={styles.priceLabel}>هزینه ورودی</span>
-                    <span className={styles.discountBadge}>۶۶٪ تخفیف</span>
-                 </div>
-                 <div className={styles.priceValues}>
-                    <span className={styles.priceOld}>۱۵۰,۰۰۰ تومان</span>
-                    <span className={styles.priceNew}>
-                       ۵۰,۰۰۰ 
-                       <span className={styles.currency}>تومان</span>
-                       <span className={styles.perUnit}>/ هر {isTeamTournament ? 'تیم' : 'نفر'}</span>
-                    </span>
-                 </div>
-              </div>
-              
-              <div className={styles.capacityBar}>
-                 <div className={styles.capLabels}>
-                    <span>ظرفیت باقیمانده</span>
-                    <span>۱۲ / ۳۲ {isTeamTournament ? 'تیم' : 'نفر'}</span>
-                 </div>
-                 <div className={styles.capTrack}>
-                    <div className={styles.capFill} style={{width: '37.5%'}}></div>
-                 </div>
-              </div>
-
-              {isTeamTournament && (
-                <div className={styles.teamSelection}>
-                  <div className={styles.teamSelectionLabel}>انتخاب تیم برای شرکت در مسابقه:</div>
-                  {[
-                    { id: 1, name: 'Shadow Wolves', tag: 'SW' },
-                    { id: 2, name: 'Night Phantoms', tag: 'NP' }
-                  ].map(team => (
-                    <div 
-                      key={team.id} 
-                      className={`${styles.teamOption} ${selectedTeam === team.id ? styles.selected : ''}`}
-                      onClick={() => setSelectedTeam(team.id)}
-                    >
-                      <div className={styles.teamOptionCrest}>{team.tag}</div>
-                      <div className={styles.teamOptionName}>{team.name}</div>
-                      <div className={styles.radioCircle}></div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button className={styles.btnRegister}>
-                <Icon name="play" /> {isTeamTournament ? 'پرداخت و ثبت‌نام تیم' : 'پرداخت و ثبت‌نام'}
-              </button>
-
-              <div className={styles.widgetMeta}>
-                 <div className={styles.trustItem}>
-                    <div className={styles.trustIcon}><Icon name="chat" /></div>
-                    <span>پشتیبانی اختصاصی</span>
-                 </div>
-                 <div className={styles.trustItem}>
-                    <div className={styles.trustIcon}><Icon name="globe" /></div>
-                    <span>سرور اختصاصی خاورمیانه</span>
-                 </div>
-                 <div className={styles.trustItem}>
-                    <div className={styles.trustIcon}><Icon name="shield" /></div>
-                    <span>سیستم آنتی‌چیت پیشرفته</span>
-                 </div>
-              </div>
-           </div>
+          <RegistrationWidget tournament={t} onChanged={tournament.reload} />
         </aside>
       </div>
-
     </main>
   );
 }

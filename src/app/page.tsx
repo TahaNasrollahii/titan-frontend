@@ -1,43 +1,64 @@
 // @ts-nocheck
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { games } from '@/data/games';
-import { tournaments } from '@/data/tournaments';
+
+import { ErrorState, Loading } from '@/components/ui/State';
+import { contentApi } from '@/lib/api/endpoints';
+import type { Home } from '@/lib/api/types';
+import { prize } from '@/lib/format';
+import { useApi } from '@/lib/hooks/useApi';
+
+/** Hero character art bundled with the frontend, keyed by game slug (value = CSS modifier class). */
+const HERO_ART: Record<string, string> = { fortnite: 'fortnite', valorant: 'valorant', 'apex-legends': 'apexlegends' };
 
 export default function TitanPage() {
+  const home = useApi(contentApi.home);
+  if (home.loading) return <Loading />;
+  if (!home.data) return <ErrorState error={home.error} onRetry={home.reload} />;
+  return <HomeScene data={home.data} />;
+}
+
+function buildSceneData(data: Home) {
+  const slides = data.heroTournaments.map(t => ({
+    title: t.game.title,
+    desc: `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`,
+    watch: t.viewerCount,
+    eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
+    art: HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.png` : t.coverImage,
+    artClass: HERO_ART[t.game.slug] ?? '',
+    href: `/tournaments/${t.slug}`,
+  }));
+  return {
+    slides: slides.length
+      ? slides
+      : [{ title: 'تایتان', desc: 'تورنمنت‌های جدید به‌زودی منتشر می‌شوند.', watch: 0, eta: 0, art: null, artClass: '', href: '/tournaments' }],
+    games: data.categories.map((g, i) => ({
+      t: g.title,
+      d: g.description,
+      p: 'مشاهده',
+      theme: ['noir', 'flame', 'mist', 'neon', 'ice', 'ember'][i % 6],
+      fig: 'game',
+      crest: i % 2 === 0,
+      slug: g.slug,
+      bg: g.backgroundImage ?? g.coverImage,
+      char: g.characterImage,
+    })),
+    stats: data.myStats,
+    announcements: data.announcements,
+  };
+}
+
+function HomeScene({ data }: { data: Home }) {
+  const router = useRouter();
   const initialized = useRef(false);
 
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
-    // Map Next.js data to Titan prototype data
-    (window as any).__TITAN_DATA = {
-      slides: tournaments.slice(0, 3).map(t => ({
-        title: t.gameName,
-        desc: t.title + ' — ' + t.description,
-        reviews: '+' + Math.floor(Math.random() * 100) + ' نظرات',
-        watch: t.participants,
-        eta: 2 * 3600 + 14 * 60 + 33, // static for now
-        plats: ['steam', 'epic'],
-        faces: [11, 12, 13]
-      })),
-      games: games.map((g, i) => ({
-        t: g.title,
-        d: g.description,
-        p: 'مشاهده',
-        theme: ['noir', 'flame', 'mist', 'neon', 'ice', 'ember'][i % 6],
-        fig: 'game',
-        crest: i % 2 === 0,
-        slug: g.slug.replace('-', ''),
-        hasCustomImages: ['fortnite', 'valorant', 'apexlegends', 'premium'].includes(g.slug.replace('-', ''))
-      })),
-      picks: games.slice(0, 3).map(g => ({
-        t: g.title,
-        s: g.genre
-      }))
-    };
+    (window as any).__TITAN_DATA = buildSceneData(data);
 
     // --- Titan Prototype Logic ---
     const cleanupFuncs: (() => void)[] = [];
@@ -102,28 +123,16 @@ export default function TitanPage() {
       /* =====================================================
          Hero key art (SVG). Replace with your own <img> per slide
          ===================================================== */
-      const heroImages = ['fortnite', 'valorant', 'apexlegends'];
-      const heroArt = k => `<img src="/images/hero/characters/${heroImages[k]}.png" class="hero-char ${heroImages[k]}" alt="" />`;
+      const heroArt = k => (SLIDES[k].art ? `<img src="${esc(SLIDES[k].art)}" class="hero-char ${SLIDES[k].artClass}" alt="" />` : '');
 
       /* =====================================================
          Data
          ===================================================== */
-      const SLIDES = window.__TITAN_DATA.slides || [
-        { title: 'Valorant', desc: 'Titan Cup — the 5v5 tactical shooter tournament. Squad up, climb the bracket and fight for the $5,000 prize pool.', reviews: '+53 Reviews', watch: 1284, eta: 2 * 3600 + 14 * 60 + 33, plats: ['steam', 'epic'], faces: [11, 12, 13] },
-        { title: 'Rocket League', desc: 'Titan سری راکت — 3v3 aerial chaos. Weekly qualifiers are open and the top 8 teams reach the live finals.', reviews: '+38 Reviews', watch: 842, eta: 5 * 3600 + 41 * 60 + 8, plats: ['steam', 'epic'], faces: [21, 22, 23] },
-        { title: 'Counter-Strike 2', desc: 'Titan Major Qualifier — the classic bomb-defusal showdown. Register your five and lock in your map picks.', reviews: '+71 Reviews', watch: 2310, eta: 26 * 60 + 52, plats: ['steam'], faces: [31, 32, 33] }
-      ];
+      const SLIDES = window.__TITAN_DATA.slides;
 
 
 
-      const GAMES = window.__TITAN_DATA.games || [
-        { t: 'Uncharted 4', d: "The last chapter of Nathan Drake's story: a cinematic treasure hunt across the globe.", p: '$29.99', theme: 'noir' },
-        { t: 'Dishonored : Standard Edition', d: 'Stealth, supernatural powers and a city on the brink. Play it your way.', p: '$19.99', theme: 'flame', crest: true },
-        { t: 'Elden Ring', d: "Explore a vast open world and take on the Lands Between's toughest bosses.", p: '$39.99', theme: 'mist' },
-        { t: 'Titan Pro Headset', d: '7.1 surround sound and a detachable mic, built for long ranked nights.', p: '$89.00', theme: 'neon', fig: 'headset', kind: 'Gear' },
-        { t: 'God of War Ragnarök', d: 'Kratos and Atreus face the end of the world in a Norse epic.', p: '$44.99', theme: 'ice' },
-        { t: 'Titan K1 Keyboard', d: 'Hot-swappable switches and per-key RGB for a board that feels like yours.', p: '$109.00', theme: 'ember', fig: 'keyboard', kind: 'Gear' }
-      ];
+      const GAMES = window.__TITAN_DATA.games;
 
       const THEME = {
         noir: { a: '#120c14', b: '#3a2a30', glow: '#c98d92', fig: '#08050a' },
@@ -135,9 +144,9 @@ export default function TitanPage() {
       };
 
       const HRS = [
-        { k: 'games', name: 'تعداد بازی‌ها', v: 345, c: '#7458d6', fg: '#fff', bpm: 110 },
-        { k: 'wins', name: 'تعداد بردها', v: 240, c: '#fff1b8', fg: '#2b1013', bpm: 128 },
-        { k: 'losses', name: 'تعداد باخت‌ها', v: 105, c: '#d9443f', fg: '#fff', bpm: 92 }
+        { k: 'games', name: 'تعداد بازی‌ها', v: window.__TITAN_DATA.stats?.matches ?? 0, c: '#7458d6', fg: '#fff', bpm: 110 },
+        { k: 'wins', name: 'تعداد بردها', v: window.__TITAN_DATA.stats?.wins ?? 0, c: '#fff1b8', fg: '#2b1013', bpm: 128 },
+        { k: 'losses', name: 'تعداد باخت‌ها', v: window.__TITAN_DATA.stats?.losses ?? 0, c: '#d9443f', fg: '#fff', bpm: 92 }
       ];
       const GLYPH = {
         games: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7h9A4.5 4.5 0 0 1 21 11.5v1a4.5 4.5 0 0 1-4.5 4.5h-1.2l-1.8-2h-3l-1.8 2H7.5A4.5 4.5 0 0 1 3 12.5v-1A4.5 4.5 0 0 1 7.5 7z"/><path d="M8 10v3M6.5 11.5h3"/><circle cx="15.6" cy="10.8" r=".6"/><circle cx="17.6" cy="12.6" r=".6"/></svg>',
@@ -182,6 +191,7 @@ export default function TitanPage() {
         const s = SLIDES[cur];
         $('#heroTitle').textContent = s.title;
         $('#heroDesc').textContent = s.desc;
+        $('#heroLink').setAttribute('href', s.href);
         watchEl.textContent = fmt(s.watch);
         tickCountdown();
       }
@@ -205,12 +215,6 @@ export default function TitanPage() {
         cdEl.textContent = `${p(Math.floor(left / 3600))}:${p(Math.floor(left % 3600 / 60))}:${p(left % 60)}`;
       }
       setInterval(tickCountdown, 1000);
-      (function wobbleViewers() {
-        const s = SLIDES[cur];
-        s.watch = Math.max(100, s.watch + Math.round(rand(-9, 15)));
-        watchEl.textContent = fmt(s.watch);
-        setTimeout(wobbleViewers, rand(1800, 3200));
-      })();
 
 
 
@@ -218,19 +222,11 @@ export default function TitanPage() {
          New Games carousel
          ===================================================== */
       function cardArt(g, idx) {
-        if (g.hasCustomImages) {
-          if (g.slug === 'premium') {
-            return `
-              <img src="/images/games/premium.png" alt="${g.t}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;" />
-              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-            `;
-          }
-          const bgUrl = `/images/games/${g.slug}-background.png`;
-          const charUrl = `/images/games/${g.slug}-character.png`;
+        if (g.bg || g.char) {
           return `
-            <img src="${bgUrl}" alt="${g.t}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />
+            ${g.bg ? `<img src="${esc(g.bg)}" alt="${esc(g.t)}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-            <img src="${charUrl}" alt="${g.t}" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />
+            ${g.char ? `<img src="${esc(g.char)}" alt="${esc(g.t)}" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
           `;
         }
         const t = THEME[g.theme], id = 'c' + idx;
@@ -295,20 +291,11 @@ export default function TitanPage() {
         if (dragMoved) sc.scrollLeft = startL - dx;
       });
       addEventListener('pointerup', () => { dragging = false; sc.classList.remove('drag'); });
-      const getCategoryFromTitle = (t: string) => {
-        if (t.includes('فورتنایت') || t.includes('Fortnite') || t.includes('fortnite')) return 'فورتنایت';
-        if (t.includes('ولورنت') || t.includes('ولورانت') || t.includes('Valorant')) return 'ولورانت';
-        if (t.includes('ایپکس') || t.includes('Apex')) return 'ایپکس لجندز';
-        if (t.includes('پریمیوم') || t.includes('پرمیوم') || t.includes('Premium')) return 'پرمیوم';
-        return 'همه';
-      };
-
       sc.addEventListener('click', e => {
         if (dragMoved) { dragMoved = false; return; }
         const view = (e.target as HTMLElement).closest('[data-view]') as HTMLElement;
         if (view) {
-           const tab = getCategoryFromTitle(GAMES[parseInt(view.dataset.view!)].t);
-           window.location.href = '/store?category=' + encodeURIComponent(tab);
+           router.push('/store?game=' + encodeURIComponent(GAMES[parseInt(view.dataset.view!)].slug));
         }
       });
       $('#nextBtn').addEventListener('click', () => {
@@ -322,7 +309,8 @@ export default function TitanPage() {
          Statistic
          ===================================================== */
       const coreLabel = $('#coreLabel'), coreVal = $('#coreVal'), ghRow = $('#ghRow');
-      let total = HRS.reduce((a, h) => a + h.v, 0), coreShown = total, coreRaf = 0, hovering = -1;
+      const total = window.__TITAN_DATA.stats?.points ?? 0;
+      let coreShown = 0, coreRaf = 0, hovering = -1;
       function setCore(label, val, dur = 700) {
         coreLabel.textContent = label;
         cancelAnimationFrame(coreRaf);
@@ -361,7 +349,7 @@ export default function TitanPage() {
         { n: 6, rot: .4, spd: .055, off: 4, rs: .92, a: .93, g: [-.7, 1, .45, -.25], st: [[0, '#bdb1ff'], [.5, '#6f5ad9'], [1, 'rgba(80,60,190,0)']], rim: 'rgba(215,205,255,.40)' }
       ];
       const bands = [.2, .2, .2, .2, .2, .2];
-      let beat = 0, bpm = BASE_BPM, kickSm = 0;
+      let kickSm = 0;
 
       function sizeCanvas() {
         dpr = Math.min(2, devicePixelRatio || 1);
@@ -429,14 +417,7 @@ export default function TitanPage() {
         b.addEventListener('pointerenter', on); b.addEventListener('pointerleave', off);
         b.addEventListener('focus', on); b.addEventListener('blur', off);
       });
-      setInterval(() => {              // one more ساعت played, every few seconds
-        const i = Math.floor(Math.random() * HRS.length);
-        HRS[i].v++; total++;
-        $('#gv' + i).textContent = fmt(HRS[i].v);
-        const b = $(`.gh[data-i="${i}"]`); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
-        if (hovering === -1) setCore('مجموع امتیاز', total, 500);
-        else if (hovering === i) setCore(HRS[i].name, HRS[i].v, 500);
-      }, 9000);
+      setCore('مجموع امتیاز', total, 900);
 
       /* =====================================================
          Right rail (friends + presence)
@@ -444,11 +425,8 @@ export default function TitanPage() {
       const tip = f => `${f.n} · ${f.s === 'game' ? 'در بازی — ' + f.g : f.s === 'online' ? 'آنلاین' : 'آفلاین'}`;
 
       (function announcements() {
-        const list = [
-          { title: 'Valorant Titan Cup', text: 'ثبت‌نام تا 10 دقیقه دیگر بسته می‌شود', icon: 'trophy' },
-          { title: 'فروش ویژه', text: 'هدست تایتان پرو — 20٪ تخفیف برای یک ساعت آینده', icon: 'bag' },
-          { title: 'سری راکت', text: 'براکت دور دوم شروع شد', icon: 'trophy' }
-        ];
+        const list = window.__TITAN_DATA.announcements;
+        if (!list.length) return;
         let n = 0;
         setTimeout(function again() {
           liveToast(list[n++ % list.length]);
@@ -505,6 +483,8 @@ export default function TitanPage() {
       cleanupFuncs.forEach(fn => fn());
     };
 
+    // The scene script builds the DOM once per mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -531,7 +511,7 @@ export default function TitanPage() {
             <h2 id="heroTitle">Valorant</h2>
             <p id="heroDesc"></p>
             <div class="hero-foot">
-              <a href="#games" class="pill-white"><span>مشاهده محصولات</span></a>
+              <a href="/tournaments" id="heroLink" class="pill-white"><span>مشاهده تورنمنت</span></a>
             </div>
           </div>
 
@@ -541,7 +521,7 @@ export default function TitanPage() {
             <span class="live-dot"></span>
             <span>شروع در <b id="cd">02:14:33</b></span>
             <span class="sep"></span>
-            <span><b id="watch">1,284</b> در حال تماشا</span>
+            <span><b id="watch">0</b> در حال تماشا</span>
           </div>
 
           <div class="dashes" id="dashes"></div>
@@ -603,7 +583,7 @@ export default function TitanPage() {
             <span class="tb-badge"><i data-icon="trophy"></i> تورنمنت‌های تایتان</span>
             <h3>رقابت با بهترین‌ها</h3>
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
-            <a href="#tournaments" class="tb-btn">اطلاعات بیشتر</a>
+            <a href="/tournament" class="tb-btn">اطلاعات بیشتر</a>
           </div>
           <img src="/images/tournoment-banner.png" alt="" class="tb-img" />
           <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none">
@@ -613,11 +593,11 @@ export default function TitanPage() {
         </article>
 
         <div class="stat-wrap col reveal" style="--d:4">
-          <div class="sec-h"><h3>امتیاز شما</h3><a class="arrow" href="#stats" aria-label="باز کردن آمار"><i data-icon="arrow"></i></a></div>
+          <div class="sec-h"><h3>امتیاز شما</h3><a class="arrow" href="/tournament" aria-label="باز کردن آمار"><i data-icon="arrow"></i></a></div>
           <article class="stat spot reveal" style="--d:5">
             <div class="blob" id="blob">
               <canvas id="blobCanvas" aria-hidden="true"></canvas>
-              <div class="core"><small id="coreLabel">مجموع امتیاز</small><strong id="coreVal">4,752</strong></div>
+              <div class="core"><small id="coreLabel">مجموع امتیاز</small><strong id="coreVal">0</strong></div>
             </div>
             <div class="gh-row" id="ghRow"></div>
           </article>

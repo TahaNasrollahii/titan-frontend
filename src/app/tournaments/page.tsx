@@ -1,84 +1,185 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { Icon } from '@/components/Icons';
+import { TournamentCard } from '@/components/TournamentCard';
+import { ErrorState, Loading } from '@/components/ui/State';
+import { errorMessage } from '@/lib/api/client';
+import { catalogApi, tournamentsApi } from '@/lib/api/endpoints';
+import type { TournamentStatus, TournamentSummary } from '@/lib/api/types';
+import { useApi } from '@/lib/hooks/useApi';
+import { useSpotlight } from '@/lib/hooks/useSpotlight';
+
 import '../tournament/tournament.css';
 import './list.css';
-import { Icon } from '@/components/Icons';
 
-// Dummy data for tournaments
-const ALL_TOURNAMENTS = [
-  { id: 1, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۵۰,۰۰۰,۰۰۰ تومان', team1: 'Shadow Wolves', tag1: 'مدافع عنوان', team2: 'Crimson Fangs', tag2: 'صعود گروهی', time: 'امروز · ۲۱:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000, prizeNum: 50000000, isSolo: false },
-  { id: 2, game: 'Apex Legends', image: '/images/games/apexlegends-background.png', prize: '۳۰,۰۰۰,۰۰۰ تومان', team1: 'Night Phantoms', tag1: 'رتبه ۳', team2: 'Iron Falcons', tag2: 'تازه‌وارد', time: 'پنجشنبه · ۱۹:۳۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 3, prizeNum: 30000000, isSolo: true },
-  { id: 3, game: 'Fortnite', image: '/images/games/fortnite-background.png', prize: '۲۰,۰۰۰,۰۰۰ تومان', team1: 'Neon Riders', tag1: 'قهرمان فصل قبل', team2: 'Dark Eagles', tag2: 'رتبه ۵', time: 'جمعه · ۱۸:۰۰', status: 'تکمیل ظرفیت', dateMs: Date.now() + 86400000 * 4, prizeNum: 20000000, isSolo: false },
-  { id: 4, game: 'CS 2', image: '/images/games/cs-background.png', prize: '۱۰۰,۰۰۰,۰۰۰ تومان', team1: 'TBA', tag1: 'آزاد', team2: 'TBA', tag2: 'آزاد', time: 'هفته آینده', status: 'به‌زودی', dateMs: Date.now() + 86400000 * 7, prizeNum: 100000000, isSolo: false },
-  { id: 5, game: 'Dota 2', image: '/images/games/dota-background.png', prize: '۸۰,۰۰۰,۰۰۰ تومان', team1: 'Dire Force', tag1: 'سطح ۱', team2: 'Radiant Glow', tag2: 'سطح ۲', time: 'دوشنبه · ۱۶:۰۰', status: 'در جریان', dateMs: Date.now() - 86400000, prizeNum: 80000000, isSolo: false },
-  { id: 6, game: 'Valorant', image: '/images/games/valorant-background.png', prize: '۱۰,۰۰۰,۰۰۰ تومان', team1: 'Aim Bots', tag1: 'تازه‌وارد', team2: 'Wall Hackers', tag2: 'آماتور', time: 'فردا · ۱۰:۰۰', status: 'ثبت‌نام باز', dateMs: Date.now() + 86400000 * 1, prizeNum: 10000000, isSolo: false },
+const PAGE_SIZE = 12;
+
+const STATUS_OPTIONS: { value: string; label: string }[] = [
+  { value: '', label: 'همه وضعیت‌ها' },
+  { value: 'registration_open', label: 'ثبت‌نام باز' },
+  { value: 'live', label: 'در جریان' },
+  { value: 'upcoming', label: 'به‌زودی' },
+  { value: 'completed', label: 'پایان یافته' },
+  { value: 'full', label: 'تکمیل ظرفیت' },
 ];
 
-const gameOptions = [
-  { value: 'All', label: 'همه بازی‌ها' },
-  { value: 'Valorant', label: 'Valorant' },
-  { value: 'Apex Legends', label: 'Apex Legends' },
-  { value: 'Fortnite', label: 'Fortnite' },
-  { value: 'CS 2', label: 'CS 2' },
-  { value: 'Dota 2', label: 'Dota 2' }
+const SORT_OPTIONS = [
+  { value: 'starts_at', label: 'نزدیک‌ترین زمان' },
+  { value: '-prize_pool', label: 'بیشترین جایزه' },
+  { value: '-starts_at', label: 'جدیدترین' },
 ];
 
-const statusOptions = [
-  { value: 'All', label: 'همه وضعیت‌ها' },
-  { value: 'ثبت‌نام باز', label: 'ثبت‌نام باز' },
-  { value: 'در جریان', label: 'در جریان' },
-  { value: 'به‌زودی', label: 'به‌زودی' },
-  { value: 'تکمیل ظرفیت', label: 'تکمیل ظرفیت' }
-];
-
-const sortOptions = [
-  { value: 'Soonest', label: 'نزدیک‌ترین زمان' },
-  { value: 'Prize High-Low', label: 'بیشترین جایزه' }
-];
-
-const Dropdown = ({ value, options, onChange }: { value: string, options: {label: string, value: string}[], onChange: (val: string) => void }) => {
+function Dropdown({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: { label: string; value: string }[];
+  onChange: (val: string) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const selectedLabel = options.find(o => o.value === value)?.label || value;
+  const selectedLabel = options.find(o => o.value === value)?.label ?? value;
 
   return (
     <div className={`custom-dropdown ${open ? 'open' : ''}`} onMouseLeave={() => setOpen(false)}>
       <div className="cd-trigger" onClick={() => setOpen(!open)}>
         <span>{selectedLabel}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
       </div>
       <div className="cd-menu">
-        {options.map(o => (
-          <div key={o.value} className={`cd-item ${value === o.value ? 'active' : ''}`} onClick={() => { onChange(o.value); setOpen(false); }}>
-            {o.label}
+        {options.map(option => (
+          <div
+            key={option.value}
+            className={`cd-item ${value === option.value ? 'active' : ''}`}
+            onClick={() => {
+              onChange(option.value);
+              setOpen(false);
+            }}
+          >
+            {option.label}
           </div>
         ))}
       </div>
     </div>
   );
-};
+}
+
+interface TournamentFilters {
+  game: string;
+  status: string;
+  ordering: string;
+  search: string;
+}
+
+/** Paginated tournament cards. Keyed by its filters, so changing them starts again from page 1. */
+function TournamentResults({ filters }: { filters: TournamentFilters }) {
+  const [items, setItems] = useState<TournamentSummary[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPage = useCallback(
+    (pageNumber: number, isActive: () => boolean = () => true) => {
+      // "Full" is a flag, not a status: it means open registration with no seats left.
+      const status = (filters.status === 'full' ? 'registration_open' : filters.status) as TournamentStatus | '';
+      return tournamentsApi
+        .list({
+          game: filters.game || undefined,
+          status: status || undefined,
+          search: filters.search || undefined,
+          ordering: filters.ordering,
+          page: pageNumber,
+          page_size: PAGE_SIZE,
+        })
+        .then(result => {
+          if (!isActive()) return;
+          const results = filters.status === 'full' ? result.results.filter(t => t.isFull) : result.results;
+          setItems(current => (pageNumber === 1 ? results : [...current, ...results]));
+          setPage(pageNumber);
+          setHasMore(Boolean(result.next));
+          setError(null);
+        })
+        .catch(err => isActive() && setError(errorMessage(err)))
+        .finally(() => isActive() && setLoading(false));
+    },
+    [filters],
+  );
+
+  useEffect(() => {
+    let active = true;
+    void fetchPage(1, () => active);
+    return () => {
+      active = false;
+    };
+  }, [fetchPage]);
+
+  useSpotlight('.spot-track', [items]);
+
+  const loadMore = () => {
+    setLoading(true);
+    void fetchPage(page + 1);
+  };
+
+  if (error && !items.length) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={() => {
+          setLoading(true);
+          void fetchPage(1);
+        }}
+      />
+    );
+  }
+
+  return (
+    <>
+      <div className="tour-matches reveal" style={{ '--d': 3, marginTop: '24px' } as React.CSSProperties}>
+        {items.map((tournament, i) => (
+          <TournamentCard key={tournament.id} tournament={tournament} index={i % PAGE_SIZE} />
+        ))}
+        {!loading && items.length === 0 && (
+          <div className="empty-state">
+            <Icon name="search" />
+            <p>هیچ تورنومنتی با این مشخصات یافت نشد!</p>
+          </div>
+        )}
+      </div>
+
+      {loading && <Loading />}
+      {!loading && hasMore && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+          <button className="mc-btn-full" style={{ maxWidth: 260 }} onClick={loadMore}>
+            بارگذاری بیشتر
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function TournamentsListPage() {
-  const [filterGame, setFilterGame] = useState('All');
-  const [filterStatus, setFilterStatus] = useState('All');
-  const [sortMethod, setSortMethod] = useState('Soonest');
-  const [searchQuery, setSearchQuery] = useState('');
+  const games = useApi(() => catalogApi.games());
+  const [game, setGame] = useState('');
+  const [status, setStatus] = useState('');
+  const [ordering, setOrdering] = useState('starts_at');
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  const filteredTournaments = ALL_TOURNAMENTS.filter(t => {
-    if (filterGame !== 'All' && t.game !== filterGame) return false;
-    if (filterStatus !== 'All' && t.status !== filterStatus) return false;
-    if (searchQuery.trim() !== '') {
-      const q = searchQuery.toLowerCase();
-      if (!t.team1.toLowerCase().includes(q) && !t.team2.toLowerCase().includes(q) && !t.game.toLowerCase().includes(q)) {
-        return false;
-      }
-    }
-    return true;
-  }).sort((a, b) => {
-    if (sortMethod === 'Soonest') return a.dateMs - b.dateMs;
-    if (sortMethod === 'Prize High-Low') return b.prizeNum - a.prizeNum;
-    return 0; // Default
-  });
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
+  const gameOptions = [{ value: '', label: 'همه بازی‌ها' }].concat(
+    (games.data ?? []).filter(g => g.kind === 'game').map(g => ({ value: g.slug, label: g.titleEn })),
+  );
 
   return (
     <main className="tour-wrapper">
@@ -88,91 +189,32 @@ export default function TournamentsListPage() {
         <div className="l-blob blob-3"></div>
       </div>
 
-      <div className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as any}>
+      <div className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as React.CSSProperties}>
         <h3>لیست مسابقات</h3>
       </div>
 
-      {/* Filter and Sort Bar */}
-      <div className="filter-bar-wrapper spot reveal" style={{ '--d': 2 } as any}>
+      <div className="filter-bar-wrapper spot reveal" style={{ '--d': 2 } as React.CSSProperties}>
         <div className="filter-search">
           <Icon name="search" />
-          <input 
-            type="text" 
-            placeholder="جستجوی تیم، بازی یا تورنومنت..." 
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+          <input
+            type="text"
+            placeholder="جستجوی تورنومنت یا بازی..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
         </div>
-        
+
         <div className="filter-dropdowns">
-          <Dropdown value={filterGame} options={gameOptions} onChange={setFilterGame} />
-          <Dropdown value={filterStatus} options={statusOptions} onChange={setFilterStatus} />
-          <Dropdown value={sortMethod} options={sortOptions} onChange={setSortMethod} />
+          <Dropdown value={game} options={gameOptions} onChange={setGame} />
+          <Dropdown value={status} options={STATUS_OPTIONS} onChange={setStatus} />
+          <Dropdown value={ordering} options={SORT_OPTIONS} onChange={setOrdering} />
         </div>
       </div>
 
-      <div className="tour-matches reveal" style={{ '--d': 3, marginTop: '24px' } as any}>
-        {filteredTournaments.length > 0 ? (
-          filteredTournaments.map((m, i) => (
-            <article key={m.id} className="match-card-premium spot spot-track reveal" style={{ '--d': 4 + i } as any}>
-              <div className="mc-hero" style={{ backgroundImage: `url(${m.image})` }}>
-                <div className="mc-hero-overlay"></div>
-                
-                <div className="mc-status-bar">
-                  <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-                    <span className="mc-game">{m.game}</span>
-                    <span className="mc-type"><Icon name={m.isSolo ? "user" : "users"} /> {m.isSolo ? 'تک نفره' : 'تیمی'}</span>
-                  </div>
-                  <div className={`mc-status ${m.status === 'ثبت‌نام باز' ? 'open' : ''}`}>
-                    <span className="mc-status-dot"></span> {m.status}
-                  </div>
-                </div>
-
-                <div className="mc-teams">
-                  <div className="mc-team-side">
-                    <div className="mc-crest">{m.team1.substring(0, 2).toUpperCase()}</div>
-                    <h4>{m.team1}</h4>
-                    <span>{m.tag1}</span>
-                  </div>
-                  
-                  <div className="mc-vs-badge">VS</div>
-                  
-                  <div className="mc-team-side">
-                    <div className="mc-crest crest-alt">{m.team2.substring(0, 2).toUpperCase()}</div>
-                    <h4>{m.team2}</h4>
-                    <span>{m.tag2}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mc-content">
-                <div className="mc-info-row">
-                  <div className="mc-info-item">
-                    <div className="mc-info-icon"><Icon name="clock" /></div>
-                    <div className="mc-info-text">
-                      <span className="mc-lbl">زمان شروع</span>
-                      <strong className="mc-val">{m.time}</strong>
-                    </div>
-                  </div>
-                  <div className="mc-info-item">
-                    <div className="mc-info-icon prize"><Icon name="trophy" /></div>
-                    <div className="mc-info-text">
-                      <span className="mc-lbl">جایزه مسابقه</span>
-                      <strong className="mc-val text-cream">{m.prize}</strong>
-                    </div>
-                  </div>
-                </div>
-                <a href={`/tournaments/${m.id}`} className="mc-btn-full" style={{textDecoration: 'none'}}>ثبت‌نام و مشاهده جزئیات <Icon name="arrow" /></a>
-              </div>
-            </article>
-          ))
-        ) : (
-          <div className="empty-state">
-            <Icon name="search" />
-            <p>هیچ تورنومنتی با این مشخصات یافت نشد!</p>
-          </div>
-        )}
-      </div>
+      <TournamentResults
+        key={`${game}|${status}|${ordering}|${debouncedSearch}`}
+        filters={{ game, status, ordering, search: debouncedSearch }}
+      />
     </main>
   );
 }

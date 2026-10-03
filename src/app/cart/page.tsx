@@ -1,24 +1,30 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
+
 import { Icon } from '@/components/Icons';
+import { Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { faNumber, toman } from '@/lib/format';
+
 import './cart.css';
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart } = useAppContext();
+  const { cart, cartLoading, updateQuantity, removeFromCart } = useAppContext();
+  const { isAuthenticated } = useAuth();
 
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  if (cartLoading && cart.lines.length === 0) return <Loading />;
 
   return (
     <div className="cart-page reveal" style={{ '--d': 1 } as React.CSSProperties}>
       <div className="cart-header">
         <h1>سبد خرید شما</h1>
-        <p>{cartItems.length} محصول در سبد خرید</p>
+        <p>{faNumber(cart.count)} محصول در سبد خرید</p>
       </div>
 
-      {cartItems.length === 0 ? (
+      {cart.lines.length === 0 ? (
         <div className="cart-empty">
           <div className="cart-empty-icon">
             <Icon name="cart" />
@@ -32,26 +38,27 @@ export default function CartPage() {
       ) : (
         <div className="cart-content">
           <div className="cart-items">
-            {cartItems.map((item, index) => (
-              <div key={item.id} className="cart-item reveal" style={{ '--d': index + 2 } as React.CSSProperties}>
-                <div className="cart-item-img">
-                  <img src={item.image} alt={item.title} />
-                </div>
+            {cart.lines.map((line, index) => (
+              <div key={line.key} className="cart-item reveal" style={{ '--d': index + 2 } as React.CSSProperties}>
+                <Link href={`/product/${line.productSlug}`} className="cart-item-img">
+                  {line.image ? <img src={line.image} alt={line.title} /> : <Icon name="gift" />}
+                </Link>
                 <div className="cart-item-info">
-                  <h3>{item.title}</h3>
-                  <span className="cart-item-price">{item.price.toLocaleString('fa-IR')} تومان</span>
+                  <h3>{line.title}</h3>
+                  {line.variantLabel && <span className="cart-item-variant">{line.variantLabel}</span>}
+                  <span className="cart-item-price">{toman(line.unitPrice)}</span>
                 </div>
                 <div className="cart-item-actions">
                   <div className="cart-qty">
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                    <button onClick={() => updateQuantity(line.key, line.quantity + 1)} aria-label="افزایش">
                       <Icon name="plus" />
                     </button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                    <span>{faNumber(line.quantity)}</span>
+                    <button onClick={() => updateQuantity(line.key, line.quantity - 1)} aria-label="کاهش">
                       <Icon name="minus" />
                     </button>
                   </div>
-                  <button className="cart-item-remove" onClick={() => removeFromCart(item.id)}>
+                  <button className="cart-item-remove" onClick={() => removeFromCart(line.key)} aria-label="حذف">
                     <Icon name="trash" />
                   </button>
                 </div>
@@ -59,26 +66,29 @@ export default function CartPage() {
             ))}
           </div>
 
-          <div className="cart-sidebar reveal" style={{ '--d': cartItems.length + 2 } as React.CSSProperties}>
+          <div className="cart-sidebar reveal" style={{ '--d': cart.lines.length + 2 } as React.CSSProperties}>
             <div className="cart-summary">
               <h3>خلاصه سفارش</h3>
               <div className="summary-row">
                 <span>جمع کل:</span>
-                <span>{totalPrice.toLocaleString('fa-IR')} تومان</span>
+                <span>{toman(cart.subtotal)}</span>
               </div>
               <div className="summary-row">
                 <span>تخفیف:</span>
-                <span className="discount">۰ تومان</span>
+                <span className="discount">{toman(cart.discount)}</span>
               </div>
               <div className="summary-divider"></div>
               <div className="summary-row total">
                 <span>مبلغ قابل پرداخت:</span>
                 <span className="total-val">
-                  {totalPrice.toLocaleString('fa-IR')} <small>تومان</small>
+                  {faNumber(cart.total)} <small>تومان</small>
                 </span>
               </div>
-              <Link href="/checkout" className="cart-btn primary block">
-                تکمیل سفارش
+              <Link
+                href={isAuthenticated ? '/checkout' : '/login?next=/checkout'}
+                className="cart-btn primary block"
+              >
+                {isAuthenticated ? 'تکمیل سفارش' : 'ورود و تکمیل سفارش'}
               </Link>
               <Link href="/store" className="cart-btn secondary block mt-2">
                 ادامه خرید

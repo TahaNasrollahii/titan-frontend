@@ -1,458 +1,598 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import './store.css';
-import { Icon, Avatar } from '@/components/Icons';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { Icon } from '@/components/Icons';
+import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { errorMessage } from '@/lib/api/client';
+import { catalogApi, contentApi } from '@/lib/api/endpoints';
+import type { Paginated, ProductSummary, Promo } from '@/lib/api/types';
+import { countdown, faNumber, PRODUCT_BADGE_LABELS, productPrice, toman, toEnglishDigits } from '@/lib/format';
+import { useApi } from '@/lib/hooks/useApi';
 
-// Data
-const DISCOUNT_PROMOS = [
-  {
-    title: 'باندل ویژه Valorant',
-    subtitle: 'پکیج کامل اسکین‌های پرایم',
-    price: '۲,۱۰۰,۰۰۰',
-    oldPrice: '۳,۵۰۰,۰۰۰',
-    discount: '۴۰٪',
-    img: '/images/games/valorant-character.png',
-    scale: 1.15,
-    y: 0,
-  },
-  {
-    title: 'Elden Crown',
-    subtitle: 'نسخه دلوکس',
-    price: '۲,۹۵۰,۰۰۰',
-    oldPrice: '۳,۴۵۰,۰۰۰',
-    discount: '۱۵٪',
-    img: '/images/banner-hero.png',
-    scale: 1.1,
-    y: 0,
-  }
+import './store.css';
+
+const PRICE_LIMIT = 10_000_000;
+const PAGE_SIZE = 12;
+const PREMIUM_SLUG = 'premium';
+
+const SORTS: { label: string; ordering: string }[] = [
+  { label: 'محبوبیت', ordering: '-popularity' },
+  { label: 'قیمت: کم به زیاد', ordering: 'price' },
+  { label: 'قیمت: زیاد به کم', ordering: '-price' },
+  { label: 'جدیدترین', ordering: '-created_at' },
 ];
 
-const BESTSELLER_PROMOS = [
-  {
-    title: 'باندل ویژه Apex',
-    subtitle: 'شامل اسکین اپیک و ۱۰۰۰ کوین',
-    price: '۲,۹۵۰,۰۰۰',
-    img: '/images/games/apexlegends-character.png',
-    bgImg: 'url(/images/games/apexlegends-background.png)',
-    bgGrad: 'linear-gradient(135deg, rgba(30, 15, 35, 0.85) 0%, rgba(15, 5, 20, 0.98) 100%)',
-    scale: 1.05,
-    y: 0,
-    x: -15
-  },
-  {
-    title: 'باندل ویژه Fortnite',
-    subtitle: 'اسکین لجندری + ۲۰۰۰ وی‌باکس',
-    price: '۴,۵۰۰,۰۰۰',
-    img: '/images/games/fortnite-character.png',
-    bgImg: 'url(/images/games/fortnite-background.png)',
-    bgGrad: 'linear-gradient(135deg, rgba(20, 30, 80, 0.85) 0%, rgba(5, 10, 30, 0.98) 100%)',
-    scale: 1.1,
-    y: 0,
-    x: 0
-  }
-];
+/** Seconds left until ``iso``, ticking every second. */
+function useSecondsUntil(iso: string | null | undefined) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!iso) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [iso]);
+  return iso ? Math.max(0, (new Date(iso).getTime() - now) / 1000) : 0;
+}
 
-const TABS = ['همه', 'فورتنایت', 'ولورانت', 'ایپکس لجندز', 'پرمیوم'];
+/** Auto-rotating index that pauses while hovered. */
+function useRotation(length: number, intervalMs: number) {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused || length < 2) return;
+    const timer = window.setInterval(() => setIndex(i => (i + 1) % length), intervalMs);
+    return () => window.clearInterval(timer);
+  }, [paused, length, intervalMs]);
+  return { index: length ? index % length : 0, setIndex, setPaused };
+}
 
-const PRODUCTS = [
-  { id: '1', title: 'Elden Crown', subtitle: 'نسخه دلوکس', price: 2950000, originalPrice: 3450000, badges: ['پرفروش'], rating: 4.9, image: '/images/products/p-game-1.jpg', type: 'پرمیوم', platform: 'پی‌سی', genre: 'نقش‌آفرینی', popularity: 100 },
-  { id: '2', title: 'Red Frontier', subtitle: 'بسته پرمیوم', price: 2500000, originalPrice: 4000000, badges: ['تخفیف'], rating: 4.6, image: '/images/products/p-game-3.jpg', type: 'پرمیوم', platform: 'پلی‌استیشن', genre: 'ماجراجویی', popularity: 95 },
-  { id: '3', title: 'هدست تایتان پرو', subtitle: '۷.۱ فراگیر · بی‌سیم', price: 7450000, originalPrice: 9000000, badges: ['تخفیف', 'پرفروش'], rating: 4.7, image: '/images/products/p-headset.jpg', type: 'ایپکس لجندز', platform: 'پی‌سی', genre: '', popularity: 90 },
-  { id: '4', title: 'کیبورد تایتان K60', subtitle: '۶۰٪ · هات‌سواپ · RGB', price: 5950000, originalPrice: undefined, badges: [], rating: 4.8, image: '/images/products/p-keyboard.jpg', type: 'ولورانت', platform: 'پی‌سی', genre: '', popularity: 88 },
-  { id: '5', title: 'موس تایتان M40', subtitle: '۱۶۰۰۰ DPI · بی‌سیم', price: 3450000, originalPrice: undefined, badges: ['جدید'], rating: 4.5, image: '/images/products/p-mouse.jpg', type: 'فورتنایت', platform: 'پی‌سی', genre: '', popularity: 80 },
-  { id: '6', title: 'گیفت کارت تایتان', subtitle: '۵۰ دلار اعتبار', price: 2500000, originalPrice: undefined, badges: [], rating: 5.0, image: '/images/products/p-controller.jpg', type: 'پرمیوم', platform: '', genre: '', popularity: 110 },
-];
+function promoHref(promo: Promo) {
+  if (promo.product) return `/product/${promo.product}`;
+  if (promo.tournament) return `/tournaments/${promo.tournament}`;
+  return promo.link || '/store';
+}
 
-function StorePageContent() {
-  const { addToCart } = useAppContext();
-  const searchParams = useSearchParams();
-  const cat = searchParams.get('category');
+function DiscountPromos({ promos }: { promos: Promo[] }) {
+  const { index, setIndex, setPaused } = useRotation(promos.length, 6000);
+  const secondsLeft = useSecondsUntil(promos[index]?.endsAt);
+  if (!promos.length) return null;
 
-  const [activeTab, setActiveTab] = useState(cat && TABS.includes(cat) ? cat : 'همه');
-  const [tabIndStyle, setTabIndStyle] = useState({});
-  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  return (
+    <article
+      className="store-promo main-promo spot"
+      onPointerEnter={() => setPaused(true)}
+      onPointerLeave={() => setPaused(false)}
+    >
+      <div className="sp-bg discount-bg"></div>
+      {promos[index].backgroundImage && (
+        <img src={promos[index].backgroundImage!} alt="" className="sp-discount-overlay" />
+      )}
+      {promos.map((promo, i) => (
+        <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
+          <div className="sp-content">
+            <div className="sp-badges">
+              <span className="sp-badge live-red">
+                <Icon name="flame" /> <span className="live-badge-text">{promo.badge || 'پیشنهاد ویژه'}</span>
+              </span>
+              {promo.endsAt && (
+                <span className="sp-badge dark">
+                  <Icon name="clock" /> پایان در {countdown(secondsLeft)}
+                </span>
+              )}
+              {promo.discountLabel && (
+                <span className="sp-badge" style={{ background: '#ffeb3b', color: '#000' }}>
+                  {promo.discountLabel} تخفیف
+                </span>
+              )}
+            </div>
+            <h2>{promo.title}</h2>
+            <p>{promo.subtitle}</p>
+            <div className="sp-foot">
+              <Link href={promoHref(promo)} className="sp-btn" style={{ textDecoration: 'none' }}>
+                مشاهده محصول
+              </Link>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginRight: '16px' }}>
+                {promo.originalPrice && <span className="sp-strike">{toman(promo.originalPrice)}</span>}
+                {promo.price && <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{toman(promo.price)}</span>}
+              </div>
+            </div>
+          </div>
+          {promo.image && (
+            <div className="sp-art-wrap">
+              <img
+                src={promo.image}
+                alt=""
+                className="sp-art discount-art"
+                style={{
+                  transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px)) scale(${promo.layout.scale ?? 1}) translateY(${promo.layout.y ?? 0}px)`,
+                }}
+              />
+            </div>
+          )}
+        </div>
+      ))}
+      <div className="sp-dots">
+        {promos.map((promo, i) => (
+          <button key={promo.id} className={`sp-dot ${index === i ? 'active' : ''}`} onClick={() => setIndex(i)}>
+            <span>
+              <i></i>
+            </span>
+          </button>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function BestsellerPromos({ promos }: { promos: Promo[] }) {
+  const { index, setIndex, setPaused } = useRotation(promos.length, 5000);
+  if (!promos.length) return null;
+
+  return (
+    <article
+      className="store-promo side-promo spot"
+      onPointerEnter={() => setPaused(true)}
+      onPointerLeave={() => setPaused(false)}
+    >
+      {promos.map((promo, i) => (
+        <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
+          <div
+            className="sp-bg side-bg"
+            style={{
+              backgroundImage: [promo.backgroundGradient, promo.backgroundImage && `url(${promo.backgroundImage})`]
+                .filter(Boolean)
+                .join(', '),
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          ></div>
+          <div className="sp-content side-content">
+            <div className="sp-badges">
+              <span className="sp-badge cream">
+                <Icon name="trophy" /> {promo.badge || 'پرفروش‌ها'}
+              </span>
+            </div>
+            <h3>{promo.title}</h3>
+            <p className="side-subtitle">{promo.subtitle}</p>
+            <div className="sp-foot">
+              <Link
+                href={promoHref(promo)}
+                className="sp-btn"
+                style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                مشاهده محصول
+              </Link>
+              {promo.price && (
+                <div style={{ marginRight: '4px', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{toman(promo.price)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          {promo.image && (
+            <div className="sp-art-wrap side-art-wrap">
+              <img
+                src={promo.image}
+                alt=""
+                className="sp-art"
+                style={{
+                  transform: `translate(calc(var(--px) * 10px + ${promo.layout.x ?? 0}px), calc(var(--py) * 10px + ${promo.layout.y ?? 0}px)) scale(${promo.layout.scale ?? 1})`,
+                }}
+              />
+            </div>
+          )}
+        </div>
+      ))}
+      <div className="sp-dots">
+        {promos.map((promo, i) => (
+          <button key={promo.id} className={`sp-dot ${index === i ? 'active' : ''}`} onClick={() => setIndex(i)}>
+            <span>
+              <i></i>
+            </span>
+          </button>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function ProductCard({
+  product,
+  index,
+  onToggleWishlist,
+}: {
+  product: ProductSummary;
+  index: number;
+  onToggleWishlist: (product: ProductSummary) => void;
+}) {
+  return (
+    <article className="sg-card spot reveal" style={{ '--d': index + 3 } as React.CSSProperties}>
+      {product.image ? (
+        <div className="sg-art">
+          <img src={product.image} alt={product.title} />
+        </div>
+      ) : (
+        <div className="sg-art gift">
+          <div className="sg-gift-icon">
+            <Icon name="gift" />
+          </div>
+        </div>
+      )}
+
+      <div className="sg-badges-top">
+        <div className="sg-b-left">
+          {product.badges.map(badge => (
+            <span
+              key={badge}
+              className={`sg-badge ${badge === 'bestseller' ? 'cream' : badge === 'discount' ? 'red' : 'dark'}`}
+            >
+              {badge === 'discount' && <Icon name="flame" />}
+              {badge === 'bestseller' && <Icon name="trophy" />}
+              {PRODUCT_BADGE_LABELS[badge]}
+            </span>
+          ))}
+          {product.reviewCount > 0 && (
+            <span className="sg-badge dark star">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>{' '}
+              {faNumber(product.rating)}
+            </span>
+          )}
+          {!product.inStock && <span className="sg-badge dark">ناموجود</span>}
+        </div>
+      </div>
+
+      <div className="sg-body">
+        <span className="sg-sub">{product.subtitle || product.game?.title || product.category.name}</span>
+        <h4>{product.title}</h4>
+        <div className="sg-price-row">
+          <span className="sg-price">{productPrice(product)}</span>
+          {product.originalPrice && !product.hasVariants && (
+            <span className="sg-old-price">{faNumber(product.originalPrice)}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="sg-actions">
+        <Link
+          href={`/product/${product.slug}`}
+          className="sg-view-btn"
+          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {product.hasVariants ? 'انتخاب گزینه' : 'مشاهده محصول'}
+        </Link>
+        <button
+          className={`sg-heart ${product.isWishlisted ? 'active' : ''}`}
+          aria-label="علاقه‌مندی"
+          onClick={() => onToggleWishlist(product)}
+        >
+          <Icon name="heart" />
+        </button>
+      </div>
+    </article>
+  );
+}
+
+interface ProductQueryState {
+  game?: string;
+  price_max?: number;
+  ordering: string;
+}
+
+/** Paginated product grid. Keyed by its query, so a filter change starts again from page 1. */
+function ProductResults({ query }: { query: ProductQueryState }) {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const { addToast } = useAppContext();
+  const [pages, setPages] = useState<Paginated<ProductSummary>[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPage = useCallback(
+    (page: number, isActive: () => boolean = () => true) =>
+      catalogApi
+        .products({ ...query, page, page_size: PAGE_SIZE })
+        .then(result => {
+          if (!isActive()) return;
+          setPages(current => (page === 1 ? [result] : [...current, result]));
+          setError(null);
+        })
+        .catch(err => isActive() && setError(errorMessage(err)))
+        .finally(() => isActive() && setLoading(false)),
+    [query],
+  );
 
   useEffect(() => {
-    if (cat && TABS.includes(cat)) {
-      setActiveTab(cat);
-    }
-  }, [cat]);
-
-  const [priceMax, setPriceMax] = useState(10000000);
-  const [priceOpen, setPriceOpen] = useState(false);
-
-  const [sortOpen, setSortOpen] = useState(false);
-  const [sortBy, setSortBy] = useState('محبوبیت');
-
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
-
-
-  // Tab indicator effect
-  useEffect(() => {
-    const el = tabRefs.current[activeTab];
-    if (el) {
-      setTabIndStyle({
-        transform: `translateX(${el.offsetLeft}px)`,
-        width: `${el.offsetWidth}px`
-      });
-    }
-  }, [activeTab]);
-
-
-  const toggleWishlist = (id: string) => {
-    setWishlist(w => ({ ...w, [id]: !w[id] }));
-  };
-
-  // Promo Carousel
-  const [mainPromoIdx, setMainPromoIdx] = useState(0);
-  const [mainPromoHover, setMainPromoHover] = useState(false);
-  useEffect(() => {
-    if (mainPromoHover) return;
-    const t = setInterval(() => {
-      setMainPromoIdx(i => (i + 1) % 2);
-    }, 6000);
-    return () => clearInterval(t);
-  }, [mainPromoHover]);
-
-  const [promoIdx, setPromoIdx] = useState(0);
-  const [promoHover, setPromoHover] = useState(false);
-  useEffect(() => {
-    if (promoHover) return;
-    const t = setInterval(() => {
-      setPromoIdx(i => (i + 1) % 2);
-    }, 5000);
-    return () => clearInterval(t);
-  }, [promoHover]);
-
-  const [timeLeft, setTimeLeft] = useState(2 * 3600 + 12 * 60 + 58);
-  useEffect(() => {
-    const t = setInterval(() => setTimeLeft(l => Math.max(0, l - 1)), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  // Mouse tracking for parallax and spot hover effects
-  useEffect(() => {
-    const handlePointerMove = (e: Event) => {
-      const pe = e as PointerEvent;
-      const promo = pe.currentTarget as HTMLElement;
-      const rect = promo.getBoundingClientRect();
-      const x = pe.clientX - rect.left;
-      const y = pe.clientY - rect.top;
-
-      // Center-relative percentages (-1 to 1)
-      const px = (x / rect.width) * 2 - 1;
-      const py = (y / rect.height) * 2 - 1;
-
-      promo.style.setProperty('--px', px.toString());
-      promo.style.setProperty('--py', py.toString());
-      promo.style.setProperty('--mx', x + 'px');
-      promo.style.setProperty('--my', y + 'px');
-    };
-
-    const handlePointerLeave = (e: Event) => {
-      const promo = e.currentTarget as HTMLElement;
-      promo.style.setProperty('--px', '0');
-      promo.style.setProperty('--py', '0');
-      promo.style.setProperty('--mx', '50%');
-      promo.style.setProperty('--my', '50%');
-    };
-
-    const promos = document.querySelectorAll('.store-promo');
-    promos.forEach(promo => {
-      promo.addEventListener('pointermove', handlePointerMove, { passive: true });
-      promo.addEventListener('pointerleave', handlePointerLeave, { passive: true });
-    });
-
+    let active = true;
+    void fetchPage(1, () => active);
     return () => {
-      promos.forEach(promo => {
-        promo.removeEventListener('pointermove', handlePointerMove);
-        promo.removeEventListener('pointerleave', handlePointerLeave);
-      });
+      active = false;
     };
-  }, []);
+  }, [fetchPage]);
 
-  const formatTime = (s: number) => {
-    const h = Math.floor(s / 3600).toString().padStart(2, '0');
-    const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-    const sc = (s % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${sc}`;
+  const loadMore = () => {
+    setLoading(true);
+    void fetchPage(pages.length + 1);
   };
 
-  // Filtering & Sorting
-  const filteredProducts = useMemo(() => {
-    let p = [...PRODUCTS];
-    if (activeTab !== 'همه') p = p.filter(x => x.type === activeTab);
-    p = p.filter(x => x.price <= priceMax);
+  const products = pages.flatMap(page => page.results);
+  const hasMore = Boolean(pages.at(-1)?.next);
 
-    if (sortBy === 'قیمت: کم به زیاد') p.sort((a, b) => a.price - b.price);
-    else if (sortBy === 'قیمت: زیاد به کم') p.sort((a, b) => b.price - a.price);
-    else if (sortBy === 'محبوبیت') p.sort((a, b) => b.popularity - a.popularity);
+  const toggleWishlist = async (product: ProductSummary) => {
+    if (!isAuthenticated) {
+      router.push(`/login?next=${encodeURIComponent('/store')}`);
+      return;
+    }
+    const setFlag = (value: boolean) =>
+      setPages(current =>
+        current.map(page => ({
+          ...page,
+          results: page.results.map(p => (p.slug === product.slug ? { ...p, isWishlisted: value } : p)),
+        })),
+      );
+    setFlag(!product.isWishlisted);
+    try {
+      if (product.isWishlisted) await catalogApi.removeFromWishlist(product.slug);
+      else await catalogApi.addToWishlist(product.slug);
+    } catch (err) {
+      setFlag(product.isWishlisted);
+      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(err), icon: 'heart' });
+    }
+  };
 
-    return p;
-  }, [activeTab, priceMax, sortBy]);
-
-
-  // Pointer parallax shell variables are managed globally by titan.js
+  if (error && !products.length) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={() => {
+          setLoading(true);
+          void fetchPage(1);
+        }}
+      />
+    );
+  }
 
   return (
     <>
-      <div className="store-content reveal" style={{ '--d': 2 } as any}>
-        {/* Category + Sort Row */}
-        <div className="store-cat-row">
-          <div className="store-tabs">
-            <span className="store-tab-ind" style={tabIndStyle}></span>
-            {TABS.map(tab => {
-              const tabImages: Record<string, string> = {
-                'فورتنایت': '/images/categories/fortnite.png',
-                'ولورانت': '/images/categories/valorant.png',
-                'ایپکس لجندز': '/images/categories/apex.png',
-                'پرمیوم': '/images/categories/premium.png',
-              };
-              return (
-                <button
-                  key={tab}
-                  ref={el => { tabRefs.current[tab] = el; }}
-                  className={`store-tab ${activeTab === tab ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
+      <div className="store-grid">
+        {products.map((product, i) => (
+          <ProductCard key={product.id} product={product} index={i % PAGE_SIZE} onToggleWishlist={toggleWishlist} />
+        ))}
+      </div>
+
+      {loading && <Loading />}
+      {!loading && hasMore && (
+        <div className="store-load-wrap">
+          <button className="store-load-btn" onClick={loadMore}>
+            بارگذاری بیشتر <Icon name="chev" />
+          </button>
+        </div>
+      )}
+      {!loading && products.length === 0 && <div className="store-empty">هیچ محصولی با فیلترهای شما مطابقت ندارد.</div>}
+    </>
+  );
+}
+
+function StorePageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const activeGame = searchParams.get('game') ?? '';
+  const games = useApi(() => catalogApi.games({ is_featured: true }));
+  const discountPromos = useApi(() => contentApi.promos('store_discount'));
+  const bestsellerPromos = useApi(() => contentApi.promos('store_bestseller'));
+
+  const [priceMax, setPriceMax] = useState(PRICE_LIMIT);
+  const [appliedPriceMax, setAppliedPriceMax] = useState(PRICE_LIMIT);
+  const [priceOpen, setPriceOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [sort, setSort] = useState(SORTS[0]);
+
+  // Debounce the price slider so dragging doesn't fire a request per pixel.
+  useEffect(() => {
+    const timer = window.setTimeout(() => setAppliedPriceMax(priceMax), 350);
+    return () => window.clearTimeout(timer);
+  }, [priceMax]);
+
+  const { isAuthenticated } = useAuth();
+  const query = useMemo<ProductQueryState>(
+    () => ({
+      game: activeGame || undefined,
+      price_max: appliedPriceMax < PRICE_LIMIT ? appliedPriceMax : undefined,
+      ordering: sort.ordering,
+    }),
+    [activeGame, appliedPriceMax, sort],
+  );
+
+  // Tab underline indicator.
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const indicatorRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const el = tabRefs.current[activeGame];
+    const indicator = indicatorRef.current;
+    if (!el || !indicator) return;
+    indicator.style.transform = `translateX(${el.offsetLeft}px)`;
+    indicator.style.width = `${el.offsetWidth}px`;
+  }, [activeGame, games.data]);
+
+  // Pointer parallax and spotlight on the promo cards.
+  useEffect(() => {
+    const move = (e: Event) => {
+      const pe = e as PointerEvent;
+      const el = pe.currentTarget as HTMLElement;
+      const rect = el.getBoundingClientRect();
+      const x = pe.clientX - rect.left;
+      const y = pe.clientY - rect.top;
+      el.style.setProperty('--px', String((x / rect.width) * 2 - 1));
+      el.style.setProperty('--py', String((y / rect.height) * 2 - 1));
+      el.style.setProperty('--mx', `${x}px`);
+      el.style.setProperty('--my', `${y}px`);
+    };
+    const leave = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      el.style.setProperty('--px', '0');
+      el.style.setProperty('--py', '0');
+    };
+    const promos = document.querySelectorAll('.store-promo');
+    promos.forEach(el => {
+      el.addEventListener('pointermove', move, { passive: true });
+      el.addEventListener('pointerleave', leave, { passive: true });
+    });
+    return () =>
+      promos.forEach(el => {
+        el.removeEventListener('pointermove', move);
+        el.removeEventListener('pointerleave', leave);
+      });
+  }, [discountPromos.data, bestsellerPromos.data]);
+
+  const selectGame = (slug: string) => router.replace(slug ? `/store?game=${slug}` : '/store', { scroll: false });
+
+  const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
+    (games.data ?? []).map(game => ({ slug: game.slug, title: game.title, icon: game.iconImage })),
+  );
+
+  return (
+    <div className="store-content reveal" style={{ '--d': 2 } as React.CSSProperties}>
+      <div className="store-cat-row">
+        <div className="store-tabs">
+          <span className="store-tab-ind" ref={indicatorRef}></span>
+          {tabs.map(tab => (
+            <button
+              key={tab.slug || 'all'}
+              ref={el => {
+                tabRefs.current[tab.slug] = el;
+              }}
+              className={`store-tab ${activeGame === tab.slug ? 'active' : ''}`}
+              onClick={() => selectGame(tab.slug)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px',
+                // The premium artwork has built-in padding; the original design compensates for it.
+                marginRight: tab.slug === PREMIUM_SLUG ? '-15px' : '0',
+              }}
+            >
+              {tab.icon && (
+                <img
+                  src={tab.icon}
+                  alt=""
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '2px',
-                    marginRight: tab === 'پرمیوم' ? '-15px' : '0'
+                    width: tab.slug === PREMIUM_SLUG ? '34px' : '32px',
+                    height: tab.slug === PREMIUM_SLUG ? '34px' : '32px',
+                    objectFit: 'contain',
                   }}
-                >
-                  {tabImages[tab] && (
-                    <img
-                      src={tabImages[tab]}
-                      alt={tab}
-                      style={{
-                        width: tab === 'پرمیوم' ? '34px' : '32px',
-                        height: tab === 'پرمیوم' ? '34px' : '32px',
-                        objectFit: 'contain'
-                      }}
-                    />
-                  )}
-                  {tab}
-                </button>
-              );
-            })}
-          </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <div className="store-sort">
-              <button className="store-sort-btn" onClick={() => { setPriceOpen(!priceOpen); setSortOpen(false); }}>
-                <Icon name="sliders" /> قیمت تا: {priceMax === 0 ? '۰' : priceMax.toLocaleString('fa-IR')} تومان <Icon name="chev" className="sort-chev" style={{ transform: priceOpen ? 'rotate(-90deg)' : 'none', transition: 'transform 0.3s var(--spring)' }} />
-              </button>
-              {priceOpen && (
-                <div className="store-sort-drop" style={{ minWidth: '260px', padding: '24px 16px', zIndex: 101 }}>
-                  <div className="sf-range-wrap" dir="ltr">
-                    <input type="range" min="0" max="10000000" step="100000" value={priceMax} onChange={e => setPriceMax(Number(e.target.value))} className="sf-range" />
-                    <div className="sf-range-track" style={{ width: `${(priceMax / 10000000) * 100}%` }}></div>
-                    <div className="sf-range-pill" style={{ left: `${(priceMax / 10000000) * 100}%`, transform: `translate(-${(priceMax / 10000000) * 100}%, -50%)` }} dir="rtl">
-                      <svg width="6" height="12" viewBox="0 0 6 12" fill="currentColor" style={{ opacity: 0.5, marginRight: '-2px', marginLeft: '6px' }}>
-                        <circle cx="2" cy="2" r="1" /><circle cx="2" cy="6" r="1" /><circle cx="2" cy="10" r="1" />
-                        <circle cx="5" cy="2" r="1" /><circle cx="5" cy="6" r="1" /><circle cx="5" cy="10" r="1" />
-                      </svg>
-                      <input
-                        type="text"
-                        value={priceMax === 0 ? '۰' : priceMax.toLocaleString('fa-IR')}
-                        onChange={(e) => {
-                          let val = e.target.value.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d).toString()).replace(/\D/g, '');
-                          let num = Number(val);
-                          if (num > 10000000) num = 10000000;
-                          setPriceMax(num);
-                        }}
-                        className="sf-pill-input"
-                        dir="ltr"
-                      />
-                      <span>تومان</span>
-                    </div>
-                  </div>
-                </div>
+                />
               )}
-            </div>
-
-            <div className="store-sort">
-              <button className="store-sort-btn" onClick={() => { setSortOpen(!sortOpen); setPriceOpen(false); }}>
-                <Icon name="arrow" className="sort-icon-rev" style={{ transform: sortBy === 'قیمت: کم به زیاد' ? 'rotate(-90deg)' : 'rotate(90deg)', transition: 'transform 0.3s var(--spring)' }} /> مرتب‌سازی: {sortBy} <Icon name="chev" className="sort-chev" style={{ transform: sortOpen ? 'rotate(-90deg)' : 'none', transition: 'transform 0.3s var(--spring)' }} />
-              </button>
-              {sortOpen && (
-                <div className="store-sort-drop">
-                  {['محبوبیت', 'قیمت: کم به زیاد', 'قیمت: زیاد به کم', 'جدیدترین'].map(s => (
-                    <button key={s} onClick={() => { setSortBy(s); setSortOpen(false); }}>{s}</button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-
-        {/* Promo Banners */}
-        <div className="store-promos reveal" style={{ '--d': 3 } as any}>
-          <article
-            className="store-promo main-promo spot"
-            onPointerEnter={() => setMainPromoHover(true)}
-            onPointerLeave={() => setMainPromoHover(false)}
-          >
-            <div className="sp-bg discount-bg"></div>
-            <img src="/images/discount.png" alt="Discount Background" className="sp-discount-overlay" />
-
-            {DISCOUNT_PROMOS.map((promo, idx) => (
-              <div key={idx} className={`promo-slide-layer ${mainPromoIdx === idx ? 'active' : ''}`}>
-                <div className="sp-content">
-                  <div className="sp-badges">
-                    <span className="sp-badge live-red"><Icon name="flame" /> <span className="live-badge-text">پیشنهاد ویژه</span></span>
-                    <span className="sp-badge dark"><Icon name="clock" /> پایان در {formatTime(timeLeft)}</span>
-                    <span className="sp-badge" style={{ background: '#ffeb3b', color: '#000' }}>{promo.discount} تخفیف</span>
-                  </div>
-                  <h2>{promo.title}</h2>
-                  <p>{promo.subtitle}</p>
-                  <div className="sp-foot">
-                    <button className="sp-btn" onClick={() => addToCart(promo.title)}>
-                      مشاهده محصول
-                    </button>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginRight: '16px' }}>
-                      <span className="sp-strike">{promo.oldPrice} تومان</span>
-                      <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{promo.price} تومان</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="sp-art-wrap">
-                  <img src={promo.img} alt="" className="sp-art discount-art" style={{
-                    transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px)) scale(${promo.scale}) translateY(${promo.y}px)`
-                  }} />
-                </div>
-              </div>
-            ))}
-
-            <div className="sp-dots">
-              {DISCOUNT_PROMOS.map((_, i) => (
-                <button key={i} className={`sp-dot ${mainPromoIdx === i ? 'active' : ''}`} onClick={() => setMainPromoIdx(i)}>
-                  <span><i></i></span>
-                </button>
-              ))}
-            </div>
-          </article>
-
-          <article
-            className="store-promo side-promo spot"
-            onPointerEnter={() => setPromoHover(true)}
-            onPointerLeave={() => setPromoHover(false)}
-          >
-            {BESTSELLER_PROMOS.map((promo, idx) => (
-              <div key={idx} className={`promo-slide-layer ${promoIdx === idx ? 'active' : ''}`}>
-                <div className="sp-bg side-bg" style={{
-                  backgroundImage: `${promo.bgGrad}, ${promo.bgImg}`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}></div>
-
-                <div className="sp-content side-content">
-                  <div className="sp-badges">
-                    <span className="sp-badge cream"><Icon name="trophy" /> پرفروش‌ها</span>
-                  </div>
-                  <h3>{promo.title}</h3>
-                  <p className="side-subtitle">{promo.subtitle}</p>
-                  <div className="sp-foot">
-                    <Link href="/product/1" className="sp-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      مشاهده محصول
-                    </Link>
-                    <div style={{ marginRight: '4px', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{promo.price} تومان</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="sp-art-wrap side-art-wrap">
-                  <img src={promo.img} alt="" className="sp-art" style={{
-                    transform: `translate(calc(var(--px) * 10px + ${promo.x}px), calc(var(--py) * 10px + ${promo.y}px)) scale(${promo.scale})`
-                  }} />
-                </div>
-              </div>
-            ))}
-
-            <div className="sp-dots">
-              {BESTSELLER_PROMOS.map((_, i) => (
-                <button key={i} className={`sp-dot ${promoIdx === i ? 'active' : ''}`} onClick={() => setPromoIdx(i)}>
-                  <span><i></i></span>
-                </button>
-              ))}
-            </div>
-          </article>
-        </div>
-
-        {/* All Products */}
-        <div className="store-sec-h">
-          <div className="store-sec-l">
-            <h3>همه محصولات</h3>
-          </div>
-        </div>
-
-        <div className="store-grid">
-          {filteredProducts.map((p, i) => (
-            <article key={p.id} className="sg-card spot reveal" style={{ '--d': i + 3 } as any}>
-              {p.image === 'gift' ? (
-                <div className="sg-art gift">
-                  <div className="sg-gift-icon"><Icon name="gift" /></div>
-                </div>
-              ) : (
-                <div className="sg-art">
-                  <img src={p.image} alt={p.title} />
-                </div>
-              )}
-
-              <div className="sg-badges-top">
-                <div className="sg-b-left">
-                  {p.badges && p.badges.map(b => (
-                    <span key={b} className={`sg-badge ${b === 'پرفروش' ? 'cream' : b === 'تخفیف' ? 'red' : 'dark'}`}>
-                      {b === 'تخفیف' && <Icon name="flame" />}
-                      {b === 'پرفروش' && <Icon name="trophy" />}
-                      {b}
-                    </span>
-                  ))}
-                  <span className="sg-badge dark star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> {p.rating}</span>
-                </div>
-              </div>
-
-              <div className="sg-body">
-                <span className="sg-sub">{p.subtitle}</span>
-                <h4>{p.title}</h4>
-                <div className="sg-price-row">
-                  <span className="sg-price">{p.price.toLocaleString('fa-IR')} تومان</span>
-                  {p.originalPrice && <span className="sg-old-price">{p.originalPrice.toLocaleString('fa-IR')}</span>}
-                </div>
-              </div>
-
-              <div className="sg-actions">
-                <Link href={`/product/${p.id}`} className="sg-view-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>مشاهده محصول</Link>
-                <button className={`sg-heart ${wishlist[p.id] ? 'active' : ''}`} onClick={() => toggleWishlist(p.id)}>
-                  <Icon name="heart" />
-                </button>
-              </div>
-            </article>
+              {tab.title}
+            </button>
           ))}
         </div>
-
-        {filteredProducts.length > 0 && (
-          <div className="store-load-wrap reveal" style={{ '--d': filteredProducts.length + 3 } as any}>
-            <button className="store-load-btn">بارگذاری بیشتر <Icon name="chev" /></button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="store-sort">
+            <button
+              className="store-sort-btn"
+              onClick={() => {
+                setPriceOpen(!priceOpen);
+                setSortOpen(false);
+              }}
+            >
+              <Icon name="sliders" /> قیمت تا: {priceMax >= PRICE_LIMIT ? 'نامحدود' : toman(priceMax)}{' '}
+              <Icon name="chev" className="sort-chev" />
+            </button>
+            {priceOpen && (
+              <div className="store-sort-drop" style={{ minWidth: '260px', padding: '24px 16px', zIndex: 101 }}>
+                <div className="sf-range-wrap" dir="ltr">
+                  <input
+                    type="range"
+                    min="0"
+                    max={PRICE_LIMIT}
+                    step="100000"
+                    value={priceMax}
+                    onChange={e => setPriceMax(Number(e.target.value))}
+                    className="sf-range"
+                  />
+                  <div className="sf-range-track" style={{ width: `${(priceMax / PRICE_LIMIT) * 100}%` }}></div>
+                  <div
+                    className="sf-range-pill"
+                    style={{
+                      left: `${(priceMax / PRICE_LIMIT) * 100}%`,
+                      transform: `translate(-${(priceMax / PRICE_LIMIT) * 100}%, -50%)`,
+                    }}
+                    dir="rtl"
+                  >
+                    <input
+                      type="text"
+                      value={faNumber(priceMax)}
+                      onChange={e => {
+                        const value = Number(toEnglishDigits(e.target.value).replace(/\D/g, ''));
+                        setPriceMax(Math.min(value, PRICE_LIMIT));
+                      }}
+                      className="sf-pill-input"
+                      dir="ltr"
+                    />
+                    <span>تومان</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        {filteredProducts.length === 0 && (
-          <div className="store-empty">هیچ محصولی با فیلترهای شما مطابقت ندارد.</div>
-        )}
 
+          <div className="store-sort">
+            <button
+              className="store-sort-btn"
+              onClick={() => {
+                setSortOpen(!sortOpen);
+                setPriceOpen(false);
+              }}
+            >
+              <Icon name="arrow" className="sort-icon-rev" /> مرتب‌سازی: {sort.label}{' '}
+              <Icon name="chev" className="sort-chev" />
+            </button>
+            {sortOpen && (
+              <div className="store-sort-drop">
+                {SORTS.map(option => (
+                  <button
+                    key={option.ordering}
+                    onClick={() => {
+                      setSort(option);
+                      setSortOpen(false);
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </>
+
+      {(discountPromos.data?.length || bestsellerPromos.data?.length) ? (
+        <div className="store-promos reveal" style={{ '--d': 3 } as React.CSSProperties}>
+          <DiscountPromos promos={discountPromos.data ?? []} />
+          <BestsellerPromos promos={bestsellerPromos.data ?? []} />
+        </div>
+      ) : null}
+
+      <div className="store-sec-h">
+        <div className="store-sec-l">
+          <h3>همه محصولات</h3>
+        </div>
+      </div>
+
+      <ProductResults key={`${JSON.stringify(query)}:${isAuthenticated}`} query={query} />
+    </div>
   );
 }
 
 export default function StorePage() {
   return (
-    <Suspense fallback={<div style={{ padding: '100px', textAlign: 'center', color: 'white' }}>در حال بارگذاری فروشگاه...</div>}>
+    <Suspense fallback={<Loading label="در حال بارگذاری فروشگاه..." />}>
       <StorePageContent />
     </Suspense>
   );

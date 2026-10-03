@@ -1,0 +1,589 @@
+/** Types mirroring the Titan API (camelCase JSON). Money is integer Toman unless a currency says otherwise. */
+
+export interface Paginated<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+export type Presence = 'online' | 'away' | 'in_game' | 'offline';
+
+// ------------------------------------------------------------------ accounts
+export interface RankTier {
+  slug: string;
+  name: string;
+  description: string;
+  minPoints: number;
+  colorFrom: string;
+  colorTo: string;
+  glow: string;
+  ornament: string;
+}
+
+export interface Badge {
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+export interface GameRef {
+  slug: string;
+  title: string;
+  titleEn: string;
+}
+
+export interface UserMini {
+  id: number;
+  username: string | null;
+  displayName: string;
+  avatar: string | null;
+  avatarSeed: number;
+  level: number;
+  points: number;
+  rank: string | null;
+}
+
+export interface PresenceUser extends UserMini {
+  presence: Presence;
+  currentGame: GameRef | null;
+}
+
+export interface PublicPlayer {
+  id: number;
+  username: string | null;
+  displayName: string;
+  avatar: string | null;
+  avatarSeed: number;
+  level: number;
+  xp: number;
+  maxXp: number;
+  points: number;
+  rank: RankTier | null;
+  favoriteGame: GameRef | null;
+  badges: Badge[];
+  presence: Presence;
+  dateJoined: string;
+}
+
+export interface Me extends Omit<PublicPlayer, 'favoriteGame'> {
+  phone: string;
+  fullName: string;
+  email: string;
+  favoriteGame: string | null;
+  favoriteGameDetail: GameRef | null;
+  isStaff: boolean;
+}
+
+export interface AuthTokens {
+  access: string;
+  refresh: string;
+}
+
+export interface LoginResponse extends AuthTokens {
+  isNewUser: boolean;
+  user: Me;
+}
+
+export interface OtpRequestResponse {
+  phone: string;
+  expiresIn: number;
+  resendIn: number;
+}
+
+export interface GameAccount {
+  id: number;
+  title: string;
+  username: string;
+  hasPassword: boolean;
+  game: string | null;
+  createdAt: string;
+}
+
+export interface FriendRequest {
+  id: number;
+  fromUser: UserMini;
+  toUser: UserMini;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: string;
+}
+
+// ------------------------------------------------------------------ catalog
+export interface GameMini {
+  slug: string;
+  title: string;
+  titleEn: string;
+  iconImage: string | null;
+  accentColor: string;
+}
+
+export interface Game extends GameMini {
+  description: string;
+  genre: string;
+  kind: 'game' | 'service';
+  coverImage: string | null;
+  logoImage: string | null;
+  backgroundImage: string | null;
+  characterImage: string | null;
+  accentGradient: string;
+  isFeatured: boolean;
+  productCount: number;
+  tournamentCount: number;
+  playerCount: number;
+}
+
+export interface Platform {
+  slug: string;
+  name: string;
+  icon: string | null;
+}
+
+export interface ProductCategory {
+  slug: string;
+  name: string;
+}
+
+export type ProductBadge = 'bestseller' | 'discount' | 'new';
+export type DeliveryType = 'code' | 'account' | 'manual';
+
+export interface ProductVariant {
+  id: number;
+  label: string;
+  price: number;
+  originalPrice: number | null;
+  discountPercent: number;
+  inStock: boolean;
+}
+
+/** ``price`` is the fixed price, or the cheapest option when ``hasVariants`` (``priceMax`` = most expensive). */
+export interface ProductSummary {
+  id: number;
+  slug: string;
+  title: string;
+  subtitle: string;
+  image: string | null;
+  price: number | null;
+  originalPrice: number | null;
+  discountPercent: number;
+  hasVariants: boolean;
+  priceMax: number | null;
+  rating: number;
+  reviewCount: number;
+  badges: ProductBadge[];
+  inStock: boolean;
+  vendor: string;
+  deliveryType: DeliveryType;
+  game: GameMini | null;
+  category: ProductCategory;
+  platforms: string[];
+  isWishlisted: boolean;
+}
+
+export interface ProductFeature {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export interface Product extends Omit<ProductSummary, 'platforms'> {
+  platforms: Platform[];
+  description: string;
+  deliveryInfo: string;
+  requiresGameAccount: boolean;
+  stock: number | null;
+  features: ProductFeature[];
+  tags: string[];
+  specs: Record<string, string>;
+  variants: ProductVariant[];
+  gallery: { image: string | null; alt: string }[];
+}
+
+export interface Review {
+  id: number;
+  user: UserMini;
+  /** Public display name chosen by the reviewer (the email is never returned). */
+  authorName: string;
+  rating: number;
+  comment: string;
+  verifiedPurchase: boolean;
+  createdAt: string;
+}
+
+export interface WishlistItem {
+  product: ProductSummary;
+  createdAt: string;
+}
+
+// ------------------------------------------------------------------ cart & orders
+export interface CartItem {
+  id: number;
+  product: {
+    id: number;
+    slug: string;
+    title: string;
+    image: string | null;
+    deliveryType: DeliveryType;
+    requiresGameAccount: boolean;
+    inStock: boolean;
+  };
+  variant: { id: number; label: string } | null;
+  quantity: number;
+  unitPrice: number;
+  unitOriginalPrice: number;
+  lineTotal: number;
+}
+
+export interface Cart {
+  items: CartItem[];
+  count: number;
+  subtotal: number;
+  discount: number;
+  total: number;
+  requiresGameAccount: boolean;
+}
+
+export type PaymentMethod = 'wallet' | 'gateway';
+export type OrderStatus =
+  | 'pending_payment'
+  | 'paid'
+  | 'processing'
+  | 'completed'
+  | 'cancelled'
+  | 'failed'
+  | 'refunded';
+
+export interface OrderItem {
+  id: number;
+  product: string | null;
+  title: string;
+  variantLabel: string;
+  image: string | null;
+  deliveryType: DeliveryType;
+  unitPrice: number;
+  unitOriginalPrice: number;
+  quantity: number;
+  lineTotal: number;
+  deliveredCode: string | null;
+  deliveredAt: string | null;
+}
+
+export interface Order {
+  number: string;
+  status: OrderStatus;
+  paymentMethod: PaymentMethod;
+  subtotal: number;
+  discount: number;
+  total: number;
+  gameAccountTitle: string;
+  gameAccountUsername: string;
+  items: OrderItem[];
+  paidAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+}
+
+export interface CheckoutResponse {
+  order: Order;
+  paymentUrl: string | null;
+}
+
+// ------------------------------------------------------------------ payments
+export interface Wallet {
+  balance: number;
+  updatedAt: string;
+}
+
+export interface WalletTransaction {
+  id: number;
+  amount: number;
+  kind: string;
+  balanceAfter: number;
+  description: string;
+  reference: string;
+  createdAt: string;
+}
+
+export interface Payment {
+  id: number;
+  amount: number;
+  gateway: string;
+  purpose: 'order' | 'tournament_registration' | 'wallet_topup';
+  objectId: number | null;
+  reference: string;
+  status: 'initiated' | 'paid' | 'failed' | 'cancelled';
+  refId: string;
+  cardPan: string;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+export interface PaymentStart {
+  paymentId: number;
+  paymentUrl: string;
+}
+
+// ------------------------------------------------------------------ teams
+export type TeamRole = 'captain' | 'player' | 'substitute';
+export type Region = 'me' | 'eu' | 'ir' | 'intl';
+
+export interface TeamMini {
+  id: number;
+  name: string;
+  tag: string;
+  logo: string | null;
+}
+
+export interface TeamSummary extends TeamMini {
+  game: GameMini;
+  region: Region;
+  memberCount: number;
+  maxMembers: number;
+  matchesPlayed: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  points: number;
+  createdAt: string;
+}
+
+export interface TeamMember {
+  user: PresenceUser;
+  role: TeamRole;
+  joinedAt: string;
+}
+
+export interface Team extends TeamSummary {
+  description: string;
+  members: TeamMember[];
+  myRole: TeamRole | null;
+  inviteCode: string | null;
+  inviteUrl: string | null;
+}
+
+export interface MyTeam extends TeamSummary {
+  myRole: TeamRole | null;
+  activity: Presence;
+}
+
+export interface TeamInvitation {
+  id: number;
+  team: TeamMini;
+  invitedUser: UserMini;
+  invitedBy: UserMini;
+  status: 'pending' | 'accepted' | 'declined' | 'cancelled';
+  createdAt: string;
+}
+
+// ------------------------------------------------------------------ tournaments
+export type TournamentStatus =
+  | 'upcoming'
+  | 'registration_open'
+  | 'registration_closed'
+  | 'live'
+  | 'completed'
+  | 'cancelled';
+
+export interface Participant {
+  id: number;
+  kind: 'team' | 'player';
+  name: string;
+  tag: string;
+  logo: string | null;
+  avatarSeed: number | null;
+  teamId: number | null;
+  username: string | null;
+  points: number;
+  rank: string | null;
+  seed: number | null;
+  finalPlacement: number | null;
+}
+
+export type MatchStatus = 'pending' | 'scheduled' | 'live' | 'completed' | 'bye';
+
+export interface Match {
+  id: number;
+  round: number;
+  position: number;
+  status: MatchStatus;
+  scheduledAt: string | null;
+  bestOf: number;
+  participantA: Participant | null;
+  participantB: Participant | null;
+  scoreA: number | null;
+  scoreB: number | null;
+  winnerId: number | null;
+  isMine: boolean;
+  lobbyCode: string | null;
+}
+
+export interface BracketRound {
+  round: number;
+  name: string;
+  matches: Match[];
+}
+
+export interface TournamentMini {
+  id: number;
+  slug: string;
+  title: string;
+  game: GameMini;
+  coverImage: string | null;
+  status: TournamentStatus;
+  participantType: 'solo' | 'team';
+  startsAt: string;
+  endsAt: string;
+}
+
+export interface TournamentSummary extends Omit<TournamentMini, 'status'> {
+  status: TournamentStatus;
+  isFull: boolean;
+  teamSize: number;
+  formatLabel: string;
+  region: Region;
+  prizePool: number;
+  prizeCurrency: 'IRT' | 'USD';
+  entryFee: number;
+  entryFeeOriginal: number | null;
+  entryDiscountPercent: number;
+  isFree: boolean;
+  participantsCount: number;
+  maxParticipants: number;
+  registrationClosesAt: string;
+  isFeatured: boolean;
+  viewerCount: number;
+  isRegistered: boolean;
+  featuredMatch: Match | null;
+}
+
+export interface Registration {
+  id: number;
+  status: 'pending_payment' | 'confirmed' | 'withdrawn' | 'cancelled';
+  team: TeamMini | null;
+  entryFeePaid: number;
+  seed: number | null;
+  finalPlacement: number | null;
+  confirmedAt: string | null;
+  createdAt: string;
+}
+
+export interface Tournament extends TournamentSummary {
+  description: string;
+  rules: string[];
+  prizes: { place: number; label: string; amount: number; points: number }[];
+  season: { number: number; name: string; startsAt: string; endsAt: string; isCurrent: boolean };
+  format: string;
+  bestOf: number;
+  registrationOpensAt: string;
+  streamUrl: string;
+  myRegistration: Registration | null;
+}
+
+export interface MyTournament extends Registration {
+  tournament: TournamentMini;
+  currentStage: string | null;
+}
+
+export interface RegistrationResult {
+  registration: Registration;
+  paymentUrl: string | null;
+}
+
+export interface StatsTotals {
+  matches: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  points: number;
+  tournamentsPlayed: number;
+  tournamentsWon: number;
+  earningsIrt: number;
+  earningsUsd: number;
+  rank: RankTier | null;
+}
+
+export interface PlayerLeaderboardRow extends Omit<StatsTotals, 'rank'> {
+  rank: number;
+  player: UserMini;
+  game: string;
+}
+
+export interface TeamLeaderboardRow extends Omit<StatsTotals, 'rank'> {
+  rank: number;
+  team: TeamMini;
+  game: string;
+}
+
+// ------------------------------------------------------------------ notifications & content
+export interface Notification {
+  id: number;
+  kind: 'system' | 'tournament' | 'team_invite' | 'team' | 'friend_request' | 'order' | 'payment';
+  title: string;
+  body: string;
+  icon: string;
+  data: Record<string, string | number | null>;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface Promo {
+  id: number;
+  placement: 'store_discount' | 'store_bestseller' | 'home_hero' | 'tournament_hero';
+  title: string;
+  subtitle: string;
+  badge: string;
+  image: string | null;
+  backgroundImage: string | null;
+  backgroundGradient: string;
+  price: number | null;
+  originalPrice: number | null;
+  discountLabel: string;
+  product: string | null;
+  tournament: string | null;
+  link: string;
+  layout: { scale?: number; x?: number; y?: number };
+  startsAt: string | null;
+  endsAt: string | null;
+}
+
+export interface Announcement {
+  id: number;
+  title: string;
+  text: string;
+  icon: string;
+  link: string;
+}
+
+export interface ContactChannel {
+  kind: 'discord' | 'telegram_channel' | 'telegram_support' | 'live_chat' | 'email' | 'phone';
+  title: string;
+  description: string;
+  url: string;
+  icon: string | null;
+  actionLabel: string;
+  isPrimary: boolean;
+  isOnline: boolean;
+}
+
+export interface Home {
+  heroTournaments: TournamentSummary[];
+  heroPromos: Promo[];
+  categories: Game[];
+  announcements: Announcement[];
+  myStats: StatsTotals | null;
+}
+
+export interface Dashboard {
+  walletBalance: number;
+  tournamentsJoined: number;
+  activeTeams: number;
+  unreadNotifications: number;
+  recentTournaments: MyTournament[];
+  recentOrders: Order[];
+}
+
+export interface SearchResults {
+  games: GameMini[];
+  tournaments: TournamentMini[];
+  products: ProductSummary[];
+}

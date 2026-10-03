@@ -59,7 +59,7 @@ export function CustomSelect({ options, value, onChange, placeholder }: CustomSe
           {selectedOption?.image ? (
             <img src={selectedOption.image} alt="" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           ) : selectedOption?.icon ? (
-            <Icon name={selectedOption.icon as any} />
+            <Icon name={selectedOption.icon} />
           ) : null}
           {selectedOption ? selectedOption.label : placeholder || 'انتخاب کنید...'}
         </span>
@@ -134,7 +134,7 @@ export function CustomSelect({ options, value, onChange, placeholder }: CustomSe
               {opt.image ? (
                 <img src={opt.image} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
               ) : opt.icon ? (
-                <Icon name={opt.icon as any} />
+                <Icon name={opt.icon} />
               ) : null}
               {opt.label}
               {value === opt.value && (

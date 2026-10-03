@@ -1,18 +1,16 @@
 import React from 'react';
+
 import dashboardStyles from '@/app/(dashboard)/dashboard/page.module.css';
 import { DashboardSidebarWrapper } from '@/components/DashboardSidebarWrapper';
+import { RequireAuth } from '@/components/RequireAuth';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={dashboardStyles.dashboardWrapper}>
-      <DashboardSidebarWrapper />
-      <main className={dashboardStyles.contentArea}>
-        {children}
-      </main>
-    </div>
+    <RequireAuth>
+      <div className={dashboardStyles.dashboardWrapper}>
+        <DashboardSidebarWrapper />
+        <main className={dashboardStyles.contentArea}>{children}</main>
+      </div>
+    </RequireAuth>
   );
 }

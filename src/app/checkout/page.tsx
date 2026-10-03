@@ -1,84 +1,93 @@
 'use client';
 
-import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
 import { Icon } from '@/components/Icons';
+import { RequireAuth } from '@/components/RequireAuth';
+import { Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
+import { errorMessage } from '@/lib/api/client';
+import { gameAccountsApi, ordersApi, walletApi } from '@/lib/api/endpoints';
+import type { PaymentMethod } from '@/lib/api/types';
+import { faNumber, toman } from '@/lib/format';
+import { useApi } from '@/lib/hooks/useApi';
+
 import './checkout.css';
 
-type GameAccount = {
-  id: string;
-  title: string;
-  username: string;
-  password?: string;
-};
-
-export default function CheckoutPage() {
+function Checkout() {
   const router = useRouter();
-  const { cartItems, addToast } = useAppContext();
+  const { cart, cartLoading, refreshCart, addToast } = useAppContext();
+  const accounts = useApi(gameAccountsApi.list);
+  const wallet = useApi(walletApi.get);
 
-  // Mocked saved accounts from "dashboard"
-  const [savedAccounts, setSavedAccounts] = useState<GameAccount[]>([
-    { id: 'acc1', title: 'اکانت اصلی فورتنایت', username: 'pro_gamer_99' },
-    { id: 'acc2', title: 'اکانت ولورانت', username: 'titan_slayer' }
-  ]);
+  const [chosenAccountId, setSelectedAccountId] = useState<number | null>(null);
+  const [addingRequested, setIsAddingNew] = useState(false);
+  const [newAccount, setNewAccount] = useState({ title: '', username: '', password: '' });
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gateway');
+  const [submitting, setSubmitting] = useState(false);
 
-  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
-    savedAccounts.length > 0 ? savedAccounts[0].id : null
-  );
+  // Preselect the first saved account; show the form straight away when there is none.
+  const selectedAccountId = chosenAccountId ?? accounts.data?.[0]?.id ?? null;
+  const isAddingNew = addingRequested || accounts.data?.length === 0;
 
-  const [isAddingNew, setIsAddingNew] = useState(savedAccounts.length === 0);
-  const [newAccTitle, setNewAccTitle] = useState('');
-  const [newAccUser, setNewAccUser] = useState('');
-  const [newAccPass, setNewAccPass] = useState('');
+  const balance = wallet.data?.balance ?? 0;
+  const walletCovers = balance >= cart.total;
 
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-  const handleSaveNewAccount = () => {
-    if (!newAccTitle.trim() || !newAccUser.trim() || !newAccPass.trim()) {
+  const saveAccount = async () => {
+    const { title, username, password } = newAccount;
+    if (!title.trim() || !username.trim() || !password.trim()) {
       addToast({ title: 'خطا', text: 'لطفاً تمام فیلدهای اکانت را پر کنید', icon: 'info' });
       return;
     }
-    const newAcc = {
-      id: Math.random().toString(36).substring(7),
-      title: newAccTitle,
-      username: newAccUser,
-      password: newAccPass, // In a real app this should be handled securely
-    };
-    setSavedAccounts([...savedAccounts, newAcc]);
-    setSelectedAccountId(newAcc.id);
-    setIsAddingNew(false);
-    setNewAccTitle('');
-    setNewAccUser('');
-    setNewAccPass('');
-    addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'check' });
+    try {
+      const created = await gameAccountsApi.create({ title, username, password });
+      accounts.setData(current => [...(current ?? []), created]);
+      setSelectedAccountId(created.id);
+      setIsAddingNew(false);
+      setNewAccount({ title: '', username: '', password: '' });
+      addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'check' });
+    } catch (error) {
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info' });
+    }
   };
 
-  const handlePaymentSubmit = () => {
-    if (!selectedAccountId) {
+  const pay = async () => {
+    if (cart.requiresGameAccount && !selectedAccountId) {
       addToast({ title: 'خطا', text: 'لطفاً یک اکانت بازی برای دریافت سفارش انتخاب کنید', icon: 'info' });
       return;
     }
-    
-    // Process redirect to gateway
-    addToast({ title: 'در حال انتقال...', text: 'در حال انتقال به درگاه پرداخت', icon: 'cart' });
-    
-    // Mock the delay of gateway redirect
-    setTimeout(() => {
-       // Since it's a demo, we can just show a success message or navigate home
-       // router.push('/payment-gateway-mock');
-       alert('انتقال به درگاه پرداخت... (پایان دمو)');
-    }, 1500);
+    setSubmitting(true);
+    try {
+      const { order, paymentUrl } = await ordersApi.checkout(
+        paymentMethod,
+        cart.requiresGameAccount ? selectedAccountId : null,
+      );
+      if (paymentUrl) {
+        addToast({ title: 'در حال انتقال...', text: 'در حال انتقال به درگاه پرداخت', icon: 'cart' });
+        window.location.assign(paymentUrl);
+        return;
+      }
+      await refreshCart();
+      router.push(`/payment/result?status=${order.status}&purpose=order&reference=${order.number}`);
+    } catch (error) {
+      addToast({ title: 'پرداخت انجام نشد', text: errorMessage(error), icon: 'info' });
+      setSubmitting(false);
+    }
   };
 
-  if (cartItems.length === 0) {
+  if (cartLoading) return <Loading />;
+
+  if (cart.lines.length === 0) {
     return (
       <div className="checkout-page reveal" style={{ '--d': 1 } as React.CSSProperties}>
         <div className="checkout-empty">
           <Icon name="cart" />
           <h2>سبد خرید شما خالی است</h2>
-          <Link href="/store" className="chk-btn primary">بازگشت به فروشگاه</Link>
+          <Link href="/store" className="chk-btn primary">
+            بازگشت به فروشگاه
+          </Link>
         </div>
       </div>
     );
@@ -92,89 +101,103 @@ export default function CheckoutPage() {
 
       <div className="checkout-content">
         <div className="checkout-main">
-          
-          <div className="chk-section reveal" style={{ '--d': 2 } as React.CSSProperties}>
-            <div className="chk-sec-header">
-              <div className="chk-sec-icon"><Icon name="user" /></div>
-              <h2>اطلاعات اکانت بازی</h2>
+          {cart.requiresGameAccount && (
+            <div className="chk-section reveal" style={{ '--d': 2 } as React.CSSProperties}>
+              <div className="chk-sec-header">
+                <div className="chk-sec-icon">
+                  <Icon name="user" />
+                </div>
+                <h2>اطلاعات اکانت بازی</h2>
+              </div>
+              <p className="chk-sec-desc">
+                محصولات خریداری شده مستقیماً روی اکانت شما فعال می‌شوند. لطفاً اکانت مورد نظر را انتخاب کرده یا اکانت
+                جدیدی اضافه کنید. رمز عبور به‌صورت رمزنگاری‌شده نگهداری می‌شود.
+              </p>
+
+              {accounts.loading ? (
+                <Loading />
+              ) : !isAddingNew ? (
+                <div className="accounts-list">
+                  {(accounts.data ?? []).map(account => (
+                    <div
+                      key={account.id}
+                      className={`account-card ${selectedAccountId === account.id ? 'selected' : ''}`}
+                      onClick={() => setSelectedAccountId(account.id)}
+                    >
+                      <div className="acc-radio">
+                        <div className="acc-radio-inner"></div>
+                      </div>
+                      <div className="acc-info">
+                        <h4>{account.title}</h4>
+                        <span>Username: {account.username}</span>
+                      </div>
+                    </div>
+                  ))}
+                  <button className="add-acc-btn" onClick={() => setIsAddingNew(true)}>
+                    <Icon name="plus" /> افزودن اکانت جدید
+                  </button>
+                </div>
+              ) : (
+                <div className="new-account-form">
+                  <div className="form-group">
+                    <label>عنوان اکانت (مثلاً اکانت اصلی)</label>
+                    <input
+                      type="text"
+                      value={newAccount.title}
+                      onChange={e => setNewAccount({ ...newAccount, title: e.target.value })}
+                      placeholder="اکانت استیم / اپیک گیمز..."
+                    />
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>نام کاربری (Username / Email)</label>
+                      <input
+                        type="text"
+                        value={newAccount.username}
+                        onChange={e => setNewAccount({ ...newAccount, username: e.target.value })}
+                        placeholder="username@email.com"
+                        dir="ltr"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>رمز عبور (Password)</label>
+                      <input
+                        type="password"
+                        value={newAccount.password}
+                        onChange={e => setNewAccount({ ...newAccount, password: e.target.value })}
+                        placeholder="••••••••"
+                        dir="ltr"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-actions">
+                    <button className="chk-btn primary" onClick={saveAccount}>
+                      ذخیره و انتخاب
+                    </button>
+                    {(accounts.data?.length ?? 0) > 0 && (
+                      <button className="chk-btn secondary" onClick={() => setIsAddingNew(false)}>
+                        انصراف
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-            <p className="chk-sec-desc">
-              محصولات خریداری شده مستقیماً روی اکانت شما فعال می‌شوند. لطفاً اکانت مورد نظر را انتخاب کرده یا اکانت جدیدی اضافه کنید.
-            </p>
-
-            {!isAddingNew ? (
-              <div className="accounts-list">
-                {savedAccounts.map(acc => (
-                  <div 
-                    key={acc.id} 
-                    className={`account-card ${selectedAccountId === acc.id ? 'selected' : ''}`}
-                    onClick={() => setSelectedAccountId(acc.id)}
-                  >
-                    <div className="acc-radio">
-                      <div className="acc-radio-inner"></div>
-                    </div>
-                    <div className="acc-info">
-                      <h4>{acc.title}</h4>
-                      <span>Username: {acc.username}</span>
-                    </div>
-                  </div>
-                ))}
-
-                <button className="add-acc-btn" onClick={() => setIsAddingNew(true)}>
-                  <Icon name="plus" /> افزودن اکانت جدید
-                </button>
-              </div>
-            ) : (
-              <div className="new-account-form">
-                <div className="form-group">
-                  <label>عنوان اکانت (مثلاً اکانت اصلی)</label>
-                  <input 
-                    type="text" 
-                    value={newAccTitle} 
-                    onChange={e => setNewAccTitle(e.target.value)} 
-                    placeholder="اکانت استیم / اپیک گیمز..." 
-                  />
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>نام کاربری (Username / Email)</label>
-                    <input 
-                      type="text" 
-                      value={newAccUser} 
-                      onChange={e => setNewAccUser(e.target.value)} 
-                      placeholder="username@email.com" 
-                      dir="ltr"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>رمز عبور (Password)</label>
-                    <input 
-                      type="password" 
-                      value={newAccPass} 
-                      onChange={e => setNewAccPass(e.target.value)} 
-                      placeholder="••••••••" 
-                      dir="ltr"
-                    />
-                  </div>
-                </div>
-                <div className="form-actions">
-                  <button className="chk-btn primary" onClick={handleSaveNewAccount}>ذخیره و انتخاب</button>
-                  {savedAccounts.length > 0 && (
-                    <button className="chk-btn secondary" onClick={() => setIsAddingNew(false)}>انصراف</button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
 
           <div className="chk-section reveal" style={{ '--d': 3 } as React.CSSProperties}>
             <div className="chk-sec-header">
-              <div className="chk-sec-icon"><Icon name="card" /></div>
+              <div className="chk-sec-icon">
+                <Icon name="card" />
+              </div>
               <h2>روش پرداخت</h2>
             </div>
-            
+
             <div className="payment-methods">
-              <div className="pay-method selected">
+              <div
+                className={`pay-method ${paymentMethod === 'gateway' ? 'selected' : ''}`}
+                onClick={() => setPaymentMethod('gateway')}
+              >
                 <div className="acc-radio">
                   <div className="acc-radio-inner"></div>
                 </div>
@@ -186,49 +209,67 @@ export default function CheckoutPage() {
                   <span>ZarrinPal</span>
                 </div>
               </div>
-              <div className="pay-method disabled">
-                <div className="acc-radio"></div>
+              <div
+                className={`pay-method ${paymentMethod === 'wallet' ? 'selected' : ''} ${walletCovers ? '' : 'disabled'}`}
+                onClick={() => walletCovers && setPaymentMethod('wallet')}
+              >
+                <div className="acc-radio">
+                  <div className="acc-radio-inner"></div>
+                </div>
                 <div className="pay-info">
                   <h4>پرداخت از کیف پول</h4>
-                  <span>موجودی ناکافی (موجودی: ۰ تومان)</span>
+                  <span>
+                    {walletCovers ? 'موجودی' : 'موجودی ناکافی'} (موجودی: {toman(balance)})
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
 
         <div className="checkout-sidebar reveal" style={{ '--d': 4 } as React.CSSProperties}>
           <div className="chk-summary">
             <h3>فاکتور نهایی</h3>
-            
+
             <div className="chk-items">
-              {cartItems.map(item => (
-                <div key={item.id} className="chk-item">
-                  <img src={item.image} alt={item.title} className="chk-item-img" />
+              {cart.lines.map(line => (
+                <div key={line.key} className="chk-item">
+                  {line.image && <img src={line.image} alt={line.title} className="chk-item-img" />}
                   <div className="chk-item-details">
-                    <span className="chk-item-title">{item.title}</span>
-                    <span className="chk-item-qty">{item.quantity}x</span>
+                    <span className="chk-item-title">
+                      {line.title}
+                      {line.variantLabel && ` — ${line.variantLabel}`}
+                    </span>
+                    <span className="chk-item-qty">{faNumber(line.quantity)}x</span>
                   </div>
-                  <span className="chk-item-price">{(item.price * item.quantity).toLocaleString('fa-IR')}</span>
+                  <span className="chk-item-price">{faNumber(line.lineTotal)}</span>
                 </div>
               ))}
             </div>
 
             <div className="summary-divider"></div>
-            
+
             <div className="summary-row">
               <span>مبلغ کل کالاها:</span>
-              <span>{totalPrice.toLocaleString('fa-IR')} تومان</span>
+              <span>{toman(cart.subtotal)}</span>
             </div>
-            
+            {cart.discount > 0 && (
+              <div className="summary-row">
+                <span>تخفیف:</span>
+                <span>{toman(cart.discount)}</span>
+              </div>
+            )}
+
             <div className="summary-row total">
               <span>قابل پرداخت:</span>
-              <span className="total-val">{totalPrice.toLocaleString('fa-IR')} <small>تومان</small></span>
+              <span className="total-val">
+                {faNumber(cart.total)} <small>تومان</small>
+              </span>
             </div>
 
-            <button className="chk-btn submit-btn block" onClick={handlePaymentSubmit}>
-              پرداخت و ثبت سفارش <Icon name="arrow" style={{ transform: 'rotate(180deg)' }} />
+            <button className="chk-btn submit-btn block" onClick={pay} disabled={submitting}>
+              {submitting ? 'در حال پردازش...' : 'پرداخت و ثبت سفارش'}{' '}
+              <Icon name="arrow" style={{ transform: 'rotate(180deg)' }} />
             </button>
             <p className="secure-text">
               <Icon name="lock" /> پرداخت امن و رمزنگاری شده
@@ -237,5 +278,13 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <RequireAuth>
+      <Checkout />
+    </RequireAuth>
   );
 }

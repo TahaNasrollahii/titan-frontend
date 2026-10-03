@@ -385,3 +385,13 @@
 .mt-2 {
   margin-top: 8px;
 }
+
+.cart-item-variant {
+  display: inline-block;
+  margin: 4px 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--cream);
+}

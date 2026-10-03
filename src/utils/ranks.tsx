@@ -1,6 +1,20 @@
 import React from 'react';
 
-export const RANKS = [
+import type { RankTier } from '@/lib/api/types';
+
+/** Visual description of a rank tier (ring colours and ornament). */
+export interface RankVisual {
+  id: string;
+  name: string;
+  pts: string;
+  desc: string;
+  from: string;
+  to: string;
+  glow: string;
+  ornament: string;
+}
+
+export const RANKS: RankVisual[] = [
   { id: 'bronze', name: 'Bronze', pts: '۰ امتیاز', desc: 'تولد یک جنگجو در میدان', from: '#c97a3d', to: '#7a4118', glow: 'rgba(201,122,61,.55)', ornament: 'lozenge' },
   { id: 'silver', name: 'Silver', pts: '+۱,۵۰۰ امتیاز', desc: 'خروج از سایه‌ها و شکار رقبا', from: '#e7ebf0', to: '#9aa0aa', glow: 'rgba(200,208,220,.55)', ornament: 'star' },
   { id: 'gold', name: 'Gold', pts: '+۵,۰۰۰ امتیاز', desc: 'کابوس حریفان؛ درخشش در اوج', from: '#ffe07a', to: '#c9932c', glow: 'rgba(255,205,90,.6)', ornament: 'crown' },
@@ -8,7 +22,20 @@ export const RANKS = [
   { id: 'titan', name: 'Titan', pts: '+۲۰,۰۰۰ امتیاز', desc: 'خدای بی‌رقیب میدان؛ اسطوره تایتان‌ها', from: '#ff3b30', to: '#3a0000', glow: 'rgba(255,40,30,.75)', ornament: 'titan' }
 ];
 
-export const getTierByScore = (score: number) => {
+/** Convert a rank tier from the API into the shape the ring/ornament renderers expect. */
+export const rankFromApi = (tier: RankTier): RankVisual => ({
+  id: tier.slug,
+  name: tier.name,
+  pts: tier.minPoints ? `+${tier.minPoints.toLocaleString('fa-IR')} امتیاز` : '۰ امتیاز',
+  desc: tier.description,
+  from: tier.colorFrom,
+  to: tier.colorTo,
+  glow: tier.glow,
+  ornament: tier.ornament,
+});
+
+/** Same thresholds as the backend's seeded rank tiers; used for avatar frames without a request. */
+export const getTierByScore = (score: number): RankVisual => {
   if (score >= 20000) return RANKS[4];
   if (score >= 10000) return RANKS[3];
   if (score >= 5000) return RANKS[2];
@@ -48,7 +75,7 @@ export const getOrnamentSVG = (kind: string) => {
   return <path d="M13 1 18.5 13 13 25 7.5 13Z"/>;
 };
 
-export const getRingSVG = (r: any) => (
+export const getRingSVG = (r: RankVisual) => (
   <svg viewBox="0 0 100 100">
     <defs>
       <linearGradient id={`ringGrad-${r.id}`} x1="0" y1="0" x2="1" y2="1">
@@ -79,7 +106,7 @@ export const getRingSVG = (r: any) => (
   </svg>
 );
 
-export const getOrnamentSVGWrapper = (r: any) => (
+export const getOrnamentSVGWrapper = (r: RankVisual) => (
   <svg width="26" height="26" viewBox="0 0 26 26"
        fill={`url(#ornFill-${r.id})`} stroke="rgba(0,0,0,.35)" strokeWidth=".6">
     <defs>

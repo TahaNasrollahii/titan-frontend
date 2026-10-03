@@ -704,7 +704,11 @@
 }
 
 .recCard {
+  display: block;
+  width: 280px;
   min-width: 280px;
+  color: inherit;
+  text-decoration: none;
   height: 360px;
   border-radius: 24px;
   position: relative;
@@ -747,4 +751,89 @@
 
 .recPrice span {
   font-size: 11px;
+}
+/* ---------- product options (variants) ---------- */
+.optionsBlock {
+  margin: 4px 0 20px;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.optionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 14px 12px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.optionCard:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.optionCard:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.optionSelected {
+  border-color: var(--red);
+  background: rgba(226, 69, 63, 0.12);
+}
+
+.optionLabel {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.optionPrice {
+  font-size: 13px;
+  color: var(--cream);
+}
+
+.optionOld {
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.optionTag {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: var(--red);
+  color: #fff;
+}
+
+.specTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.specTable td {
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 14px;
+}
+
+.specTable td:first-child {
+  color: var(--muted);
+  width: 40%;
 }

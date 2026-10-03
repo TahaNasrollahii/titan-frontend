@@ -1,58 +1,82 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
-import { Icon, Avatar } from './Icons';
+import React, { useEffect } from 'react';
+
+import { useAuth } from '@/context/AuthContext';
+import { meApi } from '@/lib/api/endpoints';
+import type { MyTeam, Presence } from '@/lib/api/types';
+import { useApi } from '@/lib/hooks/useApi';
+
+import { Icon } from './Icons';
 import { ProfileAvatar } from './ProfileAvatar';
-import { useAppContext } from '@/context/AppContext';
+
+const RAIL_REFRESH_MS = 60_000;
+
+/** Rail CSS knows three states: in game, online and away (offline is shown as away). */
+const statusClass = (presence: Presence) => (presence === 'offline' ? 'away' : presence === 'in_game' ? 'game' : presence);
+
+function tooltip(team: MyTeam) {
+  const label =
+    team.activity === 'in_game'
+      ? `در بازی — ${team.game.titleEn}`
+      : team.activity === 'online'
+        ? 'آنلاین'
+        : 'آفلاین';
+  return `${team.name} · ${label}`;
+}
 
 export function Rail() {
-  const teams = [
-    { n: 'تیم آلفا', s: 'game', g: 'Valorant', seed: 3 },
-    { n: 'جوخه سایه', s: 'online', seed: 8 },
-    { n: 'مبارزان تاریکی', s: 'away', seed: 14 },
-    { n: 'نخبگان', s: 'online', seed: 19 },
-    { n: 'عقاب‌های سرخ', s: 'online', seed: 25 },
-    { n: 'سندیکا', s: 'away', seed: 30 }
-  ];
+  const { user, isAuthenticated } = useAuth();
+  const teams = useApi(isAuthenticated ? meApi.teams : null, [isAuthenticated]);
+  const { reload } = teams;
 
-  const { addToast } = useAppContext();
-
-  const handleAddSquad = () => {
-    addToast({
-      title: 'تیم جدید',
-      text: 'دوستان خود را به لابی دعوت کنید',
-      icon: 'users'
-    });
-  };
-
-
-
-  const getTip = (f: any) => `${f.n} · ${f.s === 'game' ? 'در بازی — ' + f.g : f.s === 'online' ? 'آنلاین' : 'آفلاین'}`;
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const timer = window.setInterval(() => void reload(), RAIL_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [isAuthenticated, reload]);
 
   return (
     <aside className="rail" aria-label="تیم‌ها">
-      <div className="panel p1 reveal" style={{ '--d': 1 } as any}>
+      <div className="panel p1 reveal" style={{ '--d': 1 } as React.CSSProperties}>
         <div className="sticky-nav-inner">
-          <Link href="/dashboard" className="me" aria-label="پروفایل شما">
-            <ProfileAvatar seed={5} score={0} />
+          <Link href={isAuthenticated ? '/dashboard' : '/login'} className="me" aria-label="پروفایل شما">
+            <ProfileAvatar seed={user?.avatarSeed} score={user?.points} image={user?.avatar} />
           </Link>
-          <i className="rail-ic"><img src="/icons/team.png" alt="team" style={{ width: '20px', height: '20px', objectFit: 'contain' }} /></i>
+          <i className="rail-ic">
+            <img src="/icons/team.png" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+          </i>
           <div className="list">
-            {teams.map((f, i) => (
-              <div key={i} className={`av ${f.s === 'game' ? 'game' : ''}`} data-tip={getTip(f)}>
-                <div className="face"><Avatar seed={f.seed} /></div>
-                <span className={`st ${f.s}`}></span>
-                {f.s === 'game' && <span className="ingame">در بازی</span>}
-              </div>
-            ))}
+            {(teams.data ?? []).map(team => {
+              const state = statusClass(team.activity);
+              return (
+                <Link
+                  key={team.id}
+                  href={`/teams/${team.id}`}
+                  className={`av ${state === 'game' ? 'game' : ''}`}
+                  data-tip={tooltip(team)}
+                >
+                  <div className="face" style={{ display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 12 }}>
+                    {team.logo ? (
+                      <img src={team.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      team.tag
+                    )}
+                  </div>
+                  <span className={`st ${state}`}></span>
+                  {state === 'game' && <span className="ingame">در بازی</span>}
+                </Link>
+              );
+            })}
           </div>
-          <button className="add-btn" aria-label="ساخت تیم" data-label="ساخت تیم" onClick={handleAddSquad}>
-            <span className="plus"><Icon name="plus" /></span>
-          </button>
+          <Link href={isAuthenticated ? '/teams/create' : '/login?next=/teams/create'} className="add-btn" aria-label="ساخت تیم" data-label="ساخت تیم">
+            <span className="plus">
+              <Icon name="plus" />
+            </span>
+          </Link>
         </div>
       </div>
-
     </aside>
   );
 }

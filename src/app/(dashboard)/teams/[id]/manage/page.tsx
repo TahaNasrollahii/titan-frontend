@@ -1,117 +1,221 @@
 'use client';
 
-import React, { useState } from 'react';
-import styles from './page.module.css';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+
 import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
-import Link from 'next/link';
-import { CustomSelect } from '@/components/CustomSelect';
+import { ErrorState, Loading } from '@/components/ui/State';
+import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { ApiError, errorMessage } from '@/lib/api/client';
+import { TeamInput, teamsApi } from '@/lib/api/endpoints';
+import type { TeamMember } from '@/lib/api/types';
+import { ROLE_LABELS } from '@/lib/format';
+import { useApi } from '@/lib/hooks/useApi';
 
-export default function TeamManagePage({ params }: { params: { id: string } }) {
-  const [game, setGame] = useState('valorant');
-  const [region, setRegion] = useState('eu');
+import { TeamForm } from '../../TeamForm';
+import styles from './page.module.css';
+
+export default function TeamManagePage() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { user } = useAuth();
+  const { addToast } = useAppContext();
+  const team = useApi(() => teamsApi.get(id), [id]);
+  const isCaptain = team.data?.myRole === 'captain';
+  const invitations = useApi(isCaptain ? () => teamsApi.invitations(Number(id)) : null, [id, isCaptain]);
+
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [inviteName, setInviteName] = useState('');
+
+  // Only the captain can manage; other members see the public team page.
+  useEffect(() => {
+    if (team.data && !isCaptain) router.replace(`/teams/${id}`);
+  }, [team.data, isCaptain, id, router]);
+
+  if (team.loading) return <Loading />;
+  const data = team.data;
+  if (!data) return <ErrorState error={team.error} onRetry={team.reload} />;
+  if (!isCaptain) return <Loading />;
+
+  const run = async (action: () => Promise<unknown>, success: string) => {
+    try {
+      await action();
+      addToast({ title: success, icon: 'check' });
+      await team.reload();
+    } catch (error) {
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info' });
+    }
+  };
+
+  const save = async (input: TeamInput) => {
+    setSaving(true);
+    setErrors({});
+    try {
+      team.setData(await teamsApi.update(data.id, input));
+      addToast({ title: 'تغییرات ذخیره شد', icon: 'check' });
+    } catch (error) {
+      if (error instanceof ApiError) setErrors(error.errors);
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const copyInvite = async () => {
+    if (!data.inviteUrl) return;
+    await navigator.clipboard?.writeText(data.inviteUrl);
+    addToast({ title: 'لینک دعوت کپی شد', icon: 'copy' });
+  };
+
+  const invite = async () => {
+    if (!inviteName.trim()) return;
+    try {
+      await teamsApi.invite(data.id, inviteName.trim());
+      setInviteName('');
+      addToast({ title: 'دعوت‌نامه ارسال شد', icon: 'users' });
+      await invitations.reload();
+    } catch (error) {
+      addToast({ title: 'دعوت بازیکن', text: errorMessage(error), icon: 'info' });
+    }
+  };
+
+  const kick = (member: TeamMember) => {
+    if (!window.confirm(`${member.user.displayName} از تیم اخراج شود؟`)) return;
+    void run(() => teamsApi.removeMember(data.id, member.user.id), 'عضو اخراج شد');
+  };
+
+  const promote = (member: TeamMember) => {
+    if (!window.confirm(`کاپیتانی به ${member.user.displayName} واگذار شود؟`)) return;
+    void run(() => teamsApi.promote(data.id, member.user.id), 'کاپیتانی واگذار شد');
+  };
+
+  const leave = async () => {
+    if (!user || !window.confirm('از تیم خارج می‌شوید؟')) return;
+    try {
+      await teamsApi.removeMember(data.id, user.id);
+      router.push('/dashboard?tab=teams');
+    } catch (error) {
+      addToast({ title: 'خروج از تیم', text: errorMessage(error), icon: 'info' });
+    }
+  };
+
+  const dissolve = async () => {
+    if (!window.confirm('تیم برای همیشه منحل شود؟ این کار قابل بازگشت نیست.')) return;
+    try {
+      await teamsApi.dissolve(data.id);
+      addToast({ title: 'تیم منحل شد', icon: 'users' });
+      router.push('/dashboard?tab=teams');
+    } catch (error) {
+      addToast({ title: 'انحلال تیم', text: errorMessage(error), icon: 'info' });
+    }
+  };
 
   return (
     <div className={styles.manageWrapper}>
       <div className={styles.pageHeader}>
-        <h1>تنظیمات تیم Iran Titans</h1>
+        <h1>تنظیمات تیم {data.name}</h1>
       </div>
 
       <div className={styles.panel}>
         <div className={styles.panelTitle}>
           <Icon name="settings" /> اطلاعات پایه‌ای تیم
         </div>
-        
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '32px' }}>
-          <div style={{ width: '100px', height: '100px', borderRadius: '24px', background: 'linear-gradient(135deg, #1f2937, #111827)', display: 'grid', placeItems: 'center', fontSize: '32px', fontWeight: 'bold', color: '#fff' }}>
-            IR
-          </div>
-          <div>
-            <button className={styles.btnSecondary} style={{ marginBottom: '8px' }}>آپلود لوگوی جدید</button>
-            <p style={{ fontSize: '13px', color: 'var(--muted)' }}>حداکثر حجم: ۲ مگابایت (PNG یا JPG)</p>
-          </div>
-        </div>
-
-        <div className={styles.formGrid}>
-          <div className={styles.formGroup}>
-            <label>نام تیم</label>
-            <input type="text" className={styles.input} defaultValue="Iran Titans" />
-          </div>
-          <div className={styles.formGroup}>
-            <label>تگ تیم</label>
-            <input type="text" className={styles.input} defaultValue="IR" maxLength={4} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>بازی اصلی</label>
-            <CustomSelect 
-              value={game}
-              onChange={setGame}
-              options={[
-                { value: 'valorant', label: 'Valorant', image: '/images/categories/valorant.png' },
-                { value: 'fortnite', label: 'Fortnite', image: '/images/categories/fortnite.png' },
-                { value: 'apex', label: 'Apex Legends', image: '/images/categories/apex.png' }
-              ]}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>منطقه (Region)</label>
-            <CustomSelect 
-              value={region}
-              onChange={setRegion}
-              options={[
-                { value: 'eu', label: 'Europe (اروپا)', icon: 'map' },
-                { value: 'me', label: 'Middle East (خاورمیانه)', icon: 'map' }
-              ]}
-            />
-          </div>
-        </div>
-        <div style={{ marginTop: '24px' }}>
-          <button className={styles.btnPrimary}>ذخیره تغییرات اطلاعات</button>
-        </div>
+        <TeamForm
+          initial={{ name: data.name, tag: data.tag, game: data.game.slug, region: data.region, logoUrl: data.logo }}
+          submitLabel="ذخیره تغییرات اطلاعات"
+          submitting={saving}
+          onSubmit={save}
+          errors={errors}
+        />
       </div>
 
       <div className={styles.panel}>
         <div className={styles.panelTitle}>
           <Icon name="users" /> مدیریت اعضای تیم
         </div>
-        
-        <div className={styles.formGroup} style={{ marginBottom: '32px' }}>
+
+        <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
           <label>لینک دعوت اعضا (ارسال برای بازیکنان جدید)</label>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <input type="text" className={styles.input} value="https://titan.ir/invite/t-1x9a2" readOnly style={{ flex: 1 }} />
-            <button className={styles.btnSecondary}>کپی لینک</button>
-            <button className={styles.btnSecondary}><Icon name="refresh" /></button>
+            <input type="text" className={styles.input} value={data.inviteUrl ?? ''} readOnly dir="ltr" style={{ flex: 1 }} />
+            <button className={styles.btnSecondary} onClick={copyInvite}>
+              کپی لینک
+            </button>
+            <button
+              className={styles.btnSecondary}
+              aria-label="ساخت لینک جدید"
+              title="ساخت لینک جدید (لینک قبلی باطل می‌شود)"
+              onClick={() => run(() => teamsApi.regenerateInvite(data.id), 'لینک جدید ساخته شد')}
+            >
+              <Icon name="refresh" />
+            </button>
           </div>
         </div>
 
-        <div className={styles.memberList}>
-          <div className={styles.memberItem}>
-            <div className={styles.memberInfo}>
-              <div style={{ transform: 'scale(0.8)', transformOrigin: 'right center' }}>
-                <ProfileAvatar seed={5} score={100} />
-              </div>
-              <div>
-                <div className={styles.memberName}>TahaTitan (شما)</div>
-                <div className={styles.memberRole}>کاپیتان تیم</div>
-              </div>
-            </div>
+        <div className={styles.formGroup} style={{ marginBottom: '32px' }}>
+          <label>دعوت مستقیم با شناسه بازی (Game ID)</label>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <input
+              type="text"
+              className={styles.input}
+              value={inviteName}
+              onChange={e => setInviteName(e.target.value)}
+              placeholder="مثلا: ShadowHunter"
+              dir="ltr"
+              style={{ flex: 1 }}
+            />
+            <button className={styles.btnPrimary} onClick={invite} disabled={!inviteName.trim()}>
+              ارسال دعوت
+            </button>
           </div>
+          {invitations.data && invitations.data.length > 0 && (
+            <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>
+              در انتظار پاسخ: {invitations.data.map(i => i.invitedUser.displayName).join('، ')}
+            </p>
+          )}
+        </div>
 
-          <div className={styles.memberItem}>
-            <div className={styles.memberInfo}>
-              <div style={{ transform: 'scale(0.8)', transformOrigin: 'right center' }}>
-                <ProfileAvatar seed={12} score={50} />
+        <div className={styles.memberList}>
+          {data.members.map(member => {
+            const isMe = member.user.id === user?.id;
+            return (
+              <div key={member.user.id} className={styles.memberItem}>
+                <div className={styles.memberInfo}>
+                  <div style={{ transform: 'scale(0.8)', transformOrigin: 'right center' }}>
+                    <ProfileAvatar seed={member.user.avatarSeed} score={member.user.points} image={member.user.avatar} />
+                  </div>
+                  <div>
+                    <div className={styles.memberName}>
+                      {member.user.displayName}
+                      {isMe && ' (شما)'}
+                    </div>
+                    <div className={styles.memberRole}>{ROLE_LABELS[member.role]}</div>
+                  </div>
+                </div>
+                {!isMe && (
+                  <div className={styles.memberActions}>
+                    <button
+                      className={styles.btnSecondary}
+                      style={{ padding: '6px 12px', fontSize: '13px' }}
+                      onClick={() => promote(member)}
+                    >
+                      ارتقا به کاپیتان
+                    </button>
+                    <button
+                      className={styles.btnDanger}
+                      style={{ padding: '6px 12px', fontSize: '13px' }}
+                      onClick={() => kick(member)}
+                    >
+                      اخراج
+                    </button>
+                  </div>
+                )}
               </div>
-              <div>
-                <div className={styles.memberName}>ShadowHunter</div>
-                <div className={styles.memberRole}>بازیکن</div>
-              </div>
-            </div>
-            <div className={styles.memberActions}>
-              <button className={styles.btnSecondary} style={{ padding: '6px 12px', fontSize: '13px' }}>ارتقا به کاپیتان</button>
-              <button className={styles.btnDanger} style={{ padding: '6px 12px', fontSize: '13px' }}>اخراج</button>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -120,9 +224,17 @@ export default function TeamManagePage({ params }: { params: { id: string } }) {
           <Icon name="alert-triangle" /> منطقه خطر
         </div>
         <p style={{ color: 'var(--muted)', marginBottom: '24px', lineHeight: '1.6' }}>
-          با انحلال تیم، تمامی رکوردها، سوابق مسابقات و لیست اعضا برای همیشه پاک شده و غیرقابل بازگشت خواهد بود. آیا از این کار اطمینان دارید؟
+          برای ترک تیم ابتدا کاپیتانی را به عضو دیگری واگذار کنید. با انحلال تیم، لیست اعضا و دعوت‌نامه‌ها حذف می‌شوند و
+          تیم دیگر قابل استفاده نخواهد بود.
         </p>
-        <button className={styles.btnDanger}>انحلال کامل تیم</button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className={styles.btnSecondary} onClick={leave}>
+            خروج از تیم
+          </button>
+          <button className={styles.btnDanger} onClick={dissolve}>
+            انحلال کامل تیم
+          </button>
+        </div>
       </div>
     </div>
   );

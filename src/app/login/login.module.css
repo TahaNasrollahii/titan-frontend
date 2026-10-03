@@ -1,0 +1,133 @@
+.wrapper {
+  min-height: calc(100vh - 160px);
+  display: grid;
+  place-items: center;
+  padding: 24px 0;
+}
+
+.card {
+  width: min(440px, 100%);
+  padding: 36px 32px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(226, 69, 63, 0.15);
+}
+
+.card h1 {
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 26px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  letter-spacing: 1px;
+  text-align: center;
+  direction: ltr;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: var(--red);
+}
+
+.codeInput {
+  composes: input;
+  font-size: 26px;
+  letter-spacing: 12px;
+}
+
+.error {
+  color: #ff8a80;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.primary {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--red), var(--red-2));
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.2s var(--spring), opacity 0.2s;
+}
+
+.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.primary:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.linkButton:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.linkButton:not(:disabled):hover {
+  color: var(--text);
+}

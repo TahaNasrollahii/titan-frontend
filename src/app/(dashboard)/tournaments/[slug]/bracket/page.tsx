@@ -1,120 +1,62 @@
 'use client';
 
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import React from 'react';
-import styles from './page.module.css';
-import { Icon } from '@/components/Icons';
 
-export default function BracketPage({ params }: { params: { id: string } }) {
+import { BracketView } from '@/components/BracketView';
+import { Icon } from '@/components/Icons';
+import { Empty, ErrorState, Loading } from '@/components/ui/State';
+import { useAppContext } from '@/context/AppContext';
+import { tournamentsApi } from '@/lib/api/endpoints';
+import { useApi } from '@/lib/hooks/useApi';
+
+import styles from './page.module.css';
+
+export default function BracketPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const { addToast } = useAppContext();
+  const tournament = useApi(() => tournamentsApi.get(slug), [slug]);
+  const bracket = useApi(() => tournamentsApi.bracket(slug), [slug]);
+
+  if (tournament.loading || bracket.loading) return <Loading />;
+  if (!tournament.data) return <ErrorState error={tournament.error} onRetry={tournament.reload} />;
+
+  const rounds = bracket.data ?? [];
+  const myLiveMatch = rounds.flatMap(r => r.matches).find(m => m.isMine && m.status === 'live');
+
+  const showLobby = () => {
+    if (myLiveMatch?.lobbyCode) {
+      void navigator.clipboard?.writeText(myLiveMatch.lobbyCode);
+      addToast({ title: 'کد لابی کپی شد', text: myLiveMatch.lobbyCode, icon: 'copy' });
+    } else {
+      addToast({ title: 'لابی', text: 'کد لابی هنوز توسط ادمین ثبت نشده است.', icon: 'info' });
+    }
+  };
+
   return (
     <div className={styles.bracketWrapper}>
       <div className={styles.pageHeader}>
         <div>
-          <h1>براکت مسابقات (تورنومنت ولورانت)</h1>
+          <h1>براکت مسابقات ({tournament.data.title})</h1>
           <p>وضعیت لحظه‌ای رقابت‌ها و جایگاه تیم‌ها</p>
         </div>
-        <button className={styles.btnPrimary}><Icon name="play" /> ورود به لابی مسابقه (شما)</button>
+        {myLiveMatch ? (
+          <button className={styles.btnPrimary} onClick={showLobby}>
+            <Icon name="play" /> ورود به لابی مسابقه (شما)
+          </button>
+        ) : (
+          <Link href={`/tournaments/${slug}`} className={styles.btnPrimary} style={{ textDecoration: 'none' }}>
+            جزئیات تورنمنت
+          </Link>
+        )}
       </div>
 
-      <div className={styles.bracketContainer}>
-        {/* Quarter Finals */}
-        <div className={styles.round}>
-          <div className={styles.roundTitle}>یک چهارم نهایی</div>
-          
-          <div className={styles.match}>
-            <div className={`${styles.matchConnector} ${styles.connectorTop}`}></div>
-            <div className={`${styles.teamRow} ${styles.winner}`}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>IR</div> Iran Titans</div>
-              <div className={styles.score}>۱۳</div>
-            </div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>NV</div> Nova</div>
-              <div className={styles.score}>۸</div>
-            </div>
-          </div>
-
-          <div className={styles.match}>
-            <div className={`${styles.matchConnector} ${styles.connectorBottom}`}></div>
-            <div className={`${styles.teamRow} ${styles.winner}`}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>DP</div> Dark Phoenix</div>
-              <div className={styles.score}>۱۳</div>
-            </div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>TL</div> Team Liquid</div>
-              <div className={styles.score}>۱۱</div>
-            </div>
-          </div>
-          
-          <div className={styles.match}>
-            <div className={`${styles.matchConnector} ${styles.connectorTop}`}></div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>G2</div> G2 Esports</div>
-              <div className={styles.score}>۹</div>
-            </div>
-            <div className={`${styles.teamRow} ${styles.winner}`}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>SN</div> Sentinels</div>
-              <div className={styles.score}>۱۳</div>
-            </div>
-          </div>
-
-          <div className={styles.match}>
-            <div className={`${styles.matchConnector} ${styles.connectorBottom}`}></div>
-            <div className={`${styles.teamRow} ${styles.winner}`}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>FNC</div> Fnatic</div>
-              <div className={styles.score}>۱۳</div>
-            </div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>PRX</div> Paper Rex</div>
-              <div className={styles.score}>۱۰</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Semi Finals */}
-        <div className={styles.round} style={{ justifyContent: 'space-around' }}>
-          <div className={styles.roundTitle}>نیمه نهایی</div>
-          
-          <div className={`${styles.match} ${styles.liveMatch}`}>
-            <div className={`${styles.matchConnector} ${styles.connectorTop}`}></div>
-            <div className={styles.liveBadge}>LIVE</div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>IR</div> Iran Titans (شما)</div>
-              <div className={styles.score}>۷</div>
-            </div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>DP</div> Dark Phoenix</div>
-              <div className={styles.score}>۵</div>
-            </div>
-          </div>
-
-          <div className={styles.match}>
-            <div className={`${styles.matchConnector} ${styles.connectorBottom}`}></div>
-            <div className={`${styles.teamRow} ${styles.winner}`}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>SN</div> Sentinels</div>
-              <div className={styles.score}>۱۳</div>
-            </div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>FNC</div> Fnatic</div>
-              <div className={styles.score}>۱۱</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Grand Final */}
-        <div className={styles.round} style={{ justifyContent: 'center' }}>
-          <div className={styles.roundTitle} style={{ color: 'gold', borderColor: 'rgba(255,215,0,0.3)', background: 'rgba(255,215,0,0.05)' }}>فینال بزرگ</div>
-          
-          <div className={`${styles.match} ${styles.finalMatch}`}>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>?</div> برنده نیمه‌نهایی ۱</div>
-              <div className={styles.score}>-</div>
-            </div>
-            <div className={styles.teamRow}>
-              <div className={styles.teamName}><div className={styles.teamIcon}>SN</div> Sentinels</div>
-              <div className={styles.score}>-</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {rounds.length ? (
+        <BracketView rounds={rounds} />
+      ) : (
+        <Empty icon="chart">براکت این تورنمنت هنوز منتشر نشده است.</Empty>
+      )}
     </div>
   );
 }

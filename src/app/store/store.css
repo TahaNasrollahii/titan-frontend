@@ -743,20 +743,38 @@
   align-items: flex-start;
 }
 
+/* Badges always stay on one line; they are compact enough for three on the narrowest card. */
 .sg-b-left {
   display: flex;
-  gap: 6px;
-}
-
-.sg-badge {
-  display: inline-flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  min-width: 0;
+}
+
+/* Every badge shares one box model so a row of mixed badges lines up exactly. */
+.sg-badge {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 10px;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.sg-badge i[data-icon],
+.sg-badge > svg {
+  width: 10px;
+  height: 10px;
+  flex: none;
 }
 
 .sg-badge.cream {
@@ -772,26 +790,16 @@
 .sg-badge.red i {
   color: #ffeb3b;
   animation: flicker 0.6s infinite alternate;
-  font-size: 12px;
 }
 
 .sg-badge.dark {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sg-badge.star {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .sg-badge.star svg {
-  width: 12px;
-  height: 12px;
   color: #ffb37a;
 }
 
