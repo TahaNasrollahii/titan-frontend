@@ -1,0 +1,235 @@
+.manageWrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.pageHeader {
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.pageHeader h1 {
+  font-size: 36px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.pageHeader p {
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.panel {
+  background: rgba(20, 20, 22, 0.4);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 40px;
+  margin-bottom: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: transform 0.3s ease;
+}
+
+.panel:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.panelTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 20px;
+}
+
+.panelTitle svg {
+  color: var(--red);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formGroup label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 20px;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--red);
+  background: rgba(226, 69, 63, 0.05);
+  box-shadow: 0 0 0 4px rgba(226, 69, 63, 0.1);
+}
+
+.input::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+select.input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: left 16px center;
+  background-size: 16px;
+  padding-left: 48px; /* Extra padding for the custom arrow */
+}
+
+select.input option {
+  background-color: #1a0f12; /* Dark background matching the theme */
+  color: #fff;
+  font-size: 16px;
+  padding: 12px;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, var(--red) 0%, #a82522 100%);
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 8px 16px rgba(226, 69, 63, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 12px 24px rgba(226, 69, 63, 0.5);
+}
+
+.btnSecondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btnDanger {
+  background: rgba(226, 69, 63, 0.1);
+  color: #ff6a6a;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(226, 69, 63, 0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btnDanger:hover {
+  background: rgba(226, 69, 63, 0.2);
+  color: #ff8585;
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.memberItem:hover {
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateX(-4px);
+}
+
+.memberInfo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.memberName {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.memberRole {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.memberActions {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  .memberItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .memberActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

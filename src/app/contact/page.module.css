@@ -1,0 +1,463 @@
+.contactMain {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+/* Main Panel Layout */
+.contactPanel {
+  position: relative;
+  z-index: 10;
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.topSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.headerContent {
+  flex: 1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.onlineBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 10, 10, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3ac977;
+  box-shadow: 0 0 8px #3ac977;
+  position: relative;
+}
+
+.dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: #3ac977;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripplePulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+@keyframes ripplePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  70%, 100% {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
+}
+
+.headerContent h2 {
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.headerContent h2 span {
+  color: transparent;
+  background: linear-gradient(135deg, #ff4b4b, #bd312c);
+  -webkit-background-clip: text;
+  text-shadow: 0 0 30px rgba(226, 69, 63, 0.4);
+}
+
+.headerContent p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.robotImageWrapper {
+  flex-shrink: 0;
+  width: 250px;
+  position: relative;
+}
+
+.robotImage {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+  animation: floatRobot 6s ease-in-out infinite;
+  transform-origin: center center;
+  position: relative;
+  z-index: 2;
+}
+
+.robotBackglow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250%;
+  height: 250%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(226, 69, 63, 0.4) 0%, rgba(226, 69, 63, 0.1) 40%, transparent 70%);
+  z-index: 0;
+  animation: pulseGlow 4s infinite alternate ease-in-out;
+  pointer-events: none;
+  filter: blur(20px);
+}
+
+.spinRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 110%;
+  height: 110%;
+  margin-top: -55%;
+  margin-left: -55%;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  z-index: 1;
+  animation: spinTech 20s linear infinite;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.floatParticle1, .floatParticle2 {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.floatParticle1 {
+  width: 8px;
+  height: 8px;
+  top: 15%;
+  right: 15%;
+  background: #ff4b4b;
+  box-shadow: 0 0 15px #ff4b4b;
+  animation: floatP1 5s ease-in-out infinite alternate;
+}
+
+.floatParticle2 {
+  width: 6px;
+  height: 6px;
+  bottom: 25%;
+  left: 10%;
+  background: #3ac977;
+  box-shadow: 0 0 12px #3ac977;
+  animation: floatP2 4s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatRobot {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.5deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes spinTech {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes floatP1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-25px, -15px) scale(1.2); }
+}
+
+@keyframes floatP2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20px, 20px) scale(0.8); }
+}
+
+/* Cards Layout */
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dualGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 800px) {
+  .dualGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Advanced Interactive Cards */
+.glitchCard {
+  position: relative;
+  background: rgba(35, 10, 15, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 24px 32px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  isolation: isolate;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.glitchCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.7s;
+  z-index: 1;
+}
+
+.glitchCard:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.glitchCard:hover::before {
+  transform: translateX(100%) skewX(-15deg);
+}
+
+.cardHighlight {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-color, rgba(255,255,255,0.2)), transparent 70%);
+  filter: blur(40px);
+  top: -100px;
+  left: -100px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  z-index: 0;
+}
+
+.glitchCard:hover .cardHighlight {
+  opacity: 1;
+}
+
+.cardContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.discord .cardContent {
+  justify-content: space-between;
+}
+
+.rightContent {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.iconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  display: grid;
+  place-items: center;
+  color: var(--accent-color, #fff);
+  transition: all 0.4s var(--spring);
+  flex-shrink: 0;
+}
+
+.iconWrap img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.glitchCard:hover .iconWrap {
+  transform: scale(1.1) rotate(5deg);
+  background: var(--accent-color, rgba(255,255,255,0.1));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 20px var(--accent-glow, rgba(0,0,0,0.5));
+}
+
+.textWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+}
+
+.textWrap h3 {
+  font-size: 20px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.textWrap p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.cardLink {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--accent-color, #fff);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.glitchCard:hover .cardLink {
+  opacity: 1;
+}
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(58, 201, 119, 0.1);
+  color: #3ac977;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  margin-right: 12px;
+}
+
+.glitchCard:hover .textWrap h3 {
+  color: var(--accent-color, #fff);
+  text-shadow: 0 0 15px var(--accent-glow, transparent);
+}
+
+/* Specific Card Styling */
+.discord {
+  --accent-color: #5865F2;
+  --accent-glow: rgba(88, 101, 242, 0.4);
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.08) 0%, rgba(0, 0, 0, 0.4) 100%);
+  padding: 24px;
+}
+
+.discord .iconWrap {
+  width: 72px;
+  height: 72px;
+}
+
+.discord .iconWrap img {
+  width: 56px;
+  height: 56px;
+}
+
+.discord .textWrap h3 {
+  font-size: 24px;
+}
+
+.discord .actionBtn {
+  margin-right: auto;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: rgba(88, 101, 242, 0.2);
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  border: 1px solid rgba(88, 101, 242, 0.4);
+  transition: all 0.3s;
+}
+
+.discord:hover .actionBtn {
+  background: #5865F2;
+  box-shadow: 0 10px 20px rgba(88, 101, 242, 0.4);
+  transform: translateX(-5px);
+}
+
+.teleChannel {
+  --accent-color: #2aabee;
+  --accent-glow: rgba(42, 171, 238, 0.4);
+}
+
+.teleSupport {
+  --accent-color: #ff8a5c;
+  --accent-glow: rgba(255, 138, 92, 0.4);
+}
+
+.onlineSupport {
+  --accent-color: #ebbb40;
+  --accent-glow: rgba(235, 187, 64, 0.4);
+}
+
+.email {
+  --accent-color: #e2453f;
+  --accent-glow: rgba(226, 69, 63, 0.4);
+}
+
+.phone {
+  --accent-color: #3ac977;
+  --accent-glow: rgba(58, 201, 119, 0.4);
+}
+
+@media (max-width: 600px) {
+  .contactPanel {
+    padding: 30px 20px;
+  }
+  
+  .cardContent {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .discord .actionBtn {
+    margin: 10px auto 0;
+  }
+}

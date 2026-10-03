@@ -1,133 +1,102 @@
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import Button from '@/components/ui/Button';
-import SectionHeader from '@/components/ui/SectionHeader';
-import { Trash2, ArrowRight, ShieldCheck, Ticket } from 'lucide-react';
-import styles from './page.module.css';
+'use client';
+
+import Link from 'next/link';
+import React from 'react';
+
+import { Icon } from '@/components/Icons';
+import { Loading } from '@/components/ui/State';
+import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { faNumber, toman } from '@/lib/format';
+
+import './cart.css';
 
 export default function CartPage() {
-  const formatPrice = (price: number) => price.toLocaleString('fa-IR');
+  const { cart, cartLoading, updateQuantity, removeFromCart } = useAppContext();
+  const { isAuthenticated } = useAuth();
 
-  // Hardcoded cart items for showcase
-  const cartItems = [
-    {
-      id: 'p1',
-      title: '۱,۰۰۰ ویباکس فورتنایت',
-      category: 'ارز بازی',
-      price: 299000,
-      quantity: 1,
-      imageEmoji: '🎮',
-    },
-    {
-      id: 'p5',
-      title: '۱,۰۰۰ پوینت ولورنت',
-      category: 'ارز بازی',
-      price: 350000,
-      quantity: 2,
-      imageEmoji: '🎯',
-    },
-  ];
-
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const total = subtotal;
+  if (cartLoading && cart.lines.length === 0) return <Loading />;
 
   return (
-    <>
-      <Navbar />
-      
-      <main className={styles.main}>
-        <div className="container">
-          <div className={styles.header}>
-            <SectionHeader 
-              title="سبد خرید"
-              align="start"
-              className={styles.sectionHeader}
-            />
-            <span className={styles.itemCount}>{cartItems.length} کالا</span>
+    <div className="cart-page reveal" style={{ '--d': 1 } as React.CSSProperties}>
+      <div className="cart-header">
+        <h1>سبد خرید شما</h1>
+        <p>{faNumber(cart.count)} محصول در سبد خرید</p>
+      </div>
+
+      {cart.lines.length === 0 ? (
+        <div className="cart-empty">
+          <div className="cart-empty-icon">
+            <Icon name="cart" />
           </div>
-
-          <div className={styles.layout}>
-            
-            {/* Cart Items */}
-            <div className={styles.itemsList}>
-              {cartItems.map((item) => (
-                <div key={item.id} className={styles.cartItem}>
-                  <div className={styles.itemImage}>
-                    <span className={styles.emoji}>{item.imageEmoji}</span>
-                  </div>
-                  
-                  <div className={styles.itemInfo}>
-                    <span className={styles.itemCategory}>{item.category}</span>
-                    <h3 className={styles.itemTitle}>{item.title}</h3>
-                    <div className={styles.itemPrice}>{formatPrice(item.price)} تومان</div>
-                  </div>
-
-                  <div className={styles.itemActions}>
-                    <div className={styles.quantityControls}>
-                      <button className={styles.qtyBtn}>+</button>
-                      <span className={styles.qtyValue}>{item.quantity}</span>
-                      <button className={styles.qtyBtn}>-</button>
-                    </div>
-                    <button className={styles.removeBtn} aria-label="حذف از سبد">
-                      <Trash2 size={18} />
+          <h2>سبد خرید شما خالی است</h2>
+          <p>برای مشاهده محصولات به فروشگاه سر بزنید</p>
+          <Link href="/store" className="cart-btn primary">
+            بازگشت به فروشگاه
+          </Link>
+        </div>
+      ) : (
+        <div className="cart-content">
+          <div className="cart-items">
+            {cart.lines.map((line, index) => (
+              <div key={line.key} className="cart-item reveal" style={{ '--d': index + 2 } as React.CSSProperties}>
+                <Link href={`/product/${line.productSlug}`} className="cart-item-img">
+                  {line.image ? <img src={line.image} alt={line.title} /> : <Icon name="gift" />}
+                </Link>
+                <div className="cart-item-info">
+                  <h3>{line.title}</h3>
+                  {line.variantLabel && <span className="cart-item-variant">{line.variantLabel}</span>}
+                  <span className="cart-item-price">{toman(line.unitPrice)}</span>
+                </div>
+                <div className="cart-item-actions">
+                  <div className="cart-qty">
+                    <button onClick={() => updateQuantity(line.key, line.quantity + 1)} aria-label="افزایش">
+                      <Icon name="plus" />
+                    </button>
+                    <span>{faNumber(line.quantity)}</span>
+                    <button onClick={() => updateQuantity(line.key, line.quantity - 1)} aria-label="کاهش">
+                      <Icon name="minus" />
                     </button>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Summary Sidebar */}
-            <aside className={styles.summarySidebar}>
-              <div className={styles.summaryCard}>
-                <h3 className={styles.summaryTitle}>خلاصه سفارش</h3>
-                
-                <div className={styles.summaryRow}>
-                  <span className={styles.summaryLabel}>جمع جزء</span>
-                  <span className={styles.summaryValue}>{formatPrice(subtotal)} تومان</span>
-                </div>
-                
-                <div className={styles.summaryRow}>
-                  <span className={styles.summaryLabel}>تخفیف‌ها</span>
-                  <span className={styles.summaryValueDiscount}>۰ تومان</span>
-                </div>
-
-                <div className={styles.couponBox}>
-                  <Ticket size={16} className={styles.couponIcon} />
-                  <input type="text" placeholder="کد تخفیف" className={styles.couponInput} />
-                  <button className={styles.couponBtn}>ثبت</button>
-                </div>
-
-                <div className={styles.summaryDivider} />
-
-                <div className={styles.summaryTotalRow}>
-                  <span className={styles.summaryTotalLabel}>جمع کل</span>
-                  <span className={styles.summaryTotalValue}>{formatPrice(total)} تومان</span>
-                </div>
-
-                <Button 
-                  size="lg" 
-                  variant="primary" 
-                  fullWidth 
-                  glow 
-                  href="/checkout"
-                  icon={<ArrowRight size={18} style={{ transform: 'rotate(180deg)' }} />}
-                  iconPosition="end"
-                >
-                  تکمیل خرید
-                </Button>
-                
-                <div className={styles.secureCheckout}>
-                  <ShieldCheck size={16} className={styles.secureIcon} />
-                  <span>پرداخت امن و رمزنگاری شده</span>
+                  <button className="cart-item-remove" onClick={() => removeFromCart(line.key)} aria-label="حذف">
+                    <Icon name="trash" />
+                  </button>
                 </div>
               </div>
-            </aside>
-            
+            ))}
+          </div>
+
+          <div className="cart-sidebar reveal" style={{ '--d': cart.lines.length + 2 } as React.CSSProperties}>
+            <div className="cart-summary">
+              <h3>خلاصه سفارش</h3>
+              <div className="summary-row">
+                <span>جمع کل:</span>
+                <span>{toman(cart.subtotal)}</span>
+              </div>
+              <div className="summary-row">
+                <span>تخفیف:</span>
+                <span className="discount">{toman(cart.discount)}</span>
+              </div>
+              <div className="summary-divider"></div>
+              <div className="summary-row total">
+                <span>مبلغ قابل پرداخت:</span>
+                <span className="total-val">
+                  {faNumber(cart.total)} <small>تومان</small>
+                </span>
+              </div>
+              <Link
+                href={isAuthenticated ? '/checkout' : '/login?next=/checkout'}
+                className="cart-btn primary block"
+              >
+                {isAuthenticated ? 'تکمیل سفارش' : 'ورود و تکمیل سفارش'}
+              </Link>
+              <Link href="/store" className="cart-btn secondary block mt-2">
+                ادامه خرید
+              </Link>
+            </div>
           </div>
         </div>
-      </main>
-
-      <Footer />
-    </>
+      )}
+    </div>
   );
 }

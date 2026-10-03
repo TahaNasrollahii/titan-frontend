@@ -405,3 +405,111 @@
     flex-shrink: 0;
   }
 }
+
+/* =============================================
+   BATMAN HERO SECTION
+   ============================================= */
+.heroSection {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+}
+
+.backgroundVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.heroContainer {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  max-width: var(--container-max, 1400px);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.glassyBox {
+  position: absolute;
+  top: 35%; /* Moved slightly higher */
+  left: -3%; /* Moved even further left */
+  transform: translateY(-50%);
+  background: rgba(15, 15, 20, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3.5rem;
+  border-radius: 24px;
+  max-width: 550px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: white;
+  text-align: right;
+  direction: rtl;
+}
+
+:global([dir="rtl"]) .glassyBox {
+  left: -3%;
+  right: auto;
+  text-align: right;
+  direction: rtl;
+}
+
+.title {
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #ffffff 0%, #aaaaaa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  font-family: var(--font-persian, system-ui, sans-serif);
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-family: var(--font-persian, system-ui, sans-serif);
+  font-weight: 400;
+}
+
+@media (max-width: 768px) {
+  .glassyBox {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .overlay {
+    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.8) 100%);
+  }
+  
+  :global([dir="rtl"]) .glassyBox {
+    left: 50%;
+    right: auto;
+    text-align: center;
+  }
+}

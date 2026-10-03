@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import BackgroundManager from "@/components/effects/BackgroundManager";
+import { AuthProvider } from "@/context/AuthContext";
+import { AppProvider } from "@/context/AppContext";
+import { Sidebar } from "@/components/Sidebar";
+import { Topbar } from "@/components/Topbar";
+import { ToastContainer } from "@/components/ToastContainer";
+import { Rail } from "@/components/Rail";
+
 export const metadata: Metadata = {
   title: "TITAN — پلتفرم گیمینگ و اسپورت",
-  description: "بازی کن. رقابت کن. فتح کن. پلتفرم گیمینگ و مسابقات اسپورت تایتان — فروشگاه محصولات دیجیتال گیمینگ و تورنمنت‌های حرفه‌ای",
-  keywords: ["گیمینگ", "اسپورت", "تورنمنت", "فورتنایت", "ولورنت", "تایتان", "بازی"],
+  description: "بازی کن. رقابت کن. فتح کن. پلتفرم گیمینگ و مسابقات اسپورت تایتان",
 };
 
 export default function RootLayout({
@@ -15,8 +20,19 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <BackgroundManager />
-        {children}
+        <AuthProvider>
+          <AppProvider>
+            <div className="frame" id="frame">
+              <Sidebar />
+              <main className="main">
+                <Topbar />
+                {children}
+              </main>
+              <Rail />
+              <ToastContainer />
+            </div>
+          </AppProvider>
+        </AuthProvider>
       </body>
     </html>
   );

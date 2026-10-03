@@ -1,145 +1,220 @@
 'use client';
 
-import { useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import SectionHeader from '@/components/ui/SectionHeader';
-import Button from '@/components/ui/Button';
-import TournamentCard from '@/components/cards/TournamentCard';
-import GradientOrb from '@/components/effects/GradientOrb';
-import { tournaments } from '@/data/tournaments';
-import { Swords, ShoppingBag } from 'lucide-react';
-import styles from './page.module.css';
+import React, { useCallback, useEffect, useState } from 'react';
 
-type TournamentTab = 'all' | 'live' | 'upcoming' | 'completed';
+import { Icon } from '@/components/Icons';
+import { TournamentCard } from '@/components/TournamentCard';
+import { ErrorState, Loading } from '@/components/ui/State';
+import { errorMessage } from '@/lib/api/client';
+import { catalogApi, tournamentsApi } from '@/lib/api/endpoints';
+import type { TournamentStatus, TournamentSummary } from '@/lib/api/types';
+import { useApi } from '@/lib/hooks/useApi';
+import { useSpotlight } from '@/lib/hooks/useSpotlight';
 
-export default function TournamentsPage() {
-  const [activeTab, setActiveTab] = useState<TournamentTab>('all');
+import '../tournament/tournament.css';
+import './list.css';
 
-  const filteredTournaments = activeTab === 'all'
-    ? tournaments
-    : tournaments.filter(t => t.status === activeTab);
+const PAGE_SIZE = 12;
 
-  const tabs: { key: TournamentTab; label: string }[] = [
-    { key: 'all', label: 'همه' },
-    { key: 'live', label: 'زنده' },
-    { key: 'upcoming', label: 'بزودی' },
-    { key: 'completed', label: 'پایان‌یافته' },
-  ];
+const STATUS_OPTIONS: { value: string; label: string }[] = [
+  { value: '', label: 'همه وضعیت‌ها' },
+  { value: 'registration_open', label: 'ثبت‌نام باز' },
+  { value: 'live', label: 'در جریان' },
+  { value: 'upcoming', label: 'به‌زودی' },
+  { value: 'completed', label: 'پایان یافته' },
+  { value: 'full', label: 'تکمیل ظرفیت' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'starts_at', label: 'نزدیک‌ترین زمان' },
+  { value: '-prize_pool', label: 'بیشترین جایزه' },
+  { value: '-starts_at', label: 'جدیدترین' },
+];
+
+function Dropdown({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: { label: string; value: string }[];
+  onChange: (val: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selectedLabel = options.find(o => o.value === value)?.label ?? value;
+
+  return (
+    <div className={`custom-dropdown ${open ? 'open' : ''}`} onMouseLeave={() => setOpen(false)}>
+      <div className="cd-trigger" onClick={() => setOpen(!open)}>
+        <span>{selectedLabel}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
+      </div>
+      <div className="cd-menu">
+        {options.map(option => (
+          <div
+            key={option.value}
+            className={`cd-item ${value === option.value ? 'active' : ''}`}
+            onClick={() => {
+              onChange(option.value);
+              setOpen(false);
+            }}
+          >
+            {option.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface TournamentFilters {
+  game: string;
+  status: string;
+  ordering: string;
+  search: string;
+}
+
+/** Paginated tournament cards. Keyed by its filters, so changing them starts again from page 1. */
+function TournamentResults({ filters }: { filters: TournamentFilters }) {
+  const [items, setItems] = useState<TournamentSummary[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPage = useCallback(
+    (pageNumber: number, isActive: () => boolean = () => true) => {
+      // "Full" is a flag, not a status: it means open registration with no seats left.
+      const status = (filters.status === 'full' ? 'registration_open' : filters.status) as TournamentStatus | '';
+      return tournamentsApi
+        .list({
+          game: filters.game || undefined,
+          status: status || undefined,
+          search: filters.search || undefined,
+          ordering: filters.ordering,
+          page: pageNumber,
+          page_size: PAGE_SIZE,
+        })
+        .then(result => {
+          if (!isActive()) return;
+          const results = filters.status === 'full' ? result.results.filter(t => t.isFull) : result.results;
+          setItems(current => (pageNumber === 1 ? results : [...current, ...results]));
+          setPage(pageNumber);
+          setHasMore(Boolean(result.next));
+          setError(null);
+        })
+        .catch(err => isActive() && setError(errorMessage(err)))
+        .finally(() => isActive() && setLoading(false));
+    },
+    [filters],
+  );
+
+  useEffect(() => {
+    let active = true;
+    void fetchPage(1, () => active);
+    return () => {
+      active = false;
+    };
+  }, [fetchPage]);
+
+  useSpotlight('.spot-track', [items]);
+
+  const loadMore = () => {
+    setLoading(true);
+    void fetchPage(page + 1);
+  };
+
+  if (error && !items.length) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={() => {
+          setLoading(true);
+          void fetchPage(1);
+        }}
+      />
+    );
+  }
 
   return (
     <>
-      <Navbar />
-      
-      <main className={styles.main}>
-        <section className={styles.hero}>
-          <div className={styles.heroBackground}>
-            <GradientOrb color="blue" size={600} top="-10%" left="-15%" opacity={0.2} />
-            <GradientOrb color="violet" size={500} top="20%" right="-20%" opacity={0.15} />
-            <GradientOrb color="magenta" size={300} bottom="10%" left="30%" opacity={0.1} />
-            <div className={styles.heroGradient} />
+      <div className="tour-matches reveal" style={{ '--d': 3, marginTop: '24px' } as React.CSSProperties}>
+        {items.map((tournament, i) => (
+          <TournamentCard key={tournament.id} tournament={tournament} index={i % PAGE_SIZE} />
+        ))}
+        {!loading && items.length === 0 && (
+          <div className="empty-state">
+            <Icon name="search" />
+            <p>هیچ تورنومنتی با این مشخصات یافت نشد!</p>
           </div>
+        )}
+      </div>
 
-          {/* HUD Elements */}
-          <div className={`${styles.hudElement} ${styles.hudTopRight}`}>
-            <span>SYS://TITAN.V2.4</span>
-            <span>COORD: 35.6892°N</span>
-            <span>STATUS: ONLINE</span>
-          </div>
-          <div className={`${styles.hudElement} ${styles.hudBottomLeft}`}>
-            <span>SEASON 04 — ACTIVE</span>
-            <span>PLAYERS ONLINE: 12,847</span>
-            <span>NEXT EVENT: 02:14:33</span>
-          </div>
-
-          <div className={`container ${styles.heroContent}`}>
-            <div className={styles.heroInner}>
-              <div className={styles.heroEyebrow}>
-                <span className={styles.heroEyebrowDot} />
-                میدان نبرد تایتان
-              </div>
-
-              <h1 className={styles.heroHeading}>
-                وارد{' '}
-                <span className={styles.heroHeadingAccent}>آرنا</span>{' '}
-                شو
-              </h1>
-
-              <p className={styles.heroSubtitle}>
-                در بزرگ‌ترین تورنمنت‌های خاورمیانه رقابت کنید و جوایز نقدی برنده شوید.
-              </p>
-
-              <div className={styles.heroCTAs}>
-                <Button size="lg" variant="primary" glow href="#tournaments-list" icon={<Swords size={20} />}>
-                  مشاهده تورنمنت‌ها
-                </Button>
-              </div>
-
-              <div className={styles.heroStats}>
-                <div className={styles.heroStat}>
-                  <span className={styles.heroStatValue}>25K+</span>
-                  <span className={styles.heroStatLabel}>بازیکن فعال</span>
-                </div>
-                <div className={styles.heroStat}>
-                  <span className={styles.heroStatValue}>150+</span>
-                  <span className={styles.heroStatLabel}>تورنمنت</span>
-                </div>
-                <div className={styles.heroStat}>
-                  <span className={styles.heroStatValue}>$500K</span>
-                  <span className={styles.heroStatLabel}>جوایز توزیع‌شده</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="container">
-          <div className={styles.content}>
-            <div className={styles.controls}>
-              <div className={styles.tabsRow}>
-                {tabs.map(tab => (
-                  <button
-                    key={tab.key}
-                    className={`${styles.tab} ${activeTab === tab.key ? styles.tabActive : ''}`}
-                    onClick={() => setActiveTab(tab.key)}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              
-              <div className={styles.filters}>
-                <select className={styles.select}>
-                  <option value="">همه بازی‌ها</option>
-                  <option value="fortnite">فورتنایت</option>
-                  <option value="valorant">ولورنت</option>
-                  <option value="ea-fc">ای‌ای اف‌سی</option>
-                  <option value="call-of-duty">کال آو دیوتی</option>
-                </select>
-                <select className={styles.select}>
-                  <option value="">نوع ورودیه</option>
-                  <option value="free">رایگان</option>
-                  <option value="paid">ورودی‌دار</option>
-                </select>
-              </div>
-            </div>
-
-            <div className={styles.grid}>
-              {filteredTournaments.map(t => (
-                <TournamentCard key={t.id} tournament={t} />
-              ))}
-            </div>
-            
-            {filteredTournaments.length === 0 && (
-              <div className={styles.emptyState}>
-                <p>هیچ تورنمنتی با این فیلترها یافت نشد.</p>
-              </div>
-            )}
-          </div>
+      {loading && <Loading />}
+      {!loading && hasMore && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+          <button className="mc-btn-full" style={{ maxWidth: 260 }} onClick={loadMore}>
+            بارگذاری بیشتر
+          </button>
         </div>
-      </main>
-
-      <Footer />
+      )}
     </>
+  );
+}
+
+export default function TournamentsListPage() {
+  const games = useApi(() => catalogApi.games());
+  const [game, setGame] = useState('');
+  const [status, setStatus] = useState('');
+  const [ordering, setOrdering] = useState('starts_at');
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
+  const gameOptions = [{ value: '', label: 'همه بازی‌ها' }].concat(
+    (games.data ?? []).filter(g => g.kind === 'game').map(g => ({ value: g.slug, label: g.titleEn })),
+  );
+
+  return (
+    <main className="tour-wrapper">
+      <div className="liquid-bg">
+        <div className="l-blob blob-1"></div>
+        <div className="l-blob blob-2"></div>
+        <div className="l-blob blob-3"></div>
+      </div>
+
+      <div className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as React.CSSProperties}>
+        <h3>لیست مسابقات</h3>
+      </div>
+
+      <div className="filter-bar-wrapper spot reveal" style={{ '--d': 2 } as React.CSSProperties}>
+        <div className="filter-search">
+          <Icon name="search" />
+          <input
+            type="text"
+            placeholder="جستجوی تورنومنت یا بازی..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="filter-dropdowns">
+          <Dropdown value={game} options={gameOptions} onChange={setGame} />
+          <Dropdown value={status} options={STATUS_OPTIONS} onChange={setStatus} />
+          <Dropdown value={ordering} options={SORT_OPTIONS} onChange={setOrdering} />
+        </div>
+      </div>
+
+      <TournamentResults
+        key={`${game}|${status}|${ordering}|${debouncedSearch}`}
+        filters={{ game, status, ordering, search: debouncedSearch }}
+      />
+    </main>
   );
 }

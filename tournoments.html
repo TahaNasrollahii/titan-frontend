@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مسابقات تایتان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-void:#120708;
+  --bg-page-2:#1d0c0e;
+  --bg-surface:#2b1114;
+  --bg-surface-2:#38151a;
+  --flame:#ff5a35;
+  --flame-deep:#c23a1d;
+  --flame-soft:rgba(255,90,53,0.14);
+  --gold:#f0c866;
+  --silver:#cfd3da;
+  --bronze:#d69a63;
+  --green:#5fd07a;
+  --blue:#6fa8dc;
+  --purple:#a97bd6;
+  --text-primary:#f9efe9;
+  --text-secondary:#d1ada7;
+  --text-muted:#9c7570;
+  --border-soft:rgba(255,236,230,0.08);
+  --border-strong:rgba(255,236,230,0.18);
+  --radius-lg:26px;
+  --radius-md:18px;
+  --radius-sm:12px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;font-family:'Vazirmatn',sans-serif;color:var(--text-primary);
+  background:
+    radial-gradient(1000px 500px at 12% -8%, rgba(255,90,53,0.16) 0%, transparent 60%),
+    radial-gradient(800px 500px at 100% 30%, rgba(169,123,214,0.08) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-void) 0%, var(--bg-page-2) 100%);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  line-height:1.7;
+}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:0.035;z-index:1;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.orb-field{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);}
+.orb1{width:420px;height:420px;top:-120px;right:-80px;background:radial-gradient(circle,rgba(255,90,53,0.35),transparent 70%);animation:float1 16s ease-in-out infinite;}
+.orb2{width:380px;height:380px;top:520px;left:-120px;background:radial-gradient(circle,rgba(169,123,214,0.28),transparent 70%);animation:float2 20s ease-in-out infinite;}
+.orb3{width:320px;height:320px;bottom:0;right:10%;background:radial-gradient(circle,rgba(240,200,102,0.22),transparent 70%);animation:float1 18s ease-in-out infinite reverse;}
+@keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(-30px,40px);}}
+@keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,-30px);}}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px;position:relative;z-index:2;}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(18,7,8,0.6);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border-bottom:1px solid var(--border-soft);}
+.topbar-inner{max-width:1160px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--flame),var(--flame-deep));display:flex;align-items:center;justify-content:center;font-weight:800;color:#1a0a0a;box-shadow:0 0 18px rgba(255,90,53,0.4);}
+
+section{margin-top:50px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;}
+.section-head .head-left{display:flex;align-items:center;gap:10px;}
+.section-head .accent-bar{width:4px;height:22px;border-radius:2px;background:linear-gradient(180deg,var(--flame),var(--flame-deep));}
+.section-head h2{font-size:20px;font-weight:700;margin:0;}
+.section-head p{color:var(--text-muted);font-size:12.5px;margin:2px 0 0;}
+
+/* ---------- top row ---------- */
+.top-row{margin-top:26px;display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:stretch;}
+@media (max-width:860px){.top-row{grid-template-columns:1fr;}}
+
+.banner{
+  border-radius:var(--radius-lg);position:relative;overflow:hidden;
+  background:
+    radial-gradient(650px 380px at 90% -20%, rgba(255,140,80,0.4), transparent 60%),
+    radial-gradient(450px 320px at -15% 115%, rgba(169,123,214,0.3), transparent 60%),
+    radial-gradient(300px 240px at 50% 50%, rgba(240,200,102,0.08), transparent 70%),
+    linear-gradient(150deg, rgba(74,24,17,0.55) 0%, rgba(44,16,19,0.55) 55%, rgba(23,10,11,0.6) 100%);
+  border:1px solid rgba(255,236,230,0.22);
+  backdrop-filter:blur(22px) saturate(160%);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  padding:36px 38px;display:flex;flex-direction:column;justify-content:center;gap:16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 0 60px rgba(255,255,255,0.02), 0 24px 60px -24px rgba(0,0,0,0.7);
+}
+.banner::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);z-index:3;
+}
+.banner::after, .status-card::after{
+  content:"";position:absolute;top:-50%;left:-60%;width:45%;height:200%;
+  background:linear-gradient(75deg,transparent 30%,rgba(255,255,255,0.16) 46%,rgba(255,255,255,0.32) 50%,rgba(255,255,255,0.16) 54%,transparent 70%);
+  transform:rotate(8deg);animation:shine 6s ease-in-out infinite;pointer-events:none;z-index:2;
+}
+@keyframes shine{0%{left:-60%;}45%{left:120%;}55%{left:120%;}100%{left:-60%;}}
+.banner-rays{position:absolute;inset:0;opacity:0.5;pointer-events:none;z-index:1;}
+.banner-ghost{
+  position:absolute;left:-30px;bottom:-60px;font-size:280px;font-weight:900;
+  color:rgba(255,236,230,0.035);line-height:1;user-select:none;pointer-events:none;
+}
+.banner-inner{position:relative;z-index:4;}
+.badge-row{display:flex;gap:8px;margin-bottom:18px;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:0.2px;}
+.badge-gold{background:linear-gradient(135deg,var(--gold),#e0a94a);color:#3a2603;box-shadow:0 4px 14px -4px rgba(240,200,102,0.5);}
+.badge-outline{background:rgba(0,0,0,0.28);border:1px solid var(--border-strong);color:var(--text-secondary);}
+.badge-outline .pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--flame);display:inline-block;margin-left:5px;animation:pulse 1.6s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,90,53,0.5);}70%{box-shadow:0 0 0 7px rgba(255,90,53,0);}100%{box-shadow:0 0 0 0 rgba(255,90,53,0);}}
+.banner h1{font-size:38px;font-weight:800;margin:0 0 10px;letter-spacing:-0.5px;}
+.banner h1 em{font-style:normal;background:linear-gradient(90deg,var(--flame),#ffab8a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.banner p{color:var(--text-secondary);font-size:14.5px;max-width:46ch;margin:0;}
+.banner-foot{display:flex;align-items:center;gap:18px;margin-top:20px;flex-wrap:wrap;}
+.btn-primary{
+  background:linear-gradient(135deg,var(--flame),var(--flame-deep));color:#2a0f08;border:none;border-radius:12px;
+  padding:13px 26px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;
+  box-shadow:0 8px 22px -8px rgba(255,90,53,0.7), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.review-pill{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary);}
+.avatars{display:flex;}
+.avatars span{width:27px;height:27px;border-radius:50%;border:2px solid #2c1013;margin-inline-start:-9px;display:inline-block;background-size:cover;}
+.avatars span:nth-child(1){background:linear-gradient(140deg,#f0c866,#c23a1d);}
+.avatars span:nth-child(2){background:linear-gradient(140deg,#a97bd6,#5a2b6e);}
+.avatars span:nth-child(3){background:linear-gradient(140deg,#6fa8dc,#1c4a7a);}
+.avatars span:first-child{margin-inline-start:0;}
+
+/* ---------- status card ---------- */
+.status-card{
+  border-radius:var(--radius-lg);border:1px solid rgba(255,236,230,0.2);
+  background:linear-gradient(165deg, rgba(58,23,27,0.55), rgba(28,13,15,0.55));
+  backdrop-filter:blur(22px) saturate(160%);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:20px;
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), 0 24px 60px -24px rgba(0,0,0,0.7);
+}
+.status-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);}
+.status-glow{position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:260px;height:260px;background:radial-gradient(circle,rgba(255,90,53,0.22),transparent 70%);pointer-events:none;}
+.status-ring-wrap{position:relative;width:150px;height:150px;z-index:2;}
+.status-blob{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 220deg,var(--flame),var(--gold),var(--purple),var(--flame));animation:spin 8s linear infinite;filter:blur(0.3px);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.status-ring-inner{position:absolute;inset:11px;border-radius:50%;background:#1c0d0f;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 2px 10px rgba(0,0,0,0.4);}
+.status-ring-inner .lbl{font-size:11px;color:var(--text-muted);}
+.status-ring-inner .val{font-size:25px;font-weight:800;color:var(--text-primary);text-shadow:0 0 16px rgba(255,90,53,0.3);}
+.status-mini-row{display:flex;gap:10px;width:100%;z-index:2;}
+.status-mini{flex:1;text-align:center;background:rgba(0,0,0,0.18);border-radius:14px;padding:12px 6px;border:1px solid var(--border-soft);}
+.status-mini .ic{width:30px;height:30px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
+.status-mini.win .ic{background:rgba(95,208,122,0.15);}
+.status-mini.loss .ic{background:rgba(255,90,53,0.15);}
+.status-mini.matches .ic{background:rgba(111,168,220,0.15);}
+.status-mini svg{width:15px;height:15px;}
+.status-mini b{display:block;font-size:16px;font-weight:800;}
+.status-mini span{font-size:10.5px;color:var(--text-muted);}
+
+/* ---------- match cards ---------- */
+.match-card{
+  border-radius:var(--radius-md);overflow:hidden;position:relative;
+  padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-bottom:14px;border:1px solid rgba(255,255,255,0.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.25), 0 16px 34px -18px rgba(0,0,0,0.75);
+  transition:transform .2s;
+}
+.match-card:hover{transform:translateY(-2px);}
+.match-card.m1{background:linear-gradient(100deg,#ff5a35 0%,#8a2a1c 42%,#1f0d0e 100%);}
+.match-card.m2{background:linear-gradient(100deg,#a97bd6 0%,#4a2364 42%,#1a0c1f 100%);}
+.match-side{display:flex;align-items:center;gap:13px;flex:1;position:relative;z-index:2;}
+.match-side.right{flex-direction:row-reverse;text-align:left;}
+.crest{
+  width:54px;height:54px;flex-shrink:0;position:relative;overflow:hidden;
+  background:rgba(0,0,0,0.32);border:1px solid rgba(255,255,255,0.22);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;
+}
+.crest::after{
+  content:"";position:absolute;top:-50%;left:-90%;width:60%;height:200%;
+  background:linear-gradient(75deg,transparent 30%,rgba(255,255,255,0.5) 50%,transparent 70%);
+  animation:shine 5s ease-in-out infinite;
+}
+.team-name{font-weight:700;font-size:14.5px;}
+.team-tag{font-size:11.5px;color:rgba(255,236,230,0.72);}
+.match-center{text-align:center;flex-shrink:0;padding:0 8px;z-index:2;position:relative;}
+.vs-badge{font-weight:900;font-size:20px;color:#fff;text-shadow:0 0 14px rgba(0,0,0,0.4);display:block;letter-spacing:1px;}
+.vs-bolt{width:16px;height:16px;margin:2px auto;opacity:0.85;}
+.match-time{font-size:11.5px;color:rgba(255,236,230,0.9);white-space:nowrap;background:rgba(0,0,0,0.28);padding:3px 10px;border-radius:999px;display:inline-block;margin-top:4px;}
+.match-status{position:absolute;top:14px;left:18px;font-size:10.5px;font-weight:700;background:rgba(0,0,0,0.4);padding:4px 11px;border-radius:999px;color:#fff;z-index:3;}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;}
+@media (max-width:760px){.steps{grid-template-columns:repeat(2,1fr);}}
+.step{
+  background:linear-gradient(160deg, rgba(43,17,20,0.5), rgba(56,21,26,0.5));
+  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
+  border:1px solid rgba(255,236,230,0.14);border-radius:var(--radius-md);padding:22px 20px;position:relative;
+  transition:border-color .2s,transform .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.step:hover{border-color:rgba(255,90,53,0.4);transform:translateY(-2px);}
+.step-num{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--flame),var(--flame-deep));color:#2a0f08;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;margin-bottom:16px;box-shadow:0 6px 16px -6px rgba(255,90,53,0.6);}
+.step h3{font-size:15px;margin:0 0 6px;font-weight:700;}
+.step p{font-size:13px;color:var(--text-muted);margin:0;}
+
+/* ---------- carousel ---------- */
+.carousel{
+  background:linear-gradient(160deg, rgba(43,17,20,0.5), rgba(28,13,15,0.55));
+  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid rgba(255,236,230,0.18);border-radius:var(--radius-lg);overflow:hidden;
+  display:grid;grid-template-columns:0.9fr 1.1fr;box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+}
+@media (max-width:760px){.carousel{grid-template-columns:1fr;}}
+.carousel-img{position:relative;background:radial-gradient(circle at 30% 30%,rgba(255,120,70,0.3),transparent 60%),linear-gradient(160deg,#4a1811,#170a0b);min-height:210px;}
+.carousel-text{padding:32px;display:flex;flex-direction:column;justify-content:center;}
+.carousel-text h3{margin:0 0 10px;font-size:19px;font-weight:700;}
+.carousel-text p{color:var(--text-secondary);font-size:13.5px;margin:0 0 18px;}
+.carousel-dots{display:flex;gap:6px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border-strong);}
+.dot.active{background:var(--flame);box-shadow:0 0 8px rgba(255,90,53,0.7);}
+
+/* ---------- leaderboard ---------- */
+.tabs{display:flex;gap:8px;margin-bottom:16px;}
+.tab{padding:9px 20px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid var(--border-soft);color:var(--text-muted);background:var(--bg-surface);}
+.tab.active{background:var(--flame-soft);color:var(--flame);border-color:rgba(255,90,53,0.35);}
+.lb{
+  background:linear-gradient(160deg, rgba(43,17,20,0.5), rgba(28,13,15,0.55));
+  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid rgba(255,236,230,0.18);border-radius:var(--radius-md);overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.lb-row{display:flex;align-items:center;gap:14px;padding:15px 20px;border-bottom:1px solid var(--border-soft);position:relative;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row.r1{background:linear-gradient(90deg,rgba(240,200,102,0.1),transparent);}
+.lb-row.r2{background:linear-gradient(90deg,rgba(207,211,218,0.06),transparent);}
+.lb-row.r3{background:linear-gradient(90deg,rgba(214,154,99,0.07),transparent);}
+.lb-rank{width:28px;font-weight:800;color:var(--text-muted);text-align:center;font-size:14px;}
+.lb-row.r1 .lb-rank{color:var(--gold);font-size:17px;}
+.lb-row.r2 .lb-rank{color:var(--silver);}
+.lb-row.r3 .lb-rank{color:var(--bronze);}
+.lb-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid transparent;}
+.lb-row.r1 .lb-avatar{background:linear-gradient(140deg,#f0c866,#c23a1d);border-color:var(--gold);}
+.lb-row.r2 .lb-avatar{background:linear-gradient(140deg,#cfd3da,#5c6270);}
+.lb-row.r3 .lb-avatar{background:linear-gradient(140deg,#d69a63,#7a4b28);}
+.lb-row:not(.r1):not(.r2):not(.r3) .lb-avatar{background:linear-gradient(140deg,#c96a4a,#7a2f2f);}
+.lb-name{font-weight:600;font-size:14px;flex:1;}
+.lb-points{font-weight:800;color:var(--gold);font-size:14.5px;}
+.lb-wins{font-size:12px;color:var(--text-muted);width:70px;text-align:left;}
+
+footer{margin-top:60px;padding:28px 0 40px;text-align:center;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border-soft);}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="orb-field"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-mark">T</span>تایتان</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="top-row">
+    <div class="banner">
+      <svg class="banner-rays" viewBox="0 0 600 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.35">
+          <path d="M560 -40 L620 -40 L500 420 L440 420 Z" fill="rgba(255,150,90,0.15)"/>
+          <path d="M500 -40 L545 -40 L430 420 L385 420 Z" fill="rgba(255,150,90,0.1)"/>
+        </g>
+      </svg>
+      <div class="banner-ghost">T</div>
+      <div class="banner-inner">
+        <div class="badge-row">
+          <span class="badge badge-gold">فصل جدید</span>
+          <span class="badge badge-outline">۳ مسابقه زنده<span class="pulse-dot"></span></span>
+        </div>
+        <h1>مسابقات <em>تایتان</em></h1>
+        <p>در تورنومنت‌های رسمی تایتان ثبت‌نام کن، با بهترین بازیکن‌های کشور رقابت کن و سهمی از جوایز نقدی این فصل رو ببر.</p>
+        <div class="banner-foot">
+          <button class="btn-primary">ثبت‌نام در مسابقه</button>
+          <div class="review-pill"><div class="avatars"><span></span><span></span><span></span></div>+۲۴۰ بازیکن فعال</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-card">
+      <div class="status-glow"></div>
+      <div class="status-ring-wrap">
+        <div class="status-blob"></div>
+        <div class="status-ring-inner">
+          <div class="lbl">امتیاز کل</div>
+          <div class="val">4,851</div>
+        </div>
+      </div>
+      <div class="status-mini-row">
+        <div class="status-mini win">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5fd07a" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></div>
+          <b>38</b><span>برد</span>
+        </div>
+        <div class="status-mini loss">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#ff5a35" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+          <b>12</b><span>باخت</span>
+        </div>
+        <div class="status-mini matches">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#6fa8dc" stroke-width="2.2"><circle cx="12" cy="12" r="8"/></svg></div>
+          <b>50</b><span>مسابقه</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head"><div class="head-left"><div class="accent-bar"></div><div><h2>مسابقات پیش رو</h2><p>ثبت‌نام کن و منتظر شروع نبرد بمون</p></div></div></div>
+
+    <div class="match-card m1">
+      <span class="match-status">ثبت‌نام باز است</span>
+      <div class="match-side"><div class="crest">SW</div><div><div class="team-name">Shadow Wolves</div><div class="team-tag">تیم مدافع عنوان</div></div></div>
+      <div class="match-center">
+        <span class="vs-badge">VS</span>
+        <svg class="vs-bolt" viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+        <div class="match-time">فردا · ۲۱:۰۰</div>
+      </div>
+      <div class="match-side right"><div class="crest">CF</div><div><div class="team-name">Crimson Fangs</div><div class="team-tag">صعود از مرحله گروهی</div></div></div>
+    </div>
+
+    <div class="match-card m2">
+      <span class="match-status">۲ روز دیگر</span>
+      <div class="match-side"><div class="crest">NP</div><div><div class="team-name">Night Phantoms</div><div class="team-tag">رتبه ۳ فصل قبل</div></div></div>
+      <div class="match-center">
+        <span class="vs-badge">VS</span>
+        <svg class="vs-bolt" viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+        <div class="match-time">پنجشنبه · ۱۹:۳۰</div>
+      </div>
+      <div class="match-side right"><div class="crest">IF</div><div><div class="team-name">Iron Falcons</div><div class="team-tag">تازه‌وارد فصل</div></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><div class="head-left"><div class="accent-bar"></div><h2>چطور ثبت‌نام کنم؟</h2></div></div>
+    <div class="steps">
+      <div class="step"><div class="step-num">۱</div><h3>تیم بساز یا بپیوند</h3><p>یه تیم جدید بساز یا با کد دعوت به تیم دوستات ملحق شو.</p></div>
+      <div class="step"><div class="step-num">۲</div><h3>مسابقه رو انتخاب کن</h3><p>از بین مسابقات باز، اونی که بازی و بازه‌ی زمانیش مناسبته رو انتخاب کن.</p></div>
+      <div class="step"><div class="step-num">۳</div><h3>ثبت‌نام رو تکمیل کن</h3><p>اطلاعات تیم و شناسه بازیکن‌ها رو وارد و پرداخت ورودی رو انجام بده.</p></div>
+      <div class="step"><div class="step-num">۴</div><h3>منتظر قرعه‌کشی باش</h3><p>۴۸ ساعت قبل از شروع، جدول و حریفت رو توی همین صفحه می‌بینی.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><div class="head-left"><div class="accent-bar"></div><h2>درباره تورنومنت‌ها</h2></div></div>
+    <div class="carousel">
+      <div class="carousel-img"></div>
+      <div class="carousel-text">
+        <h3>فرمت مسابقات چطوریه؟</h3>
+        <p>هر تورنومنت شامل مرحله گروهی و سپس حذفی هست. تیم‌ها بعد از ثبت‌نام به‌صورت خودکار قرعه‌کشی میشن و زمان مسابقه ۴۸ ساعت قبل اعلام میشه.</p>
+        <div class="carousel-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><div class="head-left"><div class="accent-bar"></div><h2>جدول رتبه‌بندی</h2></div></div>
+    <div class="tabs">
+      <div class="tab active">بهترین تیم‌ها</div>
+      <div class="tab">بهترین بازیکنان</div>
+    </div>
+    <div class="lb">
+      <div class="lb-row r1"><div class="lb-rank">۱</div><div class="lb-avatar"></div><div class="lb-name">Shadow Wolves</div><div class="lb-points">9,240</div><div class="lb-wins">۴۲ برد</div></div>
+      <div class="lb-row r2"><div class="lb-rank">۲</div><div class="lb-avatar"></div><div class="lb-name">Crimson Fangs</div><div class="lb-points">8,910</div><div class="lb-wins">۳۹ برد</div></div>
+      <div class="lb-row r3"><div class="lb-rank">۳</div><div class="lb-avatar"></div><div class="lb-name">Night Phantoms</div><div class="lb-points">8,470</div><div class="lb-wins">۳۵ برد</div></div>
+      <div class="lb-row"><div class="lb-rank">۴</div><div class="lb-avatar"></div><div class="lb-name">Iron Falcons</div><div class="lb-points">7,930</div><div class="lb-wins">۳۱ برد</div></div>
+    </div>
+  </section>
+
+  <footer>© تایتان — پلتفرم گیمینگ و اسپورت</footer>
+</div>
+
+</body>
+</html>
