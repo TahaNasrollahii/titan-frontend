@@ -2490,7 +2490,7 @@ html[dir="rtl"] .hero-live {
 
 .rail .panel {
   padding: 16px 0;
-  gap: 14px;
+  gap: 22px;
   border-radius: 36px;
   background: var(--panel);
   display: flex;
@@ -2533,7 +2533,7 @@ html[dir="rtl"] .hero-live {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 22px;
 }
 
 .av {
