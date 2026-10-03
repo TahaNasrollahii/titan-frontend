@@ -89,7 +89,6 @@ export function Topbar() {
             if (e.key === 'Escape') searchInputRef.current?.blur();
           }}
         />
-        <kbd aria-hidden="true">/</kbd>
         <div className="results" id="results" onMouseDown={e => e.preventDefault()}>
           {renderResults()}
         </div>

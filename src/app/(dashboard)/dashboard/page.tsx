@@ -215,7 +215,7 @@ function AccountsTab() {
       {accounts.map(acc => (
         <div key={acc.id} className={styles.listItem}>
           <div className={styles.listItemInfo}>
-            <div className={styles.itemIcon} style={{ background: '#222' }}><Icon name="key" /></div>
+            <div className={styles.itemIcon} style={{ background: '#222' }}><img src="/icons/accounts.png" alt="account" style={{ width: '28px', height: '28px', objectFit: 'contain' }} /></div>
             <div className={styles.itemDetails}>
               <h4>{acc.name}</h4>
               <p>ایمیل: {acc.email} • رمز عبور: ••••••••</p>
@@ -230,7 +230,7 @@ function AccountsTab() {
 
       {accounts.length === 0 && !isAdding && (
         <div className={styles.emptyState}>
-          <Icon name="key" />
+          <img src="/icons/accounts.png" alt="accounts" style={{ width: '64px', height: '64px', objectFit: 'contain', opacity: 0.7, marginBottom: '8px' }} />
           <p>شما هنوز هیچ اکانتی اضافه نکرده‌اید.</p>
         </div>
       )}
@@ -333,7 +333,7 @@ function TournamentsTab({ openModal }: { openModal: (t: ModalType) => void }) {
       
       <div className={styles.listItem}>
         <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon} style={{ background: '#222' }}><Icon name="trophy" /></div>
+          <div className={styles.itemIcon} style={{ background: '#222' }}><img src="/icons/tournament.png" alt="tournament" style={{ width: '28px', height: '28px', objectFit: 'contain' }} /></div>
           <div className={styles.itemDetails}>
             <h4>تورنومنت فصلی ولورانت</h4>
             <p>وضعیت: در حال برگزاری • مرحله: نیمه‌نهایی</p>
@@ -344,7 +344,7 @@ function TournamentsTab({ openModal }: { openModal: (t: ModalType) => void }) {
 
       <div className={styles.listItem}>
         <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon} style={{ background: '#222' }}><Icon name="clock" /></div>
+          <div className={styles.itemIcon} style={{ background: '#222' }}><img src="/icons/clock.png" alt="clock" style={{ width: '28px', height: '28px', objectFit: 'contain' }} /></div>
           <div className={styles.itemDetails}>
             <h4>جام قهرمانان دوتا ۲</h4>
             <p>وضعیت: ثبت‌نام شده • شروع: ۲ روز دیگر</p>
