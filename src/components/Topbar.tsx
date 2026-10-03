@@ -73,7 +73,7 @@ export function Topbar() {
   return (
     <header className="topbar reveal" style={{ '--d': 1 } as React.CSSProperties}>
       <div className={`search ${searchOpen ? 'open' : ''}`} id="search" role="search">
-        <Icon name="search" />
+        <img src="/icons/search.png" alt="search" style={{ width: '20px', height: '20px', objectFit: 'contain', marginLeft: '10px' }} />
         <input 
           type="search" 
           placeholder="جستجو" 
@@ -97,12 +97,12 @@ export function Topbar() {
       
       <div className="top-actions">
         <button className="round" aria-label="اعلان‌ها" onClick={clearNotifications}>
-          <Icon name="bell"/>
+          <img src="/icons/notif.png" alt="notifications" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
           <span className="dot" hidden={!hasUnreadNotifications}></span>
         </button>
         
         <Link href="/cart" className="round" aria-label="سبد خرید" id="cartBtn" style={{ textDecoration: 'none' }}>
-          <Icon name="cart"/>
+          <img src="/icons/cart.png" alt="cart" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
           <span className={`badge ${cartPop ? 'pop' : ''}`} hidden={cartCount === 0}>{cartCount}</span>
         </Link>
       </div>

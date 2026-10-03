@@ -83,7 +83,7 @@ function OverviewTab() {
     <>
       <section className={styles.statsGrid}>
         <div className={`${styles.statCard} ${styles.wallet}`}>
-          <div className={styles.statIcon}><Icon name="bag" /></div>
+          <div className={styles.statIcon}><img src="/icons/cart.png" alt="wallet" style={{ width: '32px', height: '32px', objectFit: 'contain' }} /></div>
           <div>
             <div className={styles.statValue}>۱,۴۵۰,۰۰۰</div>
             <div className={styles.statLabel}>موجودی کیف پول (تومان)</div>
@@ -91,7 +91,7 @@ function OverviewTab() {
         </div>
         
         <div className={`${styles.statCard} ${styles.tourney}`}>
-          <div className={styles.statIcon}><Icon name="trophy" /></div>
+          <div className={styles.statIcon}><img src="/icons/tournament.png" alt="tournaments" style={{ width: '32px', height: '32px', objectFit: 'contain' }} /></div>
           <div>
             <div className={styles.statValue}>۱۲</div>
             <div className={styles.statLabel}>تورنومنت‌های شرکت کرده</div>
@@ -99,7 +99,7 @@ function OverviewTab() {
         </div>
         
         <div className={`${styles.statCard} ${styles.teams}`}>
-          <div className={styles.statIcon}><Icon name="users" /></div>
+          <div className={styles.statIcon}><img src="/icons/team.png" alt="teams" style={{ width: '32px', height: '32px', objectFit: 'contain' }} /></div>
           <div>
             <div className={styles.statValue}>۳</div>
             <div className={styles.statLabel}>تیم‌های فعال من</div>
@@ -366,7 +366,7 @@ function NotificationsTab() {
       
       <div className={styles.listItem}>
         <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon} style={{ color: '#3ddc84', background: 'rgba(61, 220, 132, 0.1)' }}><Icon name="bell" /></div>
+          <div className={styles.itemIcon} style={{ color: '#3ddc84', background: 'rgba(61, 220, 132, 0.1)' }}><img src="/icons/notif.png" alt="notification" style={{ width: '28px', height: '28px', objectFit: 'contain' }} /></div>
           <div className={styles.itemDetails}>
             <h4>تایید ثبت‌نام در تورنومنت</h4>
             <p>ثبت نام تیم شما در جام قهرمانان دوتا ۲ با موفقیت تایید شد.</p>
@@ -377,7 +377,7 @@ function NotificationsTab() {
 
       <div className={styles.listItem}>
         <div className={styles.listItemInfo}>
-          <div className={styles.itemIcon} style={{ color: '#a5c6ff', background: 'rgba(165, 198, 255, 0.1)' }}><Icon name="users" /></div>
+          <div className={styles.itemIcon} style={{ color: '#a5c6ff', background: 'rgba(165, 198, 255, 0.1)' }}><img src="/icons/team.png" alt="team" style={{ width: '28px', height: '28px', objectFit: 'contain' }} /></div>
           <div className={styles.itemDetails}>
             <h4>دعوتنامه تیم</h4>
             <p>تیم Shadow Strike شما را دعوت به عضویت کرده است.</p>

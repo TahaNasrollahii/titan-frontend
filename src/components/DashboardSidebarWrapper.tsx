@@ -40,31 +40,31 @@ function DashboardSidebarContent() {
       </div>
       
       <button className={`${styles.menuItem} ${activeTab === 'overview' ? styles.active : ''}`} onClick={() => handleTabClick('overview')}>
-        <Icon name="home" /> پیشخوان
+        <img src="/icons/home.png" alt="home" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> پیشخوان
       </button>
       <button className={`${styles.menuItem} ${activeTab === 'profile' ? styles.active : ''}`} onClick={() => handleTabClick('profile')}>
-        <Icon name="user" /> اطلاعات حساب کاربری
+        <img src="/icons/account.png" alt="profile" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> اطلاعات حساب کاربری
       </button>
       <button className={`${styles.menuItem} ${activeTab === 'accounts' ? styles.active : ''}`} onClick={() => handleTabClick('accounts')}>
-        <Icon name="key" /> اکانت‌های من
+        <img src="/icons/accounts.png" alt="accounts" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> اکانت‌های من
       </button>
       <button className={`${styles.menuItem} ${activeTab === 'orders' ? styles.active : ''}`} onClick={() => handleTabClick('orders')}>
-        <Icon name="bag" /> سفارش‌های من
+        <img src="/icons/cart.png" alt="orders" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> سفارش‌های من
       </button>
       <button className={`${styles.menuItem} ${activeTab === 'favorites' ? styles.active : ''}`} onClick={() => handleTabClick('favorites')}>
-        <Icon name="heart" /> لیست علاقه‌مندی‌ها
+        <img src="/icons/favorite.png" alt="favorites" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> لیست علاقه‌مندی‌ها
       </button>
       
       <div className={styles.menuDivider}></div>
       
       <button className={`${styles.menuItem} ${activeTab === 'teams' ? styles.active : ''}`} onClick={() => handleTabClick('teams')}>
-        <Icon name="users" /> تیم‌های من
+        <img src="/icons/team.png" alt="teams" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> تیم‌های من
       </button>
       <button className={`${styles.menuItem} ${activeTab === 'tournaments' ? styles.active : ''}`} onClick={() => handleTabClick('tournaments')}>
-        <Icon name="trophy" /> تورنومنت‌های من
+        <img src="/icons/tournament.png" alt="tournament" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> تورنومنت‌های من
       </button>
       <button className={`${styles.menuItem} ${activeTab === 'notifications' ? styles.active : ''}`} onClick={() => handleTabClick('notifications')}>
-        <Icon name="bell" /> پیام‌ها و اعلان‌ها
+        <img src="/icons/notif.png" alt="notifications" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> پیام‌ها و اعلان‌ها
       </button>
       
       <div className={styles.menuDivider}></div>

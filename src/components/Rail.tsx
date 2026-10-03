@@ -37,7 +37,7 @@ export function Rail() {
           <Link href="/dashboard" className="me" aria-label="پروفایل شما">
             <ProfileAvatar seed={5} score={0} />
           </Link>
-          <i className="rail-ic"><Icon name="users" /></i>
+          <i className="rail-ic"><img src="/icons/team.png" alt="team" style={{ width: '20px', height: '20px', objectFit: 'contain' }} /></i>
           <div className="list">
             {teams.map((f, i) => (
               <div key={i} className={`av ${f.s === 'game' ? 'game' : ''}`} data-tip={getTip(f)}>
