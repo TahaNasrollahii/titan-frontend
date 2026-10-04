@@ -102,7 +102,7 @@ function refreshTokens(): Promise<boolean> {
 }
 
 async function send(path: string, options: RequestOptions): Promise<Response> {
-  const headers: Record<string, string> = { Accept: 'application/json' };
+  const headers: Record<string, string> = { Accept: 'application/json', 'Accept-Language': 'fa' };
   const access = options.auth === false ? undefined : getTokens()?.access;
   if (access) headers.Authorization = `Bearer ${access}`;
 
