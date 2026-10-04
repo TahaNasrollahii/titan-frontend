@@ -160,29 +160,32 @@ export function OverviewTab() {
               <p>هنوز سفارشی ثبت نکرده‌اید.</p>
             </div>
           ) : (
-            data.recentOrders.map(order => (
-              <Link
-                key={order.number}
-                href="/dashboard?tab=orders"
-                className={styles.listItem}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <div className={styles.listItemInfo}>
-                  <div className={styles.itemThumb}>
-                    {order.items[0]?.image ? <img src={order.items[0].image} alt="" /> : <Icon name="cart" />}
+            <>
+              {data.recentOrders.slice(0, 2).map(order => (
+                <Link
+                  key={order.number}
+                  href="/dashboard?tab=orders"
+                  className={styles.listItem}
+                  style={{ textDecoration: 'none', color: 'inherit', padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: '6px' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 600 }}>
+                      سفارش #{order.number} • {timeAgo(order.createdAt)}
+                    </span>
+                    <span className={`${styles.badge} ${orderBadgeClass(order.status)}`} style={{ padding: '3px 8px', fontSize: '9.5px' }}>
+                      {ORDER_STATUS_LABELS[order.status]}
+                    </span>
                   </div>
-                  <div className={styles.itemDetails}>
-                    <h4>{order.items.map(item => item.title).join('، ')}</h4>
-                    <p>
-                      کد سفارش: {order.number} • {timeAgo(order.createdAt)}
-                    </p>
-                  </div>
-                </div>
-                <span className={`${styles.badge} ${orderBadgeClass(order.status)}`}>
-                  {ORDER_STATUS_LABELS[order.status]}
-                </span>
+                  <h4 style={{ fontSize: '13px', margin: 0, fontWeight: 700, color: '#fff', lineHeight: 1.4 }}>
+                    {order.items[0]?.title}
+                    {order.items.length > 1 && ` و ${faNumber(order.items.length - 1)} مورد دیگر`}
+                  </h4>
+                </Link>
+              ))}
+              <Link href="/dashboard?tab=orders" className={styles.btnSecondary} style={{ width: '100%' }}>
+                مشاهده تاریخچه سفارشات
               </Link>
-            ))
+            </>
           )}
         </div>
       </div>
