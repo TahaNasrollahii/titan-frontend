@@ -38,6 +38,7 @@ function DashboardSidebarContent() {
   let activeTab = 'overview';
   if (pathname.startsWith('/teams')) activeTab = 'teams';
   else if (pathname.startsWith('/tournaments')) activeTab = 'tournaments';
+  else if (pathname.startsWith('/dashboard/orders')) activeTab = 'orders';
   else if (pathname === '/dashboard') activeTab = searchParams.get('tab') || 'overview';
 
   const handleLogout = async () => {
