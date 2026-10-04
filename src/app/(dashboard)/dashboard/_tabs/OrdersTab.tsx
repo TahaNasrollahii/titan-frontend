@@ -17,22 +17,65 @@ import { orderBadgeClass } from './shared';
 
 function OrderDetails({ order }: { order: Order }) {
   return (
-    <div className={styles.orderLines}>
-      {order.items.map(item => (
-        <div key={item.id}>
-          {faNumber(item.quantity)} × {item.title}
-          {item.variantLabel && ` (${item.variantLabel})`} — {toman(item.lineTotal)}
-          {item.deliveredCode && <span className={styles.codeBox}>{item.deliveredCode}</span>}
+    <div className={styles.orderDetailsWrapper}>
+      <div className={styles.orderItemsList}>
+        {order.items.map(item => {
+          const ItemWrapper = item.product ? Link : 'div';
+          const wrapperProps = item.product ? { href: `/product/${item.product}`, className: styles.orderItemRow } : { className: styles.orderItemRow };
+
+          return (
+            <ItemWrapper key={item.id} {...wrapperProps}>
+              <div className={styles.orderItemInfo}>
+                <div className={styles.orderItemImage}>
+                  {item.image ? <img src={item.image} alt={item.title} /> : <Icon name="cart" />}
+                </div>
+                <div className={styles.orderItemMeta}>
+                  <h4>{item.title}</h4>
+                  {item.variantLabel && <p className={styles.itemVariant}>{item.variantLabel}</p>}
+                  {item.deliveredCode && (
+                    <div className={styles.deliveryCode}>
+                      <span className={styles.codeLabel}>کد تحویل:</span>
+                      <span className={styles.codeBox}>{item.deliveredCode}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className={styles.orderItemPricing}>
+                <span className={styles.itemQty}>{faNumber(item.quantity)} عدد</span>
+                <span className={styles.itemTotal}>{toman(item.lineTotal)}</span>
+              </div>
+            </ItemWrapper>
+          );
+        })}
+      </div>
+
+      <div className={styles.orderSummary}>
+        {order.gameAccountUsername && (
+          <div className={styles.summaryRow}>
+            <span className={styles.summaryLabel}>اکانت بازی:</span>
+            <span className={styles.summaryValue}>
+              {order.gameAccountTitle} <span className={styles.usernameHighlight}>({order.gameAccountUsername})</span>
+            </span>
+          </div>
+        )}
+        
+        {order.discount > 0 && (
+          <div className={styles.summaryRow}>
+            <span className={styles.summaryLabel}>تخفیف:</span>
+            <span className={styles.summaryValueDiscount}>{toman(order.discount)}</span>
+          </div>
+        )}
+        
+        <div className={`${styles.summaryRow} ${styles.summaryTotal}`}>
+          <span className={styles.summaryLabel}>مبلغ کل سفارش:</span>
+          <span className={styles.summaryValueTotal}>{toman(order.total)}</span>
         </div>
-      ))}
-      {order.gameAccountUsername && (
-        <div>
-          اکانت دریافت‌کننده: {order.gameAccountTitle} ({order.gameAccountUsername})
-        </div>
-      )}
-      <div>
-        مبلغ کل: {toman(order.total)}
-        {order.discount > 0 && ` • تخفیف: ${toman(order.discount)}`}
+      </div>
+      
+      <div style={{ marginTop: '8px', textAlign: 'center' }}>
+        <Link href={`/dashboard/orders/${order.number}`} className={styles.btnSecondary} style={{ width: '100%' }}>
+          مشاهده جزئیات کامل سفارش
+        </Link>
       </div>
     </div>
   );
