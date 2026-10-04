@@ -47,8 +47,10 @@ export function timeAgo(iso: string) {
   return relativeFormat.format(0, 'minute');
 }
 
+/** "۳ روز" while a day or more is left, then "01:35:39". */
 export function countdown(totalSeconds: number) {
   const left = Math.max(0, Math.floor(totalSeconds));
+  if (left >= 24 * 3600) return `${faNumber(Math.floor(left / (24 * 3600)))} روز`;
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${pad(Math.floor(left / 3600))}:${pad(Math.floor((left % 3600) / 60))}:${pad(left % 60)}`;
 }
