@@ -39,9 +39,7 @@ export function Sidebar() {
     <aside className="nav panel reveal" style={{ '--d': 0 } as React.CSSProperties} aria-label="منوی اصلی">
       <div className="sticky-nav-inner">
         <Link href="/" className="logo" aria-label="خانه تایتان">
-          <svg viewBox="0 0 34 34" width="34" height="34" aria-hidden="true">
-            <path d="M3 4h28v8H21v18h-8V12H3z" fill="#fff" /><path d="M3 4h11L3 15z" fill="#e2453f" />
-          </svg>
+          <img src="/titan-logo.png" alt="تایتان" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
         </Link>
         <nav className="nav-list" id="navList">
           <span className="nav-ind" style={navIndStyle}>
