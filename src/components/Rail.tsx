@@ -7,8 +7,9 @@ import { useAuth } from '@/context/AuthContext';
 import { meApi } from '@/lib/api/endpoints';
 import type { MyTeam, Presence } from '@/lib/api/types';
 import { useApi } from '@/lib/hooks/useApi';
+import { getTierByScore } from '@/utils/ranks';
 
-import { Icon } from './Icons';
+import { Icon, Avatar } from './Icons';
 import { ProfileAvatar } from './ProfileAvatar';
 
 const RAIL_REFRESH_MS = 60_000;
@@ -27,7 +28,7 @@ function tooltip(team: MyTeam) {
 }
 
 export function Rail() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const teams = useApi(isAuthenticated ? meApi.teams : null, [isAuthenticated]);
   const { reload } = teams;
 
@@ -41,9 +42,54 @@ export function Rail() {
     <aside className="rail" aria-label="تیم‌ها">
       <div className="panel p1 reveal" style={{ '--d': 1 } as React.CSSProperties}>
         <div className="sticky-nav-inner">
-          <Link href={isAuthenticated ? '/dashboard' : '/login'} className="me" aria-label="پروفایل شما">
-            <ProfileAvatar seed={user?.avatarSeed} score={user?.points} image={user?.avatar} />
-          </Link>
+          
+          {!isAuthenticated ? (
+            <Link href="/login" className="rail-icon-btn cta" data-tip="ورود یا ثبت‌نام" style={{ marginBottom: '8px' }}>
+              <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="/icons/login.png" alt="ورود" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </div>
+            </Link>
+          ) : (
+            <div className="acct" style={{ marginBottom: '8px' }}>
+              <Link href="/dashboard" className="acct-frame">
+                <span className="acct-glow"></span>
+                <ProfileAvatar seed={user?.avatarSeed} score={user?.points} image={user?.avatar} />
+                <span className="acct-online"></span>
+              </Link>
+
+              <div className="acct-menu">
+                <div className="acct-menu-head">
+                  <span className="av" style={{ position: 'relative', display: 'flex', width: 36, height: 36, borderRadius: '50%', overflow: 'hidden' }}>
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <Avatar seed={user?.avatarSeed || 5} />
+                    )}
+                  </span>
+                  <div>
+                    <b>{user?.username || user?.displayName || 'کاربر'}</b>
+                    <span>رنک: {getTierByScore(user?.points || 0).name}</span>
+                  </div>
+                </div>
+                <Link href="/dashboard?tab=overview" className="menu-item">
+                  <Icon name="home" /> پیشخوان
+                </Link>
+                <Link href="/dashboard?tab=profile" className="menu-item">
+                  <Icon name="user" /> اطلاعات حساب کاربری
+                </Link>
+                <Link href="/dashboard?tab=notifications" className="menu-item">
+                  <Icon name="bell" /> پیام‌ها و اعلان‌ها
+                </Link>
+
+                <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '4px 0' }}></div>
+
+                <button className="menu-item danger" onClick={() => logout()}>
+                  <Icon name="logout" /> خروج از حساب
+                </button>
+              </div>
+            </div>
+          )}
+
           <i className="rail-ic">
             <img src="/icons/team.png" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
           </i>
