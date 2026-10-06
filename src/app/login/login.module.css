@@ -48,18 +48,12 @@
   z-index: 0;
   pointer-events: none;
   filter: drop-shadow(0 20px 60px rgba(100, 60, 200, 0.35));
-  animation: characterFloat 6s ease-in-out infinite;
-}
-
-@keyframes characterFloat {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-12px); }
 }
 
 /* ─── Login Card ─── */
 .card {
   width: min(420px, 100%);
-  padding: 40px 36px;
+  padding: 28px 32px;
   border-radius: 32px;
   background: linear-gradient(160deg, rgb(30, 30, 35), rgb(15, 15, 20));
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -156,7 +150,7 @@
 .logo {
   width: 64px;
   height: 64px;
-  margin: 0 auto 24px;
+  margin: 0 auto 16px;
   display: grid;
   place-items: center;
   border-radius: 20px;
@@ -187,14 +181,14 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 14px;
   line-height: 1.7;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .field label {
@@ -206,7 +200,7 @@
 
 .input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 14px 20px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.3);
@@ -253,7 +247,7 @@
 
 .primary {
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   border: none;
   border-radius: 16px;
   background: linear-gradient(135deg, var(--red), #b92b27);
@@ -267,7 +261,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
+  min-height: 52px;
 }
 
 .primary:disabled {

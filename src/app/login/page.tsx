@@ -136,27 +136,18 @@ function LoginForm() {
           ))}
         </div>
         {/* Character peeking from behind the card */}
-        <motion.div
-          initial={{ opacity: 0, y: 60, scale: 0.85 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{
-            delay: 0.3,
-            duration: 0.9,
-            type: 'spring',
-            stiffness: 80,
-            damping: 16,
-          }}
-        >
+        <div>
           <Image
             className={styles.characterBehind}
-            src="/images/character-behind-login-form.png"
+            src="/images/character-behind-login-v2.png"
             alt="Gaming character"
             width={340}
             height={400}
             priority
             draggable={false}
+            style={{ height: 'auto' }}
           />
-        </motion.div>
+        </div>
 
         {/* Login card (on top of character) */}
         <motion.form 
