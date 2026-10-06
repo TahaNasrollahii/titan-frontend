@@ -2860,7 +2860,7 @@ html[dir="rtl"] .hero-live {
     grid-template-columns: 1fr;
     border-radius: 0;
     min-height: 100vh;
-    padding: 16px 16px 90px 16px; /* Bottom padding for fixed nav */
+    padding: 16px 16px 120px 16px; /* Bottom padding for fixed nav */
   }
   
   /* Bottom Navigation */
