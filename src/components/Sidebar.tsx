@@ -27,12 +27,32 @@ export function Sidebar() {
   }
 
   useEffect(() => {
-    const el = navRefs.current[activeKey];
-    if (el) {
-      setNavIndStyle({
-        transform: `translate(${el.offsetLeft}px, ${el.offsetTop}px)`,
-      });
-    }
+    const updatePosition = () => {
+      const el = navRefs.current[activeKey];
+      const container = document.getElementById('navList');
+      if (el && container) {
+        // Use the first child (icon/img) to avoid the ::after tooltip skewing the bounding box
+        const target = el.firstElementChild || el;
+        const elRect = target.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        
+        // Calculate the exact center of the icon relative to the container
+        const centerX = (elRect.left - containerRect.left) + (elRect.width / 2);
+        const centerY = (elRect.top - containerRect.top) + (elRect.height / 2);
+        
+        // Set absolute positions instead of transform to bypass all RTL translate quirks
+        setNavIndStyle({
+          left: `${centerX - 24}px`,
+          top: `${centerY - 24}px`,
+          transform: 'none',
+          transition: 'all 0.55s cubic-bezier(0.3, 1.35, 0.4, 1)'
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
   }, [pathname, activeKey]);
 
   return (
