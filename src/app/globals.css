@@ -161,7 +161,9 @@ i[data-icon] svg {
 
 /* ---------- Left nav ---------- */
 .nav {
-  position: relative;
+  position: sticky;
+  top: calc(var(--gutter) + clamp(12px, 1.6vw, 22px));
+  height: calc(100vh - 2 * var(--gutter) - 2 * clamp(12px, 1.6vw, 22px));
   z-index: 9999 !important;
 }
 
@@ -1553,7 +1555,9 @@ html[dir="rtl"] .hero-char {
 
 /* ---------- Right rail ---------- */
 .rail {
-  position: relative;
+  position: sticky;
+  top: calc(var(--gutter) + clamp(12px, 1.6vw, 22px));
+  height: calc(100vh - 2 * var(--gutter) - 2 * clamp(12px, 1.6vw, 22px));
   z-index: 9999 !important;
   display: flex;
   flex-direction: column;
@@ -3007,9 +3011,76 @@ html[dir="rtl"] .hero-live {
 
 @media (max-width: 768px) {
   .hero {
-    height: 320px;
+    height: 220px;
   }
   .hero-char {
     opacity: 0.25;
+  }
+  .hero-body {
+    padding: 16px;
+  }
+  .hero-body h2 {
+    font-size: 20px;
+  }
+  .hero-foot {
+    margin-top: 24px;
+  }
+  .hero-foot a {
+    height: 32px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+  .hero-live {
+    bottom: 60px;
+    right: 16px;
+    font-size: 10px;
+  }
+  .dashes {
+    left: 12px;
+    bottom: 16px;
+  }
+  
+  .tourney-banner {
+    height: 160px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .tourney-banner h3 {
+    font-size: 16px;
+  }
+  .tourney-banner p {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .tb-btn {
+    height: 32px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
+  .gcard {
+    flex: 0 0 140px;
+    height: 170px;
+    border-radius: 20px;
+  }
+  .gbody {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+  .gbody h4 {
+    font-size: 13px;
+  }
+  
+  .stat {
+    height: auto;
+    padding: 16px;
+  }
+  .blob {
+    width: 140px;
+    height: 140px;
+  }
+  .core strong {
+    font-size: 28px;
   }
 }

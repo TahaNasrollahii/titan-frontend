@@ -5,6 +5,8 @@
   padding: 24px 0;
   position: relative;
   overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .ambientGlow {
@@ -44,23 +46,42 @@
   z-index: 1;
 }
 
-.characterBehind {
+.characterWrapper {
+  --char-w: clamp(200px, 70vw, 340px);
   position: absolute;
-  top: -240px;
+  bottom: calc(100% - (var(--char-w) * 0.47));
   left: 50%;
   transform: translateX(-50%);
-  width: 340px;
-  height: auto;
+  width: var(--char-w);
   z-index: 0;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-height: 800px) {
+  .characterWrapper {
+    --char-w: clamp(160px, 50vw, 260px);
+  }
+}
+
+@media (max-height: 650px) {
+  .characterWrapper {
+    --char-w: clamp(120px, 40vw, 190px);
+  }
+}
+
+.characterBehind {
+  width: 100%;
+  height: auto;
   pointer-events: none;
   filter: drop-shadow(0 20px 60px rgba(100, 60, 200, 0.35));
 }
 
 /* ─── Login Card ─── */
 .card {
-  width: min(420px, 100%);
-  padding: 28px 32px;
-  border-radius: 32px;
+  width: min(380px, 100%);
+  padding: 24px 28px;
+  border-radius: 28px;
   background: linear-gradient(160deg, rgb(30, 30, 35), rgb(15, 15, 20));
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
@@ -203,12 +224,12 @@
 
 /* ─── Logo icon inside card ─── */
 .logo {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 16px;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
   display: grid;
   place-items: center;
-  border-radius: 20px;
+  border-radius: 18px;
   background: linear-gradient(135deg, rgba(226, 69, 63, 0.2), rgba(226, 69, 63, 0.05));
   border: 1px solid rgba(226, 69, 63, 0.2);
   color: var(--red);
@@ -221,9 +242,9 @@
 }
 
 .card h1 {
-  font-size: 24px;
+  font-size: 22px;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 800;
   letter-spacing: -0.5px;
   background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.7));
@@ -234,16 +255,16 @@
 .hint {
   text-align: center;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
-  line-height: 1.7;
-  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 18px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 
 .field label {
@@ -255,14 +276,14 @@
 
 .input {
   width: 100%;
-  padding: 14px 20px;
-  border-radius: 16px;
+  padding: 12px 18px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.3);
   color: var(--text);
   font: inherit;
-  font-size: 17px;
-  letter-spacing: 2px;
+  font-size: 15px;
+  letter-spacing: 1.5px;
   text-align: center;
   direction: ltr;
   outline: none;
@@ -283,10 +304,10 @@
 
 .codeInput {
   composes: input;
-  font-size: 28px;
-  letter-spacing: 16px;
+  font-size: 24px;
+  letter-spacing: 12px;
   font-weight: 700;
-  padding: 14px 20px;
+  padding: 12px 18px;
 }
 
 .error {
@@ -302,21 +323,21 @@
 
 .primary {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border: none;
-  border-radius: 16px;
+  border-radius: 14px;
   background: linear-gradient(135deg, var(--red), #b92b27);
   color: #fff;
   font: inherit;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 8px 24px rgba(226, 69, 63, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
+  min-height: 48px;
 }
 
 .primary:disabled {
@@ -371,10 +392,6 @@
 
 /* ─── Responsive ─── */
 @media (max-width: 540px) {
-  .characterBehind {
-    width: 240px;
-    top: -160px;
-  }
 
   .logoApex {
     width: 60px;

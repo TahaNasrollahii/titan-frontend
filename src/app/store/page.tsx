@@ -20,6 +20,13 @@ const PRICE_LIMIT = 10_000_000;
 const PAGE_SIZE = 12;
 const PREMIUM_SLUG = 'premium';
 
+const LOCAL_ICONS: Record<string, string> = {
+  'apex-legends': 'apex',
+  fortnite: 'fortnite',
+  valorant: 'valorant',
+  premium: 'premium'
+};
+
 const SORTS: { label: string; ordering: string }[] = [
   { label: 'محبوبیت', ordering: '-popularity' },
   { label: 'قیمت: کم به زیاد', ordering: 'price' },
@@ -68,9 +75,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
       onPointerLeave={() => setPaused(false)}
     >
       <div className="sp-bg discount-bg"></div>
-      {promos[index].backgroundImage && (
-        <img src={promos[index].backgroundImage!} alt="" className="sp-discount-overlay" />
-      )}
+      <img src={promos[index]?.backgroundImage ?? '/images/discount.png'} alt="" className="sp-discount-overlay" />
       {promos.map((promo, i) => (
         <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
           <div className="sp-content">
@@ -101,18 +106,16 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
               </div>
             </div>
           </div>
-          {promo.image && (
-            <div className="sp-art-wrap">
-              <img
-                src={promo.image}
-                alt=""
-                className="sp-art discount-art"
-                style={{
-                  transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px)) scale(${promo.layout.scale ?? 1}) translateY(${promo.layout.y ?? 0}px)`,
-                }}
-              />
-            </div>
-          )}
+          <div className="sp-art-wrap">
+            <img
+              src={promo.image ?? '/images/support-robot.png'}
+              alt=""
+              className="sp-art discount-art"
+              style={{
+                transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px))`,
+              }}
+            />
+          </div>
         </div>
       ))}
       <div className="sp-dots">
@@ -143,7 +146,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
           <div
             className="sp-bg side-bg"
             style={{
-              backgroundImage: [promo.backgroundGradient, promo.backgroundImage && `url(${promo.backgroundImage})`]
+              backgroundImage: [promo.backgroundGradient, `url(${promo.backgroundImage ?? '/images/banner-hero.png'})`]
                 .filter(Boolean)
                 .join(', '),
               backgroundSize: 'cover',
@@ -173,18 +176,16 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
               )}
             </div>
           </div>
-          {promo.image && (
-            <div className="sp-art-wrap side-art-wrap">
-              <img
-                src={promo.image}
-                alt=""
-                className="sp-art"
-                style={{
-                  transform: `translate(calc(var(--px) * 10px + ${promo.layout.x ?? 0}px), calc(var(--py) * 10px + ${promo.layout.y ?? 0}px)) scale(${promo.layout.scale ?? 1})`,
-                }}
-              />
-            </div>
-          )}
+          <div className="sp-art-wrap side-art-wrap">
+            <img
+              src={promo.image ?? '/images/character-behind-login-form.png'}
+              alt=""
+              className="sp-art"
+              style={{
+                transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px))`,
+              }}
+            />
+          </div>
         </div>
       ))}
       <div className="sp-dots">
@@ -209,19 +210,14 @@ function ProductCard({
   index: number;
   onToggleWishlist: (product: ProductSummary) => void;
 }) {
+  const LOCAL_PRODUCTS = ['/images/products/vbucks.png', '/images/products/p-controller.jpg', '/images/products/p-game-1.jpg', '/images/products/p-headset.jpg', '/images/products/p-keyboard.jpg', '/images/products/p-mouse.jpg', '/images/products/p-game-3.jpg'];
+  const localProductImage = product.image ?? LOCAL_PRODUCTS[index % LOCAL_PRODUCTS.length];
+
   return (
     <article className="sg-card spot reveal" style={{ '--d': index + 3 } as React.CSSProperties}>
-      {product.image ? (
-        <div className="sg-art">
-          <img src={product.image} alt={product.title} />
-        </div>
-      ) : (
-        <div className="sg-art gift">
-          <div className="sg-gift-icon">
-            <Icon name="gift" />
-          </div>
-        </div>
-      )}
+      <div className="sg-art">
+        <img src={localProductImage} alt={product.title} />
+      </div>
 
       <div className="sg-badges-top">
         <div className="sg-b-left">
@@ -453,11 +449,27 @@ function StorePageContent() {
   const selectGame = (slug: string) => router.replace(slug ? `/store?game=${slug}` : '/store', { scroll: false });
 
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
-    (games.data ?? []).map(game => ({ slug: game.slug, title: game.title, icon: game.iconImage })),
+    (games.data ?? []).map(game => {
+      const localIcon = LOCAL_ICONS[game.slug] ? `/images/categories/${LOCAL_ICONS[game.slug]}.png` : null;
+      return { slug: game.slug, title: game.title, icon: game.iconImage ?? localIcon };
+    }),
   );
 
   return (
     <div className="store-content reveal" style={{ '--d': 2 } as React.CSSProperties}>
+      {(discountPromos.data?.length || bestsellerPromos.data?.length) ? (
+        <div className="store-promos reveal" style={{ '--d': 3 } as React.CSSProperties}>
+          <DiscountPromos promos={discountPromos.data ?? []} />
+          <BestsellerPromos promos={bestsellerPromos.data ?? []} />
+        </div>
+      ) : null}
+
+      <div className="store-sec-h">
+        <div className="store-sec-l">
+          <h3>همه محصولات</h3>
+        </div>
+      </div>
+
       <div className="store-cat-row">
         <div className="store-tabs">
           <span className="store-tab-ind" ref={indicatorRef}></span>
@@ -569,19 +581,6 @@ function StorePageContent() {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {(discountPromos.data?.length || bestsellerPromos.data?.length) ? (
-        <div className="store-promos reveal" style={{ '--d': 3 } as React.CSSProperties}>
-          <DiscountPromos promos={discountPromos.data ?? []} />
-          <BestsellerPromos promos={bestsellerPromos.data ?? []} />
-        </div>
-      ) : null}
-
-      <div className="store-sec-h">
-        <div className="store-sec-l">
-          <h3>همه محصولات</h3>
         </div>
       </div>
 
