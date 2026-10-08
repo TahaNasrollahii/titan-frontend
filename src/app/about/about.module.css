@@ -329,8 +329,8 @@
 }
 
 .orbitC {
-  bottom: 24%;
-  left: 0;
+  top: 30%;
+  left: 3%;
   width: 50px;
 }
 
@@ -339,8 +339,8 @@
 }
 
 .orbitD {
-  bottom: 34%;
-  right: 0;
+  top: 27%;
+  right: 1%;
   width: 56px;
 }
 
@@ -892,6 +892,27 @@
     grid-column: 1 / -1;
     grid-row: auto;
     min-height: 200px;
+  }
+}
+
+/* Phones: the art is smaller, so slimmer logos placed higher keep clear of the characters' heads */
+@media (max-width: 768px) {
+  .orbit {
+    width: 48px;
+  }
+
+  .orbitB {
+    width: 44px;
+  }
+
+  .orbitC {
+    top: 25%;
+    width: 42px;
+  }
+
+  .orbitD {
+    top: 26%;
+    width: 44px;
   }
 }
 
