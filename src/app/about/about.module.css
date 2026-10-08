@@ -247,8 +247,8 @@
   user-select: none;
 }
 
+/* No drop-shadow here: the wrapper's fade mask clips it at the box edges into a visible square */
 .character img {
-  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.55));
   animation: float 7s ease-in-out infinite;
 }
 
