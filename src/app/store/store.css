@@ -538,6 +538,14 @@
   opacity: 0.8;
 }
 
+/* Side by side the banners split the row 3:2, so 75% of this banner is as wide as half of the
+   discount banner: both characters get the same box and render at the same size. */
+@media (min-width: 1025px) {
+  .side-art-wrap {
+    inset: 0 25% 0 0;
+  }
+}
+
 .sp-dots {
   position: absolute;
   bottom: 24px;
