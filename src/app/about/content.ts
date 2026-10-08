@@ -1,6 +1,7 @@
 /**
  * Copy for the About page. Edit freely; the page reads everything from here.
  * The team members are placeholders: replace names, roles, bios and tags with the real team.
+ * `icon` is a file name from /public/icons (the site's own icon set), without `.png`.
  */
 
 export const hero = {
@@ -26,28 +27,28 @@ export const manifestoHighlights = ['تایتان', 'چند', 'ثانیه', 'م�
 
 export const pillars = [
   {
-    icon: 'bag',
+    icon: 'store',
     title: 'فروشگاه دیجیتال',
     text: 'شارژ، گیفت‌کارت و آیتم بازی‌های محبوب؛ با تحویل سریع و قیمت شفاف.',
     href: '/store',
     cta: 'فروشگاه',
   },
   {
-    icon: 'trophy',
+    icon: 'tournament',
     title: 'تورنومنت‌ها',
     text: 'براکت زنده، نتایج لحظه‌ای و جایزه‌ای که واقعاً به دست برنده می‌رسه.',
     href: '/tournament',
     cta: 'تورنومنت‌ها',
   },
   {
-    icon: 'users',
+    icon: 'team',
     title: 'تیم‌سازی',
     text: 'تیمت رو بساز، با یه لینک هم‌تیمی دعوت کن و با هم وارد رقابت شید.',
     href: '/dashboard',
     cta: 'تیم من',
   },
   {
-    icon: 'wallet',
+    icon: 'dashboard',
     title: 'کیف پول',
     text: 'شارژ یک‌باره، پرداخت با یه کلیک و جایزه‌هایی که مستقیم به کیف پولت میان.',
     href: '/dashboard',
@@ -57,22 +58,22 @@ export const pillars = [
 
 export const values = [
   {
-    icon: 'shield',
+    icon: 'about-us',
     title: 'شفافیت',
     text: 'قیمت‌ها، قوانین تورنومنت‌ها و وضعیت سفارش‌ها همیشه جلوی چشمته. بدون هزینه‌ی پنهان.',
   },
   {
-    icon: 'flame',
+    icon: 'clock',
     title: 'سرعت',
     text: 'از پرداخت تا تحویل، از ثبت‌نام تا شروع مسابقه؛ هر ثانیه برای ما مهمه.',
   },
   {
-    icon: 'swords',
+    icon: 'tournament',
     title: 'رقابت منصفانه',
     text: 'براکت‌ها، داوری و تقسیم جوایز طوری طراحی شده که فقط مهارت تعیین‌کننده باشه.',
   },
   {
-    icon: 'chat',
+    icon: 'contact-us',
     title: 'پشتیبانی واقعی',
     text: 'پشت تایتان آدم‌های واقعی‌ان که خودشون گیمرن و زبونت رو می‌فهمن.',
   },

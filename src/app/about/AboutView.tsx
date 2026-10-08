@@ -27,6 +27,11 @@ import styles from './about.module.css';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+/** One of the site's own icons from /public/icons (solid, rounded, white). */
+function SiteIcon({ name }: { name: string }) {
+  return <img className={styles.siteIcon} src={`/icons/${name}.png`} alt="" draggable={false} />;
+}
+
 const stagger: Variants = { show: { transition: { staggerChildren: 0.09 } } };
 const rise: Variants = {
   hidden: { opacity: 0, y: 32 },
@@ -157,10 +162,10 @@ function CountUp({ value }: { value: number }) {
 const CURRENCY_UNIT = { USD: 'دلار', IRT: 'تومان' } as const;
 
 const STAT_CARDS: { icon: string; label: string; pick: (stats: PlatformStats) => number }[] = [
-  { icon: 'user', label: 'گیمر عضو', pick: stats => stats.players },
-  { icon: 'users', label: 'تیم فعال', pick: stats => stats.teams },
-  { icon: 'trophy', label: 'تورنومنت برگزارشده', pick: stats => stats.tournaments },
-  { icon: 'bag', label: 'سفارش تحویل‌شده', pick: stats => stats.ordersDelivered },
+  { icon: 'account', label: 'گیمر عضو', pick: stats => stats.players },
+  { icon: 'team', label: 'تیم فعال', pick: stats => stats.teams },
+  { icon: 'dashboard', label: 'تورنومنت برگزارشده', pick: stats => stats.tournaments },
+  { icon: 'cart', label: 'سفارش تحویل‌شده', pick: stats => stats.ordersDelivered },
 ];
 
 function Stats() {
@@ -173,7 +178,7 @@ function Stats() {
       <div className={styles.statsGrid}>
         <motion.div className={`${styles.statCard} ${styles.statFeatured}`} variants={rise}>
           <span className={styles.statIcon}>
-            <Icon name="gift" />
+            <SiteIcon name="tournament" />
           </span>
           <b className={styles.statValue}>
             {data ? <CountUp value={mainPrize?.amount ?? 0} /> : error ? '—' : <span className={styles.skeleton} />}
@@ -189,7 +194,7 @@ function Stats() {
         {STAT_CARDS.map(card => (
           <motion.div key={card.label} className={styles.statCard} variants={rise}>
             <span className={styles.statIcon}>
-              <Icon name={card.icon} />
+              <SiteIcon name={card.icon} />
             </span>
             <b className={styles.statValue}>
               {data ? <CountUp value={card.pick(data)} /> : error ? '—' : <span className={styles.skeleton} />}
@@ -258,7 +263,7 @@ function Pillars() {
             <Link href={pillar.href} className={`${styles.pillar} ${styles.spot}`}>
               <span className={styles.pillarIndex}>{faNumber(index + 1).padStart(2, '۰')}</span>
               <span className={styles.pillarIcon}>
-                <Icon name={pillar.icon} />
+                <SiteIcon name={pillar.icon} />
               </span>
               <h3>{pillar.title}</h3>
               <p>{pillar.text}</p>
@@ -286,7 +291,7 @@ function Values() {
         {values.map(value => (
           <motion.div key={value.title} className={styles.value} variants={rise}>
             <span className={styles.valueIcon}>
-              <Icon name={value.icon} />
+              <SiteIcon name={value.icon} />
             </span>
             <div>
               <h3>{value.title}</h3>

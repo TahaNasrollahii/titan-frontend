@@ -348,6 +348,15 @@
   animation-delay: -4.5s;
 }
 
+/* The site's PNG icons (white glyphs) sized to their bubble; the PNGs carry ~25% empty margin */
+.siteIcon {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  user-select: none;
+}
+
 /* ─── Stats ─── */
 .statsGrid {
   display: grid;
@@ -630,12 +639,11 @@
   place-items: center;
   width: 50px;
   height: 50px;
-  border-radius: 50%;
-  border: 1px solid rgba(226, 69, 63, 0.4);
-  background: rgba(226, 69, 63, 0.1);
-  color: var(--red-2);
-  font-size: 21px;
-  box-shadow: 0 0 24px rgba(226, 69, 63, 0.2);
+  border-radius: 17px;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(140deg, var(--red-2), #a8231f);
+  box-shadow: inset -3px -4px 8px rgba(0, 0, 0, 0.25), 0 10px 24px rgba(226, 69, 63, 0.35);
 }
 
 .value h3 {
