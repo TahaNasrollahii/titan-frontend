@@ -130,20 +130,45 @@
   opacity: 1;
 }
 
-.meAvatar {
-  display: block;
+/* Profile picture inside the user's rank frame */
+.meFrame {
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 26px;
   height: 26px;
+}
+
+/* The global 68px rank frame drawn at half size (34px); the picture sits inside it, between the
+   ring and the ornament */
+.meFrame > .meRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  pointer-events: none;
+}
+
+/* Ornament tucked onto the ring so it stays inside the bar */
+.meRing :global(.rank-frame-ornament) {
+  top: 8px;
+}
+
+/* 54px before the frame's half scale (27px on screen): just inside the ring's inner edge */
+.meAvatar {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 54px;
+  height: 54px;
   overflow: hidden;
   border-radius: 50%;
-  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.35);
-  opacity: 0.8;
-  transition: box-shadow 0.25s, opacity 0.25s;
+  opacity: 0.85;
+  transition: opacity 0.25s;
 }
 
 .active .meAvatar {
   opacity: 1;
-  box-shadow: 0 0 0 2px var(--red-2), 0 0 12px rgba(226, 69, 63, 0.6);
 }
 
 .meAvatar img,

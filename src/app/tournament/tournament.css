@@ -1298,10 +1298,11 @@
     font-size: 18px;
   }
 
-  /* Hero */
+  /* Hero: laid out like the store promos — copy in the right two thirds, the artwork on the
+     left at full height, bottom-anchored */
   .tour-hero {
-    min-height: 0;
-    padding: 22px 18px 24px;
+    min-height: 230px;
+    padding: 20px 18px 24px;
     border-radius: 26px;
     overflow: hidden;
   }
@@ -1310,9 +1311,17 @@
     transform: none;
   }
 
+  /* Darken the text side so copy stays readable over the artwork */
+  .th-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.28), transparent 72%);
+  }
+
   .th-content {
-    width: 64%;
-    gap: 12px;
+    width: 66%;
+    gap: 8px;
   }
 
   .th-badges {
@@ -1321,38 +1330,45 @@
   }
 
   .th-badge {
-    padding: 6px 12px;
+    padding: 5px 10px;
     font-size: 10.5px;
   }
 
   .th-content h1 {
-    font-size: 24px;
+    margin-top: 2px;
+    font-size: 21px;
     line-height: 1.3;
   }
 
   .th-content p {
     max-width: 100%;
     margin: 0;
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.7;
   }
 
   .th-foot {
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 6px 10px;
+    margin-top: 4px;
   }
 
   .th-btn-primary {
-    padding: 11px 18px;
-    font-size: 13px;
+    padding: 9px 18px;
+    font-size: 12.5px;
   }
 
   .th-art-wrap {
-    top: auto;
+    top: 0;
     bottom: 0;
-    left: -4%;
-    width: 46%;
-    height: 82%;
+    left: 0;
+    width: 58%;
+  }
+
+  /* No pointer parallax here: the art sits on the bottom edge */
+  .th-art {
+    object-position: 25% bottom;
+    transform: none;
   }
 
   /* Ranks: a swipeable strip instead of five squeezed columns */
@@ -1664,13 +1680,9 @@
   }
 }
 
-/* Very small phones: the hero copy takes the full width, the art fades behind it */
+/* Very small phones: a little more room for the hero copy */
 @media (max-width: 360px) {
   .th-content {
-    width: 100%;
-  }
-
-  .th-art-wrap {
-    opacity: 0.3;
+    width: 72%;
   }
 }

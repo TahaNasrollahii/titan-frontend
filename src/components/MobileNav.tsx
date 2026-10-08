@@ -8,9 +8,10 @@ import { createPortal } from 'react-dom';
 
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import type { UserMini } from '@/lib/api/types';
 import { faNumber } from '@/lib/format';
 import { useMounted, useOverlay } from '@/lib/hooks/useOverlay';
-import { getTierByScore } from '@/utils/ranks';
+import { getOrnamentSVGWrapper, getRingSVG, getTierByScore } from '@/utils/ranks';
 
 import { Avatar, Icon } from './Icons';
 import styles from './MobileNav.module.css';
@@ -59,6 +60,30 @@ function TabInner({ active, icon, label, dot }: { active: boolean; icon: React.R
         <span className={styles.label}>{label}</span>
       </motion.span>
     </>
+  );
+}
+
+/** The user's picture inside their own rank frame (same ring and ornament as the desktop rail). */
+function MeAvatar({ user }: { user: Pick<UserMini, 'avatar' | 'avatarSeed' | 'points'> }) {
+  const rank = getTierByScore(user.points || 0);
+  return (
+    <span className={styles.meFrame}>
+      <span
+        className={`rank-frame-wrap ${styles.meRing}`}
+        data-tier={rank.id}
+        style={{ '--tier-glow': rank.glow } as React.CSSProperties}
+        aria-hidden
+      >
+        <span className="rank-frame-glow"></span>
+        {/* Own SVG ids: the rail draws the same tier, hidden on phones, and a gradient inside a
+            hidden subtree does not paint */}
+        <span className="rank-frame-ring">{getRingSVG(rank, '-tabbar')}</span>
+        <span className={styles.meAvatar}>
+          {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
+        </span>
+        <span className="rank-frame-ornament">{getOrnamentSVGWrapper(rank, '-tabbar')}</span>
+      </span>
+    </span>
   );
 }
 
@@ -238,9 +263,7 @@ export function MobileNav() {
             dot={isAuthenticated && unreadNotifications > 0}
             icon={
               isAuthenticated && user ? (
-                <span className={styles.meAvatar}>
-                  {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
-                </span>
+                <MeAvatar user={user} />
               ) : (
                 <img src="/icons/account.png" alt="" />
               )
