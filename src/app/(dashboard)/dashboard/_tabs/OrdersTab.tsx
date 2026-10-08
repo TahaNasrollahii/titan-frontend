@@ -20,7 +20,7 @@ function OrderDetails({ order }: { order: Order }) {
     <div className={styles.orderDetailsWrapper}>
       <div className={styles.orderItemsList}>
         {order.items.map(item => {
-          const ItemWrapper = item.product ? Link : 'div';
+          const ItemWrapper: React.ElementType = item.product ? Link : 'div';
           const wrapperProps = item.product ? { href: `/product/${item.product}`, className: styles.orderItemRow } : { className: styles.orderItemRow };
 
           return (
