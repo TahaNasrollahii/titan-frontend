@@ -93,7 +93,7 @@ export function OrdersTab() {
         current && { ...current, results: current.results.map(o => (o.number === updated.number ? updated : o)) },
       );
     } catch (error) {
-      addToast({ title: 'لغو سفارش', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'لغو سفارش', text: errorMessage(error), icon: 'cart', tone: 'error' });
     }
   };
 

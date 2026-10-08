@@ -5,6 +5,22 @@ import { AnimatePresence, motion, useAnimate, usePresence, useReducedMotion } fr
 import { useAppContext, Toast as ToastType } from '@/context/AppContext';
 import { Icon } from './Icons';
 
+/** Older icon names still arrive from server data (e.g. announcements); map them to the PNG set. */
+const LEGACY_ICONS: Record<string, string> = {
+  bell: 'notif',
+  bag: 'cart',
+  gift: 'store',
+  trophy: 'tournament',
+  game: 'tournament',
+  users: 'team',
+  user: 'account',
+  heart: 'favorite',
+  wallet: 'dashboard',
+  chat: 'support',
+};
+
+const iconSrc = (icon?: string) => `/icons/${icon ? (LEGACY_ICONS[icon] ?? icon) : 'notif'}.png`;
+
 /** Size of the bubble that drops in before it stretches open. */
 const PILL = 46;
 
@@ -67,7 +83,7 @@ function Toast({ toast, onRemove }: { toast: ToastType; onRemove: (id: number) =
         <span ref={dotRef} className="island-dot" />
         <div ref={bodyRef} className="island-body" style={{ opacity: 0, filter: 'blur(6px)' }}>
           <span className="island-ic">
-            <Icon name={toast.icon || 'bell'} />
+            <img src={iconSrc(toast.icon)} alt="" />
           </span>
           <div className="island-text">
             <b>{toast.title}</b>

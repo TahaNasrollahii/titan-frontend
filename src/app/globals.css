@@ -1262,6 +1262,15 @@ html[dir="rtl"] .hero-char {
   display: none
 }
 
+/* Tablet/phone: room under the cards for their full shadow (a scroller clips it into a hard
+   band otherwise); the negative margin keeps the following section where it was */
+@media (max-width: 1024px) {
+  .scroller {
+    padding-bottom: 44px;
+    margin-bottom: -24px;
+  }
+}
+
 .scroller.drag {
   cursor: grabbing;
   scroll-snap-type: none;
@@ -1854,6 +1863,13 @@ html[dir="rtl"] .hero-char {
   box-shadow:
     inset -3px -4px 8px rgba(0, 0, 0, .28),
     0 0 16px rgb(var(--tone-rgb) / .55)
+}
+
+.island-ic img {
+  width: 19px;
+  height: 19px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3))
 }
 
 .island-text {
@@ -3001,5 +3017,13 @@ html[dir="rtl"] .hero-live {
   }
   .hero-char {
     opacity: 0.25;
+  }
+}
+
+/* The Fortnite art has the head at the very top of the image, so the desktop pop-out scale
+   pushes it out of the shorter tablet/phone banner; keep it inside */
+@media (max-width: 1024px) {
+  .hero-char.fortnite {
+    transform: scale(0.88);
   }
 }

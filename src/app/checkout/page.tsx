@@ -39,7 +39,7 @@ function Checkout() {
   const saveAccount = async () => {
     const { title, username, password } = newAccount;
     if (!title.trim() || !username.trim() || !password.trim()) {
-      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدهای اکانت را پر کنید', icon: 'info', tone: 'warning' });
+      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدهای اکانت را پر کنید', icon: 'accounts', tone: 'warning' });
       return;
     }
     try {
@@ -48,15 +48,15 @@ function Checkout() {
       setSelectedAccountId(created.id);
       setIsAddingNew(false);
       setNewAccount({ title: '', username: '', password: '' });
-      addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'check', tone: 'success' });
+      addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'accounts', tone: 'success' });
     } catch (error) {
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'accounts', tone: 'error' });
     }
   };
 
   const pay = async () => {
     if (cart.requiresGameAccount && !selectedAccountId) {
-      addToast({ title: 'خطا', text: 'لطفاً یک اکانت بازی برای دریافت سفارش انتخاب کنید', icon: 'info', tone: 'warning' });
+      addToast({ title: 'خطا', text: 'لطفاً یک اکانت بازی برای دریافت سفارش انتخاب کنید', icon: 'accounts', tone: 'warning' });
       return;
     }
     setSubmitting(true);
@@ -72,7 +72,7 @@ function Checkout() {
       await refreshCart();
       router.push(`/payment/result?status=${order.status}&purpose=order&reference=${order.number}`);
     } catch (error) {
-      addToast({ title: 'پرداخت انجام نشد', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'پرداخت انجام نشد', text: errorMessage(error), icon: 'cart', tone: 'error' });
       setSubmitting(false);
     }
   };

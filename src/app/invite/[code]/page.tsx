@@ -27,7 +27,7 @@ function JoinTeam() {
     teamsApi
       .join(code)
       .then(team => {
-        addToast({ title: 'به تیم پیوستید', text: team.name, icon: 'users', tone: 'success' });
+        addToast({ title: 'به تیم پیوستید', text: team.name, icon: 'team', tone: 'success' });
         router.replace(`/teams/${team.id}`);
       })
       .catch(err => setError(err instanceof ApiError && err.code === 'already_member' ? err.detail : errorMessage(err)));

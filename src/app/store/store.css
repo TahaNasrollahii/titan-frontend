@@ -1115,6 +1115,17 @@
     padding: 26px 24px 28px;
   }
 
+  /* Backgrounds follow the banner's own (smaller) radius, so no corner is left uncoloured;
+     the transparent hover border would otherwise show as a faint ring */
+  .store-promo .sp-bg {
+    border-radius: inherit;
+  }
+
+  .store-promo,
+  .store-promo:hover {
+    border: 0;
+  }
+
   /* The admin-tuned art offset/scale is for the desktop banner; here the art sits on the bottom edge */
   .store-promo .sp-art {
     transform: none !important;

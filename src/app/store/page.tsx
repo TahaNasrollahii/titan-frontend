@@ -341,7 +341,7 @@ function ProductResults({ query }: { query: ProductQueryState }) {
       else await catalogApi.addToWishlist(product.slug);
     } catch (err) {
       setFlag(product.isWishlisted);
-      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(err), icon: 'heart', tone: 'error' });
+      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(err), icon: 'favorite', tone: 'error' });
     }
   };
 

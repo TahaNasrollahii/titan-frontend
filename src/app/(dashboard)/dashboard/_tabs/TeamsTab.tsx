@@ -22,10 +22,10 @@ export function TeamsTab() {
     try {
       if (accept) await meApi.acceptTeamInvitation(id);
       else await meApi.declineTeamInvitation(id);
-      addToast({ title: accept ? 'به تیم پیوستید' : 'دعوت رد شد', icon: 'users', tone: accept ? 'success' : 'info' });
+      addToast({ title: accept ? 'به تیم پیوستید' : 'دعوت رد شد', icon: 'team', tone: accept ? 'success' : 'info' });
       await Promise.all([teams.reload(), invitations.reload()]);
     } catch (error) {
-      addToast({ title: 'دعوت تیم', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'دعوت تیم', text: errorMessage(error), icon: 'team', tone: 'error' });
     }
   };
 

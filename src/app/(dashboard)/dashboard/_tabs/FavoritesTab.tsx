@@ -22,7 +22,7 @@ export function FavoritesTab() {
       await catalogApi.removeFromWishlist(slug);
       wishlist.setData(current => current && { ...current, results: current.results.filter(i => i.product.slug !== slug) });
     } catch (error) {
-      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(error), icon: 'heart', tone: 'error' });
+      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(error), icon: 'favorite', tone: 'error' });
     }
   };
 

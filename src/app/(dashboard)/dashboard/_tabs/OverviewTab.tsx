@@ -28,7 +28,7 @@ function TopupForm({ onClose }: { onClose: () => void }) {
       const { paymentUrl } = await walletApi.topup(value);
       await redirectToGateway(paymentUrl, addToast);
     } catch (error) {
-      addToast({ title: 'شارژ کیف پول', text: errorMessage(error), icon: 'wallet', tone: 'error' });
+      addToast({ title: 'شارژ کیف پول', text: errorMessage(error), icon: 'dashboard', tone: 'error' });
       setBusy(false);
     }
   };

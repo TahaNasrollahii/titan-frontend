@@ -113,11 +113,11 @@ function ReviewForm({
         authorName: name.trim(),
         authorEmail: email.trim(),
       });
-      addToast({ title: existing ? 'دیدگاه شما بروزرسانی شد' : 'دیدگاه شما ثبت شد', icon: 'check', tone: 'success' });
+      addToast({ title: existing ? 'دیدگاه شما بروزرسانی شد' : 'دیدگاه شما ثبت شد', icon: 'store', tone: 'success' });
       await onSaved();
     } catch (error) {
       if (error instanceof ApiError) setErrors(error.errors);
-      addToast({ title: 'ثبت دیدگاه', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'ثبت دیدگاه', text: errorMessage(error), icon: 'store', tone: 'error' });
     } finally {
       setBusy(false);
     }

@@ -14,11 +14,24 @@ const UNREAD_POLL_MS = 60_000;
 /** Colour of a toast by meaning; defaults to `info`. */
 export type ToastTone = 'success' | 'error' | 'warning' | 'info';
 
+/** A PNG from /public/icons (the same set as the sidebars and dashboard); defaults to `notif`. */
+export type ToastIcon =
+  | 'notif'
+  | 'cart'
+  | 'store'
+  | 'team'
+  | 'favorite'
+  | 'tournament'
+  | 'account'
+  | 'accounts'
+  | 'dashboard'
+  | 'support';
+
 export type Toast = {
   id: number;
   title: string;
   text?: string;
-  icon?: string;
+  icon?: ToastIcon;
   tone?: ToastTone;
 };
 

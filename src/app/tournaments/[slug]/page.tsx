@@ -56,7 +56,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
       return;
     }
     if (isTeam && !teamId) {
-      addToast({ title: 'یک تیم انتخاب کنید', icon: 'users', tone: 'warning' });
+      addToast({ title: 'یک تیم انتخاب کنید', icon: 'team', tone: 'warning' });
       return;
     }
     setBusy(true);
@@ -69,10 +69,10 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
         await redirectToGateway(result.paymentUrl, addToast);
         return;
       }
-      addToast({ title: 'ثبت‌نام انجام شد', text: tournament.title, icon: 'trophy', tone: 'success' });
+      addToast({ title: 'ثبت‌نام انجام شد', text: tournament.title, icon: 'tournament', tone: 'success' });
       onChanged();
     } catch (error) {
-      addToast({ title: 'ثبت‌نام انجام نشد', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'ثبت‌نام انجام نشد', text: errorMessage(error), icon: 'tournament', tone: 'error' });
     } finally {
       setBusy(false);
     }
@@ -83,10 +83,10 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
     setBusy(true);
     try {
       await tournamentsApi.withdraw(tournament.slug);
-      addToast({ title: 'انصراف ثبت شد', icon: 'check', tone: 'info' });
+      addToast({ title: 'انصراف ثبت شد', icon: 'tournament', tone: 'info' });
       onChanged();
     } catch (error) {
-      addToast({ title: 'انصراف انجام نشد', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'انصراف انجام نشد', text: errorMessage(error), icon: 'tournament', tone: 'error' });
     } finally {
       setBusy(false);
     }

@@ -43,10 +43,10 @@ export default function TeamManagePage() {
   const run = async (action: () => Promise<unknown>, success: string) => {
     try {
       await action();
-      addToast({ title: success, icon: 'check', tone: 'success' });
+      addToast({ title: success, icon: 'team', tone: 'success' });
       await team.reload();
     } catch (error) {
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'team', tone: 'error' });
     }
   };
 
@@ -55,10 +55,10 @@ export default function TeamManagePage() {
     setErrors({});
     try {
       team.setData(await teamsApi.update(data.id, input));
-      addToast({ title: 'تغییرات ذخیره شد', icon: 'check', tone: 'success' });
+      addToast({ title: 'تغییرات ذخیره شد', icon: 'team', tone: 'success' });
     } catch (error) {
       if (error instanceof ApiError) setErrors(error.errors);
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'team', tone: 'error' });
     } finally {
       setSaving(false);
     }
@@ -67,7 +67,7 @@ export default function TeamManagePage() {
   const copyInvite = async () => {
     if (!data.inviteUrl) return;
     await navigator.clipboard?.writeText(data.inviteUrl);
-    addToast({ title: 'لینک دعوت کپی شد', icon: 'copy', tone: 'success' });
+    addToast({ title: 'لینک دعوت کپی شد', icon: 'team', tone: 'success' });
   };
 
   const invite = async () => {
@@ -75,10 +75,10 @@ export default function TeamManagePage() {
     try {
       await teamsApi.invite(data.id, inviteName.trim());
       setInviteName('');
-      addToast({ title: 'دعوت‌نامه ارسال شد', icon: 'users', tone: 'success' });
+      addToast({ title: 'دعوت‌نامه ارسال شد', icon: 'team', tone: 'success' });
       await invitations.reload();
     } catch (error) {
-      addToast({ title: 'دعوت بازیکن', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'دعوت بازیکن', text: errorMessage(error), icon: 'team', tone: 'error' });
     }
   };
 
@@ -98,7 +98,7 @@ export default function TeamManagePage() {
       await teamsApi.removeMember(data.id, user.id);
       router.push('/dashboard?tab=teams');
     } catch (error) {
-      addToast({ title: 'خروج از تیم', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خروج از تیم', text: errorMessage(error), icon: 'team', tone: 'error' });
     }
   };
 
@@ -106,10 +106,10 @@ export default function TeamManagePage() {
     if (!window.confirm('تیم برای همیشه منحل شود؟ این کار قابل بازگشت نیست.')) return;
     try {
       await teamsApi.dissolve(data.id);
-      addToast({ title: 'تیم منحل شد', icon: 'users', tone: 'info' });
+      addToast({ title: 'تیم منحل شد', icon: 'team', tone: 'info' });
       router.push('/dashboard?tab=teams');
     } catch (error) {
-      addToast({ title: 'انحلال تیم', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'انحلال تیم', text: errorMessage(error), icon: 'team', tone: 'error' });
     }
   };
 

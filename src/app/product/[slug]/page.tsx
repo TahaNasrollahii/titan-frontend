@@ -83,13 +83,13 @@ export default function ProductPage() {
       else await catalogApi.addToWishlist(data.slug);
     } catch (error) {
       product.setData({ ...data, isWishlisted: wished });
-      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(error), icon: 'heart', tone: 'error' });
+      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(error), icon: 'favorite', tone: 'error' });
     }
   };
 
   const handleAddToCart = async () => {
     if (data.hasVariants && !variant) {
-      addToast({ title: 'یک گزینه انتخاب کنید', icon: 'info', tone: 'warning' });
+      addToast({ title: 'یک گزینه انتخاب کنید', icon: 'store', tone: 'warning' });
       return;
     }
     setAdding(true);

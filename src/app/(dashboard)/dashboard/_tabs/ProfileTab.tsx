@@ -31,10 +31,10 @@ export function ProfileTab() {
     setErrors({});
     try {
       setUser(await meApi.update({ ...form, username: form.username || undefined }));
-      addToast({ title: 'ذخیره شد', text: 'اطلاعات حساب بروزرسانی شد', icon: 'check', tone: 'success' });
+      addToast({ title: 'ذخیره شد', text: 'اطلاعات حساب بروزرسانی شد', icon: 'account', tone: 'success' });
     } catch (error) {
       if (error instanceof ApiError) setErrors(error.errors);
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'account', tone: 'error' });
     } finally {
       setSaving(false);
     }
@@ -45,9 +45,9 @@ export function ProfileTab() {
     if (!file) return;
     try {
       setUser(await meApi.uploadAvatar(file));
-      addToast({ title: 'آواتار بروزرسانی شد', icon: 'check', tone: 'success' });
+      addToast({ title: 'آواتار بروزرسانی شد', icon: 'account', tone: 'success' });
     } catch (error) {
-      addToast({ title: 'آپلود آواتار', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'آپلود آواتار', text: errorMessage(error), icon: 'account', tone: 'error' });
     } finally {
       event.target.value = '';
     }

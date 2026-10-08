@@ -22,11 +22,11 @@ export default function CreateTeamPage() {
     setErrors({});
     try {
       const team = await teamsApi.create(data);
-      addToast({ title: 'تیم ساخته شد', text: 'لینک دعوت را برای هم‌تیمی‌ها بفرستید', icon: 'users', tone: 'success' });
+      addToast({ title: 'تیم ساخته شد', text: 'لینک دعوت را برای هم‌تیمی‌ها بفرستید', icon: 'team', tone: 'success' });
       router.push(`/teams/${team.id}/manage`);
     } catch (error) {
       if (error instanceof ApiError) setErrors(error.errors);
-      addToast({ title: 'ساخت تیم', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'ساخت تیم', text: errorMessage(error), icon: 'team', tone: 'error' });
       setSubmitting(false);
     }
   };

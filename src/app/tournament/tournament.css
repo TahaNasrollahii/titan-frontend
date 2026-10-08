@@ -1,10 +1,10 @@
-ه
 /* Tournaments Page - Liquid Glass Redesign */
 
 .tour-wrapper {
   display: flex;
   flex-direction: column;
-  gap: clamp(24px, 3vw, 40px);
+  /* Desktop/tablet spacing comes from the sections' own margins; phones add a gap (see below) */
+  gap: 0;
   min-width: 0;
   position: relative;
   /* Make sure the main element is isolated for backdrop filters */
@@ -1284,9 +1284,14 @@
     gap: 18px;
   }
 
+  /* Clear separation between sections: room above each header, a little below it */
   .tour-wrapper > .tour-sec-h {
-    margin-top: 14px;
-    margin-bottom: 4px;
+    margin-top: 40px;
+    margin-bottom: 6px;
+  }
+
+  .tour-matches {
+    gap: 18px;
   }
 
   .tour-sec-h h3 {
@@ -1360,7 +1365,10 @@
     display: flex;
     gap: 12px;
     overflow-x: auto;
-    padding: 16px var(--gutter-x, 14px) 12px;
+    /* A scroller clips its children: leave room for the cards' full shadow, then give the
+       space back so the next section does not move */
+    padding: 16px var(--gutter-x, 14px) 44px;
+    margin-bottom: -32px;
     scroll-snap-type: x mandatory;
     scroll-padding: 0 var(--gutter-x, 14px);
     scrollbar-width: none;
@@ -1448,8 +1456,9 @@
     white-space: nowrap;
   }
 
+  /* Breathing room between the teams/players filter and the table below it */
   .tour-table-controls {
-    margin: 0;
+    margin: 2px 0 12px;
   }
 
   .lb-tabs-new {

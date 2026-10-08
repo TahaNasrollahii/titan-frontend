@@ -29,7 +29,7 @@ export function AccountsTab() {
 
   const save = async () => {
     if (!form.title.trim() || !form.username.trim() || (editing === 'new' && !form.password)) {
-      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدها را پر کنید', icon: 'info', tone: 'warning' });
+      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدها را پر کنید', icon: 'accounts', tone: 'warning' });
       return;
     }
     setBusy(true);
@@ -42,9 +42,9 @@ export function AccountsTab() {
         accounts.setData(current => (current ?? []).map(a => (a.id === updated.id ? updated : a)));
       }
       setEditing(null);
-      addToast({ title: 'ذخیره شد', icon: 'check', tone: 'success' });
+      addToast({ title: 'ذخیره شد', icon: 'accounts', tone: 'success' });
     } catch (error) {
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'accounts', tone: 'error' });
     } finally {
       setBusy(false);
     }
@@ -56,7 +56,7 @@ export function AccountsTab() {
       await gameAccountsApi.remove(account.id);
       accounts.setData(current => (current ?? []).filter(a => a.id !== account.id));
     } catch (error) {
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'accounts', tone: 'error' });
     }
   };
 

@@ -7,8 +7,6 @@ import styles from '@/app/(dashboard)/dashboard/page.module.css';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 
-import { Icon } from './Icons';
-
 const MENU: { tab: string; label: string; icon: string; dividerBefore?: boolean }[] = [
   { tab: 'overview', label: 'پیشخوان', icon: '/icons/home.png' },
   { tab: 'profile', label: 'اطلاعات حساب کاربری', icon: '/icons/account.png' },
@@ -71,7 +69,7 @@ function DashboardSidebarContent() {
       <div className={styles.menuDivider}></div>
 
       <button className={`${styles.menuItem} ${styles.logoutBtn}`} onClick={handleLogout}>
-        <Icon name="logout" /> خروج از حساب
+        <img src="/icons/login.png" alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> خروج از حساب
       </button>
     </aside>
   );
