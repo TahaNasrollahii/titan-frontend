@@ -44,9 +44,24 @@
   z-index: 1;
 }
 
-.characterBehind {
+/* Soft colour blobs behind the card so the glass has something to refract */
+.scene::before {
+  content: '';
   position: absolute;
-  top: -240px;
+  inset: 8% -12%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(closest-side at 22% 30%, rgba(124, 77, 255, 0.35), transparent),
+    radial-gradient(closest-side at 80% 75%, rgba(226, 69, 63, 0.35), transparent);
+  filter: blur(20px);
+}
+
+.characterBehind {
+  /* How much of the character shows above the card */
+  --peek: 240px;
+  position: absolute;
+  top: calc(-1 * var(--peek));
   left: 50%;
   transform: translateX(-50%);
   width: 340px;
@@ -54,23 +69,49 @@
   z-index: 0;
   pointer-events: none;
   filter: drop-shadow(0 20px 60px rgba(100, 60, 200, 0.35));
+  /* Cut the image at the card's top edge so nothing shows through the glass.
+     Negative side/top insets keep the drop-shadow intact. */
+  clip-path: inset(-80px -80px calc(100% - var(--peek)) -80px);
 }
 
-/* ─── Login Card ─── */
+/* ─── Login Card (glass) ─── */
 .card {
   width: min(420px, 100%);
   padding: 28px 32px;
   border-radius: 32px;
-  background: linear-gradient(160deg, rgb(30, 30, 35), rgb(15, 15, 20));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 60%),
+    rgba(18, 14, 22, 0.45);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 0 120px rgba(100, 60, 200, 0.06);
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 0 120px rgba(100, 60, 200, 0.08);
   z-index: 2;
   position: relative;
   display: flex;
   flex-direction: column;
+}
+
+/* Light sheen along the top-left edge */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, 0.1), transparent 55%);
+}
+
+/* No backdrop-filter support: fall back to a solid card */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card {
+    background: linear-gradient(160deg, rgb(30, 30, 35), rgb(15, 15, 20));
+  }
 }
 
 /* ─── Floating Game Logos ─── */
@@ -117,6 +158,14 @@
   bottom: 10%;
   right: -55px;
   animation: floatFortnite 9s ease-in-out infinite, spinSlow 18s linear infinite;
+}
+
+.logoPremium {
+  width: 80px;
+  height: 80px;
+  bottom: 14%;
+  left: -55px;
+  animation: floatPremium 8.5s ease-in-out infinite, spinSlowReverse 26s linear infinite;
 }
 
 /* Float keyframes — each has its own unique orbit */
@@ -177,6 +226,26 @@
 
   75% {
     transform: translate(-20px, -8px);
+  }
+}
+
+@keyframes floatPremium {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-14px, 16px);
+  }
+
+  50% {
+    transform: translate(10px, 24px);
+  }
+
+  75% {
+    transform: translate(16px, 6px);
   }
 }
 
@@ -281,14 +350,6 @@
   letter-spacing: 1px;
 }
 
-.codeInput {
-  composes: input;
-  font-size: 28px;
-  letter-spacing: 16px;
-  font-weight: 700;
-  padding: 14px 20px;
-}
-
 .error {
   color: #ff5252;
   font-size: 13px;
@@ -372,8 +433,8 @@
 /* ─── Responsive ─── */
 @media (max-width: 540px) {
   .characterBehind {
+    --peek: 160px;
     width: 240px;
-    top: -160px;
   }
 
   .logoApex {
@@ -392,5 +453,11 @@
     width: 58px;
     height: 58px;
     right: -18px;
+  }
+
+  .logoPremium {
+    width: 55px;
+    height: 55px;
+    left: -15px;
   }
 }

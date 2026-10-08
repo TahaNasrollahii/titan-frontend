@@ -13,6 +13,9 @@ import { authApi } from '@/lib/api/endpoints';
 import { toEnglishDigits } from '@/lib/format';
 
 import styles from './login.module.css';
+import { OTP_SUCCESS_MS, OtpBubbles, type OtpStatus } from './OtpBubbles';
+
+const OTP_LENGTH = 4;
 
 /** Only allow redirects back into this site. */
 function safeNext(next: string | null) {
@@ -39,6 +42,12 @@ const floatingLogos = [
     className: 'logoFortnite',
     delay: 0.3,
   },
+  {
+    src: '/images/login-premium.png',
+    alt: 'Premium',
+    className: 'logoPremium',
+    delay: 0.45,
+  },
 ];
 
 function LoginForm() {
@@ -53,6 +62,7 @@ function LoginForm() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [resendIn, setResendIn] = useState(0);
+  const [otpStatus, setOtpStatus] = useState<OtpStatus>('idle');
 
   useEffect(() => {
     if (status === 'authenticated') router.replace(next);
@@ -71,6 +81,8 @@ function LoginForm() {
       const response = await authApi.requestOtp(toEnglishDigits(phone));
       setPhone(response.phone);
       setResendIn(response.resendIn);
+      setCode('');
+      setOtpStatus('idle');
       setStep('code');
     } catch (err) {
       setError(errorMessage(err));
@@ -79,16 +91,33 @@ function LoginForm() {
     }
   };
 
-  const verify = async () => {
+  const verify = async (value = code) => {
+    if (busy || value.length < OTP_LENGTH) return;
     setBusy(true);
     setError('');
+    setOtpStatus('verifying');
     try {
-      completeLogin(await authApi.verifyOtp(phone, toEnglishDigits(code)));
-      router.replace(next);
+      const response = await authApi.verifyOtp(phone, value);
+      // Let the bubbles celebrate before logging in (which redirects).
+      setOtpStatus('success');
+      window.setTimeout(() => {
+        completeLogin(response);
+        router.replace(next);
+      }, OTP_SUCCESS_MS);
     } catch (err) {
       setError(errorMessage(err));
+      setOtpStatus('error');
       setBusy(false);
+      window.setTimeout(() => {
+        setCode('');
+        setOtpStatus('idle');
+      }, 650);
     }
+  };
+
+  const changeCode = (value: string) => {
+    setCode(value);
+    if (error) setError('');
   };
 
   const onSubmit = (event: FormEvent) => {
@@ -210,16 +239,14 @@ function LoginForm() {
                 </div>
               ) : (
                 <div className={styles.field}>
-                  <label htmlFor="code">کد ۵ رقمی</label>
-                  <input
+                  <label htmlFor="code">کد ۴ رقمی</label>
+                  <OtpBubbles
                     id="code"
-                    className={styles.codeInput}
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    maxLength={5}
+                    length={OTP_LENGTH}
                     value={code}
-                    onChange={event => setCode(event.target.value)}
-                    autoFocus
+                    status={otpStatus}
+                    onChange={changeCode}
+                    onComplete={value => void verify(value)}
                   />
                 </div>
               )}
@@ -242,11 +269,13 @@ function LoginForm() {
           <motion.button
             className={styles.primary}
             type="submit"
-            disabled={busy || (step === 'phone' ? phone.trim().length < 10 : code.trim().length < 5)}
+            disabled={busy || (step === 'phone' ? phone.trim().length < 10 : code.length < OTP_LENGTH)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {busy ? (
+            {otpStatus === 'success' ? (
+              'خوش آمدید!'
+            ) : busy ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
@@ -266,7 +295,12 @@ function LoginForm() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: 0.2 }}
               >
-                <button type="button" className={styles.linkButton} onClick={() => setStep('phone')}>
+                <button type="button" className={styles.linkButton} onClick={() => {
+                    setStep('phone');
+                    setError('');
+                  }}
+                  disabled={busy}
+                >
                   تغییر شماره
                 </button>
                 <button
