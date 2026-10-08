@@ -63,6 +63,11 @@ function Toast({ toast, onRemove }: { toast: ToastType; onRemove: (id: number) =
   // Exit: fold back into a bubble and float away upwards.
   useEffect(() => {
     if (isPresent) return;
+    // Removed while the tab is hidden: animations cannot run there, so just go.
+    if (document.hidden) {
+      safeToRemove?.();
+      return;
+    }
     const island = scope.current;
 
     (async () => {

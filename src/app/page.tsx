@@ -429,7 +429,8 @@ function HomeScene({ data }: { data: Home }) {
         if (!list.length) return;
         let n = 0;
         setTimeout(function again() {
-          liveToast(list[n++ % list.length]);
+          // Skip while the tab is in the background: a stale announcement is no use later.
+          if (!document.hidden) liveToast(list[n++ % list.length]);
           setTimeout(again, rand(24000, 36000));
         }, 6500);
       })();

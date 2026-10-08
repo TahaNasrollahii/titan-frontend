@@ -10,6 +10,9 @@ import { useAuth } from './AuthContext';
 
 const GUEST_CART_KEY = 'titan.guestCart';
 const UNREAD_POLL_MS = 60_000;
+const MAX_TOASTS = 3;
+/** A toast younger than this when the tab is left is shown again on return. */
+const UNREAD_TOAST_MS = 2500;
 
 /** Colour of a toast by meaning; defaults to `info`. */
 export type ToastTone = 'success' | 'error' | 'warning' | 'info';
@@ -163,10 +166,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const unreadNotifications = isAuthenticated ? unreadCount : 0;
 
+  /** Toasts raised while the tab is in the background, shown when the user comes back. */
+  const pendingToasts = useRef<Omit<Toast, 'id'>[]>([]);
+  const toastShownAt = useRef(new Map<number, number>());
+  const toastsRef = useRef(toasts);
+  useEffect(() => {
+    toastsRef.current = toasts;
+  }, [toasts]);
+
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+    // Background tabs pause animation frames but not timers: toasts added now would pile up
+    // half-animated and all play at once on return. Hold them until the tab is visible.
+    if (document.hidden) {
+      pendingToasts.current = [...pendingToasts.current, toast].slice(-MAX_TOASTS);
+      return;
+    }
     const id = ++toastId.current;
-    setToasts(current => [...current, { ...toast, id }].slice(-3));
+    toastShownAt.current.set(id, Date.now());
+    setToasts(current => [...current, { ...toast, id }].slice(-MAX_TOASTS));
   }, []);
+
+  useEffect(() => {
+    const timers: number[] = [];
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        // Leave a clean slate (no animation can finish in the background). A toast that only
+        // just appeared is queued again so it isn't lost before it could be read.
+        const unread = toastsRef.current
+          .filter(t => Date.now() - (toastShownAt.current.get(t.id) ?? 0) < UNREAD_TOAST_MS)
+          .map(t => ({ title: t.title, text: t.text, icon: t.icon, tone: t.tone }));
+        pendingToasts.current = [...unread, ...pendingToasts.current].slice(-MAX_TOASTS);
+        toastShownAt.current.clear();
+        setToasts([]);
+        return;
+      }
+      const queued = pendingToasts.current;
+      pendingToasts.current = [];
+      queued.forEach((toast, i) => timers.push(window.setTimeout(() => addToast(toast), 400 + i * 350)));
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      timers.forEach(window.clearTimeout);
+    };
+  }, [addToast]);
 
   const removeToast = useCallback((id: number) => {
     setToasts(current => current.filter(t => t.id !== id));
