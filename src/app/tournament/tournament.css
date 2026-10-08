@@ -1353,21 +1353,43 @@
     margin-top: 4px;
   }
 
-  .th-btn-primary {
-    padding: 9px 18px;
-    font-size: 12.5px;
+  /* Under the button it only crowds the banner */
+  .th-strike {
+    display: none;
   }
 
+  /* Same pill as the home hero's «مشاهده تورنمنت» button */
+  .th-btn-primary {
+    gap: 8px;
+    height: 36px;
+    padding: 0 18px;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    color: #1a0508;
+    font-weight: 600;
+    font-size: 12.5px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1), inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .th-btn-primary i {
+    display: none;
+  }
+
+  .th-btn-primary:hover {
+    transform: none;
+  }
+
+  /* The art keeps to the strip left of the copy, so the two never overlap */
   .th-art-wrap {
     top: 0;
     bottom: 0;
-    left: 0;
-    width: 58%;
+    left: 6px;
+    width: 32%;
   }
 
-  /* No pointer parallax here: the art sits on the bottom edge */
+  /* No pointer parallax here */
   .th-art {
-    object-position: 25% bottom;
+    object-position: center;
     transform: none;
   }
 
@@ -1680,9 +1702,13 @@
   }
 }
 
-/* Very small phones: a little more room for the hero copy */
+/* Very small phones: a little more room for the hero copy, a smaller art strip beside it */
 @media (max-width: 360px) {
   .th-content {
-    width: 72%;
+    width: 68%;
+  }
+
+  .th-art-wrap {
+    width: 28%;
   }
 }

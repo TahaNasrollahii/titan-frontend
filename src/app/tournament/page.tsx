@@ -199,6 +199,7 @@ export default function TournamentPage() {
                 </Link>
                 {promo?.originalPrice && (
                   <span
+                    className="th-strike"
                     style={{
                       textDecoration: 'line-through',
                       color: 'rgba(255, 255, 255, 0.5)',
