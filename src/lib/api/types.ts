@@ -489,6 +489,18 @@ export interface RegistrationResult {
   paymentUrl: string | null;
 }
 
+/** Public platform-wide numbers (About page). */
+export interface PlatformStats {
+  players: number;
+  teams: number;
+  games: number;
+  /** Live or completed tournaments. */
+  tournaments: number;
+  ordersDelivered: number;
+  /** Prize pools of completed tournaments, one entry per currency. */
+  prizesAwarded: { currency: 'IRT' | 'USD'; amount: number }[];
+}
+
 export interface StatsTotals {
   matches: number;
   wins: number;

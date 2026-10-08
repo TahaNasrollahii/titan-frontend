@@ -22,6 +22,7 @@ import type {
   Payment,
   PaymentMethod,
   PaymentStart,
+  PlatformStats,
   PlayerLeaderboardRow,
   PresenceUser,
   Product,
@@ -226,4 +227,5 @@ export const contentApi = {
   promos: (placement: Promo['placement']) => api<Promo[]>('content/promos/', { query: { placement } }),
   announcements: () => api<Announcement[]>('content/announcements/'),
   contact: () => api<{ supportOnline: boolean; channels: ContactChannel[] }>('content/contact/'),
+  stats: () => api<PlatformStats>('stats/'),
 };

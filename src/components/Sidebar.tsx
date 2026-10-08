@@ -20,6 +20,8 @@ export function Sidebar() {
     activeKey = '/tournament';
   } else if (pathname.startsWith('/contact')) {
     activeKey = '/contact';
+  } else if (pathname.startsWith('/about')) {
+    activeKey = '/about';
   } else if (pathname.startsWith('/dashboard') || pathname.startsWith('/teams')) {
     activeKey = '/dashboard';
   } else if (pathname !== '/' && pathname !== '/store') {
@@ -102,6 +104,15 @@ export function Sidebar() {
             ref={el => { navRefs.current['/contact'] = el; }}
           >
             <img src="/icons/contact-us.png" alt="contact-us" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+          </Link>
+
+          <Link
+            href="/about"
+            className={`nav-item ${activeKey === '/about' ? 'active' : ''}`}
+            data-label="درباره ما"
+            ref={el => { navRefs.current['/about'] = el; }}
+          >
+            <img src="/icons/about-us.png" alt="about-us" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link

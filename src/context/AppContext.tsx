@@ -11,11 +11,15 @@ import { useAuth } from './AuthContext';
 const GUEST_CART_KEY = 'titan.guestCart';
 const UNREAD_POLL_MS = 60_000;
 
+/** Colour of a toast by meaning; defaults to `info`. */
+export type ToastTone = 'success' | 'error' | 'warning' | 'info';
+
 export type Toast = {
   id: number;
   title: string;
   text?: string;
   icon?: string;
+  tone?: ToastTone;
 };
 
 /** One cart line as shown in the UI, whether it lives on the server (logged in) or in the browser (guest). */
@@ -168,7 +172,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       setCart(viewFromServer(await cartApi.get()));
     } catch (error) {
-      addToast({ title: 'سبد خرید', text: errorMessage(error), icon: 'cart' });
+      addToast({ title: 'سبد خرید', text: errorMessage(error), icon: 'cart', tone: 'error' });
     }
   }, [isAuthenticated, addToast]);
 
@@ -189,7 +193,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           writeGuestCart([]);
           setCart(viewFromServer(merged));
           if (skipped.length) {
-            addToast({ title: 'سبد خرید', text: 'برخی محصولات دیگر موجود نبودند و حذف شدند.', icon: 'cart' });
+            addToast({ title: 'سبد خرید', text: 'برخی محصولات دیگر موجود نبودند و حذف شدند.', icon: 'cart', tone: 'warning' });
           }
         } catch {
           await refreshCart();
@@ -234,10 +238,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           title: 'به سبد خرید اضافه شد',
           text: variant ? `${product.title} — ${variant.label}` : product.title,
           icon: 'cart',
+          tone: 'success',
         });
         return true;
       } catch (error) {
-        addToast({ title: 'افزودن به سبد ناموفق بود', text: errorMessage(error), icon: 'cart' });
+        addToast({ title: 'افزودن به سبد ناموفق بود', text: errorMessage(error), icon: 'cart', tone: 'error' });
         return false;
       }
     },
@@ -259,7 +264,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setCart(viewFromGuest(lines));
         }
       } catch (error) {
-        addToast({ title: 'سبد خرید', text: errorMessage(error), icon: 'cart' });
+        addToast({ title: 'سبد خرید', text: errorMessage(error), icon: 'cart', tone: 'error' });
       }
     },
     [cart.lines, isAuthenticated, addToast],

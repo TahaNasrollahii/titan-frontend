@@ -13,6 +13,7 @@ import { gameAccountsApi, ordersApi, walletApi } from '@/lib/api/endpoints';
 import type { PaymentMethod } from '@/lib/api/types';
 import { faNumber, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
+import { redirectToGateway } from '@/lib/gateway';
 
 import './checkout.css';
 
@@ -38,7 +39,7 @@ function Checkout() {
   const saveAccount = async () => {
     const { title, username, password } = newAccount;
     if (!title.trim() || !username.trim() || !password.trim()) {
-      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدهای اکانت را پر کنید', icon: 'info' });
+      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدهای اکانت را پر کنید', icon: 'info', tone: 'warning' });
       return;
     }
     try {
@@ -47,15 +48,15 @@ function Checkout() {
       setSelectedAccountId(created.id);
       setIsAddingNew(false);
       setNewAccount({ title: '', username: '', password: '' });
-      addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'check' });
+      addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'check', tone: 'success' });
     } catch (error) {
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
     }
   };
 
   const pay = async () => {
     if (cart.requiresGameAccount && !selectedAccountId) {
-      addToast({ title: 'خطا', text: 'لطفاً یک اکانت بازی برای دریافت سفارش انتخاب کنید', icon: 'info' });
+      addToast({ title: 'خطا', text: 'لطفاً یک اکانت بازی برای دریافت سفارش انتخاب کنید', icon: 'info', tone: 'warning' });
       return;
     }
     setSubmitting(true);
@@ -65,14 +66,13 @@ function Checkout() {
         cart.requiresGameAccount ? selectedAccountId : null,
       );
       if (paymentUrl) {
-        addToast({ title: 'در حال انتقال...', text: 'در حال انتقال به درگاه پرداخت', icon: 'cart' });
-        window.location.assign(paymentUrl);
+        await redirectToGateway(paymentUrl, addToast);
         return;
       }
       await refreshCart();
       router.push(`/payment/result?status=${order.status}&purpose=order&reference=${order.number}`);
     } catch (error) {
-      addToast({ title: 'پرداخت انجام نشد', text: errorMessage(error), icon: 'info' });
+      addToast({ title: 'پرداخت انجام نشد', text: errorMessage(error), icon: 'info', tone: 'error' });
       setSubmitting(false);
     }
   };

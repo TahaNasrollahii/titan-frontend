@@ -28,9 +28,9 @@ export default function BracketPage() {
   const showLobby = () => {
     if (myLiveMatch?.lobbyCode) {
       void navigator.clipboard?.writeText(myLiveMatch.lobbyCode);
-      addToast({ title: 'کد لابی کپی شد', text: myLiveMatch.lobbyCode, icon: 'copy' });
+      addToast({ title: 'کد لابی کپی شد', text: myLiveMatch.lobbyCode, icon: 'copy', tone: 'success' });
     } else {
-      addToast({ title: 'لابی', text: 'کد لابی هنوز توسط ادمین ثبت نشده است.', icon: 'info' });
+      addToast({ title: 'لابی', text: 'کد لابی هنوز توسط ادمین ثبت نشده است.', icon: 'info', tone: 'warning' });
     }
   };
 

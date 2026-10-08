@@ -15,6 +15,7 @@ import type { PaymentMethod, Tournament } from '@/lib/api/types';
 import { faNumber, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
+import { redirectToGateway } from '@/lib/gateway';
 
 import '../../tournament/tournament.css';
 import styles from './details.module.css';
@@ -55,7 +56,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
       return;
     }
     if (isTeam && !teamId) {
-      addToast({ title: 'یک تیم انتخاب کنید', icon: 'users' });
+      addToast({ title: 'یک تیم انتخاب کنید', icon: 'users', tone: 'warning' });
       return;
     }
     setBusy(true);
@@ -65,13 +66,13 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
         paymentMethod: tournament.isFree ? null : paymentMethod,
       });
       if (result.paymentUrl) {
-        window.location.assign(result.paymentUrl);
+        await redirectToGateway(result.paymentUrl, addToast);
         return;
       }
-      addToast({ title: 'ثبت‌نام انجام شد', text: tournament.title, icon: 'trophy' });
+      addToast({ title: 'ثبت‌نام انجام شد', text: tournament.title, icon: 'trophy', tone: 'success' });
       onChanged();
     } catch (error) {
-      addToast({ title: 'ثبت‌نام انجام نشد', text: errorMessage(error), icon: 'info' });
+      addToast({ title: 'ثبت‌نام انجام نشد', text: errorMessage(error), icon: 'info', tone: 'error' });
     } finally {
       setBusy(false);
     }
@@ -82,10 +83,10 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
     setBusy(true);
     try {
       await tournamentsApi.withdraw(tournament.slug);
-      addToast({ title: 'انصراف ثبت شد', icon: 'check' });
+      addToast({ title: 'انصراف ثبت شد', icon: 'check', tone: 'info' });
       onChanged();
     } catch (error) {
-      addToast({ title: 'انصراف انجام نشد', text: errorMessage(error), icon: 'info' });
+      addToast({ title: 'انصراف انجام نشد', text: errorMessage(error), icon: 'info', tone: 'error' });
     } finally {
       setBusy(false);
     }

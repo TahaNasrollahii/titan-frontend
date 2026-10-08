@@ -10,6 +10,7 @@ import { errorMessage } from '@/lib/api/client';
 import { meApi, walletApi } from '@/lib/api/endpoints';
 import { faNumber, ORDER_STATUS_LABELS, timeAgo, toEnglishDigits, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
+import { redirectToGateway } from '@/lib/gateway';
 
 import styles from '../page.module.css';
 import { orderBadgeClass } from './shared';
@@ -25,9 +26,9 @@ function TopupForm({ onClose }: { onClose: () => void }) {
     setBusy(true);
     try {
       const { paymentUrl } = await walletApi.topup(value);
-      window.location.assign(paymentUrl);
+      await redirectToGateway(paymentUrl, addToast);
     } catch (error) {
-      addToast({ title: 'شارژ کیف پول', text: errorMessage(error), icon: 'wallet' });
+      addToast({ title: 'شارژ کیف پول', text: errorMessage(error), icon: 'wallet', tone: 'error' });
       setBusy(false);
     }
   };

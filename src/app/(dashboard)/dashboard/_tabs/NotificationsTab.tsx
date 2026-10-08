@@ -72,9 +72,9 @@ export function NotificationsTab() {
       } else {
         await (accept ? meApi.acceptFriend(friendshipId) : meApi.declineFriend(friendshipId));
       }
-      addToast({ title: accept ? 'پذیرفته شد' : 'رد شد', icon: 'check' });
+      addToast({ title: accept ? 'پذیرفته شد' : 'رد شد', icon: 'check', tone: accept ? 'success' : 'info' });
     } catch (error) {
-      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info' });
+      addToast({ title: 'خطا', text: errorMessage(error), icon: 'info', tone: 'error' });
     }
     // The backend marks the action notification read once it is handled.
     await notifications.reload();
