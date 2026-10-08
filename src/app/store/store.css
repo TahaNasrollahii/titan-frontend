@@ -904,22 +904,21 @@
 }
 
 .sg-view-btn {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  color: #fff;
+  background: #fff;
+  color: #1a0508;
   padding: 0 16px;
   height: 44px;
   border-radius: 22px;
   font-size: 13px;
   font-weight: 600;
-  transition: background 0.3s, color 0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s var(--spring), opacity 0.3s;
+  border: none;
   flex-grow: 1;
 }
 
 .sg-view-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  transform: translateY(-2px);
+  opacity: 0.9;
 }
 
 .sg-add-btn {
