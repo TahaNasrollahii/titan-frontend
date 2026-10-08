@@ -223,6 +223,28 @@ export default function TournamentPage() {
         </section>
       </div>
 
+      <style>{`
+        @media (min-width: 901px) {
+          .score-widget-article {
+            padding: 12px 16px !important;
+            gap: 8px !important;
+            justify-content: center !important;
+          }
+          .score-widget-blob {
+            width: min(195px, 80%) !important;
+            margin: 0 auto !important;
+          }
+          .score-widget-core {
+            transform: scale(1) !important;
+          }
+          .score-widget-gh-row {
+            transform: scale(0.75) !important;
+            transform-origin: top center !important;
+            margin-top: 4px !important;
+          }
+        }
+      `}</style>
+
       <div className="tour-sec-h reveal" style={{ '--d': 3 } as React.CSSProperties}>
         <h3>مسیر پیشرفت و رنک‌ها</h3>
       </div>

@@ -161,19 +161,19 @@ export function ScoreWidget({ stats }: { stats: ScoreStats | null }) {
   }, []);
 
   return (
-    <div className="stat-wrap col reveal" style={{ '--d': 4, flex: 1, display: 'flex', width: '100%' } as React.CSSProperties}>
+    <div className="stat-wrap col reveal score-widget-wrapper" style={{ '--d': 4, flex: 1, display: 'flex', width: '100%' } as React.CSSProperties}>
       <article
-        className="stat spot reveal"
-        style={{ '--d': 5, flex: 1, padding: '12px 16px', gap: '8px', justifyContent: 'center' } as React.CSSProperties}
+        className="stat spot reveal score-widget-article"
+        style={{ '--d': 5, flex: 1 } as React.CSSProperties}
       >
-        <div className="blob" ref={blobRef} style={{ width: 'min(195px, 80%)', margin: '0 auto' }}>
+        <div className="blob score-widget-blob" ref={blobRef}>
           <canvas ref={canvasRef} aria-hidden="true"></canvas>
-          <div className="core" style={{ transform: 'scale(1)' }}>
+          <div className="core score-widget-core">
             <small>{coreLabel}</small>
             <strong>{fmt(coreValue)}</strong>
           </div>
         </div>
-        <div className="gh-row" style={{ transform: 'scale(0.75)', transformOrigin: 'top center', marginTop: '4px' }}>
+        <div className="gh-row score-widget-gh-row">
           {ITEMS.map(item => (
             <button
               key={item.key}
