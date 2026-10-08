@@ -1092,3 +1092,169 @@
     padding: 12px;
   }
 }
+
+/* =====================================================
+   Promo banners on tablet & phone
+   Slides are stacked in one grid cell instead of being absolutely positioned, so the banner
+   grows to fit its tallest slide and nothing spills out of it.
+   ===================================================== */
+@media (max-width: 1024px) {
+  .store-promo {
+    display: grid;
+    flex: none;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .store-promo .promo-slide-layer {
+    position: relative;
+    inset: auto;
+    grid-area: 1 / 1;
+    padding: 26px 24px 28px;
+  }
+
+  /* The admin-tuned art offset/scale is for the desktop banner; here the art sits on the bottom edge */
+  .store-promo .sp-art {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .store-promos {
+    gap: 14px;
+  }
+
+  .store-promo {
+    border-radius: 26px;
+  }
+
+  /* No hover lift on touch screens (it sticks after a tap) */
+  .store-promo:hover {
+    transform: none;
+  }
+
+  .store-promo:hover .sp-art-wrap {
+    transform: none;
+  }
+
+  .store-promo .promo-slide-layer {
+    min-height: 230px;
+    padding: 20px 18px 24px;
+  }
+
+  /* Darken the text side so copy stays readable over the artwork */
+  .store-promo .promo-slide-layer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.32), transparent 72%);
+    pointer-events: none;
+  }
+
+  .sp-content,
+  .side-content {
+    max-width: 66%;
+    gap: 8px;
+  }
+
+  .sp-badges {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sp-badge,
+  .sp-badge.live-red {
+    padding: 5px 10px;
+    font-size: 10.5px;
+  }
+
+  .sp-badge i,
+  .sp-badge.live-red i {
+    font-size: 12px;
+  }
+
+  .sp-content h2,
+  .side-content h3 {
+    margin-top: 2px;
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  .sp-content p,
+  .side-subtitle {
+    max-width: 100%;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .sp-foot,
+  .side-content .sp-foot {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .sp-foot > div span:last-child {
+    font-size: 16px !important;
+  }
+
+  .sp-btn {
+    padding: 9px 18px;
+    font-size: 12.5px;
+  }
+
+  .sp-art-wrap,
+  .side-art-wrap {
+    inset: 0 42% 0 0;
+  }
+
+  .sp-dots {
+    bottom: 14px;
+    left: 18px;
+  }
+}
+
+@media (max-width: 360px) {
+  .sp-content,
+  .side-content {
+    max-width: 72%;
+  }
+
+  .sp-content h2,
+  .side-content h3 {
+    font-size: 19px;
+  }
+}
+
+/* Product grid: keep cards wide enough for their badges and titles */
+@media (max-width: 1024px) {
+  .store-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  /* Badges wrap instead of being cut off by the card */
+  .sg-b-left {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .store-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .store-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sg-badges-top {
+    padding: 12px;
+  }
+}

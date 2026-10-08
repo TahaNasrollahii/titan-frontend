@@ -75,7 +75,7 @@ function Leaderboards() {
 
   return (
     <>
-      <div className="tour-sec-h reveal" style={{ '--d': 9, marginTop: '48px' } as React.CSSProperties}>
+      <div className="tour-sec-h reveal" style={{ '--d': 9 } as React.CSSProperties}>
         <h3>جدول رتبه‌بندی فصل</h3>
         <div className="lb-games-tabs">
           <span className="lb-game-tab-ind" ref={indicatorRef}></span>
@@ -179,12 +179,9 @@ export default function TournamentPage() {
         <div className="l-blob blob-3"></div>
       </div>
 
-      <div className="cols" style={{ display: 'flex', gap: '24px', alignItems: 'stretch' }}>
-        <section className="col col-a" style={{ flex: '7', display: 'flex' }}>
-          <article
-            className="tour-hero spot spot-track reveal"
-            style={{ '--d': 2, flex: 1, width: '100%' } as React.CSSProperties}
-          >
+      <div className="tour-top">
+        <section className="tour-top-main">
+          <article className="tour-hero spot spot-track reveal" style={{ '--d': 2 } as React.CSSProperties}>
             <div className="th-bg"></div>
             <div className="th-content">
               <div className="th-badges">
@@ -220,12 +217,12 @@ export default function TournamentPage() {
           </article>
         </section>
 
-        <section className="col col-b" style={{ flex: '3', display: 'flex' }}>
+        <section className="tour-top-side">
           <ScoreWidget stats={stats.data ?? null} />
         </section>
       </div>
 
-      <div className="tour-sec-h reveal" style={{ '--d': 3, marginTop: '48px' } as React.CSSProperties}>
+      <div className="tour-sec-h reveal" style={{ '--d': 3 } as React.CSSProperties}>
         <h3>مسیر پیشرفت و رنک‌ها</h3>
       </div>
       <div className="tour-timeline-wrap reveal" style={{ '--d': 4 } as React.CSSProperties}>
@@ -249,7 +246,7 @@ export default function TournamentPage() {
         </div>
       </div>
 
-      <div className="tour-sec-h reveal" style={{ '--d': 4, marginTop: '48px' } as React.CSSProperties}>
+      <div className="tour-sec-h reveal" style={{ '--d': 4 } as React.CSSProperties}>
         <h3>مسابقات پیش‌رو</h3>
         <Link href="/tournaments" className="arrow" aria-label="مشاهده تمام مسابقات">
           <Icon name="arrow" />
@@ -265,7 +262,7 @@ export default function TournamentPage() {
         </div>
       )}
 
-      <div className="tour-sec-h reveal" style={{ '--d': 7, marginTop: '48px' } as React.CSSProperties}>
+      <div className="tour-sec-h reveal" style={{ '--d': 7 } as React.CSSProperties}>
         <h3>چطور در مسابقات شرکت کنم؟</h3>
       </div>
       <div className="tour-steps-grid reveal" style={{ '--d': 8 } as React.CSSProperties}>

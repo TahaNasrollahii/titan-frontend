@@ -13,6 +13,13 @@
   padding: 8px clamp(4px, 1.5vw, 16px) 48px;
 }
 
+/* Desktop: the whole page reads too large at full size; scale every dimension down evenly */
+@media (min-width: 1025px) {
+  .page {
+    zoom: 0.82;
+  }
+}
+
 /* ─── Shared ─── */
 .section {
   position: relative;

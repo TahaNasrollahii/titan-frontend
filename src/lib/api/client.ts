@@ -128,7 +128,10 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   let response: Response;
   try {
     response = await send(path, options);
-    if (response.status === 401 && options.auth !== false && getTokens()?.refresh && (await refreshTokens())) {
+    if (response.status === 401 && options.auth !== false && getTokens()?.refresh) {
+      // A dead session must not break public endpoints: once the refresh fails the tokens are
+      // cleared, so the retry goes out anonymously.
+      await refreshTokens();
       response = await send(path, options);
     }
   } catch {

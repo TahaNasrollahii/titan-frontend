@@ -72,19 +72,19 @@ export function Rail() {
                   </div>
                 </div>
                 <Link href="/dashboard?tab=overview" className="menu-item">
-                  <Icon name="home" /> پیشخوان
+                  <img className="menu-ic" src="/icons/dashboard.png" alt="" /> پیشخوان
                 </Link>
                 <Link href="/dashboard?tab=profile" className="menu-item">
-                  <Icon name="user" /> اطلاعات حساب کاربری
+                  <img className="menu-ic" src="/icons/account.png" alt="" /> اطلاعات حساب کاربری
                 </Link>
                 <Link href="/dashboard?tab=notifications" className="menu-item">
-                  <Icon name="bell" /> پیام‌ها و اعلان‌ها
+                  <img className="menu-ic" src="/icons/notif.png" alt="" /> پیام‌ها و اعلان‌ها
                 </Link>
 
                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '4px 0' }}></div>
 
                 <button className="menu-item danger" onClick={() => logout()}>
-                  <Icon name="logout" /> خروج از حساب
+                  <img className="menu-ic" src="/icons/login.png" alt="" /> خروج از حساب
                 </button>
               </div>
             </div>

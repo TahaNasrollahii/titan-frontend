@@ -1943,55 +1943,8 @@ html[dir="rtl"] .hero-char {
   }
 }
 
+/* App shell (frame, nav, top bar) breakpoints live in shell.css */
 @media (max-width:860px) {
-  .frame {
-    grid-template-columns: 1fr;
-    padding: 14px 14px 96px
-  }
-
-  .nav {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    z-index: 50;
-    height: 68px;
-    padding: 0 14px;
-    flex-direction: row;
-    justify-content: center;
-    background: rgba(48, 12, 19, .94);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px)
-  }
-
-  .nav .logo,
-  .add-btn {
-    display: none
-  }
-
-  .nav-list {
-    flex-direction: row;
-    margin: 0;
-    gap: 2px
-  }
-
-  .nav-item::after {
-    display: none
-  }
-
-  .rail {
-    display: none
-  }
-
-  .topbar {
-    grid-template-columns: 1fr auto
-  }
-
-  .search {
-    grid-column: 1/-1;
-    order: 3
-  }
-
   .col-b {
     grid-template-columns: 1fr
   }
@@ -2046,6 +1999,17 @@ html[dir="rtl"] .add-btn::after {
 
 html[dir="rtl"] .nav-item:hover::after,
 html[dir="rtl"] .add-btn:hover::after {
+  transform: translate(0, -50%);
+}
+
+/* The rail sits on the left edge: its tooltip must open into the page, not off-screen */
+html[dir="rtl"] .rail .add-btn::after {
+  right: auto;
+  left: calc(100% + 14px);
+  transform: translate(-6px, -50%);
+}
+
+html[dir="rtl"] .rail .add-btn:hover::after {
   transform: translate(0, -50%);
 }
 
@@ -2901,6 +2865,7 @@ html[dir="rtl"] .hero-live {
 }
 .menu-item:hover { background: rgba(255, 255, 255, .06); }
 .menu-item i { font-size: 15px; color: var(--cream); }
+.menu-item .menu-ic { flex: none; width: 18px; height: 18px; object-fit: contain; opacity: .9; }
 .menu-item.danger { color: #ff8f87; }
 .menu-item.danger i { color: #ff6a60; }
 
@@ -2909,25 +2874,11 @@ html[dir="rtl"] .hero-live {
    ===================================================== */
 
 @media (max-width: 1024px) {
-  /* Tablet Layout Adjustments */
-  .frame {
-    grid-template-columns: 76px minmax(0, 1fr);
-    gap: 16px;
-    padding: 16px;
-  }
-  .rail {
-    display: none !important; /* Hide right rail on tablet for better space */
-  }
   .cols {
     grid-template-columns: 1fr;
     gap: 24px;
   }
   
-  /* Topbar */
-  .topbar {
-    grid-template-columns: 1fr auto;
-  }
-
   /* Hero Section */
   .hero {
     height: 380px;
@@ -2955,71 +2906,6 @@ html[dir="rtl"] .hero-live {
 }
 
 @media (max-width: 768px) {
-  /* Mobile Layout Adjustments */
-  body {
-    padding: 0;
-    background: #170409;
-  }
-  .frame {
-    grid-template-columns: 1fr;
-    border-radius: 0;
-    min-height: 100vh;
-    padding: 16px 16px 120px 16px; /* Bottom padding for fixed nav */
-  }
-  
-  /* Bottom Navigation */
-  .nav.panel {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    right: 24px;
-    width: auto;
-    height: 72px;
-    border-radius: 36px;
-    background: rgba(42, 17, 20, 0.95);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.7);
-    z-index: 9999;
-    padding: 0;
-    flex-direction: row;
-    border: none;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-  }
-  .sticky-nav-inner {
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 0 8px;
-    height: 100%;
-  }
-  .nav-list {
-    flex-direction: row;
-    margin-top: 0;
-    width: 100%;
-    justify-content: space-around;
-    align-items: center;
-  }
-  .nav-item {
-    width: 48px;
-    height: 48px;
-  }
-
-  .logo, .add-btn {
-    display: none !important;
-  }
-  
-  /* Topbar */
-  .topbar {
-    gap: 12px;
-  }
-  .search {
-    height: 40px;
-    font-size: 14px;
-  }
-  .round {
-    width: 40px;
-    height: 40px;
-  }
-
   /* Typography & Spacing */
   .sec-h h3 {
     font-size: 18px;

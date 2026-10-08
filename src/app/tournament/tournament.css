@@ -14,7 +14,8 @@
 /* Liquid Background Blobs */
 .liquid-bg {
   position: absolute;
-  inset: -100px;
+  /* Bleeds upwards only: sideways or below it would widen / lengthen the page */
+  inset: -100px 0 0;
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
@@ -383,7 +384,7 @@
 /* 3. Upcoming Matches (Premium Redesign) */
 .tour-matches {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
   gap: 24px;
 }
 
@@ -1236,4 +1237,431 @@
   font-weight: 900;
   color: var(--cream);
   text-shadow: 0 2px 12px rgba(255, 240, 179, 0.3);
+}
+
+/* =====================================================
+   Layout (formerly inline styles) + tablet & phone
+   ===================================================== */
+.tour-top {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.tour-top-main {
+  flex: 7;
+  display: flex;
+  min-width: 0;
+}
+
+.tour-top-main > .tour-hero {
+  flex: 1;
+  width: 100%;
+}
+
+.tour-top-side {
+  flex: 3;
+  display: flex;
+  min-width: 0;
+}
+
+.tour-wrapper > .tour-sec-h {
+  margin-top: 48px;
+}
+
+@media (max-width: 1024px) {
+  .tour-top {
+    flex-direction: column;
+  }
+
+  .tour-top-side {
+    flex: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .tour-wrapper {
+    gap: 18px;
+  }
+
+  .tour-wrapper > .tour-sec-h {
+    margin-top: 14px;
+    margin-bottom: 4px;
+  }
+
+  .tour-sec-h h3 {
+    font-size: 18px;
+  }
+
+  /* Hero */
+  .tour-hero {
+    min-height: 0;
+    padding: 22px 18px 24px;
+    border-radius: 26px;
+    overflow: hidden;
+  }
+
+  .tour-hero:hover {
+    transform: none;
+  }
+
+  .th-content {
+    width: 64%;
+    gap: 12px;
+  }
+
+  .th-badges {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .th-badge {
+    padding: 6px 12px;
+    font-size: 10.5px;
+  }
+
+  .th-content h1 {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .th-content p {
+    max-width: 100%;
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+
+  .th-foot {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .th-btn-primary {
+    padding: 11px 18px;
+    font-size: 13px;
+  }
+
+  .th-art-wrap {
+    top: auto;
+    bottom: 0;
+    left: -4%;
+    width: 46%;
+    height: 82%;
+  }
+
+  /* Ranks: a swipeable strip instead of five squeezed columns */
+  .tour-timeline-wrap {
+    margin: 0 calc(-1 * var(--gutter-x, 14px));
+    padding: 0;
+  }
+
+  .tour-ranks-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 16px var(--gutter-x, 14px) 12px;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gutter-x, 14px);
+    scrollbar-width: none;
+  }
+
+  .tour-ranks-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tour-rank-card {
+    flex: 0 0 128px;
+    scroll-snap-align: start;
+  }
+
+  .tour-rank-card:hover {
+    transform: none;
+  }
+
+  /* Steps: icon beside the text instead of a tall stacked card */
+  .tour-steps-grid {
+    gap: 12px;
+  }
+
+  .tour-step-card {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 16px;
+    border-radius: 22px;
+  }
+
+  .tour-step-card:hover {
+    transform: none;
+  }
+
+  .tour-step-card::after {
+    top: -18px;
+    font-size: 96px;
+  }
+
+  .tsc-icon {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    font-size: 24px;
+  }
+
+  .tour-step-card:hover .tsc-icon {
+    transform: none;
+  }
+
+  .tsc-content {
+    gap: 6px;
+  }
+
+  .tsc-content h4 {
+    font-size: 16px;
+  }
+
+  .tsc-content p {
+    font-size: 13px;
+  }
+
+  /* Leaderboard header: title on its own line, game tabs swipe */
+  .tour-sec-h:has(.lb-games-tabs) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .lb-games-tabs {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .lb-games-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lb-game-tab {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .tour-table-controls {
+    margin: 0;
+  }
+
+  .lb-tabs-new {
+    display: flex;
+    width: 100%;
+  }
+
+  .lb-tab-btn {
+    flex: 1;
+    padding: 0 10px;
+  }
+
+  /* Leaderboard rows become cards: rank | name with wins/losses below | points */
+  .tour-table-wrapper {
+    padding: 10px;
+    border-radius: 22px;
+  }
+
+  .tour-table {
+    display: block;
+    min-width: 0;
+    border-spacing: 0;
+  }
+
+  .tour-table thead {
+    display: none;
+  }
+
+  .tour-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tour-table tbody tr {
+    display: grid;
+    grid-template-columns: 40px auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'rank name name pts'
+      'rank wins losses pts';
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 2px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 18px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+  }
+
+  .tour-table tbody tr:hover {
+    transform: none;
+  }
+
+  .tour-table tbody tr.top-rank-1 {
+    border-color: rgba(240, 200, 102, 0.22);
+    background: linear-gradient(90deg, rgba(240, 200, 102, 0.12), rgba(240, 200, 102, 0.02));
+  }
+
+  .tour-table tbody tr.top-rank-2 {
+    border-color: rgba(207, 211, 218, 0.16);
+    background: linear-gradient(90deg, rgba(207, 211, 218, 0.08), rgba(207, 211, 218, 0.015));
+  }
+
+  .tour-table tbody tr.top-rank-3 {
+    border-color: rgba(214, 154, 99, 0.18);
+    background: linear-gradient(90deg, rgba(214, 154, 99, 0.09), rgba(214, 154, 99, 0.015));
+  }
+
+  .tour-table tbody td,
+  .tour-table tbody tr:hover td,
+  .tour-table tr td:first-child,
+  .tour-table tr td:last-child {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    text-align: right;
+  }
+
+  .tour-table td:nth-child(1) {
+    grid-area: rank;
+  }
+
+  .tour-table td:nth-child(2) {
+    grid-area: name;
+    min-width: 0;
+  }
+
+  .tour-table td:nth-child(3) {
+    grid-area: wins;
+  }
+
+  .tour-table td:nth-child(4) {
+    grid-area: losses;
+  }
+
+  .tour-table td:nth-child(5) {
+    grid-area: pts;
+  }
+
+  .tour-table td:nth-child(3)::before,
+  .tour-table td:nth-child(4)::before {
+    margin-left: 4px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tour-table td:nth-child(3)::before {
+    content: 'برد';
+  }
+
+  .tour-table td:nth-child(4)::before {
+    content: 'باخت';
+  }
+
+  .lb-stat {
+    font-size: 12.5px;
+  }
+
+  .lb-rank-badge {
+    width: 38px;
+    height: 38px;
+  }
+
+  .lb-team-cell,
+  .lb-player-cell {
+    gap: 10px;
+  }
+
+  .lb-crest,
+  .lb-avatar {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .lb-team-cell strong,
+  .lb-player-cell strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14.5px;
+  }
+
+  .lb-pts-stat {
+    font-size: 16px;
+  }
+}
+
+/* Match cards (shared by /tournament and /tournaments) */
+@media (max-width: 768px) {
+  .match-card-premium:hover,
+  .mc-btn-full:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .match-card-premium {
+    border-radius: 24px;
+  }
+
+  .mc-hero {
+    height: 164px;
+    padding: 16px;
+  }
+
+  .mc-content {
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .mc-info-row {
+    gap: 8px;
+  }
+
+  .mc-info-item {
+    gap: 8px;
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .mc-info-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    font-size: 14px;
+  }
+
+  .mc-val {
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  .mc-btn-full {
+    padding: 12px;
+    font-size: 13.5px;
+  }
+}
+
+/* Very small phones: the hero copy takes the full width, the art fades behind it */
+@media (max-width: 360px) {
+  .th-content {
+    width: 100%;
+  }
+
+  .th-art-wrap {
+    opacity: 0.3;
+  }
 }

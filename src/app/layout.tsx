@@ -1,15 +1,25 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./shell.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { ToastContainer } from "@/components/ToastContainer";
 import { Rail } from "@/components/Rail";
+import { MobileNav } from "@/components/MobileNav";
 
 export const metadata: Metadata = {
   title: "TITAN — پلتفرم گیمینگ و اسپورت",
   description: "بازی کن. رقابت کن. فتح کن. پلتفرم گیمینگ و مسابقات اسپورت تایتان",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Lets the phone tab bar and app bar respect the notch / home indicator via safe-area insets.
+  viewportFit: "cover",
+  themeColor: "#2a0b12",
 };
 
 export default function RootLayout({
@@ -31,6 +41,7 @@ export default function RootLayout({
               <Rail />
               <ToastContainer />
             </div>
+            <MobileNav />
           </AppProvider>
         </AuthProvider>
       </body>

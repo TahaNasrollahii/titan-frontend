@@ -12,10 +12,13 @@ export function useSpotlight(selector: string, deps: DependencyList = []) {
       const pointer = event as PointerEvent;
       const el = pointer.currentTarget as HTMLElement;
       const rect = el.getBoundingClientRect();
-      const x = pointer.clientX - rect.left;
-      const y = pointer.clientY - rect.top;
-      el.style.setProperty('--px', String((x / rect.width) * 2 - 1));
-      el.style.setProperty('--py', String((y / rect.height) * 2 - 1));
+      // Inside a CSS `zoom`ed ancestor the rect is in screen px but --mx/--my are read in the
+      // element's own px; convert (ratio is 1 without zoom).
+      const ratio = el.offsetWidth / rect.width || 1;
+      const x = (pointer.clientX - rect.left) * ratio;
+      const y = (pointer.clientY - rect.top) * ratio;
+      el.style.setProperty('--px', String((x / (rect.width * ratio)) * 2 - 1));
+      el.style.setProperty('--py', String((y / (rect.height * ratio)) * 2 - 1));
       el.style.setProperty('--mx', `${x}px`);
       el.style.setProperty('--my', `${y}px`);
     };
