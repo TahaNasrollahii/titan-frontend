@@ -63,10 +63,11 @@ function LoginForm() {
   const [busy, setBusy] = useState(false);
   const [resendIn, setResendIn] = useState(0);
   const [otpStatus, setOtpStatus] = useState<OtpStatus>('idle');
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (status === 'authenticated') router.replace(next);
-  }, [status, next, router]);
+    if (status === 'authenticated' && !redirecting) router.replace(next);
+  }, [status, next, router, redirecting]);
 
   useEffect(() => {
     if (resendIn <= 0) return;
@@ -101,8 +102,13 @@ function LoginForm() {
       // Let the bubbles celebrate before logging in (which redirects).
       setOtpStatus('success');
       window.setTimeout(() => {
+        setRedirecting(true);
         completeLogin(response);
-        router.replace(next);
+        if (response.isNewUser) {
+          router.replace('/dashboard?tab=profile');
+        } else {
+          router.replace(next);
+        }
       }, OTP_SUCCESS_MS);
     } catch (err) {
       setError(errorMessage(err));
@@ -269,7 +275,7 @@ function LoginForm() {
           <motion.button
             className={styles.primary}
             type="submit"
-            disabled={busy || (step === 'phone' ? phone.trim().length < 10 : code.length < OTP_LENGTH)}
+            disabled={busy || (step === 'phone' ? phone.trim().length !== 11 : code.length < OTP_LENGTH)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
