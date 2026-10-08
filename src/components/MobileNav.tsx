@@ -242,7 +242,7 @@ export function MobileNav() {
                   {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
                 </span>
               ) : (
-                <img src="/icons/login.png" alt="" />
+                <img src="/icons/account.png" alt="" />
               )
             }
           />

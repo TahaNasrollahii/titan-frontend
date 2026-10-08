@@ -44,10 +44,9 @@ export function Rail() {
         <div className="sticky-nav-inner">
           
           {!isAuthenticated ? (
-            <Link href="/login" className="rail-icon-btn cta" data-tip="ورود یا ثبت‌نام" style={{ marginBottom: '8px' }}>
-              <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/icons/login.png" alt="ورود" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              </div>
+            /* Guest "avatar": a person (sign in), not the door-and-arrow used for logout */
+            <Link href="/login" className="rail-icon-btn rail-login" data-tip="ورود یا ثبت‌نام" aria-label="ورود یا ثبت‌نام">
+              <img src="/icons/account.png" alt="" />
             </Link>
           ) : (
             <div className="acct" style={{ marginBottom: '8px' }}>

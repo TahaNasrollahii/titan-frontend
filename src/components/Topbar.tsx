@@ -167,7 +167,7 @@ export function Topbar() {
               {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
             </span>
           ) : (
-            <img src="/icons/login.png" alt="" style={iconStyle} />
+            <img src="/icons/account.png" alt="" style={iconStyle} />
           )}
         </Link>
       </div>

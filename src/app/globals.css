@@ -2753,6 +2753,61 @@ html[dir="rtl"] .hero-live {
   background: linear-gradient(135deg, var(--red), var(--red-2));
   box-shadow: 0 10px 22px -8px rgba(226, 69, 63, .6);
 }
+/* Guest sign-in button: sits where the logged-in avatar would be */
+.rail-icon-btn.rail-login {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, .38), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(140deg, var(--red-2), #a8231f);
+  box-shadow: inset -3px -4px 8px rgba(0, 0, 0, .25), 0 10px 24px -6px rgba(226, 69, 63, .65);
+}
+
+.rail-icon-btn.rail-login:hover {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, .45), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(140deg, #ff7a6e, #b92b27);
+}
+
+/* Soft ring inviting a tap */
+.rail-icon-btn.rail-login::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(240, 100, 90, .55);
+  animation: railLoginRing 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+.rail-login img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+}
+
+@keyframes railLoginRing {
+  0% {
+    opacity: .9;
+    transform: scale(.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-icon-btn.rail-login::after {
+    animation: none;
+    opacity: .5;
+  }
+}
+
 .rail-icon-btn::before {
   content: attr(data-tip);
   position: absolute;
