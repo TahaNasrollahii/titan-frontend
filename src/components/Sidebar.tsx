@@ -31,21 +31,13 @@ export function Sidebar() {
   useEffect(() => {
     const updatePosition = () => {
       const el = navRefs.current[activeKey];
-      const container = document.getElementById('navList');
-      if (el && container) {
-        // Use the first child (icon/img) to avoid the ::after tooltip skewing the bounding box
-        const target = el.firstElementChild || el;
-        const elRect = target.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        
-        // Calculate the exact center of the icon relative to the container
-        const centerX = (elRect.left - containerRect.left) + (elRect.width / 2);
-        const centerY = (elRect.top - containerRect.top) + (elRect.height / 2);
-        
-        // Set absolute positions instead of transform to bypass all RTL translate quirks
+      const indicator = el?.parentElement?.querySelector<HTMLElement>('.nav-ind');
+      if (el && indicator) {
+        // Layout offsets (relative to #navList) ignore transforms, so neither the panel's
+        // entrance animation nor the hovered item's scale/shift can throw the indicator off.
         setNavIndStyle({
-          left: `${centerX - 24}px`,
-          top: `${centerY - 24}px`,
+          left: `${el.offsetLeft + (el.offsetWidth - indicator.offsetWidth) / 2}px`,
+          top: `${el.offsetTop + (el.offsetHeight - indicator.offsetHeight) / 2}px`,
           transform: 'none',
           transition: 'all 0.55s cubic-bezier(0.3, 1.35, 0.4, 1)'
         });

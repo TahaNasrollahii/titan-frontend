@@ -278,6 +278,11 @@ i[data-icon] svg {
   color: var(--red)
 }
 
+/* Scale only: a sideways shift would push the active icon off the indicator's centre */
+.nav-item.active:hover {
+  transform: scale(1.08)
+}
+
 .nav-item::after,
 .add-btn::after {
   content: attr(data-label);
