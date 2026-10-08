@@ -165,7 +165,7 @@ function LoginForm() {
           ))}
         </div>
         {/* Character peeking from behind the card */}
-        <div>
+        <div className={styles.characterWrapper}>
           <Image
             className={styles.characterBehind}
             src="/images/character-behind-login-v2.png"

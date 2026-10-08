@@ -34,17 +34,20 @@ function buildSceneData(data: Home) {
     slides: slides.length
       ? slides
       : [{ title: 'تایتان', desc: 'تورنمنت‌های جدید به‌زودی منتشر می‌شوند.', watch: 0, eta: 0, art: null, artClass: '', href: '/tournaments' }],
-    games: data.categories.map((g, i) => ({
-      t: g.title,
-      d: g.description,
-      p: 'مشاهده',
-      theme: ['noir', 'flame', 'mist', 'neon', 'ice', 'ember'][i % 6],
-      fig: 'game',
-      crest: i % 2 === 0,
-      slug: g.slug,
-      bg: g.backgroundImage ?? g.coverImage,
-      char: g.characterImage,
-    })),
+    games: data.categories.map((g, i) => {
+      const art = HERO_ART[g.slug];
+      return {
+        t: g.title,
+        d: g.description,
+        p: 'مشاهده',
+        theme: ['noir', 'flame', 'mist', 'neon', 'ice', 'ember'][i % 6],
+        fig: 'game',
+        crest: i % 2 === 0,
+        slug: g.slug,
+        bg: g.slug === 'premium' ? '/images/games/premium.png' : (art ? `/images/games/${art}-background.png` : (g.backgroundImage ?? g.coverImage)),
+        char: g.slug === 'premium' ? null : (art ? `/images/games/${art}-character.png` : g.characterImage),
+      };
+    }),
     stats: data.myStats,
     announcements: data.announcements,
   };
