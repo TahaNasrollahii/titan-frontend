@@ -187,7 +187,7 @@ function HomeScene({ data }: { data: Home }) {
       dashesEl.innerHTML = SLIDES.map((s, i) => `<button class="dash${i === 0 ? ' on' : ''}" aria-label="نمایش ${esc(s.title)}"><span><i></i></span></button>`).join('');
       const arts = $$('.art', heroArtEl), bgLayers = $$('.hero-bg .l'), dashes = $$('.dash', dashesEl), dashFills = $$('.dash i', dashesEl);
       SLIDES.forEach(s => s.end = Date.now() + s.eta * 1000);
-      const watchEl = $('#watch'), cdEl = $('#cd');
+      const watchEl = $('#watch');
       let cur = 0, elapsed = 0, paused = false;
 
       function applySlide() {
@@ -196,7 +196,6 @@ function HomeScene({ data }: { data: Home }) {
         $('#heroDesc').textContent = s.desc;
         $('#heroLink').setAttribute('href', s.href);
         watchEl.textContent = fmt(s.watch);
-        tickCountdown();
       }
       function goTo(i, first) {
         cur = i; elapsed = 0;
@@ -212,12 +211,7 @@ function HomeScene({ data }: { data: Home }) {
       ['pointerenter', 'focusin'].forEach(ev => hero.addEventListener(ev, () => paused = true));
       ['pointerleave', 'focusout'].forEach(ev => hero.addEventListener(ev, () => paused = false));
 
-      function tickCountdown() {
-        const left = Math.max(0, Math.floor((SLIDES[cur].end - Date.now()) / 1000));
-        const p = n => String(n).padStart(2, '0');
-        cdEl.textContent = `${p(Math.floor(left / 3600))}:${p(Math.floor(left % 3600 / 60))}:${p(left % 60)}`;
-      }
-      setInterval(tickCountdown, 1000);
+      // Countdown removed as requested by user
 
 
 
@@ -523,8 +517,6 @@ function HomeScene({ data }: { data: Home }) {
 
           <div class="hero-live" aria-live="off">
             <span class="live-dot"></span>
-            <span>شروع در <b id="cd">02:14:33</b></span>
-            <span class="sep"></span>
             <span><b id="watch">0</b> در حال تماشا</span>
           </div>
 
