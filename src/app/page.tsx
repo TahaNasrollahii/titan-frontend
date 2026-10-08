@@ -38,7 +38,11 @@ function buildSceneData(data: Home) {
       const art = HERO_ART[g.slug];
       return {
         t: g.title,
-        d: g.description,
+        d: g.slug === 'fortnite' ? 'فعال سازی تمامی آیتم های بازی فورتنایت ویباکس و کروپک و ...' :
+           g.slug === 'valorant' ? 'فعال سازی تمامی آیتم های بازی ولورانت پوینت و ...' :
+           g.slug === 'apex-legends' ? 'فعال سازی تمامی آیتم های بازی اپکس کوین و ...' :
+           g.slug === 'premium' ? g.description :
+           `فعال سازی تمامی آیتم های بازی ${g.title} و ...`,
         p: 'مشاهده',
         theme: ['noir', 'flame', 'mist', 'neon', 'ice', 'ember'][i % 6],
         fig: 'game',
