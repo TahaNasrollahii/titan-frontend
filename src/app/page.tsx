@@ -21,15 +21,32 @@ export default function TitanPage() {
 }
 
 function buildSceneData(data: Home) {
-  const slides = data.heroTournaments.map(t => ({
-    title: t.game.title,
-    desc: `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`,
-    watch: t.viewerCount,
-    eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
-    art: HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.png` : t.coverImage,
-    artClass: HERO_ART[t.game.slug] ?? '',
-    href: `/tournaments/${t.slug}`,
-  }));
+  const slides = data.heroTournaments.map(t => {
+    let title = t.game.title;
+    let desc = `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`;
+    let descMobile = desc;
+
+    if (t.game.slug === 'fortnite') {
+      title = 'کروپک فورتنایت';
+      desc = 'شامل ۱۰۰۰ ویباکس، اسکین انحصاری ماهانه، بتل پس فصل جاری و مزایای ویژه دیگر!';
+      descMobile = '۱۰۰۰ ویباکس + اسکین انحصاری!';
+    } else if (t.game.slug === 'valorant') {
+      title = 'ولورانت پوینت';
+      desc = 'فعال‌سازی قانونی انواع بسته‌های ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!';
+      descMobile = 'فعال‌سازی قانونی انواع بسته‌های VP';
+    }
+
+    return {
+      title,
+      desc,
+      descMobile,
+      watch: t.viewerCount,
+      eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
+      art: HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.png` : t.coverImage,
+      artClass: HERO_ART[t.game.slug] ?? '',
+      href: `/tournaments/${t.slug}`,
+    };
+  });
   return {
     slides: slides.length
       ? slides
@@ -191,15 +208,13 @@ function HomeScene({ data }: { data: Home }) {
       dashesEl.innerHTML = SLIDES.map((s, i) => `<button class="dash${i === 0 ? ' on' : ''}" aria-label="نمایش ${esc(s.title)}"><span><i></i></span></button>`).join('');
       const arts = $$('.art', heroArtEl), bgLayers = $$('.hero-bg .l'), dashes = $$('.dash', dashesEl), dashFills = $$('.dash i', dashesEl);
       SLIDES.forEach(s => s.end = Date.now() + s.eta * 1000);
-      const watchEl = $('#watch');
       let cur = 0, elapsed = 0, paused = false;
 
       function applySlide() {
         const s = SLIDES[cur];
         $('#heroTitle').textContent = s.title;
-        $('#heroDesc').textContent = s.desc;
+        $('#heroDesc').innerHTML = `<span class="desc-pc">${s.desc}</span><span class="desc-mobile">${s.descMobile || s.desc}</span>`;
         $('#heroLink').setAttribute('href', s.href);
-        watchEl.textContent = fmt(s.watch);
       }
       function goTo(i, first) {
         cur = i; elapsed = 0;
@@ -513,16 +528,14 @@ function HomeScene({ data }: { data: Home }) {
             <h2 id="heroTitle">Valorant</h2>
             <p id="heroDesc"></p>
             <div class="hero-foot">
-              <a href="/tournaments" id="heroLink" class="pill-white"><span>مشاهده تورنمنت</span></a>
+              <a href="/tournaments" id="heroLink" class="pill-white"><span>مشاهده محصول</span></a>
+              <div class="hero-price">
+                <span class="new-price">۲۹۵,۰۰۰ تومان</span>
+              </div>
             </div>
           </div>
 
           <div class="hero-art" id="heroArt" aria-hidden="true"></div>
-
-          <div class="hero-live" aria-live="off">
-            <span class="live-dot"></span>
-            <span><b id="watch">0</b> در حال تماشا</span>
-          </div>
 
           <div class="dashes" id="dashes"></div>
         </article>
