@@ -503,10 +503,49 @@
 .badgeNeutral { background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%); color: #fff; }
 
 @media (max-width: 1024px) {
-  .dashboardWrapper { flex-direction: column; }
-  .sidebar { width: 100%; position: static; }
+  .dashboardWrapper { flex-direction: column; align-items: stretch; gap: 16px; }
   .grid2Col { grid-template-columns: 1fr; }
   .grid2 { grid-template-columns: 1fr; }
+
+  /* Above the content the full menu would fill the first screen, pushing every tab's content out of
+     view: it becomes one row of scrollable tabs instead. */
+  .sidebar {
+    width: 100%;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 22px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .menuHeader,
+  .menuDivider { display: none; }
+  .menuItem {
+    flex: none;
+    width: auto;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .menuItem img { width: 20px !important; height: 20px !important; }
+  .menuItem::before { display: none; }
+  .menuItem:hover { transform: none; }
+  .menuItem.active {
+    background: rgba(226, 69, 63, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(226, 69, 63, 0.35);
+  }
+  .menuBadge { margin-right: 0; }
+  .logoutBtn { margin-top: 0; }
+}
+
+@media (max-width: 600px) {
+  .panel { padding: 20px 16px; border-radius: 26px; gap: 18px; }
 }
 
 /* =========================================

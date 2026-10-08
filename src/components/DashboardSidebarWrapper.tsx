@@ -33,11 +33,20 @@ function DashboardSidebarContent() {
   const { user, logout } = useAuth();
   const { unreadNotifications } = useAppContext();
 
+  const asideRef = React.useRef<HTMLElement>(null);
+
   let activeTab = 'overview';
   if (pathname.startsWith('/teams')) activeTab = 'teams';
   else if (pathname.startsWith('/tournaments')) activeTab = 'tournaments';
   else if (pathname.startsWith('/dashboard/orders')) activeTab = 'orders';
   else if (pathname === '/dashboard') activeTab = searchParams.get('tab') || 'overview';
+
+  // On phones the menu is a horizontally scrolling tab bar: keep the active tab in view.
+  React.useEffect(() => {
+    const aside = asideRef.current;
+    if (!aside || aside.scrollWidth <= aside.clientWidth) return;
+    aside.querySelector(`.${styles.active}`)?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }, [activeTab]);
 
   const handleLogout = async () => {
     await logout();
@@ -45,7 +54,7 @@ function DashboardSidebarContent() {
   };
 
   return (
-    <aside className={styles.sidebar}>
+    <aside ref={asideRef} className={styles.sidebar}>
       <div className={styles.menuHeader}>
         <h2>پنل کاربری {user?.fullName || user?.displayName || ''}</h2>
       </div>
