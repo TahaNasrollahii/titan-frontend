@@ -190,24 +190,24 @@
   gap: 24px;
 }
 
+/* Slides are stacked in one grid cell instead of being absolutely positioned, so the banner grows
+   to fit its tallest slide (titles wrap, prices have two lines) instead of spilling out of it */
 .store-promo {
   position: relative;
-  height: 240px;
+  display: grid;
+  min-height: 240px;
   border-radius: 34px;
-  display: flex;
-  align-items: center;
-  padding: 30px 40px;
   color: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   border: 1px solid transparent;
 }
 
 .promo-slide-layer {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  grid-area: 1 / 1;
   display: flex;
   align-items: center;
-  padding: inherit;
+  padding: 30px 40px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.6s ease, transform 0.6s var(--spring);
@@ -455,6 +455,11 @@
   align-items: center;
   gap: 12px;
   margin-top: 8px;
+}
+
+/* "۲,۹۵۰,۰۰۰ تومان" stays on one line */
+.sp-foot > div {
+  white-space: nowrap;
 }
 
 .sp-btn {
@@ -1010,12 +1015,6 @@
     gap: 16px;
   }
 
-  .store-promo {
-    height: auto;
-    min-height: 220px;
-    padding: 24px 20px;
-  }
-
   .sp-content h2 {
     font-size: 24px;
   }
@@ -1094,23 +1093,15 @@
 
 /* =====================================================
    Promo banners on tablet & phone
-   Slides are stacked in one grid cell instead of being absolutely positioned, so the banner
-   grows to fit its tallest slide and nothing spills out of it.
    ===================================================== */
 @media (max-width: 1024px) {
   .store-promo {
-    display: grid;
     flex: none;
-    height: auto;
     min-height: 0;
-    padding: 0;
     overflow: hidden;
   }
 
   .store-promo .promo-slide-layer {
-    position: relative;
-    inset: auto;
-    grid-area: 1 / 1;
     padding: 26px 24px 28px;
   }
 
