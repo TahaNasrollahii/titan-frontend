@@ -265,10 +265,7 @@ export default function ProductPage() {
                     <div className={styles.featureIcon}>
                       <FeatureIcon size={24} />
                     </div>
-                    <div className={styles.featureText}>
-                      <div className={styles.featureTitle}>{feature.title}</div>
-                      <div className={styles.featureDesc}>{feature.description}</div>
-                    </div>
+                    <div className={styles.featureTitle}>{feature.title}</div>
                   </div>
                 );
               })}
