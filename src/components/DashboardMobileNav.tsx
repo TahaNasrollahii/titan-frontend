@@ -65,7 +65,7 @@ export function DashboardMobileNav({
         <>
           {user && <ProfileHero user={user} uid="-dash" eyebrow="پنل کاربری" />}
 
-          <DashboardHub onOpenAll={() => setSheetAt(location)} />
+          <DashboardHub />
         </>
       ) : (
         <header className={styles.header} style={{ '--tone': section.tone } as React.CSSProperties}>

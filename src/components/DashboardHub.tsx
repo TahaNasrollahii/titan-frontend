@@ -11,7 +11,7 @@ import { faNumber, ORDER_STATUS_LABELS, timeAgo } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import styles from './DashboardHub.module.css';
-import { sectionByTab } from './dashboardSections';
+import { DASHBOARD_SECTIONS, sectionByTab } from './dashboardSections';
 import { AppTile } from './ui/AppTile';
 
 const SPRING = { type: 'spring', stiffness: 380, damping: 30 } as const;
@@ -148,13 +148,11 @@ function trackSpot(event: React.PointerEvent<HTMLElement>) {
   event.currentTarget.style.setProperty('--y', `${event.clientY - box.top}px`);
 }
 
-const SHORTCUTS = ['tournaments', 'teams', 'orders', 'notifications'].map(sectionByTab);
-
 /**
- * Phone dashboard hub: one "next step" card chosen from the user's state, four everyday shortcuts,
- * and "همه" for the rest (the sections sheet), so a new visitor is not met by every option at once.
+ * Phone dashboard hub: one "next step" card chosen from the user's state, and all dashboard sections,
+ * shown in a grid.
  */
-export function DashboardHub({ onOpenAll }: { onOpenAll: () => void }) {
+export function DashboardHub() {
   const { unreadNotifications } = useAppContext();
   const summary = useApi(meApi.dashboard).data;
   const focus = pickFocus(summary, unreadNotifications);
@@ -170,20 +168,22 @@ export function DashboardHub({ onOpenAll }: { onOpenAll: () => void }) {
         <FocusCard focus={focus} />
       </motion.div>
 
-      <motion.nav className={styles.dock} variants={fadeUp} aria-label="دسترسی سریع">
-        {SHORTCUTS.map(item => (
-          <AppTile
-            key={item.tab}
-            href={`/dashboard?tab=${item.tab}`}
-            icon={item.icon}
-            tone={item.tone}
-            label={item.short}
-            badge={item.tab === 'notifications' ? unreadNotifications : 0}
-            compact
-          />
-        ))}
-        <AppTile icon="/icons/dashboard.png" tone="255 236 237" label="همه" onClick={onOpenAll} compact />
-      </motion.nav>
+      <motion.div className={styles.dockContainer} variants={fadeUp}>
+        <h4 className={styles.dockTitle}>تمامی بخش‌ها</h4>
+        <nav className={styles.dock} aria-label="تمامی بخش‌ها">
+          {DASHBOARD_SECTIONS.map(item => (
+            <AppTile
+              key={item.tab}
+              href={`/dashboard?tab=${item.tab}`}
+              icon={item.icon}
+              tone={item.tone}
+              label={item.short}
+              badge={item.tab === 'notifications' ? unreadNotifications : 0}
+              compact
+            />
+          ))}
+        </nav>
+      </motion.div>
     </motion.div>
   );
 }
