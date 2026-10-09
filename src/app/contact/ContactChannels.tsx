@@ -69,21 +69,10 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
   );
 }
 
-function pairs<T>(items: T[]): T[][] {
-  const result: T[][] = [];
-  for (let i = 0; i < items.length; i += 2) result.push(items.slice(i, i + 2));
-  return result;
-}
-
-/** The whole contact panel: one request feeds both the online badge and the channel cards. */
 export function ContactPanel() {
   const contact = useApi(contentApi.contact);
 
   const channels = contact.data?.channels ?? [];
-  const primary = channels.filter(c => c.isPrimary);
-  // The phone line reads best as a full-width card at the end, like the original design.
-  const phone = channels.filter(c => !c.isPrimary && c.kind === 'phone');
-  const rest = channels.filter(c => !c.isPrimary && c.kind !== 'phone');
 
   return (
     <div className={`reveal ${styles.contactPanel}`} style={{ '--d': 1 } as React.CSSProperties}>
@@ -112,18 +101,8 @@ export function ContactPanel() {
       {contact.loading ? (
         <Loading compact />
       ) : (
-        <div className={styles.cardContainer}>
-          {primary.map(channel => (
-            <ChannelCard key={channel.kind + channel.url} channel={channel} />
-          ))}
-          {pairs(rest).map(row => (
-            <div key={row.map(c => c.kind).join('-')} className={styles.dualGrid}>
-              {row.map(channel => (
-                <ChannelCard key={channel.kind + channel.url} channel={channel} />
-              ))}
-            </div>
-          ))}
-          {phone.map(channel => (
+        <div className={styles.channelsGrid}>
+          {channels.map(channel => (
             <ChannelCard key={channel.kind + channel.url} channel={channel} />
           ))}
         </div>

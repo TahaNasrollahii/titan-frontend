@@ -205,21 +205,24 @@
 }
 
 /* Cards Layout */
-.cardContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.dualGrid {
+.channelsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
 @media (max-width: 800px) {
-  .dualGrid {
-    grid-template-columns: 1fr;
+  .topSection {
+    flex-direction: column;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .headerContent {
+    align-items: center;
+    text-align: center;
+  }
+  .headerContent p {
+    text-align: center;
   }
 }
 
@@ -448,16 +451,73 @@
 
 @media (max-width: 600px) {
   .contactPanel {
-    padding: 30px 20px;
+    padding: 30px 16px;
+  }
+
+  .channelsGrid {
+    gap: 12px;
+  }
+
+  .glitchCard {
+    padding: 16px;
   }
   
   .cardContent {
     flex-direction: column;
     text-align: center;
-    gap: 16px;
+    gap: 12px;
+  }
+
+  .rightContent {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .textWrap {
+    align-items: center;
+    text-align: center;
+  }
+
+  .textWrap h3 {
+    font-size: 16px;
+  }
+
+  .textWrap p {
+    font-size: 12px;
+  }
+
+  .iconWrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .iconWrap img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .discord .iconWrap {
+    width: 56px;
+    height: 56px;
+  }
+
+  .discord .iconWrap img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .discord .textWrap h3 {
+    font-size: 18px;
   }
   
   .discord .actionBtn {
     margin: 10px auto 0;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .robotImageWrapper {
+    width: 200px;
   }
 }
