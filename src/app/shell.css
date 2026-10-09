@@ -122,8 +122,8 @@
   }
 
   .top-logo img {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
     filter: drop-shadow(0 4px 12px rgba(226, 69, 63, 0.45));
   }
