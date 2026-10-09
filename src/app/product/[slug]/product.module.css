@@ -837,3 +837,214 @@
   color: var(--muted);
   width: 40%;
 }
+
+/* ---------- Phone ---------- */
+@media (max-width: 768px) {
+  /* The app frame already provides the side gutter */
+  .container {
+    padding: 8px 0 24px;
+    gap: 16px;
+  }
+
+  .breadcrumb {
+    flex-wrap: wrap;
+    row-gap: 4px;
+    margin-bottom: 0;
+  }
+
+  .mainSection {
+    padding: 14px;
+    gap: 20px;
+    border-radius: 24px;
+  }
+
+  .detailsColumn {
+    padding: 0 4px;
+    min-width: 0;
+  }
+
+  .mainImageArea {
+    height: 260px;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .mainImage {
+    transform: none;
+  }
+
+  .headerRow {
+    margin-bottom: 14px;
+  }
+
+  .productTitle {
+    font-size: 22px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+
+  .ratingRow {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .optionsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  .optionCard {
+    padding: 12px 12px 10px;
+  }
+
+  .optionLabel {
+    font-size: 14px;
+  }
+
+  .priceSection {
+    margin-bottom: 20px;
+  }
+
+  .priceRow {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .priceValues {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .currentPrice {
+    font-size: 26px;
+  }
+
+  .discountBadge {
+    white-space: nowrap;
+  }
+
+  .actionButtons {
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .wishlistBtn {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .addToCartBtn {
+    min-width: 0;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 15px;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .addToCartBtn:hover {
+    transform: none;
+  }
+
+  .quantityControl {
+    flex: none;
+    width: 100px;
+    height: 48px;
+    padding: 0 4px;
+  }
+
+  .featuresList {
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 20px;
+  }
+
+  .featureIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    flex: none;
+  }
+
+  .featureDesc {
+    white-space: normal;
+  }
+
+  /* Three tabs share the row equally instead of running off the screen */
+  .tabsRow {
+    gap: 6px;
+    margin: 8px 0 0;
+  }
+
+  .tabItem {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .aboutSection {
+    padding: 20px 16px;
+    border-radius: 24px;
+  }
+
+  .aboutSection h2 {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .aboutSection p {
+    margin-bottom: 20px;
+  }
+
+  .aboutTags {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .aboutTag {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .specTable td {
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+
+  .recommendedSection {
+    margin-top: 16px;
+    gap: 16px;
+  }
+
+  .recommendedTitle {
+    font-size: 18px;
+  }
+
+  .recCard {
+    width: 200px;
+    min-width: 200px;
+    height: 260px;
+    border-radius: 20px;
+  }
+}
+
+/* Very narrow phones: the add-to-cart button gets its own row */
+@media (max-width: 360px) {
+  .actionButtons {
+    flex-wrap: wrap;
+  }
+
+  .addToCartBtn {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .quantityControl {
+    flex: 1;
+    width: auto;
+  }
+}

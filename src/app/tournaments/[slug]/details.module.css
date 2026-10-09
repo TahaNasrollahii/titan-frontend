@@ -169,8 +169,9 @@
 }
 
 @media (max-width: 900px) {
+  /* minmax(0, …) lets the column shrink below its content (the tab strip) instead of overflowing */
   .mainLayout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -796,4 +797,249 @@
 
 .teamOption.selected .radioCircle::after {
   transform: scale(1);
+}
+
+/* ---------- Tablet & phone ---------- */
+@media (max-width: 900px) {
+  .contentArea {
+    min-width: 0;
+  }
+
+  .sidebar {
+    position: static;
+  }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 768px) {
+  .wrapper {
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  .heroSection {
+    min-height: 0;
+    padding: 120px 18px 20px;
+    border-radius: 24px;
+  }
+
+  .heroContent {
+    gap: 16px;
+  }
+
+  .titleArea {
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .badges {
+    gap: 6px;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 13.5px;
+  }
+
+  .quickStats {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .statItem {
+    padding: 8px 12px;
+    font-size: 12.5px;
+    border-radius: 10px;
+  }
+
+  .contentArea {
+    gap: 14px;
+  }
+
+  /* The tab strip scrolls sideways inside its own box */
+  .tabs {
+    gap: 4px;
+    padding: 6px;
+    border-radius: 16px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabBtn {
+    flex: none;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 11px;
+  }
+
+  .tabContent {
+    padding: 18px 14px;
+    border-radius: 22px;
+    min-height: 0;
+  }
+
+  .overviewPane h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .overviewPane p {
+    font-size: 14px;
+    line-height: 1.85;
+    margin-bottom: 16px;
+  }
+
+  .prizePool {
+    margin-top: 24px;
+    padding-top: 20px;
+  }
+
+  .prizePool h4 {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .prizeList {
+    gap: 10px;
+  }
+
+  .prizeRow {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .prizeRow:hover {
+    transform: none;
+  }
+
+  .prizeRank {
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .prizeAmount {
+    font-size: 15px;
+  }
+
+  .emptyTab {
+    padding: 48px 12px;
+  }
+
+  .emptyTab i {
+    font-size: 44px;
+  }
+
+  .emptyTab p {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .participantsList {
+    gap: 8px;
+  }
+
+  .participantListRow {
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .participantListRow:hover {
+    transform: none;
+  }
+
+  .participantIndex {
+    min-width: 22px;
+    font-size: 16px;
+  }
+
+  .participantAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .participantCrest {
+    font-size: 13px;
+  }
+
+  .participantDetails {
+    min-width: 0;
+  }
+
+  .participantName {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .participantRank {
+    font-size: 11px;
+  }
+
+  .participantStats {
+    flex: none;
+    gap: 8px;
+  }
+
+  .statScore {
+    font-size: 16px;
+  }
+
+  .participantAction {
+    display: none;
+  }
+
+  .registrationWidget {
+    padding: 20px 16px;
+    gap: 18px;
+    border-radius: 24px;
+  }
+
+  .registrationWidget h3 {
+    font-size: 18px;
+  }
+
+  .priceNew {
+    flex-wrap: wrap;
+    font-size: 24px;
+  }
+
+  .btnRegister {
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .btnRegister:hover {
+    transform: none;
+  }
+
+  .teamOption {
+    padding: 10px 12px;
+  }
+
+  .teamOptionName {
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .widgetMeta {
+    margin-top: 4px;
+  }
 }
