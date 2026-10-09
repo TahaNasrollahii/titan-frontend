@@ -184,14 +184,15 @@ export default function TournamentPage() {
           <article className="tour-hero spot spot-track reveal" style={{ '--d': 2 } as React.CSSProperties}>
             <div className="th-bg"></div>
             <div className="th-content">
-              <div className="th-badges">
-                <span className="th-badge red">
-                  <Icon name="flame" /> <span className="pulse-text">تورنومنت‌های تایتان</span>
-                </span>
-                {promo?.badge && <span className="th-badge dark">{promo.badge}</span>}
-              </div>
-              <h1>{promo?.title ?? 'میدان نبردِ قهرمانان'}</h1>
-              <p>{promo?.subtitle ?? 'در رقابت‌های نفس‌گیر تایتان شرکت کنید و سهمی از جوایز نقدی این فصل ببرید.'}</p>
+              {promo?.badge && (
+                <div className="th-badges">
+                  <span className="th-badge red">
+                    <Icon name="flame" /> <span className="pulse-text">{promo.badge}</span>
+                  </span>
+                </div>
+              )}
+              <h1>تایتان تورنومنت</h1>
+              <p>رقابت کنید و جایزه ببرید.</p>
               <div className="th-foot">
                 <Link href={promoHref} className="th-btn-primary" style={{ textDecoration: 'none' }}>
                   <Icon name="game" />
