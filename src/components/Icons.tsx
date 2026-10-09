@@ -63,27 +63,18 @@ export function Icon({ name, className = '', style }: { name: string, className?
   );
 }
 
-/** Colours of one generated avatar: background pair, helmet shell pair, glow accent, suit. */
-const AVATAR_PALETTES = [
-  { bg: ['#4a0f1c', '#8f1f30'], shell: ['#ffffff', '#b9bcc8'], accent: '#ff4d5e', suit: '#24070e' },
-  { bg: ['#06303a', '#0f6170'], shell: ['#effbfc', '#9cc4ca'], accent: '#22f0d5', suit: '#081c21' },
-  { bg: ['#211046', '#4f2490'], shell: ['#f5f0ff', '#b3a2e0'], accent: '#c08cff', suit: '#150a2e' },
-  { bg: ['#36200a', '#7a4c12'], shell: ['#fff6e2', '#d6b67a'], accent: '#ffc23d', suit: '#1f1305' },
-  { bg: ['#081a42', '#1a4aa0'], shell: ['#eef3ff', '#a0b3de'], accent: '#4da3ff', suit: '#08122b' },
-  { bg: ['#0c2c14', '#1f6630'], shell: ['#f1fcec', '#a6cf99'], accent: '#6dff7a', suit: '#0a1c0d' },
-  { bg: ['#420c30', '#8a1f60'], shell: ['#fff1f8', '#dba6c4'], accent: '#ff5fb4', suit: '#28071d' },
-  { bg: ['#1a1a20', '#3a3a46'], shell: ['#5a5a68', '#26262e'], accent: '#ff7a2f', suit: '#0f0f13' },
-];
+/** Colours of the generated avatar: background pair, helmet shell pair, glow accent, suit. */
+const AVATAR_PALETTE = { bg: ['#36200a', '#7a4c12'], shell: ['#fff6e2', '#d6b67a'], accent: '#ffc23d', suit: '#1f1305' };
 
 /**
- * Default picture for users without an upload: a visored esports helmet, its colours, visor and
- * gear picked by ``seed`` (8 palettes x 3 visors x 4 add-ons). Ids come from useId: a gradient
+ * Default picture for users without an upload: a gold visored esports helmet, its visor and gear
+ * picked by ``seed`` (3 visors x 4 add-ons). Ids come from useId: a gradient
  * shared with a copy in a hidden subtree (the rail on phones) would not paint.
  */
 export function Avatar({ seed }: { seed: number }) {
   const uid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
   const s = Math.abs(seed | 0);
-  const { bg, shell, accent, suit } = AVATAR_PALETTES[s % AVATAR_PALETTES.length];
+  const { bg, shell, accent, suit } = AVATAR_PALETTE;
   const visor = (s * 7 + 1) % 3;
   const gear = (s * 5 + 2) % 4;
   const id = (name: string) => `av${name}${uid}`;
