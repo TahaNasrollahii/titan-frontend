@@ -1321,7 +1321,7 @@
   }
 
   .th-content {
-    width: 56%;
+    width: 54%;
     gap: 8px;
   }
 
@@ -1337,7 +1337,7 @@
 
   .th-content h1 {
     margin-top: 2px;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1.3;
   }
 
@@ -1380,20 +1380,20 @@
     transform: none;
   }
 
-  /* The art fills the strip left of the copy, zoomed on the character, so the two never overlap */
+  /* The whole art fits the strip left of the copy, so the two never overlap */
   .th-art-wrap {
     top: 0;
     bottom: 0;
-    left: 0;
-    width: 44%;
+    left: 4px;
+    width: 48%;
     height: auto;
     aspect-ratio: auto;
   }
 
   /* No pointer parallax here */
   .th-art {
-    object-fit: cover;
-    object-position: 30% 15%;
+    object-fit: contain;
+    object-position: center;
     transform: none;
   }
 
@@ -1709,10 +1709,10 @@
 /* Very small phones: a little more room for the hero copy */
 @media (max-width: 360px) {
   .th-content {
-    width: 58%;
+    width: 56%;
   }
 
   .th-art-wrap {
-    width: 42%;
+    width: 46%;
   }
 }
