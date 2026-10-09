@@ -6,36 +6,57 @@
 @media (max-width: 768px) {
   .bar {
     position: fixed;
-    right: 12px;
-    left: 12px;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    right: 14px;
+    left: 14px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
     z-index: 9990;
     display: flex;
     align-items: stretch;
     gap: 2px;
-    height: 66px;
+    height: 64px;
     padding: 6px;
-    border-radius: 26px;
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    background: linear-gradient(180deg, rgba(62, 17, 26, 0.8), rgba(28, 7, 12, 0.88));
+    border-radius: 999px;
+    background:
+      radial-gradient(60% 140% at 50% 120%, rgba(226, 69, 63, 0.28), transparent 70%),
+      linear-gradient(180deg, rgba(58, 15, 23, 0.78), rgba(22, 5, 9, 0.9));
     box-shadow:
-      0 18px 40px rgba(0, 0, 0, 0.55),
-      0 2px 0 rgba(0, 0, 0, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    -webkit-backdrop-filter: blur(22px) saturate(170%);
-    backdrop-filter: blur(22px) saturate(170%);
-    animation: barIn 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.15) 0.15s backwards;
+      0 22px 44px -6px rgba(0, 0, 0, 0.65),
+      0 0 0 0.5px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    animation: barIn 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.15) 0.15s backwards;
   }
 
-  /* Specular line along the top edge */
+  /* Gradient hairline border: bright along the top, warm red underneath */
   .bar::before {
     content: '';
     position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.28),
+      rgba(255, 255, 255, 0.06) 45%,
+      rgba(255, 110, 100, 0.3)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Specular streak along the top edge */
+  .bar::after {
+    content: '';
+    position: absolute;
     top: 0;
-    left: 18%;
-    right: 18%;
+    left: 22%;
+    right: 22%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
     pointer-events: none;
   }
 }
@@ -49,6 +70,7 @@
   }
 }
 
+/* Inactive tabs show the icon only; the active one widens to fit its label */
 .tab {
   position: relative;
   flex: 1 1 0;
@@ -56,54 +78,84 @@
   display: flex;
   padding: 0;
   border: 0;
-  border-radius: 20px;
+  border-radius: 999px;
   background: none;
-  color: rgba(255, 228, 230, 0.55);
+  color: rgba(255, 228, 230, 0.6);
   font: inherit;
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color 0.25s;
+  transition: flex-grow 0.55s cubic-bezier(0.3, 1.25, 0.4, 1), color 0.25s;
 }
 
 .tab:focus-visible {
-  outline: 2px solid rgba(226, 69, 63, 0.7);
+  outline: 2px solid rgba(255, 140, 130, 0.8);
   outline-offset: -2px;
 }
 
 .active {
+  flex-grow: 2.1;
   color: #fff;
 }
 
 .pill {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  overflow: hidden;
+  border-radius: inherit;
   background:
-    radial-gradient(120% 90% at 50% 0%, rgba(240, 100, 90, 0.42), rgba(226, 69, 63, 0.12) 60%, transparent),
-    rgba(255, 255, 255, 0.05);
+    radial-gradient(120% 100% at 30% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
+    linear-gradient(135deg, #ff7f6e 0%, #e9473f 48%, #b1252b 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 -6px 12px rgba(0, 0, 0, 0.18),
-    0 8px 20px rgba(226, 69, 63, 0.28);
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 8px rgba(90, 0, 10, 0.35),
+    0 8px 22px -4px rgba(226, 69, 63, 0.75),
+    0 0 0 1px rgba(255, 160, 150, 0.25);
+  opacity: 0;
+  transform: scale(0.55);
+  transition:
+    opacity 0.25s,
+    transform 0.5s cubic-bezier(0.3, 1.4, 0.4, 1);
+}
+
+/* Light sweep across the pill when a tab becomes active */
+.pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  transform: translateX(120%);
+}
+
+.active .pill {
+  opacity: 1;
+  transform: none;
+}
+
+.active .pill::after {
+  animation: sweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
 }
 
 .tabInner {
   position: relative;
   flex: 1;
+  min-width: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.tab:active .tabInner {
+  transform: scale(0.86);
 }
 
 .icon {
   position: relative;
+  flex: none;
   display: grid;
   place-items: center;
-  width: 26px;
+  min-width: 26px;
   height: 26px;
 }
 
@@ -111,72 +163,24 @@
   width: 24px;
   height: 24px;
   object-fit: contain;
-  opacity: 0.62;
-  transition: opacity 0.25s, filter 0.25s;
+  opacity: 0.55;
+  transition: opacity 0.25s, filter 0.25s, transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
 .active .icon > img {
   opacity: 1;
-  filter: drop-shadow(0 0 8px rgba(255, 120, 110, 0.65));
+  filter: drop-shadow(0 2px 4px rgba(90, 0, 10, 0.45));
+  transform: scale(1.05);
 }
 
 .moreIcon {
   width: 20px;
   height: 20px;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .active .moreIcon {
   opacity: 1;
-}
-
-/* Profile picture inside the user's rank frame */
-.meFrame {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-}
-
-/* The global 68px rank frame drawn at half size (34px); the picture sits inside it, between the
-   ring and the ornament */
-.meFrame > .meRing {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.5);
-  pointer-events: none;
-}
-
-/* Ornament tucked onto the ring so it stays inside the bar */
-.meRing :global(.rank-frame-ornament) {
-  top: 8px;
-}
-
-/* 54px before the frame's half scale (27px on screen): just inside the ring's inner edge */
-.meAvatar {
-  position: relative;
-  z-index: 2;
-  display: block;
-  width: 54px;
-  height: 54px;
-  overflow: hidden;
-  border-radius: 50%;
-  opacity: 0.85;
-  transition: opacity 0.25s;
-}
-
-.active .meAvatar {
-  opacity: 1;
-}
-
-.meAvatar img,
-.meAvatar svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .dot {
@@ -187,270 +191,219 @@
   height: 9px;
   border-radius: 50%;
   background: #ff4b4b;
-  box-shadow: 0 0 0 2px #2a0a11;
+  box-shadow: 0 0 0 2px #2a0a11, 0 0 8px rgba(255, 75, 75, 0.8);
 }
 
+.active .dot {
+  box-shadow: 0 0 0 2px #e9473f;
+  background: #fff;
+}
+
+/* Collapsed to nothing while inactive; slides open beside the icon when active */
 .label {
-  max-width: 100%;
+  max-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 800;
   line-height: 1;
+  opacity: 0;
+  text-shadow: 0 1px 2px rgba(90, 0, 10, 0.4);
+  transition:
+    max-width 0.5s cubic-bezier(0.3, 1.1, 0.4, 1),
+    opacity 0.2s,
+    margin 0.5s cubic-bezier(0.3, 1.1, 0.4, 1);
 }
 
 .active .label {
-  font-weight: 800;
+  max-width: 76px;
+  margin-right: 7px;
+  opacity: 1;
+  transition-delay: 0s, 0.12s, 0s;
 }
 
 /* ─── More sheet ─── */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9994;
-  background: rgba(10, 2, 5, 0.55);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
-
-.sheet {
-  position: fixed;
-  right: 8px;
-  left: 8px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-  z-index: 9995;
-  max-height: min(78vh, 640px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 10px 16px 18px;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background:
-    radial-gradient(110% 60% at 50% 0%, rgba(226, 69, 63, 0.2), transparent 65%),
-    linear-gradient(180deg, rgba(56, 15, 23, 0.94), rgba(26, 6, 11, 0.97));
-  box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  backdrop-filter: blur(24px) saturate(160%);
-}
-
-.grab {
-  margin: -10px -16px 4px;
-  padding: 10px 0 10px;
-  cursor: grab;
-  touch-action: none;
-}
-
-.handle {
-  display: block;
-  width: 42px;
-  height: 5px;
-  margin: 0 auto;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.userCard,
-.guestCard {
+.sheetBody {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
-  padding: 12px;
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.05);
+}
+
+.guestCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 16px 16px;
+  overflow: hidden;
+  border-radius: 26px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.14);
   color: #fff;
-  text-decoration: none;
 }
 
-.userAvatar {
-  flex: none;
-  width: 50px;
-  height: 50px;
-  overflow: hidden;
+.guestGlow {
+  position: absolute;
+  top: -60px;
+  left: -40px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--red-2), 0 0 18px rgba(226, 69, 63, 0.45);
+  background: radial-gradient(circle, rgba(226, 69, 63, 0.45), transparent 65%);
+  pointer-events: none;
 }
 
-.userAvatar img,
-.userAvatar svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.userText {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.userText b,
-.guestCard b {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.userText small,
-.guestCard small {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.userChev {
-  flex: none;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 18px;
-  transform: scaleX(-1);
-}
-
-.guestCard {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
+.guestLogo {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  opacity: 0.9;
+  filter: drop-shadow(0 6px 14px rgba(226, 69, 63, 0.6));
 }
 
 .guestCard > div {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding-left: 56px;
+}
+
+.guestCard b {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.guestCard small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .loginBtn {
+  position: relative;
   display: grid;
   place-items: center;
-  height: 46px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, var(--red-2), #b92b27);
-  box-shadow: 0 10px 24px rgba(226, 69, 63, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  height: 48px;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 100% at 30% 0%, rgba(255, 255, 255, 0.3), transparent 55%),
+    linear-gradient(135deg, #ff7f6e, #e2453f 50%, #b1252b);
+  box-shadow: 0 12px 26px -6px rgba(226, 69, 63, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   color: #fff;
   font-size: 14.5px;
   font-weight: 800;
   text-decoration: none;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px 8px;
-  margin-top: 16px;
-  list-style: none;
+.loginBtn:active {
+  transform: scale(0.98);
 }
 
-.tile {
+.quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.quickCard {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   color: #fff;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s, background 0.2s;
 }
 
-.tileIcon {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 19px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 55%),
-    rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 18px rgba(0, 0, 0, 0.25);
-  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1), background 0.2s;
+.quickCard:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.tile:active .tileIcon {
-  transform: scale(0.88);
-  background: rgba(226, 69, 63, 0.18);
+.quickIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
 }
 
-.tileIcon img {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
+.quickIcon img {
+  width: 21px;
+  height: 21px;
 }
 
-.tileLabel {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgba(255, 236, 237, 0.85);
-  font-size: 11.5px;
-  font-weight: 600;
+.quickCard > span:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.badge {
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: var(--red);
-  box-shadow: 0 0 0 2px #2a0a11;
-  color: #fff;
-  font-size: 10.5px;
+.quickCard b {
+  font-size: 13.5px;
   font-weight: 800;
 }
 
-.logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 48px;
-  margin-top: 18px;
-  border: 1px solid rgba(255, 90, 80, 0.2);
-  border-radius: 16px;
-  background: rgba(255, 90, 80, 0.08);
-  color: #ff8a80;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+.quickCard small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 11px;
 }
 
-.logout img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
+.section {
+  margin: 6px 4px -2px;
+  color: rgba(255, 236, 237, 0.5);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 6px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  list-style: none;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 @keyframes barIn {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.92);
+    transform: translateY(40px) scale(0.9);
   }
 }
 
-@media (max-width: 360px) {
-  .grid {
-    gap: 12px 4px;
+@keyframes sweep {
+  from {
+    transform: translateX(120%);
   }
-
-  .tileIcon {
-    width: 50px;
-    height: 50px;
-    border-radius: 17px;
+  to {
+    transform: translateX(-120%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bar {
+  .bar,
+  .active .pill::after {
     animation: none;
   }
 }

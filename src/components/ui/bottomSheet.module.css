@@ -1,0 +1,111 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9994;
+  background:
+    radial-gradient(120% 60% at 50% 100%, rgba(226, 69, 63, 0.22), transparent 70%),
+    rgba(10, 2, 5, 0.6);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
+}
+
+.sheet {
+  position: fixed;
+  right: 8px;
+  left: 8px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+  z-index: 9995;
+  display: flex;
+  flex-direction: column;
+  max-height: min(84dvh, 720px);
+  overflow: hidden;
+  border-radius: 32px;
+  background:
+    radial-gradient(120% 50% at 50% 0%, rgba(226, 69, 63, 0.24), transparent 70%),
+    linear-gradient(180deg, rgba(52, 13, 21, 0.95), rgba(22, 5, 9, 0.98));
+  box-shadow:
+    0 -16px 60px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  backdrop-filter: blur(28px) saturate(170%);
+}
+
+/* Hairline border that fades from bright at the top to nothing at the bottom */
+.sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 120, 110, 0.12) 40%, transparent 85%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.grab {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: 18px 20px 8px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 40px;
+  height: 5px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateX(-50%);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-right: auto;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 236, 237, 0.8);
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.close:active {
+  transform: scale(0.88);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 16px 18px;
+  scrollbar-width: none;
+}
+
+.body::-webkit-scrollbar {
+  display: none;
+}

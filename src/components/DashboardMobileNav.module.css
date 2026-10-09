@@ -1,0 +1,228 @@
+.root {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .root {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ─── Hub (overview) ─── */
+.hub {
+  padding: 16px 10px 18px;
+  border-radius: 26px;
+  background: linear-gradient(160deg, rgba(63, 17, 25, 0.75), rgba(32, 8, 13, 0.9));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 36px -18px rgba(0, 0, 0, 0.7);
+}
+
+.hubTitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 8px 16px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.hubTitle small {
+  color: rgba(255, 236, 237, 0.45);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px 6px;
+  list-style: none;
+}
+
+.sheetGrid {
+  margin: 6px 0 18px;
+  padding: 16px 6px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Section header (every other tab) ─── */
+.header {
+  --tone: 255 99 88;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    radial-gradient(70% 140% at 85% 0%, rgb(var(--tone) / 0.22), transparent 70%),
+    linear-gradient(160deg, rgba(63, 17, 25, 0.8), rgba(32, 8, 13, 0.92));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 16px 32px -16px rgba(0, 0, 0, 0.7);
+  transition: background 0.4s;
+}
+
+.back,
+.switch {
+  flex: none;
+  display: grid;
+  place-items: center;
+  height: 44px;
+  border: 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.back {
+  width: 44px;
+}
+
+.back svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.back:active,
+.switch:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.current {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.currentInner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.currentIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+}
+
+.currentIcon img {
+  width: 22px;
+  height: 22px;
+}
+
+.currentText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.currentText small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 236, 237, 0.5);
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* A plain dot would read as a Persian zero next to the digits */
+.sep {
+  width: 1px;
+  height: 9px;
+  background: rgba(255, 236, 237, 0.3);
+}
+
+.currentText b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  background:
+    radial-gradient(120% 100% at 30% 0%, rgba(255, 255, 255, 0.28), transparent 55%),
+    linear-gradient(135deg, #ff7f6e, #e2453f 50%, #b1252b);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 8px 20px -6px rgba(226, 69, 63, 0.75);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.switch:active {
+  background:
+    radial-gradient(120% 100% at 30% 0%, rgba(255, 255, 255, 0.28), transparent 55%),
+    linear-gradient(135deg, #ff7f6e, #e2453f 50%, #b1252b);
+}
+
+.gridIcon {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.switchDot {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2.5px #e2453f, 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 360px) {
+  .switchLabel {
+    display: none;
+  }
+
+  .switch {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+}

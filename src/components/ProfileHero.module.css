@@ -1,0 +1,185 @@
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    radial-gradient(90% 120% at 100% 0%, var(--tier-glow), transparent 60%),
+    radial-gradient(70% 90% at 0% 100%, rgba(226, 69, 63, 0.18), transparent 70%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 18px 36px -18px rgba(0, 0, 0, 0.7);
+  color: #fff;
+  text-decoration: none;
+  isolation: isolate;
+}
+
+/* Faint diagonal grid, for texture */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 18px 18px;
+  -webkit-mask: linear-gradient(200deg, #000, transparent 65%);
+  mask: linear-gradient(200deg, #000, transparent 65%);
+  pointer-events: none;
+}
+
+.link {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s;
+}
+
+.link:active {
+  transform: scale(0.98);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eyebrow {
+  color: rgba(255, 236, 237, 0.55);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.text b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: rgba(255, 236, 237, 0.6);
+  font-size: 12px;
+}
+
+.meta > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tier {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tier-from) 22%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tier-from) 45%, transparent);
+  color: color-mix(in srgb, var(--tier-from) 70%, #fff);
+  font-family: 'Poppins', 'Estedad Variable', sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.chev {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.track {
+  position: relative;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.fill {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: calc(var(--p) * 100%);
+  border-radius: inherit;
+  background: linear-gradient(270deg, #ffb199, #ff6b5e 45%, #e2453f);
+  box-shadow: 0 0 12px rgba(255, 107, 94, 0.75);
+  animation: fillIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards;
+  transform-origin: right;
+}
+
+/* Glint travelling along the bar */
+.fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: glint 2.8s ease-in-out 1.2s infinite;
+}
+
+.legend {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 236, 237, 0.6);
+  font-size: 11.5px;
+}
+
+.legend b {
+  color: #fff;
+  font-weight: 800;
+}
+
+@keyframes fillIn {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes glint {
+  from {
+    background-position: 250% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill,
+  .fill::after {
+    animation: none;
+  }
+}

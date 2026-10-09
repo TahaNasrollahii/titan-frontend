@@ -544,6 +544,12 @@
   .logoutBtn { margin-top: 0; }
 }
 
+/* Phones use DashboardMobileNav (section hub, header and sheet) instead */
+@media (max-width: 768px) {
+  .dashboardWrapper { gap: 14px; }
+  .sidebar { display: none; }
+}
+
 @media (max-width: 600px) {
   .panel { padding: 20px 16px; border-radius: 26px; gap: 18px; }
 }

@@ -1,20 +1,20 @@
 'use client';
 
-import { AnimatePresence, motion, useDragControls, type PanInfo } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import type { UserMini } from '@/lib/api/types';
 import { faNumber } from '@/lib/format';
-import { useMounted, useOverlay } from '@/lib/hooks/useOverlay';
-import { getOrnamentSVGWrapper, getRingSVG, getTierByScore } from '@/utils/ranks';
 
-import { Avatar, Icon } from './Icons';
+import { sectionByTab } from './dashboardSections';
 import styles from './MobileNav.module.css';
+import { ProfileHero } from './ProfileHero';
+import { RankAvatar } from './RankAvatar';
+import { AppRow, AppTile, ToneIcon } from './ui/AppTile';
+import { BottomSheet } from './ui/BottomSheet';
 
 type TabKey = 'home' | 'store' | 'tournament' | 'me' | 'more';
 
@@ -36,54 +36,24 @@ const LINK_TABS: { key: Exclude<TabKey, 'me' | 'more'>; href: string; label: str
   { key: 'tournament', href: '/tournament', label: 'تورنومنت', icon: '/icons/tournament.png' },
 ];
 
-const SHEET_LINKS = [
-  { href: '/cart', label: 'سبد خرید', icon: '/icons/cart.png', badge: 'cart' as const },
-  { href: '/dashboard?tab=notifications', label: 'اعلان‌ها', icon: '/icons/notif.png', badge: 'unread' as const },
-  { href: '/dashboard?tab=orders', label: 'سفارش‌ها', icon: '/icons/store.png' },
-  { href: '/dashboard?tab=teams', label: 'تیم‌های من', icon: '/icons/team.png' },
-  { href: '/dashboard?tab=favorites', label: 'علاقه‌مندی‌ها', icon: '/icons/favorite.png' },
-  { href: '/dashboard?tab=accounts', label: 'اکانت‌ها', icon: '/icons/accounts.png' },
-  { href: '/contact', label: 'ارتباط با ما', icon: '/icons/contact-us.png' },
-  { href: '/about', label: 'درباره ما', icon: '/icons/about-us.png' },
-];
+const ACCOUNT_TABS = ['orders', 'teams', 'favorites', 'accounts'].map(sectionByTab);
 
-/** Tap feedback + lift for one tab's content. The shared pill slides between tabs. */
-function TabInner({ active, icon, label, dot }: { active: boolean; icon: React.ReactNode; label: string; dot?: boolean }) {
+/** A light tap on phones that support it. */
+const tick = () => navigator.vibrate?.(8);
+
+/** Icon, and the label beside it while active; the glowing pill grows in behind the active tab. */
+function TabInner({ icon, label, dot }: { icon: React.ReactNode; label: string; dot?: boolean }) {
   return (
     <>
-      {active && <motion.span layoutId="mobile-tab-pill" className={styles.pill} transition={SPRING} />}
-      <motion.span className={styles.tabInner} whileTap={{ scale: 0.86 }} transition={SPRING}>
-        <motion.span className={styles.icon} animate={{ y: active ? -1 : 0, scale: active ? 1.1 : 1 }} transition={SPRING}>
+      <span className={styles.pill} aria-hidden />
+      <span className={styles.tabInner}>
+        <span className={styles.icon}>
           {icon}
           {dot && <span className={styles.dot} />}
-        </motion.span>
-        <span className={styles.label}>{label}</span>
-      </motion.span>
-    </>
-  );
-}
-
-/** The user's picture inside their own rank frame (same ring and ornament as the desktop rail). */
-function MeAvatar({ user }: { user: Pick<UserMini, 'avatar' | 'avatarSeed' | 'points'> }) {
-  const rank = getTierByScore(user.points || 0);
-  return (
-    <span className={styles.meFrame}>
-      <span
-        className={`rank-frame-wrap ${styles.meRing}`}
-        data-tier={rank.id}
-        style={{ '--tier-glow': rank.glow } as React.CSSProperties}
-        aria-hidden
-      >
-        <span className="rank-frame-glow"></span>
-        {/* Own SVG ids: the rail draws the same tier, hidden on phones, and a gradient inside a
-            hidden subtree does not paint */}
-        <span className="rank-frame-ring">{getRingSVG(rank, '-tabbar')}</span>
-        <span className={styles.meAvatar}>
-          {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
         </span>
-        <span className="rank-frame-ornament">{getOrnamentSVGWrapper(rank, '-tabbar')}</span>
+        <span className={styles.label}>{label}</span>
       </span>
-    </span>
+    </>
   );
 }
 
@@ -103,126 +73,120 @@ function MoreIcon({ open }: { open: boolean }) {
   );
 }
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 16, scale: 0.94 },
+  show: { opacity: 1, y: 0, scale: 1, transition: SPRING },
+};
+
 function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const mounted = useMounted();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount, unreadNotifications } = useAppContext();
-  const drag = useDragControls();
-  useOverlay(open, onClose);
+  const unread = isAuthenticated ? unreadNotifications : 0;
 
-  const onDragEnd = (_: unknown, info: PanInfo) => {
-    if (info.offset.y > 110 || info.velocity.y > 600) onClose();
-  };
-  const badgeFor = (kind?: 'cart' | 'unread') =>
-    kind === 'cart' ? cartCount : kind === 'unread' && isAuthenticated ? unreadNotifications : 0;
+  return (
+    <BottomSheet open={open} onClose={onClose} label="منوی بیشتر" title="منو">
+      <motion.div
+        className={styles.sheetBody}
+        initial="hidden"
+        animate="show"
+        variants={{ show: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } } }}
+      >
+        <motion.div variants={fadeUp}>
+          {isAuthenticated && user ? (
+            <ProfileHero user={user} uid="-sheet" href="/dashboard" onClick={onClose} eyebrow="پنل کاربری" />
+          ) : (
+            <div className={styles.guestCard}>
+              <span className={styles.guestGlow} aria-hidden />
+              <img src="/titan-logo.png" alt="" className={styles.guestLogo} />
+              <div>
+                <b>به تایتان خوش اومدی</b>
+                <small>وارد شو تا سفارش‌ها، تیم‌ها و تورنومنت‌هات اینجا باشن.</small>
+              </div>
+              <Link href="/login" className={styles.loginBtn} onClick={onClose}>
+                ورود / ثبت‌نام
+              </Link>
+            </div>
+          )}
+        </motion.div>
 
-  if (!mounted) return null;
-  return createPortal(
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            key="backdrop"
-            className={styles.backdrop}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+        <motion.div className={styles.quick} variants={fadeUp}>
+          <Link href="/cart" className={styles.quickCard} onClick={onClose}>
+            <ToneIcon icon="/icons/cart.png" tone="255 146 64" className={styles.quickIcon} />
+            <span>
+              <b>سبد خرید</b>
+              <small>{cartCount > 0 ? `${faNumber(cartCount)} کالا` : 'خالی'}</small>
+            </span>
+          </Link>
+          <Link
+            href={isAuthenticated ? '/dashboard?tab=notifications' : '/login'}
+            className={styles.quickCard}
+            onClick={onClose}
+          >
+            <ToneIcon icon="/icons/notif.png" tone="47 210 122" className={styles.quickIcon} badge={unread} />
+            <span>
+              <b>اعلان‌ها</b>
+              <small>
+                {!isAuthenticated ? 'برای دیدن وارد شو' : unread > 0 ? `${faNumber(unread)} پیام تازه` : 'همه خوانده شده'}
+              </small>
+            </span>
+          </Link>
+        </motion.div>
+
+        <motion.h4 className={styles.section} variants={fadeUp}>
+          حساب من
+        </motion.h4>
+        <motion.ul className={styles.grid} variants={fadeUp}>
+          {ACCOUNT_TABS.map(item => (
+            <li key={item.tab}>
+              <AppTile
+                href={`/dashboard?tab=${item.tab}`}
+                icon={item.icon}
+                tone={item.tone}
+                label={item.short}
+                onClick={onClose}
+              />
+            </li>
+          ))}
+        </motion.ul>
+
+        <motion.h4 className={styles.section} variants={fadeUp}>
+          تایتان
+        </motion.h4>
+        <motion.div className={styles.rows} variants={fadeUp}>
+          <AppRow
+            href="/contact"
+            icon="/icons/contact-us.png"
+            tone="45 212 191"
+            label="ارتباط با ما"
+            hint="پشتیبانی، تلگرام و دیسکورد"
             onClick={onClose}
           />
-          <motion.div
-            key="sheet"
-            className={styles.sheet}
-            role="dialog"
-            aria-modal="true"
-            aria-label="منوی بیشتر"
-            initial={{ y: '105%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '105%' }}
-            transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-            drag="y"
-            dragControls={drag}
-            dragListener={false}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0.04, bottom: 0.7 }}
-            onDragEnd={onDragEnd}
-          >
-            {/* Drag from the top strip only, so the rest of the sheet can scroll on short screens */}
-            <div className={styles.grab} onPointerDown={event => drag.start(event)} aria-hidden>
-              <span className={styles.handle} />
-            </div>
+          <AppRow
+            href="/about"
+            icon="/icons/about-us.png"
+            tone="196 160 255"
+            label="درباره ما"
+            hint="داستان تایتان"
+            onClick={onClose}
+          />
+        </motion.div>
 
-            {isAuthenticated && user ? (
-              <Link href="/dashboard" className={styles.userCard} onClick={onClose}>
-                <span className={styles.userAvatar}>
-                  {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
-                </span>
-                <span className={styles.userText}>
-                  <b>{user.username || user.displayName || 'کاربر'}</b>
-                  <small>
-                    {getTierByScore(user.points || 0).name} · {faNumber(user.points || 0)} امتیاز
-                  </small>
-                </span>
-                <Icon name="chev" className={styles.userChev} />
-              </Link>
-            ) : (
-              <div className={styles.guestCard}>
-                <div>
-                  <b>به تایتان خوش اومدی</b>
-                  <small>وارد شو تا سفارش‌ها، تیم‌ها و تورنومنت‌هات اینجا باشن.</small>
-                </div>
-                <Link href="/login" className={styles.loginBtn} onClick={onClose}>
-                  ورود / ثبت‌نام
-                </Link>
-              </div>
-            )}
-
-            <motion.ul
-              className={styles.grid}
-              initial="hidden"
-              animate="show"
-              variants={{ show: { transition: { staggerChildren: 0.035, delayChildren: 0.08 } } }}
-            >
-              {SHEET_LINKS.map(item => {
-                const badge = badgeFor(item.badge);
-                return (
-                  <motion.li
-                    key={item.href}
-                    variants={{
-                      hidden: { opacity: 0, y: 18, scale: 0.9 },
-                      show: { opacity: 1, y: 0, scale: 1, transition: SPRING },
-                    }}
-                  >
-                    <Link href={item.href} className={styles.tile} onClick={onClose}>
-                      <span className={styles.tileIcon}>
-                        <img src={item.icon} alt="" />
-                        {badge > 0 && <span className={styles.badge}>{faNumber(badge)}</span>}
-                      </span>
-                      <span className={styles.tileLabel}>{item.label}</span>
-                    </Link>
-                  </motion.li>
-                );
-              })}
-            </motion.ul>
-
-            {isAuthenticated && (
-              <button
-                type="button"
-                className={styles.logout}
-                onClick={() => {
-                  onClose();
-                  logout();
-                }}
-              >
-                <img src="/icons/login.png" alt="" />
-                خروج از حساب
-              </button>
-            )}
+        {isAuthenticated && (
+          <motion.div variants={fadeUp}>
+            <AppRow
+              icon="/icons/login.png"
+              tone="255 90 80"
+              label="خروج از حساب"
+              danger
+              onClick={() => {
+                onClose();
+                logout();
+              }}
+            />
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body,
+        )}
+      </motion.div>
+    </BottomSheet>
   );
 }
 
@@ -237,6 +201,7 @@ export function MobileNav() {
   const closeSheet = useCallback(() => setSheetPath(null), []);
 
   const current = sheetOpen ? 'more' : tabFor(pathname);
+  const tabClass = (key: TabKey) => `${styles.tab} ${current === key ? styles.active : ''}`;
 
   return (
     <>
@@ -245,25 +210,26 @@ export function MobileNav() {
           <Link
             key={tab.key}
             href={tab.href}
-            className={`${styles.tab} ${current === tab.key ? styles.active : ''}`}
+            className={tabClass(tab.key)}
             aria-current={current === tab.key ? 'page' : undefined}
+            onClick={tick}
           >
-            <TabInner active={current === tab.key} label={tab.label} icon={<img src={tab.icon} alt="" />} />
+            <TabInner label={tab.label} icon={<img src={tab.icon} alt="" />} />
           </Link>
         ))}
 
         <Link
           href={isAuthenticated ? '/dashboard' : '/login'}
-          className={`${styles.tab} ${current === 'me' ? styles.active : ''}`}
+          className={tabClass('me')}
           aria-current={current === 'me' ? 'page' : undefined}
+          onClick={tick}
         >
           <TabInner
-            active={current === 'me'}
             label={isAuthenticated ? 'پروفایل' : 'ورود'}
             dot={isAuthenticated && unreadNotifications > 0}
             icon={
               isAuthenticated && user ? (
-                <MeAvatar user={user} />
+                <RankAvatar user={user} size={34} uid="-tabbar" tuckOrnament />
               ) : (
                 <img src="/icons/account.png" alt="" />
               )
@@ -273,12 +239,15 @@ export function MobileNav() {
 
         <button
           type="button"
-          className={`${styles.tab} ${current === 'more' ? styles.active : ''}`}
+          className={tabClass('more')}
           aria-expanded={sheetOpen}
           aria-haspopup="dialog"
-          onClick={() => setSheetPath(sheetOpen ? null : pathname)}
+          onClick={() => {
+            tick();
+            setSheetPath(sheetOpen ? null : pathname);
+          }}
         >
-          <TabInner active={current === 'more'} label="بیشتر" icon={<MoreIcon open={sheetOpen} />} />
+          <TabInner label="بیشتر" icon={<MoreIcon open={sheetOpen} />} />
         </button>
       </nav>
 

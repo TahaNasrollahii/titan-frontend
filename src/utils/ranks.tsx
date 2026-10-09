@@ -34,13 +34,23 @@ export const rankFromApi = (tier: RankTier): RankVisual => ({
   ornament: tier.ornament,
 });
 
-/** Same thresholds as the backend's seeded rank tiers; used for avatar frames without a request. */
+/** Minimum points of each entry in RANKS (same thresholds as the backend's seeded rank tiers). */
+const RANK_MIN_POINTS = [0, 1500, 5000, 10000, 20000];
+
+/** Used for avatar frames without a request. */
 export const getTierByScore = (score: number): RankVisual => {
-  if (score >= 20000) return RANKS[4];
-  if (score >= 10000) return RANKS[3];
-  if (score >= 5000) return RANKS[2];
-  if (score >= 1500) return RANKS[1];
+  for (let i = RANK_MIN_POINTS.length - 1; i > 0; i--) if (score >= RANK_MIN_POINTS[i]) return RANKS[i];
   return RANKS[0];
+};
+
+/** How far ``score`` is through its tier: ``next`` is null at the top tier (progress is then 1). */
+export const getRankProgress = (score: number) => {
+  const index = RANKS.indexOf(getTierByScore(score));
+  const next = RANKS[index + 1] ?? null;
+  if (!next) return { next, progress: 1, remaining: 0 };
+  const from = RANK_MIN_POINTS[index];
+  const to = RANK_MIN_POINTS[index + 1];
+  return { next, progress: (score - from) / (to - from), remaining: to - score };
 };
 
 /** ``uid`` keeps the SVG ids unique when the same tier is drawn more than once on a page. */
