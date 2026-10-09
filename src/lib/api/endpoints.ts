@@ -53,6 +53,8 @@ export const authApi = {
   logout: (refresh: string) => api<void>('auth/logout/', { method: 'POST', body: { refresh } }),
 };
 
+let dashboardInFlight: Promise<Dashboard> | null = null;
+
 export const meApi = {
   get: () => api<Me>('me/'),
   update: (data: Partial<Pick<Me, 'fullName' | 'email' | 'username' | 'favoriteGame' | 'avatarSeed'>>) =>
@@ -64,7 +66,11 @@ export const meApi = {
   },
   heartbeat: (status: 'online' | 'away' | 'in_game', game?: string | null) =>
     api<void>('me/heartbeat/', { method: 'POST', body: { status, game } }),
-  dashboard: () => api<Dashboard>('me/dashboard/'),
+  // The phone dashboard hub and the overview tab mount together: they share one in-flight request.
+  dashboard: () =>
+    (dashboardInFlight ??= api<Dashboard>('me/dashboard/').finally(() => {
+      dashboardInFlight = null;
+    })),
   stats: () => api<StatsTotals>('me/stats/'),
   tournaments: () => api<Paginated<MyTournament>>('me/tournaments/', { query: { page_size: 50 } }),
   teams: () => api<MyTeam[]>('me/teams/'),

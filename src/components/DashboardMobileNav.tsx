@@ -9,6 +9,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { faNumber } from '@/lib/format';
 
+import { DashboardBento } from './DashboardBento';
 import styles from './DashboardMobileNav.module.css';
 import { DASHBOARD_SECTIONS, sectionByTab } from './dashboardSections';
 import { ProfileHero } from './ProfileHero';
@@ -16,11 +17,6 @@ import { AppRow, AppTile, ToneIcon } from './ui/AppTile';
 import { BottomSheet } from './ui/BottomSheet';
 
 const SPRING = { type: 'spring', stiffness: 460, damping: 34 } as const;
-
-const tileIn = {
-  hidden: { opacity: 0, y: 14, scale: 0.9 },
-  show: { opacity: 1, y: 0, scale: 1, transition: SPRING },
-};
 
 function GridIcon() {
   return (
@@ -69,32 +65,12 @@ export function DashboardMobileNav({
         <>
           {user && <ProfileHero user={user} uid="-dash" eyebrow="پنل کاربری" />}
 
-          <section className={styles.hub} aria-label="بخش‌های پنل کاربری">
+          <section aria-label="بخش‌های پنل کاربری">
             <h2 className={styles.hubTitle}>
               بخش‌های پنل
-              <small>{faNumber(DASHBOARD_SECTIONS.length - 1)} بخش</small>
+              <small>به کجا می‌ری؟</small>
             </h2>
-            <motion.ul
-              className={styles.grid}
-              initial="hidden"
-              animate="show"
-              variants={{ show: { transition: { staggerChildren: 0.035, delayChildren: 0.1 } } }}
-            >
-              {DASHBOARD_SECTIONS.slice(1).map(item => (
-                <motion.li key={item.tab} variants={tileIn}>
-                  <AppTile
-                    href={`/dashboard?tab=${item.tab}`}
-                    icon={item.icon}
-                    tone={item.tone}
-                    label={item.short}
-                    badge={badgeFor(item.tab)}
-                  />
-                </motion.li>
-              ))}
-              <motion.li variants={tileIn}>
-                <AppTile icon="/icons/login.png" tone="255 90 80" label="خروج" onClick={onLogout} />
-              </motion.li>
-            </motion.ul>
+            <DashboardBento onLogout={onLogout} />
           </section>
         </>
       ) : (
