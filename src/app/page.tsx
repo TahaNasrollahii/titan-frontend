@@ -21,7 +21,24 @@ export default function TitanPage() {
 }
 
 function buildSceneData(data: Home) {
+  const seenGames = new Set<string>();
   const slides = data.heroTournaments.map(t => {
+    // One slide per game: a second Valorant tournament is shown as the Apex Legends slide instead
+    if (t.game.slug === 'valorant' && seenGames.has('valorant') && !seenGames.has('apex-legends')) {
+      seenGames.add('apex-legends');
+      return {
+        title: 'اپکس کوین',
+        desc: 'شارژ قانونی انواع بسته‌های اپکس کوین برای خرید اسکین، لجند و بتل‌پس!',
+        descMobile: 'شارژ قانونی انواع بسته‌های اپکس کوین',
+        watch: 0,
+        eta: 0,
+        art: `/images/hero/characters/${HERO_ART['apex-legends']}.png`,
+        artClass: HERO_ART['apex-legends'],
+        href: '/store?game=apex-legends',
+      };
+    }
+    seenGames.add(t.game.slug);
+
     let title = t.game.title;
     let desc = `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`;
     let descMobile = desc;
