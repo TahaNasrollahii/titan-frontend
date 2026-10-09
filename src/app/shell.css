@@ -68,7 +68,8 @@
     display: block;
     max-width: none;
     min-height: 100dvh;
-    padding: 0 var(--gutter-x) calc(env(safe-area-inset-bottom, 0px) + 96px);
+    /* Clears the tab bar and the active tab's bubble above it */
+    padding: 0 var(--gutter-x) calc(env(safe-area-inset-bottom, 0px) + 124px);
     border-radius: 0;
     box-shadow: none;
     /* Safety net: nothing may widen or lengthen the page on a phone (sideways wobble, zoom-out,

@@ -1,3 +1,11 @@
+/* The active tab's slot (0 = rightmost, as the bar is RTL). Registered so it can be transitioned:
+   the bubble, the notch and its rim all slide with it. */
+@property --tab-i {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 /* ─── Tab bar (phones only) ─── */
 .bar {
   display: none;
@@ -5,6 +13,9 @@
 
 @media (max-width: 768px) {
   .bar {
+    --pad: 6px;
+    /* Centre of the active slot, measured from the left edge */
+    --x: calc(100% - var(--pad) - (100% - 2 * var(--pad)) * (var(--tab-i) + 0.5) / 5);
     position: fixed;
     right: 14px;
     left: 14px;
@@ -12,128 +23,115 @@
     z-index: 9990;
     display: flex;
     align-items: stretch;
-    gap: 2px;
-    height: 64px;
-    padding: 6px;
-    border-radius: 999px;
-    background:
-      radial-gradient(60% 140% at 50% 120%, rgba(226, 69, 63, 0.28), transparent 70%),
-      linear-gradient(180deg, rgba(58, 15, 23, 0.78), rgba(22, 5, 9, 0.9));
-    box-shadow:
-      0 22px 44px -6px rgba(0, 0, 0, 0.65),
-      0 0 0 0.5px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    backdrop-filter: blur(24px) saturate(180%);
+    height: 66px;
+    padding: var(--pad);
+    border-radius: 22px;
+    box-shadow: 0 22px 44px -8px rgba(0, 0, 0, 0.65);
+    transition: --tab-i 0.6s cubic-bezier(0.3, 1.25, 0.4, 1);
     animation: barIn 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.15) 0.15s backwards;
-  }
-
-  /* Gradient hairline border: bright along the top, warm red underneath */
-  .bar::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.28),
-      rgba(255, 255, 255, 0.06) 45%,
-      rgba(255, 110, 100, 0.3)
-    );
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* Specular streak along the top edge */
-  .bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 22%;
-    right: 22%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-    pointer-events: none;
   }
 }
 
 /* Very narrow phones */
 @media (max-width: 340px) {
   .bar {
+    --pad: 5px;
     right: 8px;
     left: 8px;
-    padding: 5px;
   }
 }
 
-/* Inactive tabs show the icon only; the active one widens to fit its label */
+/* Frosted glass with a round notch cut out of its top edge under the bubble */
+.bg {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(60% 140% at 50% 120%, rgba(226, 69, 63, 0.26), transparent 70%),
+    linear-gradient(180deg, rgba(58, 15, 23, 0.8), rgba(22, 5, 9, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-mask: radial-gradient(circle at var(--x) 0, transparent 33.5px, #000 34.5px);
+  mask: radial-gradient(circle at var(--x) 0, transparent 33.5px, #000 34.5px);
+}
+
+/* Gradient hairline border: bright along the top, warm red underneath */
+.bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.06) 45%, rgba(255, 110, 100, 0.3));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* The notch's rim, continuing the hairline border around the cut-out */
+.notch {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  width: 68px;
+  height: 68px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  translate: -50% -50%;
+  clip-path: inset(50% 0 0 0);
+  pointer-events: none;
+}
+
+/* The glowing bubble the active icon rises into */
+.bubble {
+  position: absolute;
+  top: 3px;
+  left: var(--x);
+  z-index: 1;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background:
+    radial-gradient(90% 80% at 32% 18%, rgba(255, 255, 255, 0.5), transparent 55%),
+    linear-gradient(150deg, #ff8a78 0%, #ec4b41 45%, #a8202a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -5px 12px rgba(90, 0, 10, 0.4),
+    0 0 0 5px rgba(255, 110, 100, 0.13),
+    0 12px 26px -6px rgba(226, 69, 63, 0.85),
+    0 0 34px rgba(255, 90, 80, 0.35);
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
 .tab {
   position: relative;
+  z-index: 2;
   flex: 1 1 0;
   min-width: 0;
   display: flex;
   padding: 0;
   border: 0;
-  border-radius: 999px;
   background: none;
   color: rgba(255, 228, 230, 0.6);
   font: inherit;
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: flex-grow 0.55s cubic-bezier(0.3, 1.25, 0.4, 1), color 0.25s;
+  transition: color 0.25s;
 }
 
 .tab:focus-visible {
   outline: 2px solid rgba(255, 140, 130, 0.8);
   outline-offset: -2px;
+  border-radius: 16px;
 }
 
 .active {
-  flex-grow: 2.1;
   color: #fff;
-}
-
-.pill {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: inherit;
-  background:
-    radial-gradient(120% 100% at 30% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
-    linear-gradient(135deg, #ff7f6e 0%, #e9473f 48%, #b1252b 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -3px 8px rgba(90, 0, 10, 0.35),
-    0 8px 22px -4px rgba(226, 69, 63, 0.75),
-    0 0 0 1px rgba(255, 160, 150, 0.25);
-  opacity: 0;
-  transform: scale(0.55);
-  transition:
-    opacity 0.25s,
-    transform 0.5s cubic-bezier(0.3, 1.4, 0.4, 1);
-}
-
-/* Light sweep across the pill when a tab becomes active */
-.pill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
-  transform: translateX(120%);
-}
-
-.active .pill {
-  opacity: 1;
-  transform: none;
-}
-
-.active .pill::after {
-  animation: sweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
 }
 
 .tabInner {
@@ -143,20 +141,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-
-.tab:active .tabInner {
-  transform: scale(0.86);
 }
 
 .icon {
   position: relative;
-  flex: none;
   display: grid;
   place-items: center;
   min-width: 26px;
   height: 26px;
+  transition:
+    translate 0.6s cubic-bezier(0.3, 1.35, 0.4, 1),
+    scale 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+/* Up into the bubble: from the slot's centre (33px) to the bubble's (3px) */
+.active .icon {
+  translate: 0 -30px;
+  scale: 1.08;
+}
+
+.tab:active .icon {
+  scale: 0.86;
 }
 
 .icon > img {
@@ -164,13 +169,12 @@
   height: 24px;
   object-fit: contain;
   opacity: 0.55;
-  transition: opacity 0.25s, filter 0.25s, transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition: opacity 0.25s, filter 0.25s;
 }
 
 .active .icon > img {
   opacity: 1;
-  filter: drop-shadow(0 2px 4px rgba(90, 0, 10, 0.45));
-  transform: scale(1.05);
+  filter: drop-shadow(0 2px 4px rgba(90, 0, 10, 0.5));
 }
 
 .moreIcon {
@@ -199,30 +203,28 @@
   background: #fff;
 }
 
-/* Collapsed to nothing while inactive; slides open beside the icon when active */
+/* Under the bubble, inside the bar */
 .label {
-  max-width: 0;
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 3px;
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  /* Room above and below the glyphs: overflow is hidden for the collapse, and a tight line box
-     clips the tops of letters like گ */
-  padding: 3px 0;
-  font-size: 12.5px;
+  text-align: center;
+  font-size: 11.5px;
   font-weight: 800;
-  line-height: 1.6;
+  line-height: 1.7;
   opacity: 0;
-  text-shadow: 0 1px 2px rgba(90, 0, 10, 0.4);
-  transition:
-    max-width 0.5s cubic-bezier(0.3, 1.1, 0.4, 1),
-    opacity 0.2s,
-    margin 0.5s cubic-bezier(0.3, 1.1, 0.4, 1);
+  translate: 0 6px;
+  transition: opacity 0.2s, translate 0.45s cubic-bezier(0.3, 1.4, 0.4, 1);
 }
 
 .active .label {
-  max-width: 76px;
-  margin-right: 7px;
   opacity: 1;
-  transition-delay: 0s, 0.12s, 0s;
+  translate: none;
+  transition-delay: 0.12s;
 }
 
 /* ─── More sheet ─── */
@@ -395,18 +397,9 @@
   }
 }
 
-@keyframes sweep {
-  from {
-    transform: translateX(120%);
-  }
-  to {
-    transform: translateX(-120%);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .bar,
-  .active .pill::after {
+  .bar {
     animation: none;
+    transition: none;
   }
 }

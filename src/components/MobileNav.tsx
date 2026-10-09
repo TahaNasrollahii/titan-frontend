@@ -18,6 +18,9 @@ import { BottomSheet } from './ui/BottomSheet';
 
 type TabKey = 'home' | 'store' | 'tournament' | 'me' | 'more';
 
+/** Tab order in the bar; the bubble and the notch slide to the active tab's slot. */
+const TAB_ORDER: TabKey[] = ['home', 'store', 'tournament', 'me', 'more'];
+
 const SPRING = { type: 'spring', stiffness: 520, damping: 38 } as const;
 
 /** Which tab a route belongs to. */
@@ -41,19 +44,16 @@ const ACCOUNT_TABS = ['orders', 'teams', 'favorites', 'accounts'].map(sectionByT
 /** A light tap on phones that support it. */
 const tick = () => navigator.vibrate?.(8);
 
-/** Icon, and the label beside it while active; the glowing pill grows in behind the active tab. */
+/** Icon, which rises into the floating bubble while active, with its label shown underneath. */
 function TabInner({ icon, label, dot }: { icon: React.ReactNode; label: string; dot?: boolean }) {
   return (
-    <>
-      <span className={styles.pill} aria-hidden />
-      <span className={styles.tabInner}>
-        <span className={styles.icon}>
-          {icon}
-          {dot && <span className={styles.dot} />}
-        </span>
-        <span className={styles.label}>{label}</span>
+    <span className={styles.tabInner}>
+      <span className={styles.icon}>
+        {icon}
+        {dot && <span className={styles.dot} />}
       </span>
-    </>
+      <span className={styles.label}>{label}</span>
+    </span>
   );
 }
 
@@ -205,7 +205,15 @@ export function MobileNav() {
 
   return (
     <>
-      <nav className={styles.bar} aria-label="منوی اصلی">
+      <nav
+        className={styles.bar}
+        aria-label="منوی اصلی"
+        style={{ '--tab-i': TAB_ORDER.indexOf(current) } as React.CSSProperties}
+      >
+        {/* Glass with a notch cut under the bubble, the notch's rim, and the bubble itself */}
+        <span className={styles.bg} aria-hidden />
+        <span className={styles.notch} aria-hidden />
+        <span className={styles.bubble} aria-hidden />
         {LINK_TABS.map(tab => (
           <Link
             key={tab.key}
