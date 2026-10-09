@@ -63,19 +63,117 @@ export function Icon({ name, className = '', style }: { name: string, className?
   );
 }
 
+/** Colours of one generated avatar: background pair, helmet shell pair, glow accent, suit. */
+const AVATAR_PALETTES = [
+  { bg: ['#4a0f1c', '#8f1f30'], shell: ['#ffffff', '#b9bcc8'], accent: '#ff4d5e', suit: '#24070e' },
+  { bg: ['#06303a', '#0f6170'], shell: ['#effbfc', '#9cc4ca'], accent: '#22f0d5', suit: '#081c21' },
+  { bg: ['#211046', '#4f2490'], shell: ['#f5f0ff', '#b3a2e0'], accent: '#c08cff', suit: '#150a2e' },
+  { bg: ['#36200a', '#7a4c12'], shell: ['#fff6e2', '#d6b67a'], accent: '#ffc23d', suit: '#1f1305' },
+  { bg: ['#081a42', '#1a4aa0'], shell: ['#eef3ff', '#a0b3de'], accent: '#4da3ff', suit: '#08122b' },
+  { bg: ['#0c2c14', '#1f6630'], shell: ['#f1fcec', '#a6cf99'], accent: '#6dff7a', suit: '#0a1c0d' },
+  { bg: ['#420c30', '#8a1f60'], shell: ['#fff1f8', '#dba6c4'], accent: '#ff5fb4', suit: '#28071d' },
+  { bg: ['#1a1a20', '#3a3a46'], shell: ['#5a5a68', '#26262e'], accent: '#ff7a2f', suit: '#0f0f13' },
+];
+
+/**
+ * Default picture for users without an upload: a visored esports helmet, its colours, visor and
+ * gear picked by ``seed`` (8 palettes x 3 visors x 4 add-ons). Ids come from useId: a gradient
+ * shared with a copy in a hidden subtree (the rail on phones) would not paint.
+ */
 export function Avatar({ seed }: { seed: number }) {
-  const bgs = [['#ffcf8a','#ff8a5c'],['#9be8b0','#37b57a'],['#a5c6ff','#6272f2'],['#ffe17a','#ffa02e'],['#f7b0dd','#c862dc'],['#a6dcff','#4aa0e6']];
-  const skins = ['#f4cfa8','#e6b088','#c98d62','#f8dcc4','#a8714a','#dca47a'];
-  const hairs = ['#2b1b17','#5b3a26','#d9a441','#151515','#8a2e2e','#3a2a5c'];
-  const shirts = ['#2f2a4a','#c9403f','#1f6f6b','#f0f0f0','#3a5bd0','#222'];
+  const uid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
   const s = Math.abs(seed | 0);
-  const bg = bgs[s % 6], sk = skins[(s * 7 + 1) % 6], hr = hairs[(s * 5 + 2) % 6], sh = shirts[(s * 3 + 4) % 6], style = (s * 11 + 3) % 4;
-  let hair = '';
-  if (style === 0) hair = `<path d="M10.5 19c-.6-7.5 4-10.5 9.5-10.5S30 11.5 29.5 19c-1.8-3.6-5.2-5-9.5-5s-7.7 1.4-9.5 5z" fill="${hr}"/>`;
-  else if (style === 1) hair = `<circle cx="13" cy="13" r="4.5" fill="${hr}"/><circle cx="20" cy="10.5" r="5" fill="${hr}"/><circle cx="27" cy="13" r="4.5" fill="${hr}"/>`;
-  else if (style === 2) hair = `<path d="M9.5 24c-1.5-9 2-16 10.5-16s12 7 10.5 16c-1.2-2-2-5-2-8-3.5 1-11 1-14.5 0 0 3-.8 6-2 8z" fill="${hr}"/>`;
-  else hair = `<path d="M11 17.5c1-5 4.5-7 9-7s8 2 9 7c-3-2.5-6-3-9-3s-6 .5-9 3z" fill="${hr}"/>`;
-  const id = 'av' + s;
-  const svg = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg[0]}"/><stop offset="1" stop-color="${bg[1]}"/></linearGradient></defs><rect width="40" height="40" fill="url(#${id})"/><ellipse cx="20" cy="42" rx="15" ry="11" fill="${sh}"/><rect x="17" y="26" width="6" height="6" rx="3" fill="${sk}"/><circle cx="20" cy="20" r="8.6" fill="${sk}"/>${hair}<circle cx="16.8" cy="20.3" r="1" fill="#2a1414"/><circle cx="23.2" cy="20.3" r="1" fill="#2a1414"/><path d="M17.2 24c1.8 1.6 3.8 1.6 5.6 0" fill="none" stroke="#7a3a2a" stroke-width="1.1" stroke-linecap="round"/>`;
-  return <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" dangerouslySetInnerHTML={{ __html: svg }} />;
+  const { bg, shell, accent, suit } = AVATAR_PALETTES[s % AVATAR_PALETTES.length];
+  const visor = (s * 7 + 1) % 3;
+  const gear = (s * 5 + 2) % 4;
+  const id = (name: string) => `av${name}${uid}`;
+  const url = (name: string) => `url(#${id(name)})`;
+
+  return (
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id={id('bg')} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={bg[1]} />
+          <stop offset="1" stopColor={bg[0]} />
+        </linearGradient>
+        <radialGradient id={id('glow')} cx="0.5" cy="0.42" r="0.5">
+          <stop offset="0" stopColor={accent} stopOpacity="0.55" />
+          <stop offset="1" stopColor={accent} stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={id('shell')} x1="0.2" y1="0" x2="0.8" y2="1">
+          <stop offset="0" stopColor={shell[0]} />
+          <stop offset="1" stopColor={shell[1]} />
+        </linearGradient>
+        <linearGradient id={id('visor')} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="0.35" stopColor={accent} />
+          <stop offset="1" stopColor={accent} stopOpacity="0.75" />
+        </linearGradient>
+      </defs>
+
+      <rect width="40" height="40" fill={url('bg')} />
+      {/* Diagonal speed lines and the halo behind the head */}
+      <path d="M-4 30 30-4M4 42 42 4M14 48 48 14" stroke="#fff" strokeOpacity="0.06" strokeWidth="3" />
+      <circle cx="20" cy="17" r="17" fill={url('glow')} />
+
+      {/* Suit with a rim light along the shoulders, and a chest emblem */}
+      <path d="M3.5 41c0-8.5 7-13.5 16.5-13.5S36.5 32.5 36.5 41z" fill={suit} />
+      <path d="M3.5 41c0-8.5 7-13.5 16.5-13.5S36.5 32.5 36.5 41" fill="none" stroke={accent} strokeOpacity="0.55" strokeWidth="0.9" />
+      <path d="M20 32.6l2.2 2.2-2.2 2.2-2.2-2.2z" fill={accent} />
+      <rect x="16.6" y="24.5" width="6.8" height="4.5" rx="1.6" fill={shell[1]} />
+
+      {gear === 3 && <path d="M8.6 20.5a11.4 11.4 0 0 1 22.8 0" fill="none" stroke={suit} strokeWidth="2.2" />}
+
+      {/* Helmet shell and its highlight */}
+      <path d="M10.4 18.6a9.6 9.6 0 0 1 19.2 0v4a5.2 5.2 0 0 1-5.2 5.2h-8.8a5.2 5.2 0 0 1-5.2-5.2z" fill={url('shell')} />
+      <path d="M13.6 12.6a7.6 7.6 0 0 1 6.4-3.2" fill="none" stroke="#fff" strokeOpacity="0.7" strokeWidth="1.3" strokeLinecap="round" />
+
+      {/* Visor: soft glow underneath, then the lit glass */}
+      {visor === 0 && (
+        <>
+          <rect x="11" y="16.4" width="18" height="7.4" rx="3.7" fill={accent} opacity="0.35" />
+          <rect x="12" y="17.1" width="16" height="6" rx="3" fill={url('visor')} />
+        </>
+      )}
+      {visor === 1 && (
+        <>
+          <path d="M11.6 17h16.8l-3.3 7h-10.2z" fill={accent} opacity="0.35" transform="translate(0 -.4) scale(1 1.04)" />
+          <path d="M12.4 17.3h15.2l-3 6.1h-9.2z" fill={url('visor')} />
+        </>
+      )}
+      {visor === 2 && (
+        <>
+          <rect x="11.6" y="17.6" width="16.8" height="5.4" rx="2.7" fill="#0d0d12" opacity="0.85" />
+          <rect x="13.2" y="18.8" width="5.6" height="3" rx="1.5" fill={url('visor')} />
+          <rect x="21.2" y="18.8" width="5.6" height="3" rx="1.5" fill={url('visor')} />
+        </>
+      )}
+      <path d="M14.4 18.6h4" stroke="#fff" strokeOpacity="0.8" strokeWidth="0.9" strokeLinecap="round" />
+
+      {/* Add-on: antenna, crest, side modules or a headset */}
+      {gear === 0 && (
+        <>
+          <path d="M24.6 9.9l2.4-4.4" stroke={shell[1]} strokeWidth="1.2" strokeLinecap="round" />
+          <circle cx="27.2" cy="5.2" r="1.6" fill={accent} />
+        </>
+      )}
+      {gear === 1 && <path d="M17.6 9.6 20 4.6l2.4 5" fill={accent} />}
+      {gear === 2 && (
+        <>
+          <rect x="8.4" y="17.2" width="2.6" height="6.4" rx="1.3" fill={shell[1]} />
+          <rect x="29" y="17.2" width="2.6" height="6.4" rx="1.3" fill={shell[1]} />
+          <circle cx="9.7" cy="20.4" r="0.8" fill={accent} />
+          <circle cx="30.3" cy="20.4" r="0.8" fill={accent} />
+        </>
+      )}
+      {gear === 3 && (
+        <>
+          <rect x="7.4" y="17.6" width="3.6" height="7.2" rx="1.8" fill={suit} />
+          <rect x="29" y="17.6" width="3.6" height="7.2" rx="1.8" fill={suit} />
+          <rect x="8.4" y="19.4" width="1.6" height="3.6" rx="0.8" fill={accent} />
+          <rect x="30" y="19.4" width="1.6" height="3.6" rx="0.8" fill={accent} />
+        </>
+      )}
+    </svg>
+  );
 }

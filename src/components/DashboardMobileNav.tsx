@@ -66,10 +66,7 @@ export function DashboardMobileNav({
           {user && <ProfileHero user={user} uid="-dash" eyebrow="پنل کاربری" />}
 
           <section aria-label="بخش‌های پنل کاربری">
-            <h2 className={styles.hubTitle}>
-              بخش‌های پنل
-              <small>به کجا می‌ری؟</small>
-            </h2>
+            <h2 className={styles.hubTitle}>بخش‌های پنل</h2>
             <DashboardBento onLogout={onLogout} />
           </section>
         </>
