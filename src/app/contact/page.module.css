@@ -285,14 +285,10 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
   width: 100%;
-}
-
-.discord .cardContent {
-  justify-content: space-between;
 }
 
 .rightContent {
@@ -403,25 +399,37 @@
   font-size: 24px;
 }
 
-.discord .actionBtn {
+.actionBtn {
   margin-right: auto;
-  padding: 10px 20px;
-  border-radius: 12px;
-  background: rgba(88, 101, 242, 0.2);
+  padding: 10px 22px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  border: 1px solid rgba(88, 101, 242, 0.4);
-  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.discord:hover .actionBtn {
-  background: #5865F2;
-  box-shadow: 0 10px 20px rgba(88, 101, 242, 0.4);
-  transform: translateX(-5px);
+.actionIcon {
+  transform: rotate(180deg);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.glitchCard:hover .actionBtn {
+  background: var(--accent-color);
+  border-color: transparent;
+  box-shadow: 0 8px 24px var(--accent-glow), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.glitchCard:hover .actionIcon {
+  transform: rotate(180deg) translateX(4px);
 }
 
 .teleChannel {
@@ -511,7 +519,7 @@
     font-size: 18px;
   }
   
-  .discord .actionBtn {
+  .actionBtn {
     margin: 10px auto 0;
     padding: 8px 12px;
     font-size: 12px;

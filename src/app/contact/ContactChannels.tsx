@@ -23,6 +23,10 @@ const KIND_CLASS: Record<ContactChannel['kind'], string> = {
 const isExternal = (url: string) => /^https?:/.test(url);
 
 function ChannelCard({ channel }: { channel: ContactChannel }) {
+  const channelTitle = channel.kind === 'discord' ? channel.title.replace(' تایتان', '').replace('تایتان', '') : channel.title;
+  let actionLabel = channel.actionLabel || 'ارتباط';
+  if (channel.kind === 'telegram_channel') actionLabel = 'عضویت';
+
   const content = (
     <>
       {channel.icon && (
@@ -31,14 +35,12 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
         </div>
       )}
       <div className={styles.textWrap}>
-        <h3>
-          {channel.title}
-          {channel.isOnline && (
-            <span className={styles.liveBadge}>
-              <span className={styles.dot}></span> آنلاین
-            </span>
-          )}
-        </h3>
+        {channel.isOnline && (
+          <span className={styles.liveBadge} style={{ marginBottom: 6 }}>
+            <span className={styles.dot}></span> آنلاین
+          </span>
+        )}
+        <h3>{channelTitle}</h3>
         <p>{channel.description}</p>
       </div>
     </>
@@ -52,18 +54,10 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
     >
       <div className={styles.cardHighlight}></div>
       <div className={styles.cardContent}>
-        {channel.isPrimary ? (
-          <>
-            <div className={styles.rightContent}>{content}</div>
-            {channel.actionLabel && (
-              <div className={styles.actionBtn}>
-                <Icon name="arrow" style={{ transform: 'rotate(180deg)' }} /> {channel.actionLabel}
-              </div>
-            )}
-          </>
-        ) : (
-          content
-        )}
+        <div className={styles.rightContent}>{content}</div>
+        <div className={styles.actionBtn}>
+          <Icon name="arrow" className={styles.actionIcon} /> {actionLabel}
+        </div>
       </div>
     </a>
   );
@@ -72,7 +66,17 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
 export function ContactPanel() {
   const contact = useApi(contentApi.contact);
 
-  const channels = contact.data?.channels ?? [];
+  const sortOrder: Record<string, number> = {
+    discord: 1,
+    live_chat: 2,
+    telegram_channel: 3,
+    telegram_support: 4,
+    email: 5,
+    phone: 6,
+  };
+
+  const rawChannels = contact.data?.channels ?? [];
+  const channels = [...rawChannels].sort((a, b) => (sortOrder[a.kind] || 99) - (sortOrder[b.kind] || 99));
 
   return (
     <div className={`reveal ${styles.contactPanel}`} style={{ '--d': 1 } as React.CSSProperties}>
