@@ -179,10 +179,29 @@
   color: #ff8a80;
 }
 
+.compact .icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+}
+
+.compact .icon img {
+  width: 24px;
+  height: 24px;
+}
+
 @media (max-width: 360px) {
   .tile .icon {
     width: 52px;
     height: 52px;
     border-radius: 18px;
+  }
+}
+
+@media (max-width: 360px) {
+  .compact .icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
   }
 }

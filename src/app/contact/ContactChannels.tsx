@@ -110,7 +110,7 @@ export function ContactPanel() {
       </div>
 
       {contact.loading ? (
-        <Loading />
+        <Loading compact />
       ) : (
         <div className={styles.cardContainer}>
           {primary.map(channel => (

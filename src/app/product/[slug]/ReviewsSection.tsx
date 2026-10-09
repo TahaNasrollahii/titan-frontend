@@ -293,7 +293,7 @@ export function ReviewsSection({ product, onChanged }: { product: Product; onCha
         دیدگاه کاربران <span className={styles.count}>{faNumber(list.length)}</span>
       </div>
       {reviews.loading && !reviews.data ? (
-        <Loading />
+        <Loading compact />
       ) : list.length === 0 ? (
         <div className={`${styles.card} ${styles.empty}`}>هنوز دیدگاهی ثبت نشده است. اولین نفر باشید!</div>
       ) : (

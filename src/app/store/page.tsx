@@ -361,7 +361,7 @@ function ProductResults({ query }: { query: ProductQueryState }) {
         ))}
       </div>
 
-      {loading && <Loading />}
+      {loading && <Loading compact={products.length > 0} />}
       {!loading && hasMore && (
         <div className="store-load-wrap">
           <button className="store-load-btn" onClick={loadMore}>

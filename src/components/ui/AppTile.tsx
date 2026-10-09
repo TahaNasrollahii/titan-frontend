@@ -38,17 +38,19 @@ type TileProps = {
   label: string;
   badge?: number;
   active?: boolean;
+  /** Smaller icon, for rows of five. */
+  compact?: boolean;
 } & ({ href: string; onClick?: () => void } | { href?: undefined; onClick: () => void });
 
 /** Icon tile with its label underneath: a link with ``href``, otherwise a button. */
-export function AppTile({ icon, tone, label, badge, active, href, onClick }: TileProps) {
+export function AppTile({ icon, tone, label, badge, active, compact, href, onClick }: TileProps) {
   const content = (
     <>
       <ToneIcon icon={icon} tone={tone} badge={badge} active={active} />
       <span className={styles.label}>{label}</span>
     </>
   );
-  const className = `${styles.tile} ${active ? styles.active : ''}`;
+  const className = `${styles.tile} ${active ? styles.active : ''} ${compact ? styles.compact : ''}`;
   return href ? (
     <Link href={href} className={className} onClick={onClick} aria-current={active ? 'page' : undefined}>
       {content}

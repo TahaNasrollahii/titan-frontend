@@ -548,6 +548,23 @@
 @media (max-width: 768px) {
   .dashboardWrapper { gap: 14px; }
   .sidebar { display: none; }
+
+  /* The overview on phones: tournament and team counts live in their sections, and the wallet is a
+     single row, so the hub's "next step" card stays the one thing that stands out */
+  .statsGrid { gap: 12px; }
+  .statCard.tourney,
+  .statCard.teams { display: none; }
+  .statCard.wallet {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 22px;
+  }
+  .statCard.wallet .statIcon { width: 44px; height: 44px; border-radius: 15px; }
+  .statCard.wallet .statIcon img { width: 24px !important; height: 24px !important; }
+  .statCard.wallet .statValue { font-size: 21px; }
+  .statCard.wallet .statLabel { font-size: 11.5px; }
 }
 
 @media (max-width: 600px) {

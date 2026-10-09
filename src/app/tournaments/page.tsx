@@ -152,7 +152,7 @@ function TournamentResults({ filters }: { filters: TournamentFilters }) {
         )}
       </div>
 
-      {loading && <Loading />}
+      {loading && <Loading compact={items.length > 0} />}
       {!loading && hasMore && (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
           <button className="mc-btn-full" style={{ maxWidth: 260 }} onClick={loadMore}>

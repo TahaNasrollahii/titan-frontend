@@ -10,15 +10,6 @@
   }
 }
 
-/* ─── Hub (overview) ─── */
-.hubTitle {
-  margin: 6px 4px 12px;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -0.3px;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

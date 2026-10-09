@@ -108,7 +108,7 @@ function Leaderboards() {
 
       <div className="tour-table-wrapper spot spot-track reveal" style={{ '--d': 11 } as React.CSSProperties}>
         {loading ? (
-          <Loading />
+          <Loading compact />
         ) : rows.length === 0 ? (
           <Empty icon="trophy">هنوز رکوردی برای این بازی ثبت نشده است.</Empty>
         ) : (
@@ -277,7 +277,7 @@ export default function TournamentPage() {
         </Link>
       </div>
       {upcoming.loading ? (
-        <Loading />
+        <Loading compact />
       ) : (
         <div className="tour-matches">
           {(upcoming.data?.results ?? []).map((tournament, i) => (

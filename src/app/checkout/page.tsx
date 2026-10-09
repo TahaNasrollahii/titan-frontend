@@ -115,7 +115,7 @@ function Checkout() {
               </p>
 
               {accounts.loading ? (
-                <Loading />
+                <Loading compact />
               ) : !isAddingNew ? (
                 <div className="accounts-list">
                   {(accounts.data ?? []).map(account => (

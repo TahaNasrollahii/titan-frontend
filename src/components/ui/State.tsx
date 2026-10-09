@@ -7,11 +7,34 @@ import type { ApiError } from '@/lib/api/client';
 import { Icon } from '../Icons';
 import styles from './state.module.css';
 
-export function Loading({ label = 'در حال بارگذاری...' }: { label?: string }) {
+/**
+ * Branded loader: the Titan logo in a spinning ring of light. It fades in after a short delay, so
+ * quick loads never flash it. ``compact`` is for a section inside a page (a list, "load more").
+ */
+export function Loading({ label = 'در حال بارگذاری', compact = false }: { label?: string; compact?: boolean }) {
+  // Callers pass labels like "در حال بارگذاری..."; the animated dots replace the trailing ones.
+  const text = label.replace(/[.…]+$/, '');
   return (
-    <div className={styles.state} role="status">
-      <span className={styles.spinner} aria-hidden="true" />
-      <span>{label}</span>
+    <div className={`${styles.loading} ${compact ? styles.compact : ''}`} role="status" aria-live="polite">
+      <span className={styles.loader} aria-hidden="true">
+        <span className={styles.glow} />
+        <span className={styles.ring} />
+        <span className={styles.orbit}>
+          <span className={styles.spark} />
+        </span>
+        <span className={styles.core}>
+          <img src="/titan-logo.png" alt="" />
+        </span>
+      </span>
+      <span className={styles.label}>
+        {text}
+        <span className={styles.dots} aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+      </span>
+      {!compact && <span className={styles.bar} aria-hidden="true" />}
     </div>
   );
 }

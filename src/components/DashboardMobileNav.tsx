@@ -9,7 +9,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { faNumber } from '@/lib/format';
 
-import { DashboardBento } from './DashboardBento';
+import { DashboardHub } from './DashboardHub';
 import styles from './DashboardMobileNav.module.css';
 import { DASHBOARD_SECTIONS, sectionByTab } from './dashboardSections';
 import { ProfileHero } from './ProfileHero';
@@ -65,10 +65,7 @@ export function DashboardMobileNav({
         <>
           {user && <ProfileHero user={user} uid="-dash" eyebrow="پنل کاربری" />}
 
-          <section aria-label="بخش‌های پنل کاربری">
-            <h2 className={styles.hubTitle}>بخش‌های پنل</h2>
-            <DashboardBento onLogout={onLogout} />
-          </section>
+          <DashboardHub onOpenAll={() => setSheetAt(location)} />
         </>
       ) : (
         <header className={styles.header} style={{ '--tone': section.tone } as React.CSSProperties}>

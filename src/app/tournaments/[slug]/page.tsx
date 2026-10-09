@@ -158,7 +158,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
           {isTeam && isAuthenticated && (
             <div className={styles.teamSelection}>
               <div className={styles.teamSelectionLabel}>انتخاب تیم برای شرکت در مسابقه:</div>
-              {teams.loading && <Loading />}
+              {teams.loading && <Loading compact />}
               {teams.data?.length === 0 && (
                 <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8 }}>
                   تیمی با بازی {tournament.game.title} که کاپیتان آن باشید ندارید.{' '}
@@ -239,7 +239,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
 
 function Participants({ slug }: { slug: string }) {
   const participants = useApi(() => tournamentsApi.participants(slug), [slug]);
-  if (participants.loading) return <Loading />;
+  if (participants.loading) return <Loading compact />;
   if (!participants.data?.length) return <Empty icon="users">هنوز شرکت‌کننده‌ای ثبت‌نام نکرده است.</Empty>;
 
   return (
@@ -295,7 +295,7 @@ function Participants({ slug }: { slug: string }) {
 
 function Bracket({ slug }: { slug: string }) {
   const bracket = useApi(() => tournamentsApi.bracket(slug), [slug]);
-  if (bracket.loading) return <Loading />;
+  if (bracket.loading) return <Loading compact />;
   if (!bracket.data?.length) {
     return (
       <div className={styles.emptyTab}>
