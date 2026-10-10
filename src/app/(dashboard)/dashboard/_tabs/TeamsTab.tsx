@@ -86,13 +86,24 @@ export function TeamsTab() {
               </p>
             </div>
           </div>
-          <Link
-            href={team.myRole === 'captain' ? `/teams/${team.id}/manage` : `/teams/${team.id}`}
-            className={styles.btnSecondary}
-            style={{ textDecoration: 'none' }}
-          >
-            {team.myRole === 'captain' ? 'مدیریت تیم' : 'مشاهده'}
-          </Link>
+          <div className={styles.itemActions}>
+            <Link
+              href={`/teams/${team.id}`}
+              className={styles.btnSecondary}
+              style={{ textDecoration: 'none', padding: '10px 16px', fontSize: '14px' }}
+            >
+              مشاهده تیم
+            </Link>
+            {team.myRole === 'captain' && (
+              <Link
+                href={`/teams/${team.id}/manage`}
+                className={styles.btnPrimary}
+                style={{ textDecoration: 'none', padding: '10px 16px', fontSize: '14px' }}
+              >
+                تنظیمات
+              </Link>
+            )}
+          </div>
         </div>
       ))}
     </div>

@@ -139,7 +139,7 @@ export default function TeamManagePage() {
 
         <div className={styles.formGroup} style={{ marginBottom: '24px' }}>
           <label>لینک دعوت اعضا (ارسال برای بازیکنان جدید)</label>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className={styles.actionRow}>
             <input type="text" className={styles.input} value={data.inviteUrl ?? ''} readOnly dir="ltr" style={{ flex: 1 }} />
             <button className={styles.btnSecondary} onClick={copyInvite}>
               کپی لینک
@@ -157,7 +157,7 @@ export default function TeamManagePage() {
 
         <div className={styles.formGroup} style={{ marginBottom: '32px' }}>
           <label>دعوت مستقیم با شناسه بازی (Game ID)</label>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className={styles.actionRow}>
             <input
               type="text"
               className={styles.input}
@@ -227,7 +227,7 @@ export default function TeamManagePage() {
           برای ترک تیم ابتدا کاپیتانی را به عضو دیگری واگذار کنید. با انحلال تیم، لیست اعضا و دعوت‌نامه‌ها حذف می‌شوند و
           تیم دیگر قابل استفاده نخواهد بود.
         </p>
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div className={styles.actionRow}>
           <button className={styles.btnSecondary} onClick={leave}>
             خروج از تیم
           </button>

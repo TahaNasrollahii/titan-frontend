@@ -569,6 +569,25 @@
 
 @media (max-width: 600px) {
   .panel { padding: 20px 16px; border-radius: 26px; gap: 18px; }
+  .listItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+  .listItemInfo {
+    width: 100%;
+  }
+  .itemActions {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+  }
+  .itemActions > * {
+    flex: 1;
+    text-align: center;
+  }
 }
 
 /* =========================================
