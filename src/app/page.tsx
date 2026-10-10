@@ -664,7 +664,7 @@ function HomeScene({ data }: { data: Home }) {
       <div class="th-badge">
         ${enamadSeal()}
         <div class="th-copy">
-          <span class="th-kicker"><i data-icon="check"></i>فروشگاه تأییدشده</span>
+          <span class="th-kicker"><i data-icon="check"></i>فروشگاه تاییدشده</span>
           <h3>خرید مطمئن با نماد اعتماد</h3>
           <p>تایتان دارای نماد اعتماد الکترونیکی است؛ با خیال راحت خرید کنید.</p>
         </div>
