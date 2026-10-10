@@ -673,12 +673,12 @@ function HomeScene({ data }: { data: Home }) {
       <nav class="th-links" aria-label="بیشتر بدانید">
         <a class="th-link spot" href="/about" data-nav>
           <span class="th-link-ic"><i data-icon="info"></i></span>
-          <span class="th-link-tx"><b>درباره ما</b><small>با تیم تایتان آشنا شوید</small></span>
+          <span class="th-link-tx"><b>درباره ما</b><small><span>با تیم تایتان آشنا شوید</span></small></span>
           <span class="th-link-go"><i data-icon="arrow"></i></span>
         </a>
         <a class="th-link th-link--hot spot" href="/contact" data-nav>
           <span class="th-link-ic"><i data-icon="chat"></i></span>
-          <span class="th-link-tx"><b>ارتباط با ما</b><small><span class="th-live"></span>پاسخ‌گویی سریع</small></span>
+          <span class="th-link-tx"><b>ارتباط با ما</b><small><span class="th-live"></span><span>پاسخ‌گویی سریع</span></small></span>
           <span class="th-link-go"><i data-icon="arrow"></i></span>
         </a>
       </nav>

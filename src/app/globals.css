@@ -2733,9 +2733,15 @@ html[dir="rtl"] .hero-live {
 .th-link-tx small {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 9px;
+  min-width: 0;
   font-size: 11.5px;
   color: var(--muted);
+}
+
+/* clip only the text, so the pulsing dot's ring isn't cut off */
+.th-link-tx small>span:last-child {
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
