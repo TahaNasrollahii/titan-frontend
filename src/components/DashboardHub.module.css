@@ -222,10 +222,38 @@
 }
 
 /* ─── Shortcut row ─── */
+.dockContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dockTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  padding: 0 4px;
+  margin: 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.5px;
+}
+
+.dockTitle::before {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 20px;
+  background: linear-gradient(180deg, var(--red) 0%, #ff8a8a 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 14px rgba(226, 69, 63, 0.6);
+}
+
 .dock {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 4px;
   padding: 14px 6px 12px;
   border-radius: 24px;
   background: linear-gradient(160deg, rgb(63 17 25 / 0.75), rgb(32 8 13 / 0.9));
