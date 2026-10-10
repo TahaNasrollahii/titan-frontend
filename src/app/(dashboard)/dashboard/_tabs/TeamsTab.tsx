@@ -8,7 +8,7 @@ import { Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
 import { errorMessage } from '@/lib/api/client';
 import { meApi } from '@/lib/api/endpoints';
-import { faNumber, ROLE_LABELS } from '@/lib/format';
+import { faNumber, initials, ROLE_LABELS } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import styles from '../page.module.css';
@@ -45,7 +45,7 @@ export function TeamsTab() {
             <div key={invitation.id} className={styles.listItem}>
               <div className={styles.listItemInfo}>
                 <div className={styles.itemIcon} style={{ background: 'linear-gradient(135deg, #1f2937, #111827)', color: '#fff' }}>
-                  {invitation.team.tag}
+                  {initials(invitation.team.name)}
                 </div>
                 <div className={styles.itemDetails}>
                   <h4>{invitation.team.name}</h4>
@@ -77,12 +77,12 @@ export function TeamsTab() {
         <div key={team.id} className={styles.listItem}>
           <div className={styles.listItemInfo}>
             <div className={styles.itemIcon} style={{ background: 'linear-gradient(135deg, #1f2937, #111827)', color: '#fff' }}>
-              {team.logo ? <img src={team.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : team.tag}
+              {team.logo ? <img src={team.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials(team.name)}
             </div>
             <div className={styles.itemDetails}>
               <h4>{team.name}</h4>
               <p>
-                بازی: {team.game.titleEn} • {faNumber(team.memberCount)} عضو • نقش: {team.myRole ? ROLE_LABELS[team.myRole] : '—'}
+                {faNumber(team.memberCount)} عضو • نقش: {team.myRole ? ROLE_LABELS[team.myRole] : '—'}
               </p>
             </div>
           </div>

@@ -46,17 +46,6 @@
   letter-spacing: -1px;
 }
 
-.teamTag {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 800;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  letter-spacing: 1px;
-}
-
 .gameLabel {
   font-size: 18px;
   color: var(--muted);

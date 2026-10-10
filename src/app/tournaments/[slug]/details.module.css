@@ -799,6 +799,11 @@
   transform: scale(1);
 }
 
+.checkBox,
+.checkBox::after {
+  border-radius: 5px;
+}
+
 /* ---------- Tablet & phone ---------- */
 @media (max-width: 900px) {
   .contentArea {

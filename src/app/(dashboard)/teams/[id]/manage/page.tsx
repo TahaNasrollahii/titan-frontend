@@ -124,7 +124,7 @@ export default function TeamManagePage() {
           <Icon name="settings" /> اطلاعات پایه‌ای تیم
         </div>
         <TeamForm
-          initial={{ name: data.name, tag: data.tag, game: data.game.slug, region: data.region, logoUrl: data.logo }}
+          initial={{ name: data.name, logoUrl: data.logo }}
           submitLabel="ذخیره تغییرات اطلاعات"
           submitting={saving}
           onSubmit={save}

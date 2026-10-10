@@ -10,7 +10,7 @@ import { TournamentCard } from '@/components/TournamentCard';
 import { Empty, Loading } from '@/components/ui/State';
 import { useAuth } from '@/context/AuthContext';
 import { catalogApi, contentApi, meApi, tournamentsApi } from '@/lib/api/endpoints';
-import { faNumber, toman } from '@/lib/format';
+import { faNumber, initials, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
 import { getOrnamentSVGWrapper, getRingSVG, rankFromApi } from '@/utils/ranks';
@@ -20,7 +20,7 @@ import './tournament.css';
 const STEPS = [
   { num: '۱', icon: 'users', t: 'تیم خود را بسازید', d: 'یک تیم جدید با دوستان خود بسازید یا با لینک دعوت به تیمی که قبلاً ساخته شده ملحق شوید.' },
   { num: '۲', icon: 'search', t: 'مسابقه را انتخاب کنید', d: 'به لیست مسابقات فعال بروید و تورنومنتی که با زمان و بازی شما همخوانی دارد را انتخاب کنید.' },
-  { num: '۳', icon: 'game', t: 'تکمیل ثبت‌نام', d: 'تیم یا حساب خود را انتخاب کرده و در صورت نیاز هزینه ورودی را از کیف پول یا درگاه پرداخت کنید.' },
+  { num: '۳', icon: 'game', t: 'تکمیل ثبت‌نام', d: 'کاپیتان تیم را انتخاب می‌کند و بازیکنان این تورنومنت را از بین اعضا مشخص می‌کند (در مسابقات تک‌نفره خودتان ثبت‌نام کنید). در صورت نیاز هزینه ورودی را از کیف پول یا درگاه پرداخت کنید.' },
   { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: 'پس از بسته شدن ثبت‌نام، براکت مسابقات منتشر می‌شود و حریف خود را در همین صفحه می‌بینید.' },
 ];
 
@@ -54,7 +54,7 @@ function Leaderboards() {
           key: `t${row.team.id}`,
           rank: row.rank,
           name: row.team.name,
-          badge: <div className="lb-crest">{row.team.tag}</div>,
+          badge: <div className="lb-crest">{initials(row.team.name)}</div>,
           wins: row.wins,
           losses: row.losses,
           points: row.points,

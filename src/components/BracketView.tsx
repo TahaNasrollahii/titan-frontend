@@ -4,7 +4,7 @@ import React from 'react';
 
 import styles from '@/app/(dashboard)/tournaments/[slug]/bracket/page.module.css';
 import type { BracketRound, Match, Participant } from '@/lib/api/types';
-import { faNumber } from '@/lib/format';
+import { faNumber, initials } from '@/lib/format';
 
 function TeamRow({ match, participant, score }: { match: Match; participant: Participant | null; score: number | null }) {
   const isWinner = participant !== null && match.winnerId === participant.id;
@@ -12,7 +12,7 @@ function TeamRow({ match, participant, score }: { match: Match; participant: Par
   return (
     <div className={`${styles.teamRow} ${isWinner ? styles.winner : ''}`}>
       <div className={styles.teamName}>
-        <div className={styles.teamIcon}>{participant ? participant.tag || '?' : '?'}</div>
+        <div className={styles.teamIcon}>{participant ? initials(participant.name) : '?'}</div>
         {participant ? participant.name : match.status === 'bye' ? 'استراحت (بای)' : 'در انتظار'}
       </div>
       <div className={styles.score}>{showScore && score !== null ? faNumber(score) : '-'}</div>

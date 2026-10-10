@@ -6,12 +6,14 @@ import type {
   CheckoutResponse,
   ContactChannel,
   Dashboard,
+  EligibleTeam,
   FriendRequest,
   Game,
   GameAccount,
   Home,
   LoginResponse,
   Me,
+  MyRegistration,
   MyTeam,
   MyTournament,
   Notification,
@@ -36,7 +38,6 @@ import type {
   Team,
   TeamInvitation,
   TeamLeaderboardRow,
-  TeamSummary,
   Tournament,
   TournamentStatus,
   TournamentSummary,
@@ -172,10 +173,15 @@ export const tournamentsApi = {
   get: (slug: string) => api<Tournament>(`tournaments/${slug}/`),
   participants: (slug: string) => api<Participant[]>(`tournaments/${slug}/participants/`),
   bracket: (slug: string) => api<BracketRound[]>(`tournaments/${slug}/bracket/`),
-  eligibleTeams: (slug: string) => api<TeamSummary[]>(`tournaments/${slug}/eligible-teams/`),
-  register: (slug: string, data: { team?: number | null; paymentMethod?: PaymentMethod | null }) =>
+  eligibleTeams: (slug: string) => api<EligibleTeam[]>(`tournaments/${slug}/eligible-teams/`),
+  register: (
+    slug: string,
+    data: { team?: number | null; members?: number[]; paymentMethod?: PaymentMethod | null },
+  ) =>
     api<RegistrationResult>(`tournaments/${slug}/register/`, { method: 'POST', body: data }),
   withdraw: (slug: string) => api<void>(`tournaments/${slug}/register/`, { method: 'DELETE' }),
+  updateLineup: (slug: string, members: number[]) =>
+    api<MyRegistration>(`tournaments/${slug}/lineup/`, { method: 'PUT', body: { members } }),
   ranks: () => api<RankTier[]>('ranks/'),
   playerLeaderboard: (game?: string) =>
     api<Paginated<PlayerLeaderboardRow>>('leaderboards/players/', { query: { game, page_size: 10 } }),
@@ -185,10 +191,6 @@ export const tournamentsApi = {
 
 export interface TeamInput {
   name: string;
-  tag: string;
-  game: string;
-  region: string;
-  description?: string;
   logo?: File | null;
 }
 

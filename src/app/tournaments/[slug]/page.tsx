@@ -10,9 +10,9 @@ import { Empty, ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/lib/api/client';
-import { tournamentsApi, walletApi } from '@/lib/api/endpoints';
-import type { PaymentMethod, Tournament } from '@/lib/api/types';
-import { faNumber, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS, toman } from '@/lib/format';
+import { teamsApi, tournamentsApi, walletApi } from '@/lib/api/endpoints';
+import type { PaymentMethod, Tournament, UserMini } from '@/lib/api/types';
+import { faNumber, initials, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
 import { redirectToGateway } from '@/lib/gateway';
@@ -23,6 +23,103 @@ import styles from './details.module.css';
 type Tab = 'overview' | 'rules' | 'participants' | 'bracket';
 
 const PLACE_COLORS = ['#ffd700', '#c0c0c0', '#cd7f32'];
+
+interface Candidate {
+  user: UserMini;
+  /** The entry this player already plays for in the tournament, if any. */
+  registeredWith?: string | null;
+}
+
+/** Checklist for picking exactly ``size`` players out of a team. */
+function LineupPicker({
+  candidates,
+  size,
+  value,
+  onChange,
+}: {
+  candidates: Candidate[];
+  size: number;
+  value: number[];
+  onChange: (ids: number[]) => void;
+}) {
+  const toggle = (id: number) => {
+    if (value.includes(id)) onChange(value.filter(v => v !== id));
+    else if (value.length < size) onChange([...value, id]);
+  };
+
+  return (
+    <div className={styles.teamSelection}>
+      <div className={styles.teamSelectionLabel}>
+        بازیکنان این تورنومنت ({faNumber(value.length)} از {faNumber(size)}):
+      </div>
+      {candidates.map(({ user, registeredWith }) => {
+        const selected = value.includes(user.id);
+        const blocked = !selected && (!!registeredWith || value.length >= size);
+        return (
+          <div
+            key={user.id}
+            className={`${styles.teamOption} ${selected ? styles.selected : ''}`}
+            style={blocked ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+            onClick={() => !registeredWith && toggle(user.id)}
+          >
+            <div className={styles.teamOptionName}>
+              {user.displayName}
+              {registeredWith && (
+                <small style={{ display: 'block', color: 'var(--muted)', fontWeight: 400 }}>
+                  با {registeredWith} ثبت‌نام شده
+                </small>
+              )}
+            </div>
+            <div className={`${styles.radioCircle} ${styles.checkBox}`}></div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Captain-only: swap players of a registered team while registration is open. */
+function LineupEditor({
+  tournament,
+  teamId,
+  current,
+  onDone,
+}: {
+  tournament: Tournament;
+  teamId: number;
+  current: number[];
+  onDone: (saved: boolean) => void;
+}) {
+  const { addToast } = useAppContext();
+  const team = useApi(() => teamsApi.get(teamId), [teamId]);
+  const [lineup, setLineup] = useState(current);
+  const [busy, setBusy] = useState(false);
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      await tournamentsApi.updateLineup(tournament.slug, lineup);
+      addToast({ title: 'ترکیب تیم به‌روزرسانی شد', icon: 'team', tone: 'success' });
+      onDone(true);
+    } catch (error) {
+      addToast({ title: 'ویرایش ترکیب انجام نشد', text: errorMessage(error), icon: 'team', tone: 'error' });
+      setBusy(false);
+    }
+  };
+
+  if (team.loading) return <Loading compact />;
+  return (
+    <>
+      <LineupPicker candidates={team.data?.members ?? []} size={tournament.teamSize} value={lineup} onChange={setLineup} />
+      <button className={styles.btnRegister} onClick={save} disabled={busy || lineup.length !== tournament.teamSize}>
+        <Icon name="check" /> ذخیره ترکیب
+      </button>
+      <button className={styles.btnRegister} onClick={() => onDone(false)} disabled={busy}>
+        انصراف
+      </button>
+    </>
+  );
+}
 
 function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament; onChanged: () => void }) {
   const router = useRouter();
@@ -41,8 +138,13 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
     canRegister,
   ]);
 
-  const [chosenTeamId, setTeamId] = useState<number | null>(null);
-  const teamId = chosenTeamId ?? teams.data?.[0]?.id ?? null;
+  const teamSize = tournament.teamSize;
+  const bigEnough = (teams.data ?? []).filter(team => team.memberCount >= teamSize);
+  const [chosenTeamId, setChosenTeamId] = useState<number | null>(null);
+  const teamId = chosenTeamId ?? bigEnough[0]?.id ?? null;
+  const team = teams.data?.find(t => t.id === teamId) ?? null;
+  const [lineup, setLineup] = useState<number[]>([]);
+  const [editingLineup, setEditingLineup] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gateway');
   const [busy, setBusy] = useState(false);
 
@@ -55,14 +157,15 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
       router.push(`/login?next=/tournaments/${tournament.slug}`);
       return;
     }
-    if (isTeam && !teamId) {
-      addToast({ title: 'یک تیم انتخاب کنید', icon: 'team', tone: 'warning' });
+    if (isTeam && (!teamId || lineup.length !== teamSize)) {
+      addToast({ title: `${faNumber(teamSize)} بازیکن برای ترکیب تیم انتخاب کنید`, icon: 'team', tone: 'warning' });
       return;
     }
     setBusy(true);
     try {
       const result = await tournamentsApi.register(tournament.slug, {
         team: isTeam ? teamId : null,
+        members: isTeam ? lineup : undefined,
         paymentMethod: tournament.isFree ? null : paymentMethod,
       });
       if (result.paymentUrl) {
@@ -137,8 +240,32 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
               {registration.status === 'confirmed' ? 'ثبت‌نام شما تایید شده است' : 'در انتظار پرداخت'}
               {registration.team && ` — تیم ${registration.team.name}`}
             </div>
+            {registration.team && !editingLineup && (
+              <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8 }}>
+                ترکیب: {registration.members.map(member => member.displayName).join('، ')}
+              </p>
+            )}
           </div>
-          {tournament.status !== 'live' && tournament.status !== 'completed' && (
+          {editingLineup && registration.team ? (
+            <LineupEditor
+              tournament={tournament}
+              teamId={registration.team.id}
+              current={registration.members.map(member => member.id)}
+              onDone={saved => {
+                setEditingLineup(false);
+                if (saved) onChanged();
+              }}
+            />
+          ) : (
+            registration.canManage &&
+            registration.team &&
+            tournament.status === 'registration_open' && (
+              <button className={styles.btnRegister} onClick={() => setEditingLineup(true)} disabled={busy}>
+                <Icon name="users" /> ویرایش ترکیب
+              </button>
+            )
+          )}
+          {registration.canManage && !editingLineup && tournament.status !== 'live' && tournament.status !== 'completed' && (
             <button className={styles.btnRegister} onClick={withdraw} disabled={busy}>
               <Icon name="x" /> انصراف از تورنمنت
             </button>
@@ -161,24 +288,40 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
               {teams.loading && <Loading compact />}
               {teams.data?.length === 0 && (
                 <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8 }}>
-                  تیمی با بازی {tournament.game.title} که کاپیتان آن باشید ندارید.{' '}
-                  <Link href="/teams/create">ساخت تیم</Link>
+                  تیمی که کاپیتان آن باشید ندارید. <Link href="/teams/create">ساخت تیم</Link>
                 </p>
               )}
-              {teams.data?.map(team => (
-                <div
-                  key={team.id}
-                  className={`${styles.teamOption} ${teamId === team.id ? styles.selected : ''}`}
-                  onClick={() => setTeamId(team.id)}
-                >
-                  <div className={styles.teamOptionCrest}>{team.tag}</div>
-                  <div className={styles.teamOptionName}>
-                    {team.name} · {faNumber(team.memberCount)} عضو
+              {teams.data?.map(option => {
+                const tooSmall = option.memberCount < teamSize;
+                return (
+                  <div
+                    key={option.id}
+                    className={`${styles.teamOption} ${teamId === option.id ? styles.selected : ''}`}
+                    style={tooSmall ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                    onClick={() => {
+                      if (tooSmall || option.id === teamId) return;
+                      setChosenTeamId(option.id);
+                      setLineup([]);
+                    }}
+                  >
+                    <div className={styles.teamOptionCrest}>{initials(option.name)}</div>
+                    <div className={styles.teamOptionName}>
+                      {option.name} · {faNumber(option.memberCount)} عضو
+                      {tooSmall && (
+                        <small style={{ display: 'block', color: 'var(--muted)', fontWeight: 400 }}>
+                          حداقل {faNumber(teamSize)} عضو لازم است
+                        </small>
+                      )}
+                    </div>
+                    <div className={styles.radioCircle}></div>
                   </div>
-                  <div className={styles.radioCircle}></div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+          )}
+
+          {isTeam && team && (
+            <LineupPicker candidates={team.members} size={teamSize} value={lineup} onChange={setLineup} />
           )}
 
           {!tournament.isFree && isAuthenticated && (
@@ -205,7 +348,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
           <button
             className={styles.btnRegister}
             onClick={register}
-            disabled={busy || (isTeam && isAuthenticated && !teams.data?.length)}
+            disabled={busy || (isTeam && isAuthenticated && lineup.length !== teamSize)}
           >
             <Icon name="play" />{' '}
             {!isAuthenticated
@@ -252,7 +395,7 @@ function Participants({ slug }: { slug: string }) {
               {p.logo ? (
                 <img src={p.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : p.kind === 'team' ? (
-                p.tag
+                initials(p.name)
               ) : (
                 <Avatar seed={p.avatarSeed ?? 1} />
               )}

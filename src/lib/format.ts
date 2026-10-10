@@ -80,11 +80,11 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 
 export const ROLE_LABELS: Record<string, string> = { captain: 'کاپیتان', player: 'بازیکن', substitute: 'ذخیره' };
 
-export const REGION_LABELS: Record<string, string> = {
-  me: 'خاورمیانه',
-  eu: 'اروپا',
-  ir: 'ایران',
-  intl: 'بین‌المللی',
-};
+/** Stand-in for a missing team logo: the first letters of the first two words of ``name``. */
+export function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  const letters = words.length > 1 ? words[0][0] + words[1][0] : (words[0] ?? '?').slice(0, 2);
+  return letters.toUpperCase();
+}
 
 export const PRODUCT_BADGE_LABELS: Record<string, string> = { bestseller: 'پرفروش', discount: 'تخفیف', new: 'جدید' };

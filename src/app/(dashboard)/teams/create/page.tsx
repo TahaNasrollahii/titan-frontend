@@ -42,7 +42,7 @@ export default function CreateTeamPage() {
           <Icon name="users" /> مشخصات اولیه تیم
         </div>
         <TeamForm
-          initial={{ name: '', tag: '', game: '', region: 'me' }}
+          initial={{ name: '' }}
           submitLabel="ایجاد تیم و دریافت لینک دعوت"
           submitting={submitting}
           onSubmit={create}

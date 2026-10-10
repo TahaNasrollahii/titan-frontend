@@ -2,17 +2,13 @@
 
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 
-import { CustomSelect } from '@/components/CustomSelect';
 import { Icon } from '@/components/Icons';
-import { catalogApi, TeamInput } from '@/lib/api/endpoints';
-import { REGION_LABELS } from '@/lib/format';
-import { useApi } from '@/lib/hooks/useApi';
+import { TeamInput } from '@/lib/api/endpoints';
+import { initials } from '@/lib/format';
 
 import styles from './[id]/manage/page.module.css';
 
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
-
-const REGION_OPTIONS = Object.entries(REGION_LABELS).map(([value, label]) => ({ value, label, icon: 'map' }));
 
 interface TeamFormProps {
   initial: Omit<TeamInput, 'logo'> & { logoUrl?: string | null };
@@ -22,22 +18,12 @@ interface TeamFormProps {
   errors?: Record<string, string[]>;
 }
 
-/** Name, tag, game, region and logo — shared by "create team" and "manage team". */
+/** Name and logo — shared by "create team" and "manage team". */
 export function TeamForm({ initial, submitLabel, submitting, onSubmit, errors = {} }: TeamFormProps) {
-  const games = useApi(() => catalogApi.games());
   const fileInput = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(initial.name);
-  const [tag, setTag] = useState(initial.tag);
-  const [chosenGame, setGame] = useState(initial.game);
-  const [region, setRegion] = useState(initial.region);
   const [logo, setLogo] = useState<File | null>(null);
   const [logoError, setLogoError] = useState('');
-
-  const gameOptions = (games.data ?? [])
-    .filter(g => g.kind === 'game')
-    .map(g => ({ value: g.slug, label: g.titleEn, image: g.iconImage ?? undefined }));
-  // The create form starts empty: default to the first game once the list arrives.
-  const game = chosenGame || gameOptions[0]?.value || '';
 
   const logoUrl = useMemo(() => (logo ? URL.createObjectURL(logo) : null), [logo]);
   useEffect(() => () => {
@@ -79,8 +65,8 @@ export function TeamForm({ initial, submitLabel, submitting, onSubmit, errors = 
         >
           {preview ? (
             <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : tag ? (
-            tag.toUpperCase()
+          ) : name.trim() ? (
+            initials(name)
           ) : (
             <Icon name="plus" />
           )}
@@ -110,34 +96,13 @@ export function TeamForm({ initial, submitLabel, submitting, onSubmit, errors = 
           />
           {fieldError('name')}
         </div>
-        <div className={styles.formGroup}>
-          <label>تگ تیم (کوتاه)</label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="مثلا: TS"
-            maxLength={4}
-            dir="ltr"
-            value={tag}
-            onChange={e => setTag(e.target.value.toUpperCase())}
-          />
-          {fieldError('tag')}
-        </div>
-        <div className={styles.formGroup}>
-          <label>بازی اصلی</label>
-          <CustomSelect value={game} onChange={setGame} options={gameOptions} />
-        </div>
-        <div className={styles.formGroup}>
-          <label>منطقه (Region)</label>
-          <CustomSelect value={region} onChange={setRegion} options={REGION_OPTIONS} />
-        </div>
       </div>
       <div style={{ marginTop: '32px' }}>
         <button
           type="button"
           className={styles.btnPrimary}
-          disabled={submitting || !name.trim() || !tag.trim() || !game}
-          onClick={() => onSubmit({ name: name.trim(), tag: tag.trim(), game, region, logo })}
+          disabled={submitting || !name.trim()}
+          onClick={() => onSubmit({ name: name.trim(), logo })}
         >
           {submitting ? 'لطفاً صبر کنید...' : submitLabel}
         </button>

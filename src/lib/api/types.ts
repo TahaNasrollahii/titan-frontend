@@ -330,13 +330,10 @@ export type Region = 'me' | 'eu' | 'ir' | 'intl';
 export interface TeamMini {
   id: number;
   name: string;
-  tag: string;
   logo: string | null;
 }
 
 export interface TeamSummary extends TeamMini {
-  game: GameMini;
-  region: Region;
   memberCount: number;
   maxMembers: number;
   matchesPlayed: number;
@@ -354,7 +351,6 @@ export interface TeamMember {
 }
 
 export interface Team extends TeamSummary {
-  description: string;
   members: TeamMember[];
   myRole: TeamRole | null;
   inviteCode: string | null;
@@ -388,7 +384,6 @@ export interface Participant {
   id: number;
   kind: 'team' | 'player';
   name: string;
-  tag: string;
   logo: string | null;
   avatarSeed: number | null;
   teamId: number | null;
@@ -467,6 +462,22 @@ export interface Registration {
   createdAt: string;
 }
 
+/** The viewer's own entry, with its lineup. ``canManage``: the viewer may edit the lineup or withdraw. */
+export interface MyRegistration extends Registration {
+  members: UserMini[];
+  canManage: boolean;
+}
+
+export interface LineupCandidate extends TeamMember {
+  /** Name of the team (or player) this member already plays for in the tournament. */
+  registeredWith: string | null;
+}
+
+/** A team the viewer captains, offered for a tournament registration. */
+export interface EligibleTeam extends TeamSummary {
+  members: LineupCandidate[];
+}
+
 export interface Tournament extends TournamentSummary {
   description: string;
   rules: string[];
@@ -476,7 +487,7 @@ export interface Tournament extends TournamentSummary {
   bestOf: number;
   registrationOpensAt: string;
   streamUrl: string;
-  myRegistration: Registration | null;
+  myRegistration: MyRegistration | null;
 }
 
 export interface MyTournament extends Registration {
@@ -485,7 +496,7 @@ export interface MyTournament extends Registration {
 }
 
 export interface RegistrationResult {
-  registration: Registration;
+  registration: MyRegistration;
   paymentUrl: string | null;
 }
 

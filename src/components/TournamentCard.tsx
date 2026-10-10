@@ -4,7 +4,7 @@ import Link from 'next/link';
 import React from 'react';
 
 import type { Participant, TournamentSummary } from '@/lib/api/types';
-import { jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
+import { initials, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
 
 import { Icon } from './Icons';
 
@@ -17,7 +17,7 @@ function Side({ participant, alt }: { participant: Participant | null; alt?: boo
   return (
     <div className="mc-team-side">
       <div className={`mc-crest ${alt ? 'crest-alt' : ''}`}>
-        {participant ? (participant.tag || participant.name.substring(0, 2)).toUpperCase() : '?'}
+        {participant ? initials(participant.name) : '?'}
       </div>
       <h4>{participant?.name ?? 'TBA'}</h4>
       <span>{participant?.seed ? `سید ${participant.seed.toLocaleString('fa-IR')}` : 'آزاد'}</span>

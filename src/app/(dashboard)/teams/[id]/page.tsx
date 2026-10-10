@@ -8,7 +8,7 @@ import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { teamsApi } from '@/lib/api/endpoints';
-import { faNumber, jalaliDate, REGION_LABELS, ROLE_LABELS } from '@/lib/format';
+import { faNumber, initials, jalaliDate, ROLE_LABELS } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import styles from './page.module.css';
@@ -28,14 +28,14 @@ export default function TeamDetailsPage() {
     <div className={styles.teamWrapper}>
       <div className={styles.teamHeader}>
         <div className={styles.logo}>
-          {data.logo ? <img src={data.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : data.tag}
+          {data.logo ? <img src={data.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials(data.name)}
         </div>
         <div className={styles.teamInfo}>
           <h1 className={styles.teamName}>
-            {data.name} <span className={styles.teamTag}>{data.tag}</span>
+            {data.name}
           </h1>
           <div className={styles.gameLabel}>
-            <Icon name="game" /> تیم اختصاصی {data.game.titleEn} • {REGION_LABELS[data.region]}
+            <Icon name="clock" /> ساخته شده در {jalaliDate(data.createdAt)}
           </div>
         </div>
         {data.myRole === 'captain' && (

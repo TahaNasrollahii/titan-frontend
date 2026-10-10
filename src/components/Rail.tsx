@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { meApi } from '@/lib/api/endpoints';
 import type { MyTeam, Presence } from '@/lib/api/types';
+import { initials } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { getTierByScore } from '@/utils/ranks';
 
@@ -20,7 +21,7 @@ const statusClass = (presence: Presence) => (presence === 'offline' ? 'away' : p
 function tooltip(team: MyTeam) {
   const label =
     team.activity === 'in_game'
-      ? `در بازی — ${team.game.titleEn}`
+      ? 'در بازی'
       : team.activity === 'online'
         ? 'آنلاین'
         : 'آفلاین';
@@ -106,7 +107,7 @@ export function Rail() {
                     {team.logo ? (
                       <img src={team.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      team.tag
+                      initials(team.name)
                     )}
                   </div>
                   <span className={`st ${state}`}></span>
