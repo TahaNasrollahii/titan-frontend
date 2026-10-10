@@ -13,6 +13,18 @@ import { useApi } from '@/lib/hooks/useApi';
 /** Hero character art bundled with the frontend, keyed by game slug (value = CSS modifier class). */
 const HERO_ART: Record<string, string> = { fortnite: 'fortnite', valorant: 'valorant', 'apex-legends': 'apexlegends' };
 
+/** eNamad trust seal — paste the id & Code from the enamad.ir panel. While empty, a placeholder emblem is shown. */
+const ENAMAD = { id: '', code: '' };
+
+function enamadSeal() {
+  const inner = '<span class="th-seal-ring" aria-hidden="true"></span><span class="th-seal-check" aria-hidden="true"><i data-icon="check"></i></span>';
+  if (!ENAMAD.id) {
+    return `<div class="th-seal">${inner}<span class="th-seal-face"><span class="th-seal-ph"><i data-icon="shield"></i><b>اینماد</b></span></span></div>`;
+  }
+  const q = `id=${encodeURIComponent(ENAMAD.id)}&Code=${encodeURIComponent(ENAMAD.code)}`;
+  return `<a class="th-seal" referrerpolicy="origin" target="_blank" rel="noopener" href="https://trustseal.enamad.ir/?${q}" aria-label="نماد اعتماد الکترونیکی">${inner}<span class="th-seal-face"><img referrerpolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?${q}" alt="نماد اعتماد الکترونیکی" code="${ENAMAD.code}" /></span></a>`;
+}
+
 export default function TitanPage() {
   const home = useApi(contentApi.home);
   if (home.loading) return <Loading />;
@@ -152,7 +164,9 @@ function HomeScene({ data }: { data: Home }) {
         like: ['<path d="M2.5 10.5h4v10h-4z"/><path d="M6.5 10.5 10.5 3c1.9 0 3 1.4 2.6 3.3L12.4 9.5h6.3a2 2 0 0 1 2 2.4l-1.4 6.6a2 2 0 0 1-2 1.5H6.5z"/>', true],
         shield: ['<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'],
         trophy: ['<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a1.5 1.5 0 0 0 0 3H8M16 6h2.5a1.5 1.5 0 0 1 0 3H16"/><path d="M12 13v4M8.5 20.5h7M10 17h4v3.5h-4z"/>'],
-        arrow: ['<path d="M4 12h15.5M13.5 6l6 6-6 6"/>']
+        arrow: ['<path d="M4 12h15.5M13.5 6l6 6-6 6"/>'],
+        check: ['<path d="m5.5 12.5 4 4 9-9.5"/>'],
+        info: ['<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/>']
       };
       const ico = name => {
         const [inner, filled] = I[name] || ['', false];
@@ -335,6 +349,13 @@ function HomeScene({ data }: { data: Home }) {
         const end = sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 8;
         sc.scrollTo({ left: end ? 0 : sc.scrollLeft + sc.clientWidth * .55, behavior: 'smooth' });
       });
+
+      /* in-app links inside the injected markup: route client-side, keep modifier-clicks native */
+      $$('[data-nav]').forEach(a => a.addEventListener('click', e => {
+        if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        router.push(a.getAttribute('href'));
+      }));
 
 
 
@@ -635,6 +656,33 @@ function HomeScene({ data }: { data: Home }) {
       </section>
 
     </div>
+
+    <section class="trust-hub reveal" style="--d:7" aria-label="اعتماد و ارتباط">
+      <div class="th-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="th-grid" aria-hidden="true"></div>
+
+      <div class="th-badge">
+        ${enamadSeal()}
+        <div class="th-copy">
+          <span class="th-kicker"><i data-icon="check"></i>فروشگاه تأییدشده</span>
+          <h3>خرید مطمئن با نماد اعتماد</h3>
+          <p>تایتان دارای نماد اعتماد الکترونیکی است؛ با خیال راحت خرید کنید.</p>
+        </div>
+      </div>
+
+      <nav class="th-links" aria-label="بیشتر بدانید">
+        <a class="th-link spot" href="/about" data-nav>
+          <span class="th-link-ic"><i data-icon="info"></i></span>
+          <span class="th-link-tx"><b>درباره ما</b><small>با تیم تایتان آشنا شوید</small></span>
+          <span class="th-link-go"><i data-icon="arrow"></i></span>
+        </a>
+        <a class="th-link th-link--hot spot" href="/contact" data-nav>
+          <span class="th-link-ic"><i data-icon="chat"></i></span>
+          <span class="th-link-tx"><b>ارتباط با ما</b><small><span class="th-live"></span>پاسخ‌گویی سریع</small></span>
+          <span class="th-link-go"><i data-icon="arrow"></i></span>
+        </a>
+      </nav>
+    </section>
 
 ` }}
     />
