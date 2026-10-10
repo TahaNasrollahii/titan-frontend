@@ -92,7 +92,6 @@ export function Topbar() {
       {/* Mobile app bar only */}
       <Link href="/" className="top-logo" aria-label="خانه تایتان">
         <img src="/titan-logo.png" alt="" />
-        <span>TITAN</span>
       </Link>
 
       <div className={`search ${searchOpen ? 'open' : ''}`} id="search" role="search">
