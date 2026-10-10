@@ -82,9 +82,11 @@ export default function TeamDetailsPage() {
                     <span className={styles.tier} style={{ '--tier-from': tier.from } as React.CSSProperties}>{tier.name}</span>
                   </div>
                 </div>
-                <div className={`${styles.roleTag} ${member.role === 'captain' ? styles.roleCaptain : ''}`}>
-                  {ROLE_LABELS[member.role]}
-                </div>
+                {member.role === 'captain' && (
+                  <div className={`${styles.roleTag} ${styles.roleCaptain}`}>
+                    Founder
+                  </div>
+                )}
               </div>
               );
             })}
@@ -102,22 +104,34 @@ export default function TeamDetailsPage() {
             </div>
             <div className={styles.statBoxes}>
               <div className={`${styles.statBox} ${styles.matches}`}>
-                <div className={styles.statValue}>{faNumber(data.matchesPlayed)}</div>
-                <div className={styles.statLabel}>مسابقات</div>
+                <div className={styles.statIcon} style={{ color: '#a5c6ff' }}><Icon name="game" /></div>
+                <div className={styles.statInfo}>
+                  <div className={styles.statValue}>{faNumber(data.matchesPlayed)}</div>
+                  <div className={styles.statLabel}>مسابقات</div>
+                </div>
               </div>
               <div className={`${styles.statBox} ${styles.losses}`}>
-                <div className={styles.statValue} style={{ color: '#ff6a6a', textShadow: '0 0 10px rgba(255,106,106,0.4)' }}>
-                  {faNumber(data.matchesPlayed - data.wins)}
+                <div className={styles.statIcon} style={{ color: '#ff6a6a' }}><Icon name="x" /></div>
+                <div className={styles.statInfo}>
+                  <div className={styles.statValue} style={{ color: '#ff6a6a', textShadow: '0 0 10px rgba(255,106,106,0.4)' }}>
+                    {faNumber(data.matchesPlayed - data.wins)}
+                  </div>
+                  <div className={styles.statLabel}>باخت</div>
                 </div>
-                <div className={styles.statLabel}>باخت</div>
               </div>
               <div className={`${styles.statBox} ${styles.wins}`}>
-                <div className={styles.statValue} style={{ color: '#f0c14b' }}>{faNumber(data.wins)}</div>
-                <div className={styles.statLabel}>برد</div>
+                <div className={styles.statIcon} style={{ color: '#f0c14b' }}><Icon name="trophy" /></div>
+                <div className={styles.statInfo}>
+                  <div className={styles.statValue} style={{ color: '#f0c14b' }}>{faNumber(data.wins)}</div>
+                  <div className={styles.statLabel}>برد</div>
+                </div>
               </div>
               <div className={`${styles.statBox} ${styles.points}`}>
-                <div className={styles.statValue} style={{ color: '#a5c6ff' }}>{faNumber(data.points)}</div>
-                <div className={styles.statLabel}>امتیاز</div>
+                <div className={styles.statIcon} style={{ color: '#b464ff' }}><Icon name="flame" /></div>
+                <div className={styles.statInfo}>
+                  <div className={styles.statValue} style={{ color: '#a5c6ff' }}>{faNumber(data.points)}</div>
+                  <div className={styles.statLabel}>امتیاز</div>
+                </div>
               </div>
             </div>
           </div>

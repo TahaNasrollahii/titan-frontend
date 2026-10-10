@@ -375,6 +375,22 @@
   --glow-color: rgba(255, 255, 255, 0.1);
 }
 
+.statIcon {
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
 .statBox.matches { --glow-color: rgba(165, 198, 255, 0.3); }
 .statBox.losses { --glow-color: rgba(255, 106, 106, 0.3); }
 .statBox.wins { --glow-color: rgba(240, 193, 75, 0.3); }
@@ -546,7 +562,21 @@
 
 @media (max-width: 480px) {
   .statBoxes {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .statBox {
+    padding: 16px 12px;
+    gap: 8px;
+  }
+  .statIcon {
+    font-size: 26px;
+  }
+  .statValue {
+    font-size: 24px;
+  }
+  .statLabel {
+    font-size: 12px;
   }
   .memberCard {
     flex-direction: column;
