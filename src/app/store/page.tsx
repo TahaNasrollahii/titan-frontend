@@ -219,7 +219,7 @@ const GAME_ACCENTS: Record<string, string> = {
 };
 
 const LOCAL_CHARACTERS = [
-  '/images/products/vbucks.png',
+  '/images/products/giftcard.svg',
   '/images/hero/characters/fortnite.png',
   '/images/hero/characters/apexlegends.png',
   '/images/hero/characters/valorant.png',
@@ -242,15 +242,28 @@ function ProductCard({
     GAME_ACCENTS[gameSlug] ||
     ACCENT_COLORS[index % ACCENT_COLORS.length];
 
+  const isVbucks =
+    product.slug.includes('vbucks') ||
+    product.slug.includes('v-bucks') ||
+    product.title.toLowerCase().includes('v-bucks') ||
+    product.title.includes('وی‌باکس') ||
+    Boolean(product.image && product.image.includes('vbucks'));
+
+  const isGiftCard =
+    product.slug.includes('gift-card') ||
+    product.title.includes('گیفت کارت');
+
   const defaultImage =
-    product.image ??
-    (gameSlug === 'fortnite'
-      ? '/images/hero/characters/fortnite.png'
-      : gameSlug === 'apex-legends'
-      ? '/images/hero/characters/apexlegends.png'
-      : gameSlug === 'valorant'
-      ? '/images/hero/characters/valorant.png'
-      : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
+    isVbucks || isGiftCard
+      ? '/images/products/giftcard.svg'
+      : (product.image ??
+        (gameSlug === 'fortnite'
+          ? '/images/hero/characters/fortnite.png'
+          : gameSlug === 'apex-legends'
+          ? '/images/hero/characters/apexlegends.png'
+          : gameSlug === 'valorant'
+          ? '/images/hero/characters/valorant.png'
+          : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]));
 
   const [imgSrc, setImgSrc] = useState(defaultImage);
 
@@ -265,14 +278,17 @@ function ProductCard({
   const isHot = product.badges.includes('bestseller');
   const isNew = product.badges.includes('new');
 
+  const imgY = isVbucks || isGiftCard ? '-15px' : (gameSlug === 'fortnite' ? '-10px' : '0px');
+  const imgX = '0px';
+
   return (
     <article
       className="tc-card spot reveal"
-      style={{ '--accent': accent, '--d': index + 3 } as React.CSSProperties}
+      style={{ '--accent': accent, '--d': index + 3, '--img-x': imgX, '--img-y': imgY } as React.CSSProperties}
     >
       <div className="tc-base" />
 
-      <svg className="tc-panel" viewBox="0 0 140 267" aria-hidden="true">
+      <svg className="tc-panel" viewBox="0 0 140 227" aria-hidden="true">
         <defs>
           <linearGradient id={`g${product.id}`} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="#fff" stopOpacity=".28" />
@@ -281,8 +297,8 @@ function ProductCard({
           </linearGradient>
         </defs>
         <g strokeWidth="26" strokeLinejoin="round">
-          <polygon points="13,38 127,13 127,254 13,254" fill="currentColor" stroke="currentColor" />
-          <polygon points="13,38 127,13 127,254 13,254" fill={`url(#g${product.id})`} stroke={`url(#g${product.id})`} />
+          <polygon points="13,38 127,13 127,214 13,214" fill="currentColor" stroke="currentColor" />
+          <polygon points="13,38 127,13 127,214 13,214" fill={`url(#g${product.id})`} stroke={`url(#g${product.id})`} />
         </g>
       </svg>
 

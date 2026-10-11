@@ -672,9 +672,9 @@
 .tc-panel {
   position: absolute;
   left: 0;
-  top: -85px;
+  top: -45px;
   width: 140px;
-  height: 267px;
+  height: 227px; /* ارتفاع کادر رنگی از بالا کمتر شد */
   color: var(--accent);
   transform-origin: bottom left;
   transition: transform .4s cubic-bezier(.2, .8, .2, 1);
@@ -686,11 +686,12 @@
 
 .tc-char {
   position: absolute;
-  left: 6px;
+  left: -10px;
   top: -88px;
   width: 160px;
   height: 270px;
-  z-index: 2;
+  z-index: 2; /* کاراکتر به چپ آمد */
+  translate: var(--img-x, 0px) var(--img-y, 0px); /* جابه‌جایی دلخواه برای هر محصول */
   clip-path: inset(-60px -40px 0 -40px);
   transition: transform .4s cubic-bezier(.2, .8, .2, 1);
   pointer-events: none;
