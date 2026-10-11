@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/lib/api/client';
 import { catalogApi, contentApi } from '@/lib/api/endpoints';
 import type { Paginated, ProductSummary, Promo } from '@/lib/api/types';
-import { countdown, faNumber, PRODUCT_BADGE_LABELS, productPrice, toman, toEnglishDigits } from '@/lib/format';
+import { countdown, faNumber, toman, toEnglishDigits } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import './store.css';
@@ -201,6 +201,32 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
   );
 }
 
+const SILHOUETTE_PLACEHOLDER =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 270">' +
+      '<circle cx="80" cy="70" r="38" fill="#1b1b24"/>' +
+      '<path d="M10 270 C10 170 40 130 80 130 C120 130 150 170 150 270 Z" fill="#1b1b24"/></svg>'
+  );
+
+const ACCENT_COLORS = ['#ff7a2f', '#7a3cff', '#2f8bff', '#ef2f5a', '#35d07f', '#ffb800'];
+
+const GAME_ACCENTS: Record<string, string> = {
+  fortnite: '#2f8bff',
+  'apex-legends': '#ff7a2f',
+  valorant: '#ef2f5a',
+  premium: '#ffb800',
+};
+
+const LOCAL_CHARACTERS = [
+  '/images/products/vbucks.png',
+  '/images/hero/characters/fortnite.png',
+  '/images/hero/characters/apexlegends.png',
+  '/images/hero/characters/valorant.png',
+  '/images/support-robot.png',
+  '/images/character-behind-login-form.png',
+];
+
 function ProductCard({
   product,
   index,
@@ -210,64 +236,128 @@ function ProductCard({
   index: number;
   onToggleWishlist: (product: ProductSummary) => void;
 }) {
-  const LOCAL_PRODUCTS = ['/images/products/vbucks.png', '/images/products/p-controller.jpg', '/images/products/p-game-1.jpg', '/images/products/p-headset.jpg', '/images/products/p-keyboard.jpg', '/images/products/p-mouse.jpg', '/images/products/p-game-3.jpg'];
-  const localProductImage = product.image ?? LOCAL_PRODUCTS[index % LOCAL_PRODUCTS.length];
+  const gameSlug = product.game?.slug || '';
+  const accent =
+    product.game?.accentColor ||
+    GAME_ACCENTS[gameSlug] ||
+    ACCENT_COLORS[index % ACCENT_COLORS.length];
+
+  const defaultImage =
+    product.image ??
+    (gameSlug === 'fortnite'
+      ? '/images/hero/characters/fortnite.png'
+      : gameSlug === 'apex-legends'
+      ? '/images/hero/characters/apexlegends.png'
+      : gameSlug === 'valorant'
+      ? '/images/hero/characters/valorant.png'
+      : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
+
+  const [imgSrc, setImgSrc] = useState(defaultImage);
+
+  useEffect(() => {
+    setImgSrc(defaultImage);
+  }, [defaultImage]);
+
+  const hasDiscount =
+    product.badges.includes('discount') ||
+    Boolean(product.originalPrice) ||
+    Boolean(product.discountPercent && product.discountPercent > 0);
+  const isHot = product.badges.includes('bestseller');
+  const isNew = product.badges.includes('new');
 
   return (
-    <article className="sg-card spot reveal" style={{ '--d': index + 3 } as React.CSSProperties}>
-      <div className="sg-art">
-        <img src={localProductImage} alt={product.title} />
+    <article
+      className="tc-card spot reveal"
+      style={{ '--accent': accent, '--d': index + 3 } as React.CSSProperties}
+    >
+      <div className="tc-base" />
+
+      <svg className="tc-panel" viewBox="0 0 140 267" aria-hidden="true">
+        <defs>
+          <linearGradient id={`g${product.id}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#fff" stopOpacity=".28" />
+            <stop offset=".5" stopColor="#fff" stopOpacity="0" />
+            <stop offset="1" stopColor="#000" stopOpacity=".18" />
+          </linearGradient>
+        </defs>
+        <g strokeWidth="26" strokeLinejoin="round">
+          <polygon points="13,38 127,13 127,254 13,254" fill="currentColor" stroke="currentColor" />
+          <polygon points="13,38 127,13 127,254 13,254" fill={`url(#g${product.id})`} stroke={`url(#g${product.id})`} />
+        </g>
+      </svg>
+
+      <div className="tc-char">
+        <img
+          className="tc-ch"
+          src={imgSrc}
+          alt={product.title}
+          onError={() => setImgSrc(SILHOUETTE_PLACEHOLDER)}
+        />
       </div>
 
-      <div className="sg-badges-top">
-        <div className="sg-b-left">
-          {product.badges.map(badge => (
-            <span
-              key={badge}
-              className={`sg-badge ${badge === 'bestseller' ? 'cream' : badge === 'discount' ? 'red' : 'dark'}`}
-            >
-              {badge === 'discount' && <Icon name="flame" />}
-              {badge === 'bestseller' && <Icon name="trophy" />}
-              {PRODUCT_BADGE_LABELS[badge]}
-            </span>
-          ))}
-          {product.reviewCount > 0 && (
-            <span className="sg-badge dark star">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>{' '}
-              {faNumber(product.rating)}
-            </span>
+      <div className="tc-badges">
+        {product.rating > 0 && (
+          <span className="tc-badge tc-b-rate">
+            <i>★</i>
+            {faNumber(product.rating)}
+          </span>
+        )}
+        {hasDiscount && (
+          <span className="tc-badge tc-b-sale">
+            تخفیف{' '}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3c1 3.5 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .3 1.2 1 2 2 2 0-3-1-5 1-8z" />
+            </svg>
+          </span>
+        )}
+        {isHot && (
+          <span className="tc-badge tc-b-hot">
+            پرفروش{' '}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4v1a3 3 0 0 0 4 3M16 6h4v1a3 3 0 0 1-4 3M12 13v4M8 20h8" />
+            </svg>
+          </span>
+        )}
+        {isNew && <span className="tc-badge tc-b-new">جدید</span>}
+      </div>
+
+      <span className={`tc-status ${product.inStock ? '' : 'off'}`}>
+        {product.inStock ? 'موجود' : 'ناموجود'}
+      </span>
+
+      <div className="tc-info">
+        <p className="tc-cat">{product.subtitle || product.game?.title || product.category.name}</p>
+        <h3 className="tc-title" title={product.title}>
+          {product.title}
+        </h3>
+        <div className="tc-priceRow">
+          <span className="tc-price">
+            {product.hasVariants && <span className="tc-from">از</span>}
+            {product.price != null ? faNumber(product.price) : '—'}
+            <small>تومان</small>
+          </span>
+          {product.originalPrice != null && (
+            <span className="tc-old">{faNumber(product.originalPrice)}</span>
           )}
-          {!product.inStock && <span className="sg-badge dark">ناموجود</span>}
         </div>
       </div>
 
-      <div className="sg-body">
-        <span className="sg-sub">{product.subtitle || product.game?.title || product.category.name}</span>
-        <h4>{product.title}</h4>
-        <div className="sg-price-row">
-          <span className="sg-price">{productPrice(product)}</span>
-          {product.originalPrice && !product.hasVariants && (
-            <span className="sg-old-price">{faNumber(product.originalPrice)}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="sg-actions">
-        <Link
-          href={`/product/${product.slug}`}
-          className="sg-view-btn"
-          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
+      <div className="tc-actions">
+        <Link href={`/product/${product.slug}`} className="tc-view">
           {product.hasVariants ? 'انتخاب گزینه' : 'مشاهده محصول'}
         </Link>
         <button
-          className={`sg-heart ${product.isWishlisted ? 'active' : ''}`}
-          aria-label="علاقه‌مندی"
-          onClick={() => onToggleWishlist(product)}
+          type="button"
+          className={`tc-fav ${product.isWishlisted ? 'active' : ''}`}
+          aria-label="افزودن به علاقه‌مندی"
+          onClick={e => {
+            e.preventDefault();
+            onToggleWishlist(product);
+          }}
         >
-          <Icon name="heart" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 20s-7-4.4-9-9.2C1.8 7.6 3.7 4.5 7 4.5c2 0 3.4 1 5 2.8 1.6-1.8 3-2.8 5-2.8 3.3 0 5.2 3.1 4 6.3-2 4.8-9 9.2-9 9.2z" />
+          </svg>
         </button>
       </div>
     </article>
