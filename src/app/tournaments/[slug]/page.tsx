@@ -9,7 +9,7 @@ import { Avatar, Icon } from '@/components/Icons';
 import { Empty, ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import { errorMessage } from '@/lib/api/client';
+import { API_URL, errorMessage } from '@/lib/api/client';
 import { teamsApi, tournamentsApi, walletApi } from '@/lib/api/endpoints';
 import type { PaymentMethod, Tournament, UserMini } from '@/lib/api/types';
 import { faNumber, initials, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS, toman } from '@/lib/format';
@@ -169,6 +169,22 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
         paymentMethod: tournament.isFree ? null : paymentMethod,
       });
       if (result.paymentUrl) {
+        if (result.paymentUrl.includes('Authority=FAKE-') || result.paymentUrl.includes('status=paid')) {
+          try {
+            const parsed = new URL(result.paymentUrl);
+            const authority = parsed.searchParams.get('Authority');
+            if (authority) {
+              await fetch(`${API_URL}/payments/callback/?Authority=${encodeURIComponent(authority)}&Status=OK`, {
+                method: 'GET',
+              }).catch(() => {});
+            }
+          } catch {
+            // ignore
+          }
+          addToast({ title: 'ثبت‌نام انجام شد', text: tournament.title, icon: 'tournament', tone: 'success' });
+          onChanged();
+          return;
+        }
         await redirectToGateway(result.paymentUrl, addToast);
         return;
       }

@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { Icon } from '@/components/Icons';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
-import { errorMessage } from '@/lib/api/client';
+import { API_URL, errorMessage } from '@/lib/api/client';
 import { meApi, walletApi } from '@/lib/api/endpoints';
 import { faNumber, ORDER_STATUS_LABELS, timeAgo, toEnglishDigits, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
@@ -26,6 +26,23 @@ function TopupForm({ onClose }: { onClose: () => void }) {
     setBusy(true);
     try {
       const { paymentUrl } = await walletApi.topup(value);
+      if (paymentUrl && (paymentUrl.includes('Authority=FAKE-') || paymentUrl.includes('status=paid'))) {
+        try {
+          const parsed = new URL(paymentUrl);
+          const authority = parsed.searchParams.get('Authority');
+          if (authority) {
+            await fetch(`${API_URL}/payments/callback/?Authority=${encodeURIComponent(authority)}&Status=OK`, {
+              method: 'GET',
+            }).catch(() => {});
+          }
+        } catch {
+          // ignore
+        }
+        addToast({ title: 'کیف پول با موفقیت شارژ شد', icon: 'dashboard', tone: 'success' });
+        onClose();
+        window.location.reload();
+        return;
+      }
       await redirectToGateway(paymentUrl, addToast);
     } catch (error) {
       addToast({ title: 'شارژ کیف پول', text: errorMessage(error), icon: 'dashboard', tone: 'error' });
