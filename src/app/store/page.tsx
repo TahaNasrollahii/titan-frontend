@@ -219,7 +219,7 @@ const GAME_ACCENTS: Record<string, string> = {
 };
 
 const LOCAL_CHARACTERS = [
-  '/images/products/giftcard.svg',
+  '/images/products/vbucks.png',
   '/images/hero/characters/fortnite.png',
   '/images/hero/characters/apexlegends.png',
   '/images/hero/characters/valorant.png',
@@ -242,28 +242,15 @@ function ProductCard({
     GAME_ACCENTS[gameSlug] ||
     ACCENT_COLORS[index % ACCENT_COLORS.length];
 
-  const isVbucks =
-    product.slug.includes('vbucks') ||
-    product.slug.includes('v-bucks') ||
-    product.title.toLowerCase().includes('v-bucks') ||
-    product.title.includes('وی‌باکس') ||
-    Boolean(product.image && product.image.includes('vbucks'));
-
-  const isGiftCard =
-    product.slug.includes('gift-card') ||
-    product.title.includes('گیفت کارت');
-
   const defaultImage =
-    isVbucks || isGiftCard
-      ? '/images/products/giftcard.svg'
-      : (product.image ??
-        (gameSlug === 'fortnite'
-          ? '/images/hero/characters/fortnite.png'
-          : gameSlug === 'apex-legends'
-          ? '/images/hero/characters/apexlegends.png'
-          : gameSlug === 'valorant'
-          ? '/images/hero/characters/valorant.png'
-          : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]));
+    product.image ??
+    (gameSlug === 'fortnite'
+      ? '/images/hero/characters/fortnite.png'
+      : gameSlug === 'apex-legends'
+      ? '/images/hero/characters/apexlegends.png'
+      : gameSlug === 'valorant'
+      ? '/images/hero/characters/valorant.png'
+      : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
 
   const [imgSrc, setImgSrc] = useState(defaultImage);
 
@@ -278,7 +265,13 @@ function ProductCard({
   const isHot = product.badges.includes('bestseller');
   const isNew = product.badges.includes('new');
 
-  const imgY = isVbucks || isGiftCard ? '-15px' : (gameSlug === 'fortnite' ? '-10px' : '0px');
+  const isVbucksOrFortnite =
+    gameSlug === 'fortnite' ||
+    product.slug.includes('vbucks') ||
+    product.slug.includes('v-bucks') ||
+    product.title.toLowerCase().includes('v-bucks') ||
+    product.title.includes('وی‌باکس');
+  const imgY = isVbucksOrFortnite ? '-30px' : '0px';
   const imgX = '0px';
 
   return (
