@@ -2,10 +2,15 @@ import { api } from './client';
 import type {
   Announcement,
   BracketRound,
+  CannedReply,
   Cart,
   CheckoutResponse,
   ContactChannel,
   Dashboard,
+  DeskConversation,
+  DeskMe,
+  DeskQueueItem,
+  DeskSync,
   EligibleTeam,
   FriendRequest,
   Game,
@@ -35,12 +40,18 @@ import type {
   Review,
   SearchResults,
   StatsTotals,
+  SupportMessage,
+  SupportMessageInput,
+  SupportStart,
+  SupportStatus,
   Team,
   TeamInvitation,
   TeamLeaderboardRow,
   Tournament,
   TournamentStatus,
   TournamentSummary,
+  VisitorConversation,
+  VisitorSync,
   Wallet,
   WalletTransaction,
   WishlistItem,
@@ -236,4 +247,60 @@ export const contentApi = {
   announcements: () => api<Announcement[]>('content/announcements/'),
   contact: () => api<{ supportOnline: boolean; channels: ContactChannel[] }>('content/contact/'),
   stats: () => api<PlatformStats>('stats/'),
+};
+
+// ------------------------------------------------------------------ live support chat
+/** Text as JSON; an image goes as multipart (the server reads both). */
+function messageBody({ body, image, clientId }: SupportMessageInput, internal?: boolean) {
+  if (!image) return { body: body ?? '', clientId, ...(internal === undefined ? {} : { internal }) };
+  const form = new FormData();
+  form.append('image', image);
+  form.append('clientId', clientId);
+  if (body) form.append('body', body);
+  if (internal !== undefined) form.append('internal', String(internal));
+  return form;
+}
+
+/** Visitor endpoints: identified by the token handed out when the chat starts, never by the login. */
+const visitor = (token: string) => ({ auth: false, headers: { 'X-Support-Token': token } });
+
+export const supportApi = {
+  status: () => api<SupportStatus>('support/status/', { auth: false }),
+  start: (data: { firstName: string; lastName: string; phone: string; pageUrl?: string }) =>
+    api<SupportStart>('support/chat/start/', { method: 'POST', body: data }),
+  sync: (token: string, after: number) =>
+    api<VisitorSync>('support/chat/sync/', { ...visitor(token), query: { after } }),
+  send: (token: string, message: SupportMessageInput) =>
+    api<SupportMessage>('support/chat/messages/', { ...visitor(token), method: 'POST', body: messageBody(message) }),
+  read: (token: string, lastId: number) =>
+    api<void>('support/chat/read/', { ...visitor(token), method: 'POST', body: { lastId } }),
+  typing: (token: string) => api<void>('support/chat/typing/', { ...visitor(token), method: 'POST' }),
+  close: (token: string) => api<VisitorConversation>('support/chat/close/', { ...visitor(token), method: 'POST' }),
+  rate: (token: string, rating: number, comment: string) =>
+    api<VisitorConversation>('support/chat/rate/', { ...visitor(token), method: 'POST', body: { rating, comment } }),
+};
+
+export const deskApi = {
+  sync: (conversation: number | null, after: number) =>
+    api<DeskSync>('support/desk/sync/', { query: { conversation, after } }),
+  history: (params: { status?: 'open' | 'closed'; search?: string; page?: number }) =>
+    api<Paginated<DeskQueueItem>>('support/desk/conversations/', { query: { ...params, page_size: 30 } }),
+  send: (id: number, message: SupportMessageInput, internal: boolean) =>
+    api<SupportMessage>(`support/desk/conversations/${id}/messages/`, {
+      method: 'POST',
+      body: messageBody(message, internal),
+    }),
+  assign: (id: number, agent: number | null) =>
+    api<DeskConversation>(`support/desk/conversations/${id}/assign/`, { method: 'POST', body: { agent } }),
+  close: (id: number) => api<DeskConversation>(`support/desk/conversations/${id}/close/`, { method: 'POST' }),
+  read: (id: number, lastId: number) =>
+    api<void>(`support/desk/conversations/${id}/read/`, { method: 'POST', body: { lastId } }),
+  typing: (id: number) => api<void>(`support/desk/conversations/${id}/typing/`, { method: 'POST' }),
+  me: () => api<DeskMe>('support/desk/me/'),
+  updateMe: (data: Partial<Pick<DeskMe, 'displayName' | 'isAvailable' | 'smsAlerts'>>) =>
+    api<DeskMe>('support/desk/me/', { method: 'PATCH', body: data }),
+  cannedReplies: () => api<CannedReply[]>('support/desk/canned-replies/'),
+  addCannedReply: (data: Omit<CannedReply, 'id' | 'position'>) =>
+    api<CannedReply>('support/desk/canned-replies/', { method: 'POST', body: data }),
+  deleteCannedReply: (id: number) => api<void>(`support/desk/canned-replies/${id}/`, { method: 'DELETE' }),
 };

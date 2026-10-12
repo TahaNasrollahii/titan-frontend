@@ -61,6 +61,8 @@ interface RequestOptions {
   query?: Query;
   /** Send the bearer token when available (default true). */
   auth?: boolean;
+  /** Extra request headers, e.g. the live-chat visitor token. */
+  headers?: Record<string, string>;
 }
 
 function buildUrl(path: string, query?: Query): string {
@@ -102,7 +104,7 @@ function refreshTokens(): Promise<boolean> {
 }
 
 async function send(path: string, options: RequestOptions): Promise<Response> {
-  const headers: Record<string, string> = { Accept: 'application/json', 'Accept-Language': 'fa' };
+  const headers: Record<string, string> = { Accept: 'application/json', 'Accept-Language': 'fa', ...options.headers };
   const access = options.auth === false ? undefined : getTokens()?.access;
   if (access) headers.Authorization = `Bearer ${access}`;
 

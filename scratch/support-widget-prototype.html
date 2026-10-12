@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Titan Live Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap">
+<style>
+/* Layout: a stand-in of the Titan frame behind; the widget is the subject — orb bottom-right, panel grows out of it. */
+:root {
+  color-scheme: dark;
+  --bg: #170409;
+  --frame-a: #65232d;
+  --frame-b: #4d1720;
+  --panel: #3f1119;
+  --card: #4a1620;
+  --red: #e2453f;
+  --red-2: #f0645a;
+  --red-deep: #b3201d;
+  --cream: #fff0b3;
+  --text: #fdf1f0;
+  --muted: #c98d92;
+  --muted-2: #a86068;
+  --green: #3ddc84;
+  --amber: #ffb23e;
+  --violet: 122 80 230;
+  --glass: rgba(255, 255, 255, .06);
+  --glass-2: rgba(255, 255, 255, .1);
+  --line: rgba(255, 255, 255, .08);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --spring: cubic-bezier(.3, 1.5, .5, 1);
+  --font: 'Vazirmatn', 'Estedad Variable', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  --orb: 64px;
+  --edge: 28px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0 }
+html, body { height: 100% }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background:
+    radial-gradient(1000px 520px at 20% -10%, rgba(226, 69, 63, .2), transparent 65%),
+    radial-gradient(800px 500px at 100% 100%, rgb(var(--violet) / .15), transparent 60%),
+    linear-gradient(180deg, #26080f, var(--bg)) fixed;
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-inline: 16px;
+  padding-block: 16px;
+}
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer }
+input, textarea { font: inherit; color: inherit }
+svg { display: block }
+:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; border-radius: 12px }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+
+/* ───────────── stand-in site (only context for the widget) ───────────── */
+.site {
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: calc(100vh - 32px);
+  border-radius: clamp(26px, 3.4vw, 48px);
+  background: linear-gradient(160deg, var(--frame-a), #571c26 55%, var(--frame-b));
+  box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .75), 0 0 0 1px rgba(255, 255, 255, .05);
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
+  gap: 20px;
+  padding: 18px;
+}
+.s-col { background: var(--panel); border-radius: 30px; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 18px 0 }
+.s-col img { width: 44px; height: auto }
+.s-dot { width: 36px; height: 36px; border-radius: 12px; background: rgba(255, 255, 255, .05) }
+.s-main { display: flex; flex-direction: column; gap: 18px; min-width: 0 }
+.s-top { height: 56px; border-radius: 22px; background: var(--panel); display: flex; align-items: center; padding: 0 18px; gap: 12px }
+.s-search { flex: 1; max-width: 360px; height: 36px; border-radius: 12px; background: rgba(255, 255, 255, .05) }
+.s-hero {
+  position: relative; overflow: hidden;
+  border-radius: 30px; padding: clamp(22px, 4vw, 44px);
+  background: radial-gradient(600px 300px at 15% 120%, rgba(226, 69, 63, .55), transparent 70%), linear-gradient(120deg, #2b0b12, #4a1620);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+}
+.s-hero small { color: var(--cream); font-weight: 700; letter-spacing: .02em }
+.s-hero h1 { font-size: clamp(24px, 3.6vw, 40px); font-weight: 900; margin: 8px 0 10px; text-wrap: balance }
+.s-hero p { color: var(--muted); max-width: 46ch; line-height: 1.9 }
+.s-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px }
+.s-card { background: var(--card); border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04) }
+.s-card img { width: 56px; height: 56px; object-fit: contain }
+.s-card b { font-size: 14px }
+.s-card span { font-size: 12px; color: var(--muted) }
+.s-tabbar { display: none }
+
+@media (max-width: 768px) {
+  .site { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 14px; padding-bottom: 110px }
+  .s-col { display: none }
+  .s-tabbar {
+    display: flex; position: fixed; left: 14px; right: 14px; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    height: 66px; border-radius: 22px; z-index: 50; justify-content: space-around; align-items: center;
+    background: linear-gradient(180deg, rgba(58, 15, 23, .85), rgba(22, 5, 9, .95));
+    box-shadow: 0 22px 44px -8px rgba(0, 0, 0, .65), inset 0 1px 0 rgba(255, 255, 255, .14);
+    backdrop-filter: blur(20px);
+  }
+  .s-tabbar i { width: 26px; height: 26px; border-radius: 9px; background: rgba(255, 255, 255, .1) }
+  :root { --edge: 16px }
+}
+
+/* ───────────── prototype controls ───────────── */
+.proto {
+  position: fixed; top: 16px; left: 16px; z-index: 9999; width: min(272px, calc(100vw - 32px));
+  background: rgba(20, 6, 10, .82); border: 1px solid var(--line); border-radius: 18px;
+  backdrop-filter: blur(16px); box-shadow: 0 20px 40px -12px rgba(0, 0, 0, .7);
+  font-size: 12.5px;
+}
+.proto summary { list-style: none; cursor: pointer; padding: 11px 14px; display: flex; align-items: center; gap: 8px; font-weight: 700 }
+.proto summary::-webkit-details-marker { display: none }
+.proto summary::after { content: ''; margin-inline-start: auto; width: 8px; height: 8px; border: solid var(--muted); border-width: 0 0 2px 2px; rotate: -45deg; translate: 0 -2px; transition: rotate .25s }
+.proto[open] summary::after { rotate: 135deg; translate: 0 2px }
+.proto .tag { font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 99px; background: var(--cream); color: var(--panel) }
+.proto-body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 7px }
+.proto-body p { color: var(--muted); line-height: 1.8; padding: 0 2px 4px }
+.proto-btn {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: start;
+  padding: 9px 12px; border-radius: 12px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line);
+  transition: background .2s, border-color .2s;
+}
+.proto-btn:hover { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .16) }
+.proto-btn em { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: rgba(61, 220, 132, .15); color: var(--green) }
+.proto-btn em.off { background: rgba(255, 178, 62, .14); color: var(--amber) }
+
+/* ───────────── the gem (Titan's red crystal) ───────────── */
+.gem { display: block; overflow: visible }
+
+/* ───────────── launcher orb ───────────── */
+.tw-orb {
+  position: fixed; right: var(--edge); bottom: var(--edge); z-index: 9996;
+  width: var(--orb); height: var(--orb); border-radius: 50%;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, .26), transparent 40%),
+    radial-gradient(circle at 50% 125%, rgba(226, 69, 63, .6), transparent 62%),
+    linear-gradient(160deg, #5c1d27, #22080d);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .28),
+    inset 0 -10px 18px rgba(0, 0, 0, .45),
+    0 18px 40px -8px rgba(0, 0, 0, .75),
+    0 0 0 1px rgba(255, 255, 255, .07),
+    0 0 44px rgba(226, 69, 63, .38);
+  transition: transform .5s var(--spring), box-shadow .3s, opacity .3s;
+  animation: orbIn .9s var(--spring) .3s backwards;
+}
+@keyframes orbIn { from { transform: scale(0) rotate(-40deg); opacity: 0 } }
+.tw-orb:hover { transform: scale(1.07) }
+.tw-orb:active { transform: scale(.94) }
+/* rotating light ring */
+.tw-orb .ring {
+  position: absolute; inset: -3px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 0deg, transparent 0 52%, rgba(255, 240, 179, .95) 70%, var(--red) 86%, transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  animation: spin 3.4s linear infinite;
+}
+/* sonar pulse, only while support is online and the panel is closed */
+.tw-orb .pulse { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(240, 100, 90, .7); pointer-events: none; animation: sonar 2.8s var(--ease) infinite }
+.tw-orb .pulse + .pulse { animation-delay: 1.4s }
+.tw.is-offline .tw-orb .pulse, .tw.is-open .tw-orb .pulse { display: none }
+.tw.is-offline .tw-orb .ring { background: conic-gradient(from 0deg, transparent 0 60%, rgba(255, 255, 255, .5) 85%, transparent 100%) }
+@keyframes spin { to { rotate: 360deg } }
+@keyframes sonar { 0% { scale: 1; opacity: .8 } 100% { scale: 1.75; opacity: 0 } }
+
+.tw-orb .ico { position: absolute; transition: transform .55s var(--spring), opacity .3s }
+.tw-orb .ico-gem { width: 22px; filter: drop-shadow(0 0 7px rgba(255, 70, 60, .95)) drop-shadow(0 2px 2px rgba(0, 0, 0, .5)); animation: gemFloat 3.2s ease-in-out infinite }
+.tw-orb .ico-x { width: 22px; height: 22px; opacity: 0; transform: rotate(-120deg) scale(.4) }
+.tw.is-open .tw-orb .ico-gem { opacity: 0; transform: rotate(140deg) scale(.2) }
+.tw.is-open .tw-orb .ico-x { opacity: 1; transform: none }
+@keyframes gemFloat { 50% { translate: 0 -2.5px; filter: drop-shadow(0 0 12px rgba(255, 90, 80, 1)) drop-shadow(0 2px 2px rgba(0, 0, 0, .5)) } }
+
+.tw-badge {
+  position: absolute; top: -3px; left: -3px; min-width: 22px; height: 22px; padding: 0 6px;
+  border-radius: 99px; display: grid; place-items: center;
+  background: var(--cream); color: var(--panel); font-size: 12px; font-weight: 900;
+  border: 2.5px solid #2a0a10; box-shadow: 0 4px 12px rgba(255, 240, 179, .35);
+  transform: scale(0); transition: transform .45s var(--spring);
+}
+.tw-badge.on { transform: scale(1) }
+
+/* hover / first-visit nudge pill */
+.tw-nudge {
+  position: fixed; right: calc(var(--edge) + var(--orb) + 14px); bottom: calc(var(--edge) + 12px); z-index: 9995;
+  display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 99px;
+  font-size: 13px; font-weight: 600; white-space: nowrap; pointer-events: none;
+  background: linear-gradient(180deg, rgba(40, 12, 18, .82), rgba(20, 6, 10, .9));
+  border: 1px solid rgba(255, 255, 255, .1); backdrop-filter: blur(16px);
+  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .12);
+  transform-origin: right center; opacity: 0; transform: translateX(14px) scale(.7);
+  transition: opacity .3s, transform .5s var(--spring);
+}
+.tw-nudge.on { opacity: 1; transform: none }
+.tw.is-open .tw-nudge { opacity: 0; transform: translateX(14px) scale(.7) }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(61, 220, 132, .18), 0 0 10px var(--green); flex: none }
+.tw.is-offline .dot { background: #9a8a8c; box-shadow: 0 0 0 3px rgba(154, 138, 140, .18) }
+
+/* incoming-message peek: a card that pops out of the orb */
+.tw-peek {
+  position: fixed; right: var(--edge); bottom: calc(var(--edge) + var(--orb) + 16px); z-index: 9995;
+  width: min(330px, calc(100vw - 2 * var(--edge)));
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; text-align: start;
+  padding: 14px; border-radius: 22px 22px 8px 22px;
+  background:
+    radial-gradient(120% 140% at 50% -40%, rgba(255, 255, 255, .14), transparent 55%),
+    radial-gradient(70% 160% at 100% 50%, rgba(226, 69, 63, .22), transparent 70%),
+    linear-gradient(180deg, rgba(40, 12, 18, .86), rgba(18, 6, 10, .92));
+  border: 1px solid rgba(240, 100, 90, .28); backdrop-filter: blur(20px) saturate(170%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 24px 50px -12px rgba(0, 0, 0, .8), 0 0 40px rgba(226, 69, 63, .22);
+  transform-origin: calc(100% - 32px) calc(100% + 40px);
+  opacity: 0; transform: scale(.2) translateY(30px); visibility: hidden;
+  transition: opacity .25s, transform .6s var(--spring), visibility 0s .6s;
+  cursor: pointer;
+}
+.tw-peek.on { opacity: 1; transform: none; visibility: visible; transition: opacity .25s, transform .6s var(--spring) }
+.tw-peek .who { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center }
+.tw-peek .who b { color: var(--text); font-size: 13px }
+.tw-peek p { font-size: 13.5px; line-height: 1.85; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+.tw-peek .x { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); background: rgba(255, 255, 255, .06) }
+.tw-peek .x:hover { color: var(--text); background: rgba(255, 255, 255, .12) }
+
+/* ───────────── agent avatars ───────────── */
+.av {
+  --c1: #f0645a; --c2: #7a50e6;
+  width: 30px; height: 30px; border-radius: 50%; flex: none; position: relative;
+  display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #fff;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .45), transparent 45%), linear-gradient(140deg, var(--c1), var(--c2));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2), 0 4px 10px rgba(0, 0, 0, .35);
+}
+.av.mehdi { --c1: #ffb23e; --c2: #e2453f }
+.av.lg { width: 52px; height: 52px; font-size: 20px }
+.av.on::after { content: ''; position: absolute; bottom: 0; right: 0; width: 28%; height: 28%; border-radius: 50%; background: var(--green); border: 2px solid #2a0a10 }
+.tw.is-offline .av.on::after { background: #8d7d80 }
+.stack { display: flex }
+.stack .av + .av { margin-inline-start: -10px }
+.stack .av { border: 2px solid #3a0f17 }
+
+/* ───────────── panel ───────────── */
+.tw-panel {
+  --clip-at: calc(100% - var(--orb) / 2) calc(100% + 16px + var(--orb) / 2);
+  position: fixed; right: var(--edge); bottom: calc(var(--edge) + var(--orb) + 16px); z-index: 9994;
+  width: 396px; height: min(680px, calc(100vh - var(--edge) - var(--orb) - 40px));
+  border-radius: 30px; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column;
+  background: linear-gradient(172deg, rgba(78, 24, 34, .94), rgba(34, 9, 15, .97) 60%, rgba(24, 6, 11, .98));
+  border: 1px solid rgba(255, 255, 255, .09);
+  box-shadow: 0 40px 90px -20px rgba(0, 0, 0, .85), 0 0 0 1px rgba(0, 0, 0, .3), 0 0 80px -20px rgba(226, 69, 63, .35), inset 0 1px 0 rgba(255, 255, 255, .12);
+  backdrop-filter: blur(26px) saturate(160%);
+  clip-path: circle(0 at var(--clip-at));
+  visibility: hidden;
+  transition: clip-path .55s cubic-bezier(.6, 0, .4, 1), visibility 0s .55s;
+}
+.tw.is-open .tw-panel { clip-path: circle(175% at var(--clip-at)); visibility: visible; transition: clip-path .8s cubic-bezier(.2, .75, .15, 1) }
+
+/* staggered content reveal as the circle opens */
+.tw-panel > .rv { opacity: 0; transform: translateY(16px); transition: opacity .3s, transform .3s }
+.tw.is-open .tw-panel > .rv { opacity: 1; transform: none; transition: opacity .5s .18s, transform .7s var(--spring) .18s }
+.tw.is-open .tw-panel > .views.rv { transition-delay: .28s }
+
+.aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden }
+.aurora i { position: absolute; width: 320px; height: 320px; border-radius: 50%; filter: blur(70px); opacity: .5; animation: drift 16s ease-in-out infinite alternate }
+.aurora i:nth-child(1) { background: var(--red); top: -140px; right: -90px }
+.aurora i:nth-child(2) { background: rgb(var(--violet)); bottom: -170px; left: -120px; opacity: .35; animation-duration: 21s }
+.aurora i:nth-child(3) { background: var(--cream); width: 160px; height: 160px; top: 40%; left: 30%; opacity: .07; animation-duration: 13s }
+@keyframes drift { 50% { translate: 40px 60px; scale: 1.15 } 100% { translate: -30px 20px; scale: .9 } }
+.grain {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* header */
+.tw-head { position: relative; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 16px 16px 14px 14px; border-bottom: 1px solid var(--line) }
+.emblem {
+  width: 46px; height: 46px; border-radius: 16px; flex: none; position: relative; display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, .22), transparent 45%), linear-gradient(160deg, #6a2330, #2a0a10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), inset 0 -6px 12px rgba(0, 0, 0, .4), 0 8px 20px -6px rgba(0, 0, 0, .7), 0 0 24px rgba(226, 69, 63, .3);
+}
+.emblem .gem { width: 15px; filter: drop-shadow(0 0 6px rgba(255, 70, 60, .9)) }
+.emblem .dot { position: absolute; bottom: -2px; left: -2px; border: 2px solid #3a0f17; width: 12px; height: 12px; box-shadow: 0 0 10px var(--green) }
+.tw-title { flex: 1; min-width: 0 }
+.tw-title b { display: block; font-size: 15.5px; font-weight: 800; letter-spacing: -.01em }
+.tw-title span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.ibtn { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; color: var(--muted); background: rgba(255, 255, 255, .04); border: 1px solid transparent; transition: background .2s, color .2s, border-color .2s; flex: none }
+.ibtn:hover { background: rgba(255, 255, 255, .09); color: var(--text); border-color: var(--line) }
+.ibtn svg { width: 18px; height: 18px }
+
+/* header menu */
+.menu {
+  position: absolute; top: 58px; left: 14px; z-index: 10; min-width: 220px; padding: 6px; border-radius: 16px;
+  background: rgba(28, 8, 13, .96); border: 1px solid rgba(255, 255, 255, .1); box-shadow: 0 24px 50px -10px rgba(0, 0, 0, .85);
+  transform-origin: top left; opacity: 0; transform: scale(.85) translateY(-6px); visibility: hidden;
+  transition: opacity .18s, transform .3s var(--spring), visibility 0s .3s;
+}
+.menu.on { opacity: 1; transform: none; visibility: visible; transition: opacity .18s, transform .35s var(--spring) }
+.menu button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 11px; font-size: 13.5px; text-align: start }
+.menu button:hover { background: rgba(255, 255, 255, .07) }
+.menu button svg { width: 17px; height: 17px; color: var(--muted) }
+.menu button.danger { color: #ff8f86 }
+.menu button.danger svg { color: #ff8f86 }
+.menu button em { margin-inline-start: auto; font-style: normal; font-size: 11px; color: var(--muted) }
+.menu hr { border: 0; height: 1px; background: var(--line); margin: 4px 8px }
+
+/* status banner (connection) */
+.banner {
+  position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 12.5px; font-weight: 600; overflow: hidden; height: 0; opacity: 0;
+  transition: height .35s var(--ease), opacity .3s;
+}
+.banner.on { height: 36px; opacity: 1 }
+.banner.warn { background: linear-gradient(90deg, transparent, rgba(255, 178, 62, .16), transparent); color: var(--amber) }
+.banner.ok { background: linear-gradient(90deg, transparent, rgba(61, 220, 132, .14), transparent); color: var(--green) }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: spin .8s linear infinite; flex: none }
+
+/* views */
+.views { position: relative; flex: 1; min-height: 0 }
+.view {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  opacity: 0; visibility: hidden; transform: translateY(18px) scale(.98); filter: blur(8px);
+  transition: opacity .3s, transform .45s var(--ease), filter .35s, visibility 0s .45s;
+}
+.view.on { opacity: 1; visibility: visible; transform: none; filter: none; transition: opacity .45s .08s, transform .6s var(--spring) .08s, filter .45s .08s }
+.scroll { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .15) transparent }
+
+/* ── welcome / pre-chat ── */
+.welcome { padding: 22px 20px 18px; gap: 18px }
+.hello { display: flex; flex-direction: column; gap: 10px }
+.hello .stack .av { border-color: #4a1620 }
+.hello h2 {
+  font-size: 25px; font-weight: 900; line-height: 1.5; letter-spacing: -.01em; text-wrap: balance;
+  background: linear-gradient(90deg, #fff, var(--cream)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hello p { font-size: 13.5px; color: var(--muted); line-height: 1.95; text-wrap: pretty }
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 99px; font-size: 12px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); color: #f3d7d6 }
+.chip svg { width: 14px; height: 14px; color: var(--cream) }
+.chip b { font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums }
+
+.form {
+  display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .03));
+  border: 1px solid rgba(255, 255, 255, .09); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.form-title { font-size: 13px; font-weight: 700; color: #f3d7d6; display: flex; align-items: center; gap: 8px }
+.form-title::before { content: ''; width: 6px; height: 6px; border-radius: 2px; background: var(--red); rotate: 45deg; box-shadow: 0 0 8px var(--red) }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.field { position: relative }
+.field input {
+  width: 100%; height: 54px; padding: 22px 14px 6px; border-radius: 15px; outline: none; font-size: 14.5px; font-weight: 600;
+  background: rgba(10, 2, 5, .35); border: 1px solid rgba(255, 255, 255, .1);
+  transition: border-color .2s, box-shadow .25s, background .2s;
+}
+.field input[dir="ltr"] { text-align: right; letter-spacing: .04em; font-variant-numeric: tabular-nums }
+.field label { position: absolute; right: 15px; top: 17px; font-size: 13.5px; color: var(--muted); pointer-events: none; transform-origin: right top; transition: transform .25s var(--ease), color .2s }
+.field input:focus { border-color: rgba(240, 100, 90, .7); background: rgba(10, 2, 5, .5); box-shadow: 0 0 0 4px rgba(226, 69, 63, .16), 0 0 24px -4px rgba(226, 69, 63, .45) }
+.field input:focus + label, .field input:not(:placeholder-shown) + label { transform: translateY(-10px) scale(.78); color: #f3b3ad }
+.field input::placeholder { color: transparent }
+.field input:focus::placeholder { color: rgba(201, 141, 146, .45) }
+.field .ok { position: absolute; left: 14px; top: 18px; width: 18px; height: 18px; color: var(--green); opacity: 0; transform: scale(.4); transition: opacity .2s, transform .4s var(--spring) }
+.field.valid .ok { opacity: 1; transform: none }
+.field.bad input { border-color: rgba(255, 110, 100, .85); box-shadow: 0 0 0 4px rgba(226, 69, 63, .14) }
+.field.bad { animation: shake .4s }
+.err { font-size: 11.5px; color: #ff9d94; padding: 5px 4px 0; min-height: 0; display: none }
+.field.bad .err { display: block }
+@keyframes shake { 20%, 60% { translate: -5px 0 } 40%, 80% { translate: 5px 0 } }
+
+.cta {
+  position: relative; overflow: hidden; height: 52px; border-radius: 16px; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, var(--red-2), var(--red) 55%, #c9302b);
+  box-shadow: 0 14px 30px -10px rgba(226, 69, 63, .8), inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 -3px 0 rgba(0, 0, 0, .15);
+  transition: transform .3s var(--spring), box-shadow .3s, filter .2s;
+}
+.cta:hover { transform: translateY(-2px); box-shadow: 0 20px 36px -10px rgba(226, 69, 63, .9), inset 0 1px 0 rgba(255, 255, 255, .35) }
+.cta:active { transform: scale(.98) }
+.cta::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .35) 50%, transparent 65%); translate: 120% 0; transition: translate .7s var(--ease) }
+.cta:hover::after { translate: -120% 0 }
+.cta svg { width: 18px; height: 18px }
+.cta[aria-busy="true"] { pointer-events: none; filter: saturate(.8) }
+.cta[aria-busy="true"] .lbl { opacity: 0 }
+.cta .spin { position: absolute; display: none }
+.cta[aria-busy="true"] .spin { display: block; width: 20px; height: 20px }
+.cta.ghost { background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); font-weight: 700 }
+.privacy { display: flex; gap: 8px; align-items: center; font-size: 11.5px; color: var(--muted-2); line-height: 1.8 }
+.privacy svg { width: 14px; height: 14px; flex: none }
+.offline-card { display: none; gap: 10px; padding: 12px 14px; border-radius: 16px; font-size: 12.5px; line-height: 1.9; color: #f6dcae; background: rgba(255, 178, 62, .08); border: 1px solid rgba(255, 178, 62, .2) }
+.offline-card svg { width: 18px; height: 18px; flex: none; margin-top: 3px; color: var(--amber) }
+.tw.is-offline .offline-card { display: flex }
+
+/* ── chat ── */
+.log { flex: 1; min-height: 0; padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 3px; scroll-behavior: smooth }
+.sep { align-self: center; margin: 8px 0 10px; font-size: 11.5px; color: var(--muted); padding: 4px 12px; border-radius: 99px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line) }
+.sys { align-self: center; display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 12px; color: var(--muted); text-align: center; line-height: 1.8; max-width: 92%; animation: fadeUp .5s var(--ease) both }
+.sys .av { width: 22px; height: 22px; font-size: 10px; animation: joinPop .7s var(--spring) both }
+.sys b { color: #f3d7d6; font-weight: 700 }
+.sys.note { display: block; padding: 10px 14px; border-radius: 14px; background: rgba(255, 178, 62, .07); border: 1px solid rgba(255, 178, 62, .18); color: #f6dcae }
+@keyframes joinPop { from { scale: 0; rotate: -60deg } }
+@keyframes fadeUp { from { opacity: 0; translate: 0 8px } }
+
+.m { display: flex; align-items: flex-end; gap: 8px; max-width: 86% }
+.m.agent { align-self: flex-start }
+.m.me { align-self: flex-end; flex-direction: row-reverse }
+.m.first { margin-top: 8px }
+.m .av { width: 28px; height: 28px; font-size: 12px }
+.m .av.ghost { visibility: hidden }
+.bub {
+  position: relative; padding: 9px 13px 7px; border-radius: 19px; font-size: 14px; line-height: 1.9; min-width: 0;
+  overflow-wrap: anywhere; white-space: pre-wrap;
+}
+.agent .bub { background: rgba(255, 255, 255, .075); border: 1px solid rgba(255, 255, 255, .07); border-top-right-radius: 7px; border-bottom-right-radius: 7px; transform-origin: bottom right; animation: inAgent .55s var(--spring) both }
+.agent.first .bub { border-top-right-radius: 19px }
+.agent.last .bub { border-bottom-right-radius: 19px }
+.agent.first.last .bub, .agent.last .bub { border-bottom-right-radius: 6px }
+.me .bub {
+  color: #fff; background: linear-gradient(140deg, var(--red-2), var(--red) 60%, #c52f29);
+  box-shadow: 0 10px 22px -10px rgba(226, 69, 63, .85), inset 0 1px 0 rgba(255, 255, 255, .25);
+  border-top-left-radius: 7px; border-bottom-left-radius: 7px; transform-origin: bottom left; animation: inMe .5s var(--spring) both;
+}
+.me.first .bub { border-top-left-radius: 19px }
+.me.last .bub { border-bottom-left-radius: 6px }
+@keyframes inMe { from { opacity: 0; transform: translate(-14px, 14px) scale(.6) } }
+@keyframes inAgent { from { opacity: 0; transform: translate(14px, 14px) scale(.6) } }
+.meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 10.5px; opacity: .72; margin-top: 1px; font-variant-numeric: tabular-nums; direction: ltr }
+.agent .meta { justify-content: flex-start; color: var(--muted); opacity: 1 }
+.ticks { width: 16px; height: 12px; position: relative }
+.ticks svg { position: absolute; inset: 0; width: 16px; height: 12px; transition: opacity .25s, transform .4s var(--spring) }
+.ticks .t-clock, .ticks .t-one, .ticks .t-two { opacity: 0; transform: scale(.4) }
+.ticks[data-s="pending"] .t-clock, .ticks[data-s="sent"] .t-one, .ticks[data-s="seen"] .t-two { opacity: 1; transform: none }
+.ticks[data-s="seen"] .t-two { color: var(--cream) }
+.ticks[data-s="pending"] .t-clock { animation: spin 2s linear infinite }
+.bub.img { padding: 4px; background: rgba(255, 255, 255, .06) }
+.me .bub.img { background: linear-gradient(140deg, var(--red-2), #c52f29) }
+.bub.img img { display: block; width: 210px; max-width: 100%; aspect-ratio: auto; max-height: 260px; object-fit: cover; border-radius: 15px; cursor: zoom-in }
+.bub.img .meta { position: absolute; bottom: 9px; left: 10px; padding: 1px 7px; border-radius: 99px; background: rgba(0, 0, 0, .45); backdrop-filter: blur(6px); opacity: 1; color: #fff }
+.up { position: absolute; inset: 4px; border-radius: 15px; display: grid; place-items: center; background: rgba(15, 4, 7, .45); backdrop-filter: blur(3px); transition: opacity .3s }
+.up svg { width: 46px; height: 46px; rotate: -90deg }
+.up circle { fill: none; stroke-width: 3.5 }
+.up .trk { stroke: rgba(255, 255, 255, .2) }
+.up .bar { stroke: #fff; stroke-linecap: round; stroke-dasharray: 113; stroke-dashoffset: 113; transition: stroke-dashoffset .15s linear }
+
+.typing { display: flex; gap: 5px; padding: 14px 16px; align-items: center; height: 42px }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blob 1.2s ease-in-out infinite }
+.typing i:nth-child(2) { animation-delay: .15s }
+.typing i:nth-child(3) { animation-delay: .3s }
+@keyframes blob { 0%, 60%, 100% { transform: translateY(0) scale(1, 1); background: var(--muted) } 25% { transform: translateY(-6px) scale(.85, 1.15); background: var(--cream) } 40% { transform: translateY(0) scale(1.2, .8) } }
+
+.jump {
+  position: absolute; left: 50%; bottom: 12px; translate: -50% 0; z-index: 3; display: flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px; border-radius: 99px; font-size: 12.5px; font-weight: 700;
+  background: var(--cream); color: var(--panel); box-shadow: 0 10px 24px -6px rgba(0, 0, 0, .6);
+  opacity: 0; transform: translateY(14px) scale(.8); pointer-events: none; transition: opacity .2s, transform .4s var(--spring);
+}
+.jump.on { opacity: 1; transform: none; pointer-events: auto }
+.jump svg { width: 15px; height: 15px }
+.logwrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column }
+
+.composer { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 2 }
+.attach-prev { display: none; align-items: center; gap: 10px; padding: 6px; border-radius: 16px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); animation: fadeUp .35s var(--ease) }
+.attach-prev.on { display: flex }
+.attach-prev img { width: 48px; height: 48px; border-radius: 11px; object-fit: cover }
+.attach-prev span { flex: 1; min-width: 0; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr; text-align: right }
+.box {
+  display: flex; align-items: flex-end; gap: 4px; padding: 5px; border-radius: 22px;
+  background: rgba(10, 2, 5, .45); border: 1px solid rgba(255, 255, 255, .1);
+  transition: border-color .2s, box-shadow .25s;
+}
+.box:focus-within { border-color: rgba(240, 100, 90, .55); box-shadow: 0 0 0 4px rgba(226, 69, 63, .13), 0 0 30px -8px rgba(226, 69, 63, .5) }
+.box textarea { flex: 1; min-width: 0; resize: none; border: 0; outline: none; background: none; font-size: 14px; line-height: 1.8; padding: 8px 6px; max-height: 120px; height: 41px }
+.box textarea::placeholder { color: var(--muted-2) }
+.send {
+  width: 40px; height: 40px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(140deg, var(--red-2), var(--red) 60%, #c52f29);
+  box-shadow: 0 8px 18px -6px rgba(226, 69, 63, .8), inset 0 1px 0 rgba(255, 255, 255, .3);
+  transition: transform .35s var(--spring), opacity .2s, filter .2s;
+}
+.send svg { width: 18px; height: 18px; transform: scaleX(-1) }
+.send:disabled { opacity: .35; filter: grayscale(.6); transform: scale(.88); cursor: default; box-shadow: none }
+.send:not(:disabled):hover { transform: scale(1.08) rotate(-8deg) }
+.send.fly svg { animation: fly .5s var(--ease) }
+@keyframes fly { 45% { transform: scaleX(-1) translate(14px, -14px); opacity: 0 } 50% { transform: scaleX(-1) translate(-14px, 14px); opacity: 0 } 100% { transform: scaleX(-1); opacity: 1 } }
+.hint { font-size: 10.5px; color: var(--muted-2); text-align: center }
+.hint kbd { font-family: inherit; font-size: 10px; padding: 0 5px; border-radius: 5px; background: rgba(255, 255, 255, .08); border: 1px solid var(--line) }
+
+/* drop overlay, lightbox, confirm sheet, inline toast */
+.drop { position: absolute; inset: 10px; z-index: 20; border-radius: 22px; border: 2px dashed rgba(255, 240, 179, .6); background: rgba(40, 10, 16, .85); display: grid; place-items: center; text-align: center; font-weight: 700; color: var(--cream); opacity: 0; pointer-events: none; transition: opacity .2s }
+.drop.on { opacity: 1 }
+.drop svg { width: 34px; height: 34px; margin: 0 auto 8px }
+.lightbox { position: absolute; inset: 0; z-index: 30; background: rgba(8, 2, 4, .9); display: grid; place-items: center; padding: 20px; opacity: 0; visibility: hidden; transition: opacity .25s, visibility 0s .25s; cursor: zoom-out }
+.lightbox.on { opacity: 1; visibility: visible; transition: opacity .25s }
+.lightbox img { max-width: 100%; max-height: 100%; border-radius: 16px; transform: scale(.9); transition: transform .4s var(--spring) }
+.lightbox.on img { transform: none }
+.scrim { position: absolute; inset: 0; z-index: 25; background: rgba(8, 2, 4, .6); opacity: 0; visibility: hidden; transition: opacity .25s, visibility 0s .25s }
+.scrim.on { opacity: 1; visibility: visible; transition: opacity .25s }
+.sheet {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 26; padding: 20px; border-radius: 24px;
+  background: linear-gradient(180deg, #4a1620, #2a0a10); border: 1px solid rgba(255, 255, 255, .1); box-shadow: 0 -10px 40px rgba(0, 0, 0, .5);
+  transform: translateY(120%); transition: transform .45s var(--spring);
+}
+.sheet.on { transform: none }
+.sheet h3 { font-size: 16px; font-weight: 800 }
+.sheet p { font-size: 13px; color: var(--muted); line-height: 1.9; margin: 6px 0 16px }
+.sheet .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.sheet .cta { height: 46px; font-size: 14px }
+.itoast { position: absolute; top: 12px; left: 50%; translate: -50% 0; z-index: 40; padding: 9px 16px; border-radius: 99px; font-size: 12.5px; font-weight: 600; white-space: nowrap; background: rgba(176, 22, 40, .92); border: 1px solid rgba(255, 140, 140, .4); box-shadow: 0 12px 30px -8px rgba(0, 0, 0, .7); opacity: 0; transform: translateY(-14px) scale(.9); pointer-events: none; transition: opacity .2s, transform .4s var(--spring) }
+.itoast.on { opacity: 1; transform: none }
+
+/* ── rating ── */
+.rate { padding: 26px 22px 20px; align-items: center; text-align: center; gap: 14px }
+.rate .emblem { width: 64px; height: 64px; border-radius: 22px }
+.rate .emblem .gem { width: 20px }
+.rate h3 { font-size: 19px; font-weight: 900; text-wrap: balance; line-height: 1.6 }
+.rate > p { font-size: 13px; color: var(--muted); line-height: 1.9; margin-top: -6px }
+.gems { display: flex; gap: 6px; direction: ltr; padding: 6px 0 0 }
+.gems button { width: 46px; height: 58px; display: grid; place-items: center; border-radius: 14px; position: relative; transition: transform .35s var(--spring), background .2s }
+.gems button:hover { background: rgba(255, 255, 255, .05) }
+.gems .gem { width: 20px; filter: grayscale(1) brightness(.55); opacity: .7; transition: filter .3s, opacity .3s, transform .45s var(--spring) }
+.gems button.lit .gem { filter: drop-shadow(0 0 8px rgba(255, 70, 60, .9)); opacity: 1; transform: translateY(-3px) scale(1.15) }
+.gems button.lit { transform: none }
+.p { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 2px; background: var(--cream); pointer-events: none; animation: burst .75s var(--ease) forwards }
+.p.r { background: var(--red-2) }
+@keyframes burst { from { transform: translate(-50%, -50%) rotate(0) scale(1); opacity: 1 } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(220deg) scale(.2); opacity: 0 } }
+.rate-label { height: 22px; font-size: 13.5px; font-weight: 700; color: var(--cream) }
+.rate textarea { width: 100%; height: 84px; resize: none; padding: 12px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.8; outline: none; background: rgba(10, 2, 5, .35); border: 1px solid rgba(255, 255, 255, .1); transition: border-color .2s, box-shadow .2s }
+.rate textarea:focus { border-color: rgba(240, 100, 90, .6); box-shadow: 0 0 0 4px rgba(226, 69, 63, .13) }
+.rate .cta:disabled { opacity: .45; pointer-events: none }
+.linkbtn { font-size: 12.5px; color: var(--muted); text-decoration: underline; text-underline-offset: 4px }
+.done { justify-content: center }
+.done .big { width: 92px; height: 92px; border-radius: 30px; animation: joinPop .8s var(--spring) both }
+.done .big .gem { width: 30px }
+
+/* ───────────── phones: full-screen sheet, orb above the tab bar ───────────── */
+@media (max-width: 560px) {
+  :root { --orb: 58px }
+  .tw-orb, .tw-nudge { bottom: calc(env(safe-area-inset-bottom, 0px) + 92px) }
+  .tw-nudge { bottom: calc(env(safe-area-inset-bottom, 0px) + 101px) }
+  .tw-peek { bottom: calc(env(safe-area-inset-bottom, 0px) + 92px + var(--orb) + 14px) }
+  .tw-panel {
+    --clip-at: calc(100% - var(--edge) - var(--orb) / 2) calc(100% - 92px - var(--orb) / 2);
+    inset: 0; width: auto; height: 100dvh; border-radius: 0; border: 0;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .tw.is-open .tw-orb { opacity: 0; pointer-events: none; transform: scale(.6) }
+  .hint { display: none }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important }
+}
+</style>
+</head>
+<body>
+
+
+<!-- shared SVG symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gHi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc2b8" /><stop offset="1" stop-color="#ff6b5c" /></linearGradient>
+    <linearGradient id="gLo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7302a" /><stop offset="1" stop-color="#7d0f10" /></linearGradient>
+  </defs>
+  <symbol id="gem" viewBox="0 0 24 40">
+    <polygon points="12,0 4,15 12,17.5" fill="url(#gHi)" />
+    <polygon points="12,0 20,15 12,17.5" fill="#f0453a" />
+    <polygon points="4,15 12,17.5 12,40" fill="url(#gLo)" />
+    <polygon points="20,15 12,17.5 12,40" fill="#c4231f" />
+    <polygon points="12,2.5 8.6,12 12,13.2" fill="#fff" opacity=".6" />
+  </symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none" /></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" /></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="1.9" /><circle cx="12" cy="12" r="1.9" /><circle cx="19" cy="12" r="1.9" /></g></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 17-3-7-7-2z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" /></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><path d="M20 11.5l-7.8 7.8a5 5 0 01-7.1-7.1l8.5-8.5a3.3 3.3 0 014.7 4.7l-8.5 8.5a1.7 1.7 0 01-2.4-2.4l7.8-7.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none" /></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" /><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" /></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="3" stroke="currentColor" stroke-width="1.9" fill="none" /><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5" stroke="currentColor" stroke-width="1.9" fill="none" /></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 004 0" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" fill="none" /></symbol>
+  <symbol id="i-end" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3M10 8l-4 4 4 4M6 12h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" fill="none" /></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3.5" stroke="currentColor" stroke-width="1.9" fill="none" /><circle cx="9" cy="10" r="1.8" fill="currentColor" /><path d="M5 18l5-5 3 3 2.5-2.5L20 18" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" fill="none" /></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" fill="none" /></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24"><path d="M9 4L7 20M17 4l-2 16M4.5 9h15M4 15h15" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none" /></symbol>
+</svg>
+
+<!-- ───────── stand-in Titan page ───────── -->
+<div class="site" aria-hidden="true">
+  <aside class="s-col"><img src="data:image/webp;base64,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" alt=""><i class="s-dot"></i><i class="s-dot"></i><i class="s-dot"></i><i class="s-dot"></i></aside>
+  <div class="s-main">
+    <div class="s-top"><div class="s-search"></div></div>
+    <section class="s-hero">
+      <small>فصل پاییز ۱۴۰۵</small>
+      <h1>بازی کن. رقابت کن. فتح کن.</h1>
+      <p>ثبت‌نام کاپ والورانت باز شد. جایزه‌ی کل ۲۵۰ میلیون تومان، ۶۴ تیم، بِراکت حذفی.</p>
+    </section>
+    <div class="s-grid">
+      <div class="s-card"><img src="data:image/webp;base64,UklGRgAFAABXRUJQVlA4WAoAAAAQAAAAXwAAXwAAQUxQSPEDAAABBlrbNhmSpsjM6s+2ud2zNo9s2zZ/gW3buz1Y27Zt27YmszLioDWbVYeLNyJiAvAvuwZAibnMEgCrrpzUEDBorIIA48rHWMJKR9//3rd4/76jVyJYUzKWsOGj0qZuSLCl4jD+CkH0IY/Q4KOgbwK5ElHU3pCg3KaqvN5FtjQszf9U+hlADB4aGUC/fDaXbEkYO/x18QzEIE01MuDl5WHWlIPD2dLPQBT8dOfZ59z1o3BkoF9OJVcKiiVjACOKP3IGAdCjg0RGzMOixpZDj3hGHn9YmWAzBWGNnyIYXi4lVwKGJv/MsWFtGmQIgBlEG3EORP5xApniZdhOAsNLL1WoZYWuEs9Q2YKyMjiNPSNiWeMIpomaFSIYnk8oA4ebJXAub2cG1NLQoA8l5yA3kSueoUclsMqd5FoZKN0vgVUeITsgJinj7DNNbrSDnG2uOsje2uRJ60yhTAYCnpKcg1xPHd4syrk8QYDJ0FG6DsCE2fPfkJxVHqouVFXtAmpQhT4hOau8Pn/2OAJcQRSTDn7m+z+8cKME9dBcA3IEqHCj9P/x7TMHTSRXCMUmn0kjN5cOubk0froxuQJY2lHg8wi0iB22iIB6wQ5kk7NmsRCVE9XoFzU2ObpTPCfr5XZKzdIieeSEo3aRTSvDfuJT8rInaWonp3ZCeuenpuldnNql6V2eWj29elsxKDqL6mORHHrayQWAdqICQNu5LL3eNqJ8d+2Nv0lsL8qvN1z9rcQ26gXK5dmZhIXe5rwdxVsLEmY8K3mrXnKFiWFpGgRaUXxsFYMsT4NAS/pYAlE+H2pBFTpb/mqlcg5VjMXQzyS26EmvrxX/PstYMm7I/RI0AlCV+4Y4Q9bM+I1LAF6OogwwNKxbWvYMI0PIcLh4LoGIX+aTAwxh3Zu+8PjixnUIhuAw95eIVr0FQpDHnAXBWMLoqo4iWEOwTh+RwK36ioQg3WQcAaoAYJUANVSXwG10p9fbDoJcXqGKIRjrFIZgMqrUxXM7vcWCl0cXI7jMWQCaOcIij4jnYvW1hyC/Hz+X2pxz/G8SuGBXdIAg+OWqXZecMAzjF9vp6l8EgTvopiy13k4QgwD44RN8JwBC5NIBYlAWAKwauVMv9fR6BqAxIgcPpJfL0+seoAH3oqVXT01xWWqXpndxauend3pqJ6d3YGr7p2ZpcY4pRSxGNi1YekB8Ol7uIUuJOywTc01FNSxpXGpQ7CbweUxQvWBXckhfsfWXkuiXW5GiiIophz37/Z8+R1DNm4ZcNeSqQXNVBfrx1/fPHT6FHIqpACbMWaC2QK1a61KFNq2iplWtqVYX0PmYO4EAh6KajJJUQ0U29m839E/XAFZQOCDoAAAAEAgAnQEqYABgAD5hKI5FJCKhF48M2EAGBLSG4jxAAA8U6TFJK9eRdmzBgMRMPvjyZgVmpDxQO3quKNXKnpMbw+GP65y4bQf3YAD+zXAg/gO9D/WK//+eJ//z8x//6DggV2GJQt3Dw/yEns0qfmfjJyTHineH0ch2Z2e+RehJ+iZlLcYdnFbZ/ZnQFFN+S9PG4nPnd09+rzXVOWIB2ssk77hEb02LXMkYPXh6gAuw7dld3bWJ4kXDpAYNrjfUWZL74ggVW5R0O4/+EW9CUApGfCdtUzszDZZ8+2sccs2I2ISRnI//KxAAAA==" alt=""><b>ویباکس فورتنایت</b><span>از ۳۹۰٬۰۰۰ تومان</span></div>
+      <div class="s-card"><img src="data:image/webp;base64,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" alt=""><b>کاپ فصلی والورانت</b><span>ثبت‌نام باز است</span></div>
+      <div class="s-card"><img src="data:image/webp;base64,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" alt=""><b>گیفت‌کارت پلی‌استیشن</b><span>تحویل آنی</span></div>
+      <div class="s-card"><img src="data:image/webp;base64,UklGRgAFAABXRUJQVlA4WAoAAAAQAAAAXwAAXwAAQUxQSPEDAAABBlrbNhmSpsjM6s+2ud2zNo9s2zZ/gW3buz1Y27Zt27YmszLioDWbVYeLNyJiAvAvuwZAibnMEgCrrpzUEDBorIIA48rHWMJKR9//3rd4/76jVyJYUzKWsOGj0qZuSLCl4jD+CkH0IY/Q4KOgbwK5ElHU3pCg3KaqvN5FtjQszf9U+hlADB4aGUC/fDaXbEkYO/x18QzEIE01MuDl5WHWlIPD2dLPQBT8dOfZ59z1o3BkoF9OJVcKiiVjACOKP3IGAdCjg0RGzMOixpZDj3hGHn9YmWAzBWGNnyIYXi4lVwKGJv/MsWFtGmQIgBlEG3EORP5xApniZdhOAsNLL1WoZYWuEs9Q2YKyMjiNPSNiWeMIpomaFSIYnk8oA4ebJXAub2cG1NLQoA8l5yA3kSueoUclsMqd5FoZKN0vgVUeITsgJinj7DNNbrSDnG2uOsje2uRJ60yhTAYCnpKcg1xPHd4syrk8QYDJ0FG6DsCE2fPfkJxVHqouVFXtAmpQhT4hOau8Pn/2OAJcQRSTDn7m+z+8cKME9dBcA3IEqHCj9P/x7TMHTSRXCMUmn0kjN5cOubk0froxuQJY2lHg8wi0iB22iIB6wQ5kk7NmsRCVE9XoFzU2ObpTPCfr5XZKzdIieeSEo3aRTSvDfuJT8rInaWonp3ZCeuenpuldnNql6V2eWj29elsxKDqL6mORHHrayQWAdqICQNu5LL3eNqJ8d+2Nv0lsL8qvN1z9rcQ26gXK5dmZhIXe5rwdxVsLEmY8K3mrXnKFiWFpGgRaUXxsFYMsT4NAS/pYAlE+H2pBFTpb/mqlcg5VjMXQzyS26EmvrxX/PstYMm7I/RI0AlCV+4Y4Q9bM+I1LAF6OogwwNKxbWvYMI0PIcLh4LoGIX+aTAwxh3Zu+8PjixnUIhuAw95eIVr0FQpDHnAXBWMLoqo4iWEOwTh+RwK36ioQg3WQcAaoAYJUANVSXwG10p9fbDoJcXqGKIRjrFIZgMqrUxXM7vcWCl0cXI7jMWQCaOcIij4jnYvW1hyC/Hz+X2pxz/G8SuGBXdIAg+OWqXZecMAzjF9vp6l8EgTvopiy13k4QgwD44RN8JwBC5NIBYlAWAKwauVMv9fR6BqAxIgcPpJfL0+seoAH3oqVXT01xWWqXpndxauend3pqJ6d3YGr7p2ZpcY4pRSxGNi1YekB8Ol7uIUuJOywTc01FNSxpXGpQ7CbweUxQvWBXckhfsfWXkuiXW5GiiIophz37/Z8+R1DNm4ZcNeSqQXNVBfrx1/fPHT6FHIqpACbMWaC2QK1a61KFNq2iplWtqVYX0PmYO4EAh6KajJJUQ0U29m839E/XAFZQOCDoAAAAEAgAnQEqYABgAD5hKI5FJCKhF48M2EAGBLSG4jxAAA8U6TFJK9eRdmzBgMRMPvjyZgVmpDxQO3quKNXKnpMbw+GP65y4bQf3YAD+zXAg/gO9D/WK//+eJ//z8x//6DggV2GJQt3Dw/yEns0qfmfjJyTHineH0ch2Z2e+RehJ+iZlLcYdnFbZ/ZnQFFN+S9PG4nPnd09+rzXVOWIB2ssk77hEb02LXMkYPXh6gAuw7dld3bWJ4kXDpAYNrjfUWZL74ggVW5R0O4/+EW9CUApGfCdtUzszDZZ8+2sccs2I2ISRnI//KxAAAA==" alt=""><b>کوینز اپکس لجندز</b><span>از ۲۱۰٬۰۰۰ تومان</span></div>
+    </div>
+  </div>
+  <aside class="s-col"><i class="s-dot"></i><i class="s-dot"></i><i class="s-dot"></i></aside>
+  <nav class="s-tabbar"><i></i><i></i><i></i><i></i><i></i></nav>
+</div>
+
+<!-- ───────── prototype controls ───────── -->
+<details class="proto" id="proto" open>
+  <summary><span class="tag">پروتوتایپ</span> کنترل سناریوها</summary>
+  <div class="proto-body">
+    <p>ظاهر و رفتار ویجت را امتحان کنید. پاسخ‌های پشتیبان شبیه‌سازی شده‌اند.</p>
+    <button class="proto-btn" id="pPeek" type="button">پیام پشتیبان وقتی ویجت بسته است</button>
+    <button class="proto-btn" id="pOnline" type="button">وضعیت پشتیبان‌ها <em id="pOnlineV">آنلاین</em></button>
+    <button class="proto-btn" id="pNet" type="button">اتصال اینترنت <em id="pNetV">وصل</em></button>
+    <button class="proto-btn" id="pReset" type="button">شروع دوباره از اول</button>
+  </div>
+</details>
+
+<!-- ───────── widget ───────── -->
+<div class="tw" id="tw">
+  <div class="tw-nudge" id="nudge" aria-hidden="true"><span class="dot"></span><span id="nudgeText">سؤالی داری؟ ما آنلاینیم</span></div>
+
+  <div class="tw-peek" id="peek" role="button" tabindex="-1" aria-label="باز کردن پیام پشتیبان">
+    <span class="av on" id="peekAv">س</span>
+    <div>
+      <div class="who"><b id="peekName">سارا</b> · پشتیبانی تایتان</div>
+      <p id="peekText"></p>
+    </div>
+    <button class="x" id="peekX" type="button" aria-label="بستن پیش‌نمایش"><svg width="12" height="12"><use href="#i-x" /></svg></button>
+  </div>
+
+  <button class="tw-orb" id="orb" type="button" aria-expanded="false" aria-controls="panel" aria-label="پشتیبانی آنلاین">
+    <span class="ring"></span><span class="pulse"></span><span class="pulse"></span>
+    <svg class="ico ico-gem gem" viewBox="0 0 24 40"><use href="#gem" /></svg>
+    <svg class="ico ico-x" viewBox="0 0 24 24"><use href="#i-x" /></svg>
+    <span class="tw-badge" id="badge" aria-live="polite"></span>
+  </button>
+
+  <section class="tw-panel" id="panel" role="dialog" aria-modal="false" aria-labelledby="twTitle">
+    <div class="aurora"><i></i><i></i><i></i></div>
+    <div class="grain"></div>
+
+    <header class="tw-head rv">
+      <div class="emblem"><svg class="gem" viewBox="0 0 24 40"><use href="#gem" /></svg><span class="dot"></span></div>
+      <div class="tw-title">
+        <b id="twTitle">پشتیبانی تایتان</b>
+        <span id="status">آنلاین · معمولاً زیر ۲ دقیقه پاسخ می‌دیم</span>
+      </div>
+      <button class="ibtn" id="menuBtn" type="button" aria-label="گزینه‌ها" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-more" /></svg></button>
+      <button class="ibtn" id="minBtn" type="button" aria-label="کوچک کردن"><svg><use href="#i-down" /></svg></button>
+      <div class="menu" id="menu" role="menu">
+        <button type="button" role="menuitemcheckbox" id="mSound" aria-checked="true"><svg><use href="#i-bell" /></svg>صدای اعلان<em id="mSoundV">روشن</em></button>
+        <button type="button" role="menuitem" id="mTicket" hidden><svg><use href="#i-hash" /></svg>کد پیگیری<em id="mTicketV"></em></button>
+        <hr id="mHr" hidden>
+        <button type="button" role="menuitem" class="danger" id="mEnd" hidden><svg><use href="#i-end" /></svg>پایان گفتگو</button>
+      </div>
+    </header>
+
+    <div class="banner" id="banner" role="status"></div>
+
+    <div class="views rv">
+      <!-- 1. pre-chat -->
+      <div class="view welcome scroll on" id="vWelcome">
+        <div class="hello">
+          <div class="stack"><span class="av lg on">س</span><span class="av lg mehdi on">م</span></div>
+          <h2>سلام! کارت رو راه بندازیم؟</h2>
+          <p>سفارش، پرداخت، کد تحویلی یا ثبت‌نام تورنمنت؛ تیم پشتیبانی تایتان همین‌جا کنارته.</p>
+          <div class="chips">
+            <span class="chip"><svg><use href="#i-clock" /></svg>میانگین پاسخ امروز <b>۱:۴۰</b></span>
+            <span class="chip" id="chipOnline"><span class="dot"></span><b>۲</b> پشتیبان آنلاین</span>
+          </div>
+        </div>
+
+        <div class="offline-card" role="note"><svg><use href="#i-moon" /></svg><span>الان پشتیبان‌ها آنلاین نیستن. پیامت رو بذار؛ ساعت ۱۰ صبح تا ۱۲ شب جواب می‌دیم و با پیامک خبرت می‌کنیم.</span></div>
+
+        <form class="form" id="form" novalidate>
+          <div class="form-title">برای شروع گفتگو خودت رو معرفی کن</div>
+          <div class="row2">
+            <div class="field" id="fFirst">
+              <input id="first" name="first" autocomplete="given-name" placeholder="مثلاً طاها" maxlength="40" required>
+              <label for="first">نام</label>
+              <svg class="ok"><use href="#i-check" /></svg>
+              <div class="err" id="eFirst">نام رو وارد کن</div>
+            </div>
+            <div class="field" id="fLast">
+              <input id="last" name="last" autocomplete="family-name" placeholder="مثلاً رضایی" maxlength="60" required>
+              <label for="last">نام خانوادگی</label>
+              <svg class="ok"><use href="#i-check" /></svg>
+              <div class="err" id="eLast">نام خانوادگی رو وارد کن</div>
+            </div>
+          </div>
+          <div class="field" id="fPhone">
+            <input id="phone" name="phone" dir="ltr" inputmode="numeric" autocomplete="tel" placeholder="۰۹۱۲ ۳۴۵ ۶۷۸۹" required>
+            <label for="phone">شماره موبایل</label>
+            <svg class="ok"><use href="#i-check" /></svg>
+            <div class="err" id="ePhone">شماره موبایل باید ۱۱ رقم و با ۰۹ شروع بشه</div>
+          </div>
+          <button class="cta" id="startBtn" type="submit"><span class="lbl">شروع گفتگو</span><span class="spin"></span></button>
+          <div class="privacy"><svg><use href="#i-lock" /></svg>شماره‌ات فقط برای پیگیری همین گفتگو استفاده می‌شه.</div>
+        </form>
+      </div>
+
+      <!-- 2. chat -->
+      <div class="view" id="vChat">
+        <div class="logwrap">
+          <div class="log scroll" id="log" role="log" aria-live="polite" aria-label="گفتگو"></div>
+          <button class="jump" id="jump" type="button"><svg><use href="#i-down" /></svg>پیام جدید</button>
+        </div>
+        <div class="composer">
+          <div class="attach-prev" id="prev">
+            <img id="prevImg" alt="">
+            <span id="prevName"></span>
+            <button class="ibtn" id="prevX" type="button" aria-label="حذف تصویر"><svg><use href="#i-x" /></svg></button>
+          </div>
+          <div class="box">
+            <label class="ibtn" for="file" title="ارسال تصویر" style="cursor:pointer"><svg><use href="#i-clip" /></svg><span class="sr">پیوست تصویر</span></label>
+            <input type="file" id="file" accept="image/png,image/jpeg,image/webp" hidden>
+            <textarea id="input" rows="1" placeholder="پیامت رو بنویس…" aria-label="پیام" maxlength="2000"></textarea>
+            <button class="send" id="send" type="button" aria-label="ارسال" disabled><svg><use href="#i-send" /></svg></button>
+          </div>
+          <div class="hint"><kbd>Enter</kbd> ارسال · <kbd>Shift</kbd>+<kbd>Enter</kbd> خط جدید · تصویر رو می‌تونی بکشی و رها کنی</div>
+        </div>
+        <div class="drop" id="drop"><div><svg><use href="#i-img" /></svg>تصویر رو اینجا رها کن</div></div>
+      </div>
+
+      <!-- 3. rating -->
+      <div class="view rate scroll" id="vRate">
+        <div class="emblem"><svg class="gem" viewBox="0 0 24 40"><use href="#gem" /></svg></div>
+        <h3 id="rateTitle">گفتگو با سارا چطور بود؟</h3>
+        <p>امتیازت مستقیم به تیم پشتیبانی می‌رسه.</p>
+        <div class="gems" id="gems" role="radiogroup" aria-label="امتیاز"></div>
+        <div class="rate-label" id="rateLabel" aria-live="polite"></div>
+        <textarea id="rateNote" placeholder="اگه نکته‌ای داری بنویس (اختیاری)" aria-label="نظر" maxlength="500"></textarea>
+        <button class="cta" id="rateSend" type="button" disabled><span class="lbl">ثبت امتیاز</span><span class="spin"></span></button>
+        <button class="linkbtn" id="rateSkip" type="button">رد شدن</button>
+      </div>
+
+      <!-- 4. done -->
+      <div class="view rate done" id="vDone">
+        <div class="emblem big"><svg class="gem" viewBox="0 0 24 40"><use href="#gem" /></svg></div>
+        <h3 id="doneTitle">ممنون!</h3>
+        <p>گفتگو بسته شد. هر وقت کاری داشتی، همین گوشه منتظرتیم.</p>
+        <button class="cta ghost" id="again" type="button" style="max-width:240px">شروع گفتگوی جدید</button>
+      </div>
+
+      <div class="scrim" id="scrim"></div>
+      <div class="sheet" id="sheet" role="alertdialog" aria-labelledby="sheetT">
+        <h3 id="sheetT">گفتگو تموم بشه؟</h3>
+        <p>بعد از پایان، دیگه نمی‌تونی توی همین گفتگو پیام بدی. برای سؤال بعدی یک گفتگوی جدید باز می‌شه.</p>
+        <div class="btns">
+          <button class="cta" id="sheetYes" type="button">بله، تمومش کن</button>
+          <button class="cta ghost" id="sheetNo" type="button">ادامه گفتگو</button>
+        </div>
+      </div>
+      <div class="lightbox" id="lightbox"><img id="lbImg" alt="تصویر ارسالی"></div>
+      <div class="itoast" id="itoast" role="alert"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const tw = $('tw'), orb = $('orb'), panel = $('panel'), log = $('log'), input = $('input'), send = $('send');
+
+  // ───────── helpers ─────────
+  const FA = '۰۱۲۳۴۵۶۷۸۹';
+  const fa = s => String(s).replace(/\d/g, d => FA[d]);
+  const toLatin = s => String(s).replace(/[۰-۹]/g, d => FA.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
+  const dayFmt = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { weekday: 'long', day: 'numeric', month: 'long' });
+  const now = () => timeFmt.format(new Date());
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const timers = new Set();
+  const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
+  const clearTimers = () => { timers.forEach(clearTimeout); timers.clear(); };
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const svgUse = (id, cls) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); if (cls) s.setAttribute('class', cls); const u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#' + id); s.appendChild(u); return s; };
+
+  // ───────── state ─────────
+  const AGENTS = { sara: { name: 'سارا', initial: 'س', cls: '' }, mehdi: { name: 'مهدی', initial: 'م', cls: 'mehdi' } };
+  const S = {
+    open: false, view: 'welcome', online: true, net: true, sound: true,
+    unread: 0, visitor: null, agent: null, lastFrom: null, lastRow: null,
+    queue: [], replyTimer: null, typingEl: null, attach: null, rating: 0, ticket: null, replyIdx: 0,
+  };
+
+  // ───────── sound (only after a user gesture) ─────────
+  let ac = null, gestured = false;
+  ['pointerdown', 'keydown'].forEach(t => addEventListener(t, () => (gestured = true), { once: true, capture: true }));
+  const ping = () => {
+    if (!S.sound || !gestured) return;
+    try {
+      ac ??= new (window.AudioContext || window.webkitAudioContext)();
+      const t = ac.currentTime;
+      [[880, 0], [1320, .09]].forEach(([f, d]) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t + d); g.gain.linearRampToValueAtTime(.08, t + d + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d + .35);
+        o.connect(g).connect(ac.destination); o.start(t + d); o.stop(t + d + .4);
+      });
+    } catch { /* audio unavailable */ }
+  };
+
+  // ───────── open / close ─────────
+  let lastFocus = null;
+  function openPanel() {
+    if (S.open) return;
+    S.open = true; lastFocus = document.activeElement;
+    tw.classList.add('is-open'); orb.setAttribute('aria-expanded', 'true');
+    hidePeek(); nudge(false); setUnread(0);
+    later(() => {
+      if (S.view === 'welcome') $('first').focus({ preventScroll: true });
+      else if (S.view === 'chat') { input.focus({ preventScroll: true }); toBottom(false); }
+    }, 420);
+  }
+  function closePanel() {
+    if (!S.open) return;
+    S.open = false; closeMenu(); closeSheet();
+    tw.classList.remove('is-open'); orb.setAttribute('aria-expanded', 'false');
+    (lastFocus && lastFocus !== document.body ? lastFocus : orb).focus({ preventScroll: true });
+  }
+  orb.addEventListener('click', () => (S.open ? closePanel() : openPanel()));
+  $('minBtn').addEventListener('click', closePanel);
+
+  // nudge pill on hover and once on first visit
+  const nudgeEl = $('nudge');
+  const nudge = on => nudgeEl.classList.toggle('on', on && !S.open);
+  orb.addEventListener('mouseenter', () => nudge(true));
+  orb.addEventListener('mouseleave', () => nudge(false));
+  setTimeout(() => { nudge(true); setTimeout(() => nudge(false), 5200); }, 1600);
+
+  // ───────── unread + peek ─────────
+  function setUnread(n) {
+    S.unread = n;
+    const b = $('badge');
+    b.textContent = fa(n > 9 ? '9+' : n);
+    b.classList.toggle('on', n > 0);
+    document.title = n > 0 ? `(${fa(n)}) Titan Live Support` : 'Titan Live Support';
+  }
+  function showPeek(agent, text) {
+    $('peekName').textContent = agent.name;
+    const av = $('peekAv'); av.textContent = agent.initial; av.className = 'av on ' + agent.cls;
+    $('peekText').textContent = text;
+    const p = $('peek');
+    p.classList.remove('on'); void p.offsetWidth; p.classList.add('on');
+  }
+  function hidePeek() { $('peek').classList.remove('on'); }
+  $('peek').addEventListener('click', e => { if (!e.target.closest('#peekX')) openPanel(); });
+  $('peekX').addEventListener('click', e => { e.stopPropagation(); hidePeek(); });
+
+  // ───────── menu / sheet ─────────
+  const menu = $('menu'), menuBtn = $('menuBtn');
+  function closeMenu() { menu.classList.remove('on'); menuBtn.setAttribute('aria-expanded', 'false'); }
+  menuBtn.addEventListener('click', e => { e.stopPropagation(); const on = !menu.classList.contains('on'); menu.classList.toggle('on', on); menuBtn.setAttribute('aria-expanded', String(on)); });
+  document.addEventListener('click', e => { if (!e.target.closest('#menu')) closeMenu(); });
+  $('mSound').addEventListener('click', () => {
+    S.sound = !S.sound;
+    $('mSound').setAttribute('aria-checked', String(S.sound));
+    $('mSoundV').textContent = S.sound ? 'روشن' : 'خاموش';
+  });
+  $('mTicket').addEventListener('click', () => {
+    navigator.clipboard?.writeText(S.ticket).then(() => toast('کد پیگیری کپی شد', true), () => {});
+    closeMenu();
+  });
+  const openSheet = () => { $('scrim').classList.add('on'); $('sheet').classList.add('on'); $('sheetNo').focus(); };
+  const closeSheet = () => { $('scrim').classList.remove('on'); $('sheet').classList.remove('on'); };
+  $('mEnd').addEventListener('click', () => { closeMenu(); openSheet(); });
+  $('sheetNo').addEventListener('click', closeSheet);
+  $('scrim').addEventListener('click', closeSheet);
+  $('sheetYes').addEventListener('click', () => { closeSheet(); endChat(); });
+
+  function setChatMenu(on) { ['mTicket', 'mHr', 'mEnd'].forEach(id => ($(id).hidden = !on)); }
+
+  // ───────── inline toast ─────────
+  let toastT = null;
+  function toast(msg, good) {
+    const t = $('itoast');
+    t.textContent = msg;
+    t.style.background = good ? 'rgba(18,110,62,.92)' : '';
+    t.classList.add('on'); clearTimeout(toastT);
+    toastT = setTimeout(() => t.classList.remove('on'), 2600);
+  }
+
+  // ───────── views ─────────
+  function setView(v) {
+    S.view = v;
+    [['welcome', 'vWelcome'], ['chat', 'vChat'], ['rate', 'vRate'], ['done', 'vDone']].forEach(([k, id]) => $(id).classList.toggle('on', k === v));
+    setChatMenu(v === 'chat');
+  }
+
+  // ───────── pre-chat form ─────────
+  const nameOk = v => /^[\p{L}‌\s'-]{2,}$/u.test(v.trim());
+  function normPhone(v) {
+    let d = toLatin(v).replace(/\D/g, '');
+    if (d.startsWith('0098')) d = '0' + d.slice(4);
+    else if (d.startsWith('98') && d.length > 10) d = '0' + d.slice(2);
+    else if (d.startsWith('9')) d = '0' + d;
+    return d.slice(0, 11);
+  }
+  const groupPhone = d => fa([d.slice(0, 4), d.slice(4, 7), d.slice(7, 11)].filter(Boolean).join(' '));
+  const phoneOk = d => /^09\d{9}$/.test(d);
+
+  const fields = {
+    first: { f: $('fFirst'), ok: () => nameOk($('first').value) },
+    last: { f: $('fLast'), ok: () => nameOk($('last').value) },
+    phone: { f: $('fPhone'), ok: () => phoneOk(normPhone($('phone').value)) },
+  };
+  Object.entries(fields).forEach(([k, { f, ok }]) => {
+    const inp = $(k);
+    inp.addEventListener('input', () => {
+      if (k === 'phone') { inp.value = groupPhone(normPhone(inp.value)); inp.setSelectionRange(inp.value.length, inp.value.length); }
+      f.classList.toggle('valid', ok());
+      if (ok()) f.classList.remove('bad');
+    });
+    inp.addEventListener('blur', () => { if (inp.value && !ok()) markBad(f); });
+  });
+  function markBad(f) { f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); }
+
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    let firstBad = null;
+    Object.entries(fields).forEach(([k, { f, ok }]) => { if (!ok()) { markBad(f); firstBad ??= $(k); } });
+    if (firstBad) { firstBad.focus(); return; }
+    const btn = $('startBtn');
+    btn.setAttribute('aria-busy', 'true');
+    later(() => {
+      btn.removeAttribute('aria-busy');
+      S.visitor = { first: $('first').value.trim(), last: $('last').value.trim(), phone: normPhone($('phone').value) };
+      startChat();
+    }, 700);
+  });
+
+  // ───────── chat ─────────
+  function startChat() {
+    S.ticket = 'T-' + (2400 + Math.floor(Math.random() * 600));
+    $('mTicketV').textContent = fa(S.ticket);
+    log.replaceChildren();
+    S.lastFrom = null; S.lastRow = null;
+    log.append(el('div', 'sep', 'امروز · ' + dayFmt.format(new Date())));
+    sys(`گفتگو شروع شد · کد پیگیری ${fa(S.ticket)}`);
+    setView('chat');
+    later(() => input.focus({ preventScroll: true }), 450);
+    if (S.online) {
+      S.agent = AGENTS.sara;
+      later(() => { joinSys(S.agent); }, 1100);
+      later(() => agentSay(`سلام ${S.visitor.first} جان! من ${S.agent.name} هستم از پشتیبانی تایتان. چطور می‌تونم کمکت کنم؟`), 1600);
+    } else {
+      later(() => offlineNote(), 600);
+    }
+  }
+
+  function sys(text) { const n = el('div', 'sys'); n.textContent = text; log.append(n); S.lastFrom = 'sys'; S.lastRow = null; autoScroll(); }
+  function joinSys(agent) {
+    const n = el('div', 'sys');
+    const av = el('span', 'av ' + agent.cls, agent.initial);
+    const t = el('span'); const b = el('b', null, agent.name); t.append(b, ' به گفتگو پیوست');
+    n.append(av, t); log.append(n); S.lastFrom = 'sys'; S.lastRow = null; autoScroll();
+  }
+  function offlineNote() {
+    const n = el('div', 'sys note');
+    n.textContent = `پشتیبان‌ها الان آنلاین نیستن. پیامت ثبت می‌شه و به محض آنلاین شدن جواب می‌دیم؛ با پیامک به ${groupPhone(S.visitor.phone)} خبرت می‌کنیم.`;
+    log.append(n); S.lastFrom = 'sys'; S.lastRow = null; autoScroll();
+  }
+
+  /** Append a message row; consecutive messages from one sender form a group (one avatar, joined corners). */
+  function addRow(from, build) {
+    const grouped = S.lastFrom === from && S.lastRow;
+    if (grouped) S.lastRow.classList.remove('last');
+    const row = el('div', `m ${from} last${grouped ? '' : ' first'}`);
+    if (from === 'agent') {
+      const av = el('span', 'av ' + S.agent.cls, S.agent.initial);
+      if (grouped) { S.lastRow.querySelector('.av').classList.add('ghost'); }
+      row.append(av);
+    }
+    const bub = build();
+    row.append(bub);
+    log.append(row);
+    S.lastFrom = from; S.lastRow = row;
+    autoScroll(from === 'me');
+    return row;
+  }
+  function meta(state) {
+    const m = el('div', 'meta');
+    m.append(el('span', null, now()));
+    if (state) {
+      const t = el('span', 'ticks'); t.dataset.s = state;
+      t.append(svgUse('i-clock', 't-clock'), svgUse('i-check', 't-one'));
+      const two = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      two.setAttribute('class', 't-two'); two.setAttribute('viewBox', '0 0 28 24');
+      two.innerHTML = '<path d="M2 12.5l4.5 4.5L16 7.5M11 15.5l1.5 1.5L22 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+      t.append(two); m.append(t);
+    }
+    return m;
+  }
+
+  function agentSay(text) {
+    hideTyping();
+    addRow('agent', () => { const b = el('div', 'bub'); b.append(el('span', null, text), meta()); return b; });
+    if (!S.open || document.hidden) { setUnread(S.unread + 1); showPeek(S.agent, text); ping(); }
+    else if (!nearBottom()) showJump(); else ping();
+  }
+
+  function showTyping() {
+    if (S.typingEl) return;
+    const row = el('div', 'm agent first last');
+    row.append(el('span', 'av ' + S.agent.cls, S.agent.initial));
+    const b = el('div', 'bub typing'); b.setAttribute('aria-label', `${S.agent.name} در حال نوشتن است`);
+    b.append(el('i'), el('i'), el('i'));
+    row.append(b); log.append(row); S.typingEl = row; autoScroll();
+    $('status').textContent = `${S.agent.name} در حال نوشتن…`;
+  }
+  function hideTyping() { if (S.typingEl) { S.typingEl.remove(); S.typingEl = null; } setStatus(); }
+
+  /** Visitor message. Each one carries a client id so a retry after a dropped connection is never duplicated. */
+  function sendMine() {
+    const text = input.value.trim();
+    const img = S.attach;
+    if (!text && !img) return;
+    if (img) {
+      const row = addRow('me', () => {
+        const b = el('div', 'bub img');
+        const im = el('img'); im.src = img.url; im.alt = 'تصویر ارسالی';
+        im.addEventListener('click', () => openLightbox(img.url));
+        const up = el('div', 'up');
+        up.innerHTML = '<svg viewBox="0 0 44 44"><circle class="trk" cx="22" cy="22" r="18"/><circle class="bar" cx="22" cy="22" r="18"/></svg>';
+        b.append(im, up, meta('pending')); return b;
+      });
+      fakeUpload(row);
+      clearAttach();
+    }
+    if (text) {
+      const row = addRow('me', () => { const b = el('div', 'bub'); b.dir = 'auto'; b.append(el('span', null, text), meta('pending')); return b; });
+      S.queue.push({ row, text, cid: crypto.randomUUID?.() ?? String(Math.random()) });
+      flush();
+    }
+    input.value = ''; autosize(); updateSend();
+    send.classList.remove('fly'); void send.offsetWidth; send.classList.add('fly');
+    input.focus({ preventScroll: true });
+  }
+
+  function fakeUpload(row) {
+    const bar = row.querySelector('.bar'), up = row.querySelector('.up');
+    let p = 0;
+    const step = () => {
+      if (!row.isConnected) return;
+      if (!S.net) { later(step, 400); return; }
+      p = Math.min(1, p + .12 + Math.random() * .12);
+      bar.style.strokeDashoffset = String(113 * (1 - p));
+      if (p < 1) later(step, 140);
+      else {
+        later(() => { up.style.opacity = '0'; later(() => up.remove(), 300); }, 150);
+        S.queue.push({ row, text: '', img: true, cid: String(Math.random()) });
+        flush();
+      }
+    };
+    later(step, 200);
+  }
+
+  /** Deliver queued messages in order once the connection is up, then let the agent answer the whole batch. */
+  function flush() {
+    if (!S.net || !S.queue.length) return;
+    const batch = S.queue.splice(0);
+    batch.forEach((m, i) => later(() => setTicks(m.row, 'sent'), 250 + i * 120));
+    if (!S.online) {
+      if (!S.offlineAck) { S.offlineAck = true; later(() => sys('پیامت ثبت شد ✓ به محض آنلاین شدن پشتیبان‌ها جواب می‌دیم.'), 900); }
+      return;
+    }
+    scheduleReply(batch);
+  }
+  function setTicks(row, s) { const t = row.querySelector('.ticks'); if (t) t.dataset.s = s; }
+
+  function scheduleReply(batch) {
+    clearTimeout(S.replyTimer); timers.delete(S.replyTimer);
+    const all = [...(S.pendingBatch || []), ...batch];
+    S.pendingBatch = all;
+    S.replyTimer = later(() => {
+      if (!S.net || !S.online || S.view !== 'chat') return;
+      all.forEach(m => setTicks(m.row, 'seen'));
+      showTyping();
+      const reply = pickReply(all);
+      S.pendingBatch = [];
+      S.replyTimer = later(() => { if (S.view === 'chat' && S.net) agentSay(reply); else hideTyping(); }, 1100 + Math.min(1800, reply.length * 18));
+    }, 1200);
+  }
+
+  function pickReply(batch) {
+    const t = batch.map(m => m.text).join(' ');
+    if (batch.some(m => m.img)) return 'تصویر رسید، ممنون. دارم بررسیش می‌کنم؛ اگه شماره سفارش هم داری بفرست تا سریع‌تر پیداش کنم.';
+    if (/سفارش|order|ord/i.test(t)) return 'شماره سفارشت رو (مثل ⁨ORD-12345⁩) بفرست تا همین الان وضعیتش رو برات چک کنم.';
+    if (/کد|ویباکس|گیفت|فعال/.test(t)) return 'اگه کد تحویلی کار نمی‌کنه، یه اسکرین‌شات از پیغام خطا بفرست. با دکمه‌ی سنجاق کنار پیام می‌تونی تصویر بفرستی.';
+    if (/تورنمنت|مسابقه|تیم|براکت/.test(t)) return 'برای تورنمنت‌های تیمی فقط کاپیتان می‌تونه ثبت‌نام کنه. اسم تورنمنت رو بگو تا وضعیت ثبت‌نام تیمتون رو ببینم.';
+    if (/پرداخت|پول|کیف|درگاه|کسر/.test(t)) return 'اگه مبلغ کم شده ولی سفارش ثبت نشده، نگران نباش؛ حداکثر تا ۷۲ ساعت به حسابت برمی‌گرده. کد پیگیری بانک رو بفرست تا سریع‌تر بررسی کنم.';
+    const generic = ['حتماً. یه کم بیشتر توضیح می‌دی تا دقیق راهنماییت کنم؟', 'متوجه شدم. دارم بررسی می‌کنم، یه لحظه صبر کن.', 'انجام شد. کار دیگه‌ای هست که برات انجام بدم؟'];
+    return generic[S.replyIdx++ % generic.length];
+  }
+
+  // composer
+  function autosize() { input.style.height = 'auto'; input.style.height = Math.min(120, input.scrollHeight) + 'px'; }
+  const updateSend = () => { send.disabled = !input.value.trim() && !S.attach; };
+  input.addEventListener('input', () => { autosize(); updateSend(); });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendMine(); } });
+  send.addEventListener('click', sendMine);
+
+  // attachments: picker, paste, drag & drop
+  const MAX = 2 * 1024 * 1024;
+  function takeFile(file) {
+    if (!file) return;
+    if (!/^image\/(png|jpe?g|webp)$/.test(file.type)) return toast('فقط تصویر PNG، JPG یا WebP');
+    if (file.size > MAX) return toast('حجم تصویر بیشتر از ۲ مگابایته');
+    clearAttach();
+    S.attach = { url: URL.createObjectURL(file), name: file.name || 'screenshot.png' };
+    $('prevImg').src = S.attach.url; $('prevName').textContent = S.attach.name;
+    $('prev').classList.add('on'); updateSend(); input.focus();
+  }
+  function clearAttach() { S.attach = null; $('prev').classList.remove('on'); $('file').value = ''; updateSend(); }
+  $('file').addEventListener('change', e => takeFile(e.target.files[0]));
+  $('prevX').addEventListener('click', () => { if (S.attach) URL.revokeObjectURL(S.attach.url); clearAttach(); });
+  input.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith('image/')); if (f) { e.preventDefault(); takeFile(f); } });
+  let dragDepth = 0;
+  const vChat = $('vChat');
+  vChat.addEventListener('dragenter', e => { if ([...e.dataTransfer.types].includes('Files')) { dragDepth++; $('drop').classList.add('on'); } });
+  vChat.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; $('drop').classList.remove('on'); } });
+  vChat.addEventListener('dragover', e => e.preventDefault());
+  vChat.addEventListener('drop', e => { e.preventDefault(); dragDepth = 0; $('drop').classList.remove('on'); takeFile(e.dataTransfer.files[0]); });
+
+  function openLightbox(src) { $('lbImg').src = src; $('lightbox').classList.add('on'); }
+  $('lightbox').addEventListener('click', () => $('lightbox').classList.remove('on'));
+
+  // scrolling
+  const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+  function toBottom(smooth = true) { log.scrollTo({ top: log.scrollHeight, behavior: smooth && !reduce ? 'smooth' : 'auto' }); }
+  function autoScroll(force) { if (force || nearBottom() || !S.open) requestAnimationFrame(() => toBottom()); }
+  const jump = $('jump');
+  const showJump = () => jump.classList.add('on');
+  log.addEventListener('scroll', () => { if (nearBottom()) jump.classList.remove('on'); }, { passive: true });
+  jump.addEventListener('click', () => { toBottom(); jump.classList.remove('on'); });
+
+  // ───────── end + rating ─────────
+  const LABELS = ['', 'خیلی بد بود', 'راضی نبودم', 'معمولی بود', 'خوب بود', 'عالی بود!'];
+  const gems = $('gems');
+  for (let i = 1; i <= 5; i++) {
+    const b = el('button'); b.type = 'button'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false'); b.setAttribute('aria-label', `${fa(i)} از ۵ · ${LABELS[i]}`);
+    const s = svgUse('gem', 'gem'); s.setAttribute('viewBox', '0 0 24 40'); b.append(s);
+    b.addEventListener('mouseenter', () => paint(i));
+    b.addEventListener('focus', () => paint(i));
+    b.addEventListener('click', () => { S.rating = i; paint(i); burst(b); $('rateSend').disabled = false; [...gems.children].forEach((g, k) => g.setAttribute('aria-checked', String(k + 1 === i))); });
+    gems.append(b);
+  }
+  gems.addEventListener('mouseleave', () => paint(S.rating));
+  function paint(n) { [...gems.children].forEach((g, k) => g.classList.toggle('lit', k < n)); $('rateLabel').textContent = LABELS[n] || ''; }
+  function burst(btn) {
+    if (reduce) return;
+    for (let k = 0; k < 10; k++) {
+      const p = el('i', 'p' + (k % 2 ? ' r' : ''));
+      const a = (Math.PI * 2 * k) / 10, r = 30 + Math.random() * 18;
+      p.style.setProperty('--dx', Math.cos(a) * r + 'px'); p.style.setProperty('--dy', Math.sin(a) * r + 'px');
+      btn.append(p); setTimeout(() => p.remove(), 800);
+    }
+  }
+  function endChat() {
+    clearTimers(); hideTyping(); S.queue = []; S.pendingBatch = [];
+    $('rateTitle').textContent = S.agent ? `گفتگو با ${S.agent.name} چطور بود؟` : 'تجربه‌ات از پشتیبانی چطور بود؟';
+    S.rating = 0; paint(0); $('rateNote').value = ''; $('rateSend').disabled = true;
+    setView('rate');
+  }
+  $('rateSend').addEventListener('click', () => {
+    const b = $('rateSend'); b.setAttribute('aria-busy', 'true');
+    later(() => { b.removeAttribute('aria-busy'); finish(); }, 650);
+  });
+  $('rateSkip').addEventListener('click', finish);
+  function finish() { $('doneTitle').textContent = `ممنون ${S.visitor?.first ?? ''}!`; setView('done'); }
+  $('again').addEventListener('click', () => resetAll(true));
+
+  // ───────── status / connection ─────────
+  function setStatus() {
+    $('status').textContent = S.online ? 'آنلاین · معمولاً زیر ۲ دقیقه پاسخ می‌دیم' : 'آفلاین · پیام بذار، با پیامک خبرت می‌کنیم';
+    $('nudgeText').textContent = S.online ? 'سؤالی داری؟ ما آنلاینیم' : 'پیام بذار، خبرت می‌کنیم';
+    $('chipOnline').hidden = !S.online;
+  }
+  let bannerT = null, retryT = null;
+  function banner(kind, html) {
+    const b = $('banner'); clearTimeout(bannerT);
+    b.className = 'banner on ' + kind; b.innerHTML = html;
+    if (kind === 'ok') bannerT = setTimeout(() => (b.className = 'banner'), 2000);
+  }
+  function netDown() {
+    let s = 3;
+    const tick = () => {
+      banner('warn', `<span class="spin"></span>اتصال قطع شد · تلاش دوباره تا ${fa(s)} ثانیه دیگه`);
+      s = s <= 1 ? 3 : s - 1;
+      retryT = setTimeout(tick, 1000);
+    };
+    tick();
+  }
+
+  // ───────── prototype controls ─────────
+  $('pPeek').addEventListener('click', () => {
+    if (S.open) closePanel();
+    setTimeout(() => {
+      if (S.view === 'chat' && S.agent) { agentSay('راستی کد ویباکس سفارشت آماده شد؛ از بخش سفارش‌ها می‌تونی ببینیش.'); }
+      else if (S.view === 'chat') { S.agent = AGENTS.mehdi; joinSys(S.agent); agentSay(`سلام ${S.visitor.first} جان، مهدی هستم. پیامت رو دیدم، الان بررسی می‌کنم.`); }
+      else { setUnread(S.unread + 1); showPeek(AGENTS.sara, 'سلام! برای خرید ویباکس یا ثبت‌نام کاپ والورانت سؤالی داری؟ همین‌جا بپرس.'); ping(); }
+    }, S.open ? 700 : 150);
+  });
+  $('pOnline').addEventListener('click', () => {
+    S.online = !S.online;
+    tw.classList.toggle('is-offline', !S.online);
+    $('pOnlineV').textContent = S.online ? 'آنلاین' : 'آفلاین';
+    $('pOnlineV').classList.toggle('off', !S.online);
+    setStatus();
+    if (S.view === 'chat') {
+      if (S.online) {
+        S.offlineAck = false;
+        if (!S.agent) { S.agent = AGENTS.sara; later(() => joinSys(S.agent), 500); }
+        const waiting = [...log.querySelectorAll('.me .ticks[data-s="sent"]')];
+        if (waiting.length) scheduleReply(waiting.map(t => ({ row: t.closest('.m'), text: '' })));
+      } else { hideTyping(); clearTimeout(S.replyTimer); offlineNote(); }
+    }
+  });
+  $('pNet').addEventListener('click', () => {
+    S.net = !S.net;
+    $('pNetV').textContent = S.net ? 'وصل' : 'قطع';
+    $('pNetV').classList.toggle('off', !S.net);
+    clearTimeout(retryT);
+    if (S.net) { banner('ok', 'اتصال برقرار شد · پیام‌های در صف ارسال شدن'); flush(); }
+    else { hideTyping(); netDown(); }
+  });
+  $('pReset').addEventListener('click', () => resetAll(false));
+  if (matchMedia('(max-width: 560px)').matches) $('proto').open = false;
+
+  function resetAll(keepVisitor) {
+    clearTimers(); hideTyping(); hidePeek(); setUnread(0); closeSheet(); closeMenu();
+    S.queue = []; S.pendingBatch = []; S.agent = null; S.replyIdx = 0; S.offlineAck = false; clearAttach();
+    log.replaceChildren(); jump.classList.remove('on');
+    if (!keepVisitor) {
+      S.visitor = null;
+      ['first', 'last', 'phone'].forEach(k => { $(k).value = ''; fields[k].f.classList.remove('valid', 'bad'); });
+      setView('welcome');
+      if (S.open) closePanel();
+    } else {
+      startChat();
+    }
+  }
+
+  // keyboard: Esc peels one layer at a time
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('lightbox').classList.contains('on')) return $('lightbox').classList.remove('on');
+    if ($('sheet').classList.contains('on')) return closeSheet();
+    if (menu.classList.contains('on')) return closeMenu();
+    if (S.open) closePanel();
+  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && S.open && S.view === 'chat' && nearBottom()) setUnread(0); });
+
+  setStatus();
+})();
+</script>
+
+</body>
+</html>

@@ -611,3 +611,131 @@ export interface SearchResults {
   tournaments: TournamentMini[];
   products: ProductSummary[];
 }
+
+// ------------------------------------------------------------------ live support chat
+export type SupportMessageKind = 'visitor' | 'agent' | 'note' | 'system';
+
+export interface SupportAgent {
+  id: number;
+  name: string;
+  avatar: string | null;
+  avatarSeed: number;
+  isOnline: boolean;
+}
+
+export interface SupportMessage {
+  id: number;
+  kind: SupportMessageKind;
+  body: string;
+  image: string | null;
+  author: SupportAgent | null;
+  clientId: string | null;
+  createdAt: string;
+}
+
+export interface SupportStatus {
+  online: boolean;
+  agents: SupportAgent[];
+  avgResponseSeconds: number | null;
+}
+
+export interface VisitorConversation {
+  ticket: string;
+  status: 'open' | 'closed';
+  firstName: string;
+  lastName: string;
+  phone: string;
+  agent: SupportAgent | null;
+  agentTyping: boolean;
+  agentReadId: number;
+  visitorReadId: number;
+  rating: number | null;
+  createdAt: string;
+  closedAt: string | null;
+}
+
+export interface VisitorSync {
+  conversation: VisitorConversation;
+  messages: SupportMessage[];
+  support: SupportStatus;
+}
+
+export interface SupportStart extends VisitorSync {
+  token: string;
+}
+
+export interface SupportMessageInput {
+  body?: string;
+  image?: File | null;
+  clientId: string;
+}
+
+export interface DeskQueueItem {
+  id: number;
+  ticket: string;
+  status: 'open' | 'closed';
+  fullName: string;
+  phone: string;
+  username: string | null;
+  assignee: SupportAgent | null;
+  unread: number;
+  lastKind: SupportMessageKind | null;
+  lastBody: string | null;
+  lastHasImage: boolean;
+  lastMessageAt: string | null;
+  awaitingSince: string | null;
+  visitorOnline: boolean;
+  visitorTyping: boolean;
+  rating: number | null;
+  createdAt: string;
+  closedAt: string | null;
+}
+
+export interface DeskConversation extends DeskQueueItem {
+  firstName: string;
+  lastName: string;
+  pageUrl: string;
+  agentTyping: boolean;
+  visitorReadId: number;
+  agentReadId: number;
+  ratingComment: string;
+}
+
+export interface DeskCustomer {
+  userId: number | null;
+  username: string | null;
+  displayName: string | null;
+  avatar: string | null;
+  dateJoined: string | null;
+  walletBalance: number | null;
+  ordersCount: number;
+  recentOrders: { number: string; status: string; statusLabel: string; total: number; createdAt: string }[];
+  previousConversations: number;
+}
+
+export interface DeskMe {
+  id: number;
+  name: string;
+  displayName: string;
+  avatar: string | null;
+  avatarSeed: number;
+  isAvailable: boolean;
+  smsAlerts: boolean;
+}
+
+export interface DeskSync {
+  me: DeskMe;
+  agents: SupportAgent[];
+  queue: DeskQueueItem[];
+  conversation: DeskConversation | null;
+  customer: DeskCustomer | null;
+  messages: SupportMessage[];
+}
+
+export interface CannedReply {
+  id: number;
+  shortcut: string;
+  title: string;
+  body: string;
+  position: number;
+}

@@ -9,6 +9,7 @@ import { ToastContainer } from "@/components/ToastContainer";
 import { Rail } from "@/components/Rail";
 import { MobileNav } from "@/components/MobileNav";
 import { RouteScrollReset } from "@/components/RouteScrollReset";
+import { SupportWidget } from "@/components/support/SupportWidget";
 
 export const metadata: Metadata = {
   title: "TITAN — پلتفرم گیمینگ و اسپورت",
@@ -43,6 +44,7 @@ export default function RootLayout({
               <ToastContainer />
             </div>
             <MobileNav />
+            <SupportWidget />
             <RouteScrollReset />
           </AppProvider>
         </AuthProvider>

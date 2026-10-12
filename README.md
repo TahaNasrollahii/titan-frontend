@@ -46,6 +46,11 @@ Notes:
   browser lands on `/payment/result`.
 - **Team invites:** links look like `/invite/<code>` and join the team after login.
 - **Images:** the API returns absolute media URLs, so plain `<img>` is used rather than `next/image`.
+- **Live chat:** `src/components/support/` holds the widget mounted in the root layout (hidden on `/desk`).
+  `useSupportChat` keeps the visitor's chat token in `localStorage` (`titan.support`), polls `support/chat/sync/`
+  (2 s while open, slower when closed or hidden, backing off when offline), sends messages in order with a
+  `clientId` so retries never duplicate, and drops the chat when a different account logs in. Open it from
+  anywhere with `openSupportChat()`; the contact page's live-chat card does.
 
 ## Routes
 
@@ -61,4 +66,5 @@ Notes:
 | `/dashboard?tab=…` | overview (wallet top-up), profile, game accounts, orders, wishlist, teams, tournaments, notifications |
 | `/teams/create`, `/teams/[id]`, `/teams/[id]/manage`, `/invite/[code]` | teams |
 | `/contact` | contact channels and support status |
+| `/desk` | staff only: live-chat queue, conversation, canned replies (`/`), internal notes, customer card |
 | `/login` | OTP login / sign-up |

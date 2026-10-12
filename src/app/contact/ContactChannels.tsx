@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { Icon } from '@/components/Icons';
+import { openSupportChat } from '@/components/support/SupportWidget';
 import { Loading } from '@/components/ui/State';
 import { contentApi } from '@/lib/api/endpoints';
 import type { ContactChannel } from '@/lib/api/types';
@@ -46,11 +47,21 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
     </>
   );
 
+  // Live chat opens the on-site widget instead of leaving the page.
+  const liveChat = channel.kind === 'live_chat';
   return (
     <a
-      href={channel.url}
+      href={liveChat ? '#support' : channel.url}
       className={`${styles.glitchCard} ${KIND_CLASS[channel.kind] ?? ''}`}
-      {...(isExternal(channel.url) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      onClick={
+        liveChat
+          ? event => {
+              event.preventDefault();
+              openSupportChat();
+            }
+          : undefined
+      }
+      {...(!liveChat && isExternal(channel.url) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
     >
       <div className={styles.cardHighlight}></div>
       <div className={styles.cardContent}>
