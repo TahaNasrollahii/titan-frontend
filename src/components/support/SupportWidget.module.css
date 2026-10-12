@@ -549,6 +549,31 @@
   .field input, .box textarea { font-size: 16px } /* stops iOS zooming into the field */
 }
 
+/* Mobile hide rules: hide floating orb and nudge when a sheet/menu is open or on account page */
+.orbHidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.4) !important;
+  visibility: hidden !important;
+  transition: opacity .25s, transform .35s var(--sp), visibility .25s !important;
+}
+
+:global(body[data-sheet-open="true"]) .orb,
+:global(body[data-sheet-open="true"]) .nudge,
+:global(body[data-overlay-open="true"]) .orb,
+:global(body[data-overlay-open="true"]) .nudge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.4) !important;
+  visibility: hidden !important;
+  transition: opacity .25s, transform .35s var(--sp), visibility .25s !important;
+}
+
+:global(body[data-account-page="true"]) .orb,
+:global(body[data-account-page="true"]) .nudge {
+  display: none !important;
+}
+
 /* PC / Desktop: orb is hidden because the support launcher is inside the sidebar menu */
 @media (min-width: 769px) {
   .orb,
@@ -568,3 +593,4 @@
 @media (prefers-reduced-motion: reduce) {
   .root *, .root *::before, .root *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important }
 }
+

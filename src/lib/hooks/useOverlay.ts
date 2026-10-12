@@ -9,15 +9,26 @@ export function useOverlay(active: boolean, onClose: () => void) {
   useEffect(() => {
     if (!active) return;
     locks += 1;
-    const { style } = document.documentElement;
-    style.overflow = 'hidden';
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-overlay-open', 'true');
+      window.dispatchEvent(new CustomEvent('titan:overlay-change', { detail: { open: true } }));
+      const { style } = document.documentElement;
+      style.overflow = 'hidden';
+    }
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => {
       locks -= 1;
-      if (locks === 0) style.overflow = '';
+      if (locks <= 0) {
+        locks = 0;
+        if (typeof document !== 'undefined') {
+          document.documentElement.style.overflow = '';
+          document.body.removeAttribute('data-overlay-open');
+          window.dispatchEvent(new CustomEvent('titan:overlay-change', { detail: { open: false } }));
+        }
+      }
       window.removeEventListener('keydown', onKey);
     };
   }, [active, onClose]);

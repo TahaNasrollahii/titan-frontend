@@ -11,6 +11,8 @@ import styles from './bottomSheet.module.css';
 
 const SPRING = { type: 'spring', stiffness: 380, damping: 36 } as const;
 
+let activeSheets = 0;
+
 /** Phone bottom sheet: backdrop, drag-down (from the handle strip) to close, Escape and scroll lock. */
 export function BottomSheet({
   open,
@@ -29,6 +31,25 @@ export function BottomSheet({
   const mounted = useMounted();
   const drag = useDragControls();
   useOverlay(open, onClose);
+
+  React.useEffect(() => {
+    if (!open) return;
+    activeSheets += 1;
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-sheet-open', 'true');
+      window.dispatchEvent(new CustomEvent('titan:sheet-change', { detail: { open: true } }));
+    }
+    return () => {
+      activeSheets -= 1;
+      if (activeSheets <= 0) {
+        activeSheets = 0;
+        if (typeof document !== 'undefined') {
+          document.body.removeAttribute('data-sheet-open');
+          window.dispatchEvent(new CustomEvent('titan:sheet-change', { detail: { open: false } }));
+        }
+      }
+    };
+  }, [open]);
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.y > 110 || info.velocity.y > 600) onClose();

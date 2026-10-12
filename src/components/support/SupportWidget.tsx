@@ -698,6 +698,42 @@ export function SupportWidget() {
 
 function Widget() {
   const { user } = useAuth();
+  const pathname = usePathname();
+  const isAccountPage = Boolean(
+    pathname && (
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/teams') ||
+      pathname.startsWith('/profile') ||
+      pathname.startsWith('/account')
+    )
+  );
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  useEffect(() => {
+    const onSheet = (e: Event) => {
+      const custom = e as CustomEvent<{ open: boolean }>;
+      setSheetOpen(Boolean(custom.detail?.open));
+    };
+    window.addEventListener('titan:sheet-change', onSheet);
+    window.addEventListener('titan:overlay-change', onSheet);
+    return () => {
+      window.removeEventListener('titan:sheet-change', onSheet);
+      window.removeEventListener('titan:overlay-change', onSheet);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAccountPage) {
+      document.body.setAttribute('data-account-page', 'true');
+    } else {
+      document.body.removeAttribute('data-account-page');
+    }
+    return () => {
+      document.body.removeAttribute('data-account-page');
+    };
+  }, [isAccountPage]);
+
   const [open, setOpen] = useState(false);
   const [peek, setPeek] = useState<SupportMessage | null>(null);
   const [nudge, setNudge] = useState(false);
@@ -896,15 +932,16 @@ function Widget() {
   }, [unread]);
 
   const orbLabel = unread ? `پشتیبانی آنلاین، ${faDigits(unread)} پیام خوانده‌نشده` : 'پشتیبانی آنلاین';
+  const hideOrb = (isAccountPage || sheetOpen) && !open;
 
   return (
     <div className={cx(styles.root, open && styles.isOpen, !online && styles.offline)}>
-      <div className={cx(styles.nudge, nudge && !open && styles.nudgeOn)} aria-hidden="true">
+      <div className={cx(styles.nudge, nudge && !open && !hideOrb && styles.nudgeOn, hideOrb && styles.orbHidden)} aria-hidden="true">
         <span className={styles.dot} />
         {online ? 'سؤالی داری؟ ما آنلاینیم' : 'پیام بذار، خبرت می‌کنیم'}
       </div>
 
-      {peek && !open && (
+      {peek && !open && !hideOrb && (
         <div className={styles.peek} role="button" tabIndex={0} aria-label="باز کردن پیام پشتیبان" onClick={openPanel} onKeyDown={e => e.key === 'Enter' && openPanel()}>
           <AgentAvatar agent={peek.author} online />
           <div>
@@ -930,7 +967,7 @@ function Widget() {
       <button
         ref={orbRef}
         type="button"
-        className={styles.orb}
+        className={cx(styles.orb, hideOrb && !open && styles.orbHidden)}
         aria-expanded={open}
         aria-controls="support-panel"
         aria-label={orbLabel}
