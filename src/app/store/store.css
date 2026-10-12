@@ -980,22 +980,12 @@
 .tc-game-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   font-size: 11.5px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.6);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.tc-game-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
-  flex-shrink: 0;
 }
 
 .tc-delivery-badge {

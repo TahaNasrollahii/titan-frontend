@@ -383,7 +383,6 @@ function ProductCard({
       <div className="tc-content">
         <div className="tc-meta-row">
           <span className="tc-game-tag">
-            <span className="tc-game-dot" />
             {product.game?.title || product.category.name}
           </span>
           {deliveryBadge && <span className="tc-delivery-badge">{deliveryBadge}</span>}
