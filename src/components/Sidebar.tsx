@@ -3,13 +3,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Icon } from './Icons';
+import { toggleSupportChat } from './support/SupportWidget';
 
 export function Sidebar() {
   const pathname = usePathname();
 
   const [navIndStyle, setNavIndStyle] = useState({});
+  const [unread, setUnread] = useState(0);
   const navRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  useEffect(() => {
+    const onUnread = (e: Event) => {
+      setUnread((e as CustomEvent<number>).detail ?? 0);
+    };
+    window.addEventListener('titan:support-unread', onUnread);
+    return () => window.removeEventListener('titan:support-unread', onUnread);
+  }, []);
 
   let activeKey = pathname;
   if (pathname.startsWith('/product/')) {
@@ -117,8 +126,16 @@ export function Sidebar() {
           </Link>
 
         </nav>
-        <button className="add-btn scroll-top-btn" aria-label="برو به بالا" data-label="برو به بالا" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <span className="plus"><Icon name="arrow-up" /></span>
+        <button
+          type="button"
+          className="support-nav-btn"
+          aria-label="پشتیبانی آنلاین"
+          data-label="پشتیبانی"
+          onClick={() => toggleSupportChat()}
+        >
+          <span className="support-nav-ring" />
+          <img src="/icons/support.svg" alt="پشتیبانی" />
+          {unread > 0 && <span className="support-nav-badge">{unread > 9 ? '9+' : unread}</span>}
         </button>
       </div>
     </aside>

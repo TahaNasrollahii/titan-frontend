@@ -222,8 +222,8 @@
 .failed .bubble { box-shadow: inset 0 0 0 1px #ff8f86 }
 .meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 10.5px; opacity: .75; margin-top: 1px; direction: ltr }
 .fromVisitor .meta { justify-content: flex-start; color: var(--muted) }
-.tick { width: 16px; height: 12px }
-.tickSeen { color: var(--cream) }
+.tick { width: 16px; height: 12px; display: inline-block; vertical-align: middle }
+.tickSeen { color: #38bdf8 !important; opacity: 1 !important; filter: drop-shadow(0 0 3px rgba(56, 189, 248, .6)) }
 .img { padding: 4px }
 .img img { display: block; width: 240px; max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 14px; cursor: zoom-in }
 .img .meta { position: absolute; bottom: 9px; left: 10px; padding: 1px 7px; border-radius: 99px; background: rgba(0, 0, 0, .45); color: #fff; opacity: 1 }

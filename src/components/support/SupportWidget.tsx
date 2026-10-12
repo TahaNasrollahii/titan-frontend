@@ -40,10 +40,16 @@ import styles from './SupportWidget.module.css';
 import { chime, soundPreference, useSupportChat, type PendingMessage, type StartInput } from './useSupportChat';
 
 export const SUPPORT_OPEN_EVENT = 'titan:support-open';
+export const SUPPORT_TOGGLE_EVENT = 'titan:support-toggle';
 
 /** Open the chat from anywhere (e.g. the "live chat" card on the contact page). */
 export function openSupportChat() {
   window.dispatchEvent(new Event(SUPPORT_OPEN_EVENT));
+}
+
+/** Toggle the chat open/closed from the navigation bar or floating button. */
+export function toggleSupportChat() {
+  window.dispatchEvent(new Event(SUPPORT_TOGGLE_EVENT));
 }
 
 const NUDGE_SEEN_KEY = 'titan.support.nudged';
@@ -791,9 +797,14 @@ function Widget() {
   }, []);
 
   useEffect(() => {
+    const toggle = () => (open ? closePanel() : openPanel());
     window.addEventListener(SUPPORT_OPEN_EVENT, openPanel);
-    return () => window.removeEventListener(SUPPORT_OPEN_EVENT, openPanel);
-  }, [openPanel]);
+    window.addEventListener(SUPPORT_TOGGLE_EVENT, toggle);
+    return () => {
+      window.removeEventListener(SUPPORT_OPEN_EVENT, openPanel);
+      window.removeEventListener(SUPPORT_TOGGLE_EVENT, toggle);
+    };
+  }, [open, openPanel, closePanel]);
 
   // Esc peels one layer at a time.
   useEffect(() => {
@@ -890,6 +901,11 @@ function Widget() {
   };
 
   const unread = chat.unread;
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('titan:support-unread', { detail: unread }));
+  }, [unread]);
+
   const orbLabel = unread ? `پشتیبانی آنلاین، ${faDigits(unread)} پیام خوانده‌نشده` : 'پشتیبانی آنلاین';
 
   return (

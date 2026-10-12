@@ -344,8 +344,128 @@ i[data-icon] svg {
   transform: rotate(90deg) scale(1.1)
 }
 
-.scroll-top-btn:hover .plus {
-  transform: translateY(-4px) scale(1.1)
+.support-nav-btn {
+  margin-top: auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .35s var(--spring);
+}
+
+.support-nav-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: rgba(226, 69, 63, .06);
+  border: 1px solid rgba(255, 255, 255, .06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  transition: background .3s, border-color .3s;
+}
+
+.support-nav-btn:hover::before {
+  background: rgba(226, 69, 63, .16);
+  border-color: rgba(226, 69, 63, .35);
+}
+
+.support-nav-ring {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(from 0deg, transparent 0% 48%, rgba(255, 240, 180, .95) 70%, var(--red) 88%, transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  animation: supportRingSpin 3.2s linear infinite;
+  box-shadow: inset 0 0 8px rgba(226, 69, 63, .25);
+  transition: filter .3s;
+}
+
+.support-nav-btn:hover .support-nav-ring {
+  animation-duration: 1.8s;
+  filter: drop-shadow(0 0 6px rgba(226, 69, 63, .85));
+}
+
+@keyframes supportRingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.support-nav-btn:hover {
+  transform: translateX(2px) scale(1.08);
+}
+
+.support-nav-btn:active {
+  transform: scale(.94);
+}
+
+.support-nav-btn img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 2;
+  transition: transform .35s var(--spring), filter .35s;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .45));
+}
+
+.support-nav-btn:hover img {
+  filter: drop-shadow(0 0 8px rgba(226, 69, 63, .8));
+}
+
+.support-nav-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translate(-6px, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  background: #2a0a11;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 11px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity .2s, transform .25s var(--ease-out);
+  z-index: 9999 !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+}
+
+.support-nav-btn:hover::after,
+.support-nav-btn:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.support-nav-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 10px var(--red);
+  border: 2px solid #20080d;
+  animation: pop .35s var(--spring);
 }
 
 
@@ -2024,6 +2144,7 @@ html[dir="rtl"] .hero-char {
 
 /* RTL Specific overrides */
 html[dir="rtl"] .nav-item::after,
+html[dir="rtl"] .support-nav-btn::after,
 html[dir="rtl"] .add-btn::after {
   left: auto;
   right: calc(100% + 14px);
@@ -2031,6 +2152,7 @@ html[dir="rtl"] .add-btn::after {
 }
 
 html[dir="rtl"] .nav-item:hover::after,
+html[dir="rtl"] .support-nav-btn:hover::after,
 html[dir="rtl"] .add-btn:hover::after {
   transform: translate(0, -50%);
 }

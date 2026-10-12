@@ -39,72 +39,112 @@ const make = (paths: React.ReactNode, viewBox = '0 0 24 24') =>
     );
   };
 
-export const XIcon = make(<path d="M6 6l12 12M18 6L6 18" {...line} strokeWidth={2.4} />);
+export const XIcon = make(<path d="M18 6L6 18M6 6l12 12" {...line} strokeWidth={2.2} />);
 export const ChevronDown = make(<path d="M6 9l6 6 6-6" {...line} strokeWidth={2.2} />);
 export const MoreIcon = make(
   <g fill="currentColor">
-    <circle cx="5" cy="12" r="1.9" />
-    <circle cx="12" cy="12" r="1.9" />
-    <circle cx="19" cy="12" r="1.9" />
+    <circle cx="5" cy="12" r="2" />
+    <circle cx="12" cy="12" r="2" />
+    <circle cx="19" cy="12" r="2" />
   </g>,
 );
 export const SendIcon = make(
-  <path d="M4 12l16-8-6 17-3-7-7-2z" fill="currentColor" stroke="currentColor" strokeWidth={1.2} strokeLinejoin="round" />,
+  <path
+    d="M21.42 10.92l-16-7.5a1.2 1.2 0 00-1.67 1.34l1.6 6.32a.5.5 0 00.41.38l8.24 1.04-8.24 1.04a.5.5 0 00-.41.38l-1.6 6.32a1.2 1.2 0 001.67 1.34l16-7.5a1.2 1.2 0 000-2.16z"
+    fill="currentColor"
+  />,
 );
 export const ClipIcon = make(
-  <path d="M20 11.5l-7.8 7.8a5 5 0 01-7.1-7.1l8.5-8.5a3.3 3.3 0 014.7 4.7l-8.5 8.5a1.7 1.7 0 01-2.4-2.4l7.8-7.8" {...line} strokeWidth={1.9} />,
+  <path
+    d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
+    {...line}
+    strokeWidth={2}
+  />,
 );
 export const ClockIcon = make(
   <>
-    <circle cx="12" cy="12" r="9" {...line} strokeWidth={2} />
-    <path d="M12 7v5l3 2" {...line} strokeWidth={2} />
+    <circle cx="12" cy="12" r="9.5" {...line} strokeWidth={2} />
+    <path d="M12 6.5v5.5l3.5 2" {...line} strokeWidth={2} />
   </>,
 );
 export const LockIcon = make(
   <>
-    <rect x="5" y="10.5" width="14" height="10" rx="3" {...line} strokeWidth={1.9} />
-    <path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5" {...line} strokeWidth={1.9} />
+    <rect x="3.5" y="11" width="17" height="10" rx="3" {...line} strokeWidth={2} />
+    <path d="M7 11V7a5 5 0 0110 0v4" {...line} strokeWidth={2} />
+    <circle cx="12" cy="16" r="1.2" fill="currentColor" />
   </>,
 );
-export const CheckIcon = make(<path d="M5 12.5l4.5 4.5L19 7.5" {...line} strokeWidth={2.6} />);
+export const CheckIcon = make(<path d="M4.5 12.5l5 5L19.5 7.5" {...line} strokeWidth={2.4} />);
 export const DoubleCheckIcon = make(
-  <path d="M2 12.5l4.5 4.5L16 7.5M11 15.5l1.5 1.5L22 7.5" {...line} strokeWidth={2.6} />,
-  '0 0 28 24',
+  <>
+    <path d="M1.5 12.5l4.5 4.5L16 7" {...line} strokeWidth={2.4} />
+    <path d="M7.5 12.5l4.5 4.5L22 7" {...line} strokeWidth={2.4} />
+  </>,
+  '0 0 24 24',
 );
-export const BellIcon = make(<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 004 0" {...line} strokeWidth={1.9} />);
-export const EndIcon = make(<path d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3M10 8l-4 4 4 4M6 12h10" {...line} strokeWidth={1.9} />);
+export const BellIcon = make(
+  <>
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" {...line} strokeWidth={2} />
+    <path d="M13.73 21a2 2 0 01-3.46 0" {...line} strokeWidth={2} />
+  </>,
+);
+export const EndIcon = make(
+  <>
+    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" {...line} strokeWidth={2} />
+    <polyline points="16 17 21 12 16 7" {...line} strokeWidth={2} />
+    <line x1="21" y1="12" x2="9" y2="12" {...line} strokeWidth={2} />
+  </>,
+);
 export const ImageIcon = make(
   <>
-    <rect x="3.5" y="4.5" width="17" height="15" rx="3.5" {...line} strokeWidth={1.9} />
-    <circle cx="9" cy="10" r="1.8" fill="currentColor" />
-    <path d="M5 18l5-5 3 3 2.5-2.5L20 18" {...line} strokeWidth={1.9} />
+    <rect x="3" y="3" width="18" height="18" rx="4" {...line} strokeWidth={2} />
+    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+    <path d="M21 15l-5-5L5 21" {...line} strokeWidth={2} />
   </>,
 );
-export const MoonIcon = make(<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" {...line} strokeWidth={1.9} />);
-export const HashIcon = make(<path d="M9 4L7 20M17 4l-2 16M4.5 9h15M4 15h15" {...line} strokeWidth={1.9} />);
+export const MoonIcon = make(<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" {...line} strokeWidth={2} />);
+export const HashIcon = make(
+  <>
+    <line x1="4" y1="9" x2="20" y2="9" {...line} strokeWidth={2} />
+    <line x1="4" y1="15" x2="20" y2="15" {...line} strokeWidth={2} />
+    <line x1="10" y1="3" x2="8" y2="21" {...line} strokeWidth={2} />
+    <line x1="16" y1="3" x2="14" y2="21" {...line} strokeWidth={2} />
+  </>,
+);
 export const SearchIcon = make(
   <>
-    <circle cx="11" cy="11" r="6.5" {...line} strokeWidth={2} />
-    <path d="M20 20l-4-4" {...line} strokeWidth={2} />
+    <circle cx="11" cy="11" r="7.5" {...line} strokeWidth={2} />
+    <path d="M21 21l-4.35-4.35" {...line} strokeWidth={2} />
   </>,
 );
 export const UserIcon = make(
   <>
-    <circle cx="12" cy="8" r="4" {...line} strokeWidth={1.9} />
-    <path d="M4.5 20a7.5 7.5 0 0115 0" {...line} strokeWidth={1.9} />
+    <circle cx="12" cy="7.5" r="4" {...line} strokeWidth={2} />
+    <path d="M4 20.5a8 8 0 0116 0" {...line} strokeWidth={2} />
   </>,
 );
-export const TransferIcon = make(<path d="M7 7h12l-3-3M17 17H5l3 3" {...line} strokeWidth={1.9} />);
+export const TransferIcon = make(
+  <>
+    <polyline points="17 2 21 6 17 10" {...line} strokeWidth={2} />
+    <path d="M3 11V8a2 2 0 012-2h16" {...line} strokeWidth={2} />
+    <polyline points="7 22 3 18 7 14" {...line} strokeWidth={2} />
+    <path d="M21 13v3a2 2 0 01-2 2H3" {...line} strokeWidth={2} />
+  </>,
+);
 export const NoteIcon = make(
   <>
-    <path d="M5 4h10l4 4v12H5z" {...line} strokeWidth={1.9} />
-    <path d="M9 12h6M9 16h4" {...line} strokeWidth={1.9} />
+    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" {...line} strokeWidth={2} />
+    <polyline points="14 2 14 8 20 8" {...line} strokeWidth={2} />
+    <line x1="16" y1="13" x2="8" y2="13" {...line} strokeWidth={2} />
+    <line x1="14" y1="17" x2="8" y2="17" {...line} strokeWidth={2} />
   </>,
 );
 export const CopyIcon = make(
   <>
-    <rect x="8" y="8" width="12" height="12" rx="3" {...line} strokeWidth={1.9} />
-    <path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" {...line} strokeWidth={1.9} />
+    <rect x="8.5" y="8.5" width="12" height="12" rx="2.5" {...line} strokeWidth={2} />
+    <path d="M15.5 8.5V5.5a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2h3" {...line} strokeWidth={2} />
   </>,
 );
-export const BoltIcon = make(<path d="M13 3L5 14h6l-1 7 8-11h-6z" {...line} strokeWidth={1.9} />);
+export const BoltIcon = make(
+  <path d="M13 2L4 13.5h7l-1 8.5 9-11.5h-7l1-8.5z" {...line} strokeWidth={2} strokeLinejoin="miter" />,
+);
