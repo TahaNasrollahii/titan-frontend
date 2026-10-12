@@ -178,6 +178,7 @@ export interface ProductSummary {
   category: ProductCategory;
   platforms: string[];
   isWishlisted: boolean;
+  popularity?: number;
 }
 
 export interface ProductFeature {

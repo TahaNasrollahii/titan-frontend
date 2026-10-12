@@ -275,7 +275,7 @@ function ProductCard({
       : 0;
 
   const hasDiscount = discountPercent > 0 || product.badges.includes('discount');
-  const isHot = product.badges.includes('bestseller') || product.popularity > 80;
+  const isHot = product.badges.includes('bestseller') || ((product.popularity ?? 0) > 80);
   const isNew = product.badges.includes('new');
 
   const handlePointerMove = (e: React.PointerEvent<HTMLElement>) => {
@@ -345,7 +345,7 @@ function ProductCard({
         </div>
         {product.rating > 0 && (
           <span className="pill rate">
-            <i>★</i>{faNumber(product.rating.toFixed(product.rating % 1 === 0 ? 0 : 2))}
+            <i>★</i>{faNumber(Number(product.rating.toFixed(product.rating % 1 === 0 ? 0 : 2)))}
           </span>
         )}
       </div>
