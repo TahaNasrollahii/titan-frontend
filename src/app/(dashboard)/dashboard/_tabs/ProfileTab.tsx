@@ -1,8 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
 
 import { ProfileAvatar } from '@/components/ProfileAvatar';
+import { AppRow } from '@/components/ui/AppTile';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { ApiError, errorMessage } from '@/lib/api/client';
@@ -12,7 +14,8 @@ import { faNumber } from '@/lib/format';
 import styles from '../page.module.css';
 
 export function ProfileTab() {
-  const { user, setUser } = useAuth();
+  const router = useRouter();
+  const { user, setUser, logout } = useAuth();
   const { addToast } = useAppContext();
   const fileInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
@@ -106,6 +109,19 @@ export function ProfileTab() {
         <button type="submit" className={styles.btnPrimary} disabled={saving}>
           {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
         </button>
+      </div>
+
+      <div className={styles.mobileLogoutRow}>
+        <AppRow
+          icon="/icons/login.png"
+          tone="255 90 80"
+          label="خروج از حساب"
+          danger
+          onClick={async () => {
+            await logout();
+            router.push('/');
+          }}
+        />
       </div>
     </form>
   );

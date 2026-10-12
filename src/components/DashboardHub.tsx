@@ -2,16 +2,18 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import type { Dashboard } from '@/lib/api/types';
 import { meApi } from '@/lib/api/endpoints';
 import { faNumber, ORDER_STATUS_LABELS, timeAgo } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import styles from './DashboardHub.module.css';
-import { DASHBOARD_SECTIONS, sectionByTab } from './dashboardSections';
+import { PHONE_HUB_TILES } from './dashboardSections';
 import { AppTile } from './ui/AppTile';
 
 const SPRING = { type: 'spring', stiffness: 380, damping: 30 } as const;
@@ -152,10 +154,21 @@ function trackSpot(event: React.PointerEvent<HTMLElement>) {
  * Phone dashboard hub: one "next step" card chosen from the user's state, and all dashboard sections,
  * shown in a grid.
  */
-export function DashboardHub() {
+export function DashboardHub({ onLogout }: { onLogout?: () => void } = {}) {
   const { unreadNotifications } = useAppContext();
+  const { logout } = useAuth();
+  const router = useRouter();
   const summary = useApi(meApi.dashboard).data;
   const focus = pickFocus(summary, unreadNotifications);
+
+  const handleLogout = async () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      await logout();
+      router.push('/');
+    }
+  };
 
   return (
     <motion.div
@@ -171,17 +184,28 @@ export function DashboardHub() {
       <motion.div className={styles.dockContainer} variants={fadeUp}>
         <h4 className={styles.dockTitle}>تمامی بخش‌ها</h4>
         <nav className={styles.dock} aria-label="تمامی بخش‌ها">
-          {DASHBOARD_SECTIONS.map(item => (
-            <AppTile
-              key={item.tab}
-              href={`/dashboard?tab=${item.tab}`}
-              icon={item.icon}
-              tone={item.tone}
-              label={item.short}
-              badge={item.tab === 'notifications' ? unreadNotifications : 0}
-              compact
-            />
-          ))}
+          {PHONE_HUB_TILES.map(item =>
+            item.isLogout ? (
+              <AppTile
+                key={item.key}
+                icon={item.icon}
+                tone={item.tone}
+                label={item.short}
+                onClick={handleLogout}
+                compact
+              />
+            ) : (
+              <AppTile
+                key={item.key}
+                href={`/dashboard?tab=${item.tab}`}
+                icon={item.icon}
+                tone={item.tone}
+                label={item.short}
+                badge={item.tab === 'notifications' ? unreadNotifications : 0}
+                compact
+              />
+            ),
+          )}
         </nav>
       </motion.div>
     </motion.div>

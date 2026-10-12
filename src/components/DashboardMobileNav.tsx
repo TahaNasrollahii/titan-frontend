@@ -11,9 +11,9 @@ import { faNumber } from '@/lib/format';
 
 import { DashboardHub } from './DashboardHub';
 import styles from './DashboardMobileNav.module.css';
-import { DASHBOARD_SECTIONS, sectionByTab } from './dashboardSections';
+import { DASHBOARD_SECTIONS, PHONE_HUB_TILES, sectionByTab } from './dashboardSections';
 import { ProfileHero } from './ProfileHero';
-import { AppRow, AppTile, ToneIcon } from './ui/AppTile';
+import { AppTile, ToneIcon } from './ui/AppTile';
 import { BottomSheet } from './ui/BottomSheet';
 
 const SPRING = { type: 'spring', stiffness: 460, damping: 34 } as const;
@@ -65,7 +65,7 @@ export function DashboardMobileNav({
         <>
           {user && <ProfileHero user={user} uid="-dash" eyebrow="پنل کاربری" />}
 
-          <DashboardHub />
+          <DashboardHub onLogout={onLogout} />
         </>
       ) : (
         <header className={styles.header} style={{ '--tone': section.tone } as React.CSSProperties}>
@@ -125,30 +125,32 @@ export function DashboardMobileNav({
 
       <BottomSheet open={sheetOpen} onClose={closeSheet} label="بخش‌های پنل کاربری" title="بخش‌های پنل کاربری">
         <ul className={`${styles.grid} ${styles.sheetGrid}`}>
-          {DASHBOARD_SECTIONS.map(item => (
-            <li key={item.tab}>
-              <AppTile
-                href={`/dashboard?tab=${item.tab}`}
-                icon={item.icon}
-                tone={item.tone}
-                label={item.short}
-                badge={badgeFor(item.tab)}
-                active={item.tab === activeTab}
-                onClick={closeSheet}
-              />
+          {PHONE_HUB_TILES.map(item => (
+            <li key={item.key}>
+              {item.isLogout ? (
+                <AppTile
+                  icon={item.icon}
+                  tone={item.tone}
+                  label={item.short}
+                  onClick={() => {
+                    closeSheet();
+                    onLogout();
+                  }}
+                />
+              ) : (
+                <AppTile
+                  href={`/dashboard?tab=${item.tab}`}
+                  icon={item.icon}
+                  tone={item.tone}
+                  label={item.short}
+                  badge={badgeFor(item.tab!)}
+                  active={item.tab === activeTab}
+                  onClick={closeSheet}
+                />
+              )}
             </li>
           ))}
         </ul>
-        <AppRow
-          icon="/icons/login.png"
-          tone="255 90 80"
-          label="خروج از حساب"
-          danger
-          onClick={() => {
-            closeSheet();
-            onLogout();
-          }}
-        />
       </BottomSheet>
     </div>
   );
