@@ -186,17 +186,6 @@ function WelcomeView({
   return (
     <div className={cx(styles.view, styles.welcome, styles.scroll)}>
       <div className={styles.hello}>
-        {agents.length ? (
-          <div className={styles.stack}>
-            {agents.slice(0, 3).map((agent, index) => (
-              <AgentAvatar key={agent.id} agent={agent} large online alt={index % 2 === 1} />
-            ))}
-          </div>
-        ) : (
-          <div className={cx(styles.emblem, styles.bigGem)}>
-            <Gem className={styles.gem} />
-          </div>
-        )}
         <h2>سلام! کارت رو راه بندازیم؟</h2>
         <p>سفارش، پرداخت، کد تحویلی یا ثبت‌نام تورنمنت؛ تیم پشتیبانی تایتان همین‌جا کنارته.</p>
         {online && (
@@ -952,7 +941,8 @@ function Widget() {
         <span className={styles.ring} />
         <span className={styles.pulse} />
         <span className={styles.pulse} />
-        <Gem className={cx(styles.orbIcon, styles.orbGem, styles.gem)} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/support.svg" alt="پشتیبانی" className={cx(styles.orbIcon, styles.orbHeadset)} />
         <XIcon className={cx(styles.orbIcon, styles.orbClose)} />
         {unread > 0 && !open && <span className={styles.badge}>{faDigits(unread > 9 ? '9+' : unread)}</span>}
       </button>

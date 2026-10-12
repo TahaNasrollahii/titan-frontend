@@ -13,6 +13,7 @@ import { sectionByTab } from './dashboardSections';
 import styles from './MobileNav.module.css';
 import { ProfileHero } from './ProfileHero';
 import { RankAvatar } from './RankAvatar';
+import { openSupportChat } from './support/SupportWidget';
 import { AppRow, AppTile, ToneIcon } from './ui/AppTile';
 import { BottomSheet } from './ui/BottomSheet';
 
@@ -153,6 +154,16 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           تایتان
         </motion.h4>
         <motion.div className={styles.rows} variants={fadeUp}>
+          <AppRow
+            icon="/icons/support.svg"
+            tone="226 69 63"
+            label="پشتیبانی آنلاین"
+            hint="گفتگوی مستقیم با پشتیبان تایتان"
+            onClick={() => {
+              onClose();
+              openSupportChat();
+            }}
+          />
           <AppRow
             href="/contact"
             icon="/icons/contact-us.png"
