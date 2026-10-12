@@ -227,6 +227,17 @@ const LOCAL_CHARACTERS = [
   '/images/character-behind-login-form.png',
 ];
 
+function hexToRgb(hex: string): string {
+  const clean = hex.replace('#', '');
+  if (clean.length === 6) {
+    const r = parseInt(clean.substring(0, 2), 16);
+    const g = parseInt(clean.substring(2, 4), 16);
+    const b = parseInt(clean.substring(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+  }
+  return '226, 69, 63';
+}
+
 function ProductCard({
   product,
   index,
@@ -241,6 +252,7 @@ function ProductCard({
     product.game?.accentColor ||
     GAME_ACCENTS[gameSlug] ||
     ACCENT_COLORS[index % ACCENT_COLORS.length];
+  const accentRgb = hexToRgb(accent);
 
   const defaultImage =
     product.image ??
@@ -258,116 +270,153 @@ function ProductCard({
     setImgSrc(defaultImage);
   }, [defaultImage]);
 
-  const hasDiscount =
-    product.badges.includes('discount') ||
-    Boolean(product.originalPrice) ||
-    Boolean(product.discountPercent && product.discountPercent > 0);
+  const discountPercent =
+    product.discountPercent > 0
+      ? product.discountPercent
+      : product.originalPrice && product.price && product.originalPrice > product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : 0;
+
+  const hasDiscount = discountPercent > 0 || product.badges.includes('discount');
   const isHot = product.badges.includes('bestseller');
   const isNew = product.badges.includes('new');
 
-  const isVbucksOrFortnite =
-    gameSlug === 'fortnite' ||
-    product.slug.includes('vbucks') ||
-    product.slug.includes('v-bucks') ||
-    product.title.toLowerCase().includes('v-bucks') ||
-    product.title.includes('وی‌باکس');
-  const imgY = isVbucksOrFortnite ? '-30px' : '0px';
-  const imgX = '0px';
+  const deliveryBadge =
+    product.deliveryType === 'code'
+      ? 'کد آنی'
+      : product.deliveryType === 'account'
+      ? 'شارژ مستقیم'
+      : product.deliveryType === 'manual'
+      ? 'تحویل فوری'
+      : null;
 
   return (
     <article
       className="tc-card spot reveal"
-      style={{ '--accent': accent, '--d': index + 3, '--img-x': imgX, '--img-y': imgY } as React.CSSProperties}
+      style={
+        {
+          '--accent': accent,
+          '--accent-rgb': accentRgb,
+          '--d': index + 3,
+        } as React.CSSProperties
+      }
     >
-      <div className="tc-base" />
+      {/* Full card clickable link */}
+      <Link href={`/product/${product.slug}`} className="tc-card-link" aria-label={product.title} />
 
-      <svg className="tc-panel" viewBox="0 0 140 227" aria-hidden="true">
-        <defs>
-          <linearGradient id={`g${product.id}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#fff" stopOpacity=".28" />
-            <stop offset=".5" stopColor="#fff" stopOpacity="0" />
-            <stop offset="1" stopColor="#000" stopOpacity=".18" />
-          </linearGradient>
-        </defs>
-        <g strokeWidth="26" strokeLinejoin="round">
-          <polygon points="13,38 127,13 127,214 13,214" fill="currentColor" stroke="currentColor" />
-          <polygon points="13,38 127,13 127,214 13,214" fill={`url(#g${product.id})`} stroke={`url(#g${product.id})`} />
-        </g>
-      </svg>
+      {/* Atmospheric cyber background glow */}
+      <div className="tc-ambient-glow" />
 
-      <div className="tc-char">
-        <img
-          className="tc-ch"
-          src={imgSrc}
-          alt={product.title}
-          onError={() => setImgSrc(SILHOUETTE_PLACEHOLDER)}
-        />
-      </div>
+      {/* Visual Showcase Stage */}
+      <div className="tc-stage">
+        <div className="tc-stage-aura" />
+        <div className="tc-stage-grid" />
 
-      <div className="tc-badges">
-        {product.rating > 0 && (
-          <span className="tc-badge tc-b-rate">
-            <i>★</i>
-            {faNumber(product.rating)}
-          </span>
-        )}
-        {hasDiscount && (
-          <span className="tc-badge tc-b-sale">
-            تخفیف{' '}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 3c1 3.5 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .3 1.2 1 2 2 2 0-3-1-5 1-8z" />
+        {/* Floating Badges & Wishlist (Top) */}
+        <div className="tc-badges-top">
+          <div className="tc-badge-group">
+            {hasDiscount && (
+              <span className="tc-badge tc-b-discount">
+                <Icon name="flame" />
+                <span>{discountPercent > 0 ? `${faNumber(discountPercent)}٪` : 'تخفیف'}</span>
+              </span>
+            )}
+            {isHot && (
+              <span className="tc-badge tc-b-hot">
+                <Icon name="trophy" />
+                <span>پرفروش</span>
+              </span>
+            )}
+            {isNew && <span className="tc-badge tc-b-new">جدید</span>}
+          </div>
+
+          <button
+            type="button"
+            className={`tc-fav-btn ${product.isWishlisted ? 'active' : ''}`}
+            aria-label="افزودن به علاقه‌مندی"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleWishlist(product);
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill={product.isWishlisted ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
-          </span>
-        )}
-        {isHot && (
-          <span className="tc-badge tc-b-hot">
-            پرفروش{' '}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4v1a3 3 0 0 0 4 3M16 6h4v1a3 3 0 0 1-4 3M12 13v4M8 20h8" />
-            </svg>
-          </span>
-        )}
-        {isNew && <span className="tc-badge tc-b-new">جدید</span>}
-      </div>
+          </button>
+        </div>
 
-      <span className={`tc-status ${product.inStock ? '' : 'off'}`}>
-        {product.inStock ? 'موجود' : 'ناموجود'}
-      </span>
+        {/* Product Artwork Showcase */}
+        <div className="tc-art-wrapper">
+          <img
+            className="tc-product-img"
+            src={imgSrc}
+            alt={product.title}
+            onError={() => setImgSrc(SILHOUETTE_PLACEHOLDER)}
+          />
+        </div>
 
-      <div className="tc-info">
-        <p className="tc-cat">{product.subtitle || product.game?.title || product.category.name}</p>
-        <h3 className="tc-title" title={product.title}>
-          {product.title}
-        </h3>
-        <div className="tc-priceRow">
-          <span className="tc-price">
-            {product.hasVariants && <span className="tc-from">از</span>}
-            {product.price != null ? faNumber(product.price) : '—'}
-            <small>تومان</small>
+        {/* Stage Bottom Footer */}
+        <div className="tc-stage-footer">
+          <span className={`tc-stock-pill ${product.inStock ? 'in' : 'out'}`}>
+            <span className="tc-stock-dot" />
+            <span>{product.inStock ? 'موجود' : 'ناموجود'}</span>
           </span>
-          {product.originalPrice != null && (
-            <span className="tc-old">{faNumber(product.originalPrice)}</span>
+
+          {product.rating > 0 && (
+            <span className="tc-rating-pill">
+              <i>★</i>
+              <span>{faNumber(product.rating)}</span>
+            </span>
           )}
         </div>
       </div>
 
-      <div className="tc-actions">
-        <Link href={`/product/${product.slug}`} className="tc-view">
-          {product.hasVariants ? 'انتخاب گزینه' : 'مشاهده محصول'}
-        </Link>
-        <button
-          type="button"
-          className={`tc-fav ${product.isWishlisted ? 'active' : ''}`}
-          aria-label="افزودن به علاقه‌مندی"
-          onClick={e => {
-            e.preventDefault();
-            onToggleWishlist(product);
-          }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20s-7-4.4-9-9.2C1.8 7.6 3.7 4.5 7 4.5c2 0 3.4 1 5 2.8 1.6-1.8 3-2.8 5-2.8 3.3 0 5.2 3.1 4 6.3-2 4.8-9 9.2-9 9.2z" />
-          </svg>
-        </button>
+      {/* Info Content Section */}
+      <div className="tc-content">
+        <div className="tc-meta-row">
+          <span className="tc-game-tag">
+            <span className="tc-game-dot" />
+            {product.game?.title || product.category.name}
+          </span>
+          {deliveryBadge && <span className="tc-delivery-badge">{deliveryBadge}</span>}
+        </div>
+
+        <h3 className="tc-title" title={product.title}>
+          {product.title}
+        </h3>
+
+        <div className="tc-price-box">
+          <div className="tc-price-main">
+            {product.hasVariants && <span className="tc-from-label">از</span>}
+            <span className="tc-amount">
+              {product.price != null ? faNumber(product.price) : '—'}
+            </span>
+            <span className="tc-currency">تومان</span>
+          </div>
+          {product.originalPrice != null && product.originalPrice > (product.price || 0) && (
+            <span className="tc-original-price">{faNumber(product.originalPrice)}</span>
+          )}
+        </div>
+
+        {/* Action Button */}
+        <div className="tc-cta-wrap">
+          <Link
+            href={`/product/${product.slug}`}
+            className="tc-cta-btn"
+            onClick={e => e.stopPropagation()}
+          >
+            <span>{product.hasVariants ? 'انتخاب گزینه' : 'مشاهده و خرید'}</span>
+            <Icon name="chev" className="tc-cta-icon" />
+          </Link>
+        </div>
       </div>
     </article>
   );
