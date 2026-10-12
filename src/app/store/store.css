@@ -636,479 +636,525 @@
   margin-top: 2px;
 }
 
+:root {
+  --bg-1: #6b222c;
+  --bg-2: #3d1118;
+  --card: #3a121b;
+  --ink-dark: #2a0b12;
+  --muted: #b98f96;
+  --sale: #d4474a;
+}
+
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 28px 24px;
-  padding: 20px 0 44px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 64px 26px; /* فضای عمودی بیشتر چون محصول از بالای کارت بیرون می‌زند */
+  padding: 30px 0 60px;
   width: 100%;
 }
 
-/* ================= کارت محصول تایتان (Titan Holographic Product Card) ================= */
-.tc-card {
-  --accent: #e2453f;
-  --accent-rgb: 226, 69, 63;
-  --accent-glow: rgba(var(--accent-rgb), 0.35);
+/* ================= کارت ================= */
+.card {
+  --accent: #ff7a2f;
+  --rx: 0deg;
+  --ry: 0deg;
+  --px: 0px;
+  --py: 0px;
+  --mx: 50%;
+  --my: 30%;
+
   position: relative;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(175deg, rgba(48, 14, 22, 0.72) 0%, rgba(26, 7, 12, 0.94) 100%);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-              border-color 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  height: 410px;
+  border-radius: 30px;
   isolation: isolate;
-  cursor: pointer;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .25s ease-out;
 }
 
-.tc-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(var(--accent-rgb), 0.48);
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.7),
-              0 0 35px -6px var(--accent-glow),
-              inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-/* لینک سراسری کلیک روی کارت */
-.tc-card-link {
+/* پس‌زمینه‌ی کارت (برش‌خورده)، تا محصول بتواند از بالا بیرون بزند */
+.card .bg {
   position: absolute;
   inset: 0;
-  z-index: 1;
-}
-
-/* نور محیطی پشت کارت */
-.tc-ambient-glow {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  opacity: 0.25;
-  filter: blur(35px);
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  z-index: 0;
-}
-
-.tc-card:hover .tc-ambient-glow {
-  opacity: 0.65;
-  transform: translateX(-50%) scale(1.15);
-}
-
-/* ---------- ویترین محصول (Visual Showcase Stage) ---------- */
-.tc-stage {
-  position: relative;
-  height: 210px;
-  margin: 10px 10px 0 10px;
-  border-radius: 18px;
-  background: radial-gradient(circle at 50% 45%, rgba(var(--accent-rgb), 0.16) 0%, rgba(16, 4, 8, 0.82) 85%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: inherit;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: 2;
+  z-index: 0;
+  background:
+    radial-gradient(95% 55% at 50% 36%, color-mix(in srgb, var(--accent) 46%, transparent), transparent 78%),
+    linear-gradient(165deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .015) 45%),
+    var(--card);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+  transition: box-shadow .3s;
 }
 
-.tc-stage-aura {
+/* خط دور: خط‌چین ظریف مثل کارت‌های سایت، موقع هاور کامل می‌شود */
+.card .bg::before {
+  content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 60%, rgba(var(--accent-rgb), 0.28) 0%, transparent 65%);
-  opacity: 0.5;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  pointer-events: none;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, .09);
+  transition: border-color .3s;
 }
 
-.tc-card:hover .tc-stage-aura {
-  opacity: 0.95;
+/* نور دنبال‌کننده‌ی موس */
+.card .bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(220px circle at var(--mx) var(--my), rgba(255, 255, 255, .12), transparent 70%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.card:hover .bg {
+  box-shadow: 0 28px 56px rgba(0, 0, 0, .5);
+}
+
+.card:hover .bg::before {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.card:hover .bg::after {
+  opacity: 1;
+}
+
+.card .glow {
+  position: absolute;
+  left: 50%;
+  top: 150px;
+  width: 260px;
+  height: 260px;
+  margin: -130px 0 0 -130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent), transparent 68%);
+  opacity: .68;
+  filter: blur(22px);
+  transition: opacity .4s, transform .5s;
+}
+
+.card:hover .glow {
+  opacity: .88;
   transform: scale(1.12);
 }
 
-.tc-stage-grid {
+/* ---------- محصول (از بالای کارت بیرون می‌زند) ---------- */
+.card .stage {
   position: absolute;
-  inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-position: center center;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-/* ---------- تصویر محصول (Artwork Container) ---------- */
-.tc-art-wrapper {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  pointer-events: none;
+  top: 40px;
+  right: 0;
+  left: 0;
+  height: 236px;
   z-index: 1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
 }
 
-.tc-product-img {
-  width: 100%;
-  height: 100%;
-  max-width: 180px;
-  max-height: 160px;
+.card .stage img {
+  max-width: 68%;
+  max-height: 88%;
+  width: auto;
+  height: auto;
   object-fit: contain;
-  object-position: center center;
-  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45));
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-              filter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, .45));
+  transform: translate(var(--px), var(--py)) scale(1);
+  transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+  animation: cardFloat 5s ease-in-out infinite;
 }
 
-.tc-card:hover .tc-product-img {
-  transform: scale(1.08) translateY(-4px);
-  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.6))
-          drop-shadow(0 0 16px rgba(var(--accent-rgb), 0.35));
+@keyframes cardFloat {
+  50% {
+    translate: 0 -8px;
+  }
 }
 
-/* ---------- بج‌های شناور بالای ویترین ---------- */
-.tc-badges-top {
-  position: relative;
-  z-index: 3;
+.card:hover .stage img {
+  transform: translate(var(--px), calc(var(--py) - 8px)) scale(1.04);
+}
+
+/* ---------- ردیف بالا ---------- */
+.card .top {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  left: 14px;
+  z-index: 4;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  align-items: flex-start;
 }
 
-.tc-badge-group {
+.card .tags {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: 6px;
+  max-width: calc(100% - 62px);
 }
 
-.tc-badge {
+.card .pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  padding: 4px 9px;
+  padding: 4px 10px;
   border-radius: 999px;
   white-space: nowrap;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
-.tc-b-discount {
-  background: linear-gradient(135deg, #e2453f 0%, #ff5722 100%);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(226, 69, 63, 0.45);
-}
-
-.tc-b-discount i,
-.tc-b-discount svg {
+.card .pill svg {
   width: 12px;
   height: 12px;
 }
 
-.tc-b-hot {
-  background: rgba(255, 184, 0, 0.18);
-  color: #ffc83d;
-  border: 1px solid rgba(255, 184, 0, 0.4);
-}
-
-.tc-b-hot i,
-.tc-b-hot svg {
-  width: 12px;
-  height: 12px;
-}
-
-.tc-b-new {
-  background: rgba(47, 139, 255, 0.18);
-  color: #60a5fa;
-  border: 1px solid rgba(47, 139, 255, 0.4);
-}
-
-/* دکمه لایک / علاقه‌مندی شناور */
-.tc-fav-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgba(20, 6, 11, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.85);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: transform 0.25s var(--spring),
-              background 0.25s,
-              border-color 0.25s,
-              color 0.25s;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  pointer-events: auto;
-  z-index: 4;
-}
-
-.tc-fav-btn svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.25s;
-}
-
-.tc-fav-btn:hover {
-  transform: scale(1.12);
-  background: rgba(226, 69, 63, 0.25);
-  border-color: rgba(226, 69, 63, 0.6);
-  color: #fff;
-}
-
-.tc-fav-btn.active {
-  background: #e2453f;
-  border-color: #e2453f;
-  color: #fff;
-  box-shadow: 0 0 16px rgba(226, 69, 63, 0.6);
-}
-
-.tc-fav-btn.active svg {
-  transform: scale(1.15);
-}
-
-/* ---------- نوار پایین ویترین (وضعیت موجودی و امتیاز) ---------- */
-.tc-stage-footer {
+.card .sale {
   position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: linear-gradient(180deg, transparent 0%, rgba(10, 3, 6, 0.78) 100%);
-}
-
-.tc-stock-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 999px;
-  backdrop-filter: blur(6px);
-}
-
-.tc-stock-pill.in {
-  color: #4ade80;
-  background: rgba(34, 197, 94, 0.14);
-  border: 1px solid rgba(34, 197, 94, 0.28);
-}
-
-.tc-stock-pill.out {
-  color: #f87171;
-  background: rgba(239, 68, 68, 0.14);
-  border: 1px solid rgba(239, 68, 68, 0.28);
-}
-
-.tc-stock-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  box-shadow: 0 0 8px currentColor;
-}
-
-.tc-stock-pill.in .tc-stock-dot {
-  animation: tcPulseGreen 2s infinite ease-out;
-}
-
-.tc-stock-pill.out .tc-stock-dot {
-  animation: tcPulseRed 2s infinite ease-out;
-}
-
-@keyframes tcPulseGreen {
-  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
-  70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
-}
-
-@keyframes tcPulseRed {
-  0% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7); }
-  70% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
-}
-
-.tc-rating-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
+  overflow: hidden;
+  background: var(--sale);
   color: #fff;
-  background: rgba(20, 6, 11, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 3px 8px;
-  border-radius: 999px;
-  backdrop-filter: blur(6px);
 }
 
-.tc-rating-pill i {
+.card .sale .txt {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(60, 10, 10, .45);
+}
+
+.card .sale::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 214, 64, .85), transparent);
+  transform: skewX(-20deg);
+  animation: shine 3.2s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0%, 55% {
+    left: -60%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
+.card .sale .flame {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  color: #ffd23f;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 4px rgba(255, 200, 40, .9));
+  animation: cardFlicker 1.6s ease-in-out infinite;
+}
+
+.card .sale .flame svg {
+  fill: rgba(255, 210, 63, .35);
+  width: 13px;
+  height: 13px;
+}
+
+@keyframes cardFlicker {
+  0%, 100% {
+    transform: scale(1) rotate(0);
+    filter: drop-shadow(0 0 3px rgba(255, 200, 40, .8));
+  }
+  25% {
+    transform: scale(1.14, 1.2) rotate(-6deg);
+    filter: drop-shadow(0 0 7px rgba(255, 214, 64, 1));
+  }
+  55% {
+    transform: scale(.95, 1.05) rotate(4deg);
+    filter: drop-shadow(0 0 4px rgba(255, 200, 40, .85));
+  }
+  80% {
+    transform: scale(1.08, 1.12) rotate(-3deg);
+    filter: drop-shadow(0 0 6px rgba(255, 214, 64, .95));
+  }
+}
+
+.card .hot {
+  background: #fff1a8;
+  color: #3b2a00;
+}
+
+.card .new {
+  background: #fff;
+  color: var(--ink-dark);
+}
+
+.card .rate {
+  background: rgba(10, 4, 8, .45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, .12);
+  color: #fff;
+}
+
+.card .rate i {
   color: #ffc83d;
-  font-size: 12px;
   font-style: normal;
 }
 
-/* ---------- بخش اطلاعات محصول (Card Content) ---------- */
-.tc-content {
-  position: relative;
-  z-index: 2;
-  padding: 14px 16px 16px 16px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+/* ---------- پنل شیشه‌ای پایین ---------- */
+.card .panel {
+  position: absolute;
+  right: 10px;
+  left: 10px;
+  bottom: 10px;
+  z-index: 3;
+  padding: 14px 16px 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(32, 9, 15, .55), rgba(24, 6, 11, .82));
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, .09);
 }
 
-.tc-meta-row {
+.card .meta {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 6px;
+  align-items: center;
+  margin-bottom: 2px;
 }
 
-.tc-game-tag {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+.card .cat {
+  font-size: 12px;
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.tc-delivery-badge {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px 7px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
-
-.tc-title {
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.45;
-  color: #ffffff;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 44px;
-  margin: 0;
-  transition: color 0.25s;
-}
-
-.tc-card:hover .tc-title {
-  color: #fff;
-  text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.35);
-}
-
-/* ---------- قیمت محصول ---------- */
-.tc-price-box {
-  margin-top: 12px;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.tc-price-main {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  white-space: nowrap;
-}
-
-.tc-from-label {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 500;
-}
-
-.tc-amount {
-  font-size: 20px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-}
-
-.tc-currency {
+.card .stock {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11.5px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
+  font-weight: 700;
+  color: #6af0a8;
 }
 
-.tc-original-price {
+.card .stock::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #35d07f;
+  animation: cardPulse 2s ease-out infinite;
+}
+
+.card .stock.off {
+  color: #ff7b7b;
+}
+
+.card .stock.off::before {
+  background: #ff4d4d;
+  animation: cardPulseRed 2s ease-out infinite;
+}
+
+@keyframes cardPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(53, 208, 127, .6);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(53, 208, 127, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(53, 208, 127, 0);
+  }
+}
+
+@keyframes cardPulseRed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, .6);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(255, 77, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0);
+  }
+}
+
+.card .title {
+  font-size: 18px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  color: #fff;
+}
+
+.card .priceRow {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.card .price {
+  font-size: 22px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.card .price small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-inline-start: 4px;
+}
+
+.card .from {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-inline-end: 4px;
+}
+
+.card .old {
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--muted);
   text-decoration: line-through;
   white-space: nowrap;
 }
 
-/* ---------- دکمه اکشن (CTA Button) ---------- */
-.tc-cta-wrap {
-  margin-top: 14px;
-  position: relative;
-  z-index: 3;
+/* دکمه‌ها: پنل موقع هاور باز می‌شود و دکمه‌ها در جای خودشان ظاهر می‌شوند */
+.card .reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .4s cubic-bezier(.2, .8, .2, 1);
+  animation: none;
 }
 
-.tc-cta-btn {
-  width: 100%;
-  height: 42px;
+.card .reveal > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.card:hover .reveal,
+.card:focus-within .reveal {
+  grid-template-rows: 1fr;
+}
+
+.card .actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-top: 14px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .3s .05s, transform .4s .05s cubic-bezier(.2, .8, .2, 1);
+}
+
+.card:hover .actions,
+.card:focus-within .actions {
+  opacity: 1;
+  transform: none;
+}
+
+.card .view {
+  flex: 1;
+  height: 44px;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink-dark);
+  background: #fff;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  cursor: pointer;
   text-decoration: none;
-  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform .2s, background .2s, color .2s, box-shadow .2s;
 }
 
-.tc-cta-icon {
-  font-size: 14px;
-  transition: transform 0.3s var(--spring);
+.card .view:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(1.03);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, .35);
 }
 
-.tc-card:hover .tc-cta-btn {
-  background: linear-gradient(135deg, var(--accent) 0%, rgba(var(--accent-rgb), 0.82) 100%);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  box-shadow: 0 8px 20px -4px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+.card .view.ghost {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .3);
 }
 
-.tc-card:hover .tc-cta-icon {
-  transform: translateX(-4px);
+.card .view.ghost:hover {
+  background: #fff;
+  color: var(--ink-dark);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .tc-card, .tc-ambient-glow, .tc-stage-aura, .tc-product-img, .tc-cta-btn, .tc-stock-pill .tc-stock-dot {
-    transition: none;
-    animation: none;
-  }
+.card .fav {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .18);
+  color: #fff;
+  transition: transform .2s, background .2s, border-color .2s;
+  padding: 0;
+}
+
+.card .fav svg {
+  width: 20px;
+  height: 20px;
+  transition: transform .25s;
+}
+
+.card .fav:hover {
+  transform: scale(1.08);
+  border-color: var(--accent);
+}
+
+.card .fav.active {
+  background: var(--sale);
+  border-color: var(--sale);
+}
+
+.card .fav.active svg {
+  fill: currentColor;
+  transform: scale(1.15);
+}
+
+.card .view:focus-visible,
+.card .fav:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ناموجود */
+.card.sold .stage img {
+  filter: saturate(.3) drop-shadow(0 18px 18px rgba(0, 0, 0, .45));
+}
+
+.card.sold .glow {
+  opacity: .2;
+}
+
+/* لینک سراسری کلیک روی کارت */
+.card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
 }
 
 .store-load-wrap {
@@ -1350,6 +1396,7 @@
 /* Product grid responsive tweaks */
 @media (max-width: 600px) {
   .store-grid {
-    gap: 28px 16px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 48px 16px;
   }
 }
