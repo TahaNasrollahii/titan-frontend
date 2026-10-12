@@ -647,8 +647,8 @@
 
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 64px 26px; /* فضای عمودی بیشتر چون محصول از بالای کارت بیرون می‌زند */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 56px 24px; /* فضای عمودی بیشتر چون محصول از بالای کارت بیرون می‌زند */
   padding: 30px 0 60px;
   width: 100%;
 }
@@ -664,11 +664,12 @@
   --my: 30%;
 
   position: relative;
-  height: 410px;
+  height: 420px;
   border-radius: 30px;
   isolation: isolate;
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform .25s ease-out;
+  direction: rtl;
 }
 
 /* پس‌زمینه‌ی کارت (برش‌خورده)، تا محصول بتواند از بالا بیرون بزند */
@@ -737,13 +738,13 @@
   transform: scale(1.12);
 }
 
-/* ---------- محصول (از بالای کارت بیرون می‌زند) ---------- */
+/* ---------- محصول (از بالای کارت بیرون می‌زند و پاها پشت کادر تیره می‌روند) ---------- */
 .card .stage {
   position: absolute;
-  top: 40px;
+  top: 18px;
   right: 0;
   left: 0;
-  height: 236px;
+  height: 285px;
   z-index: 1;
   display: grid;
   place-items: center;
@@ -751,14 +752,14 @@
 }
 
 .card .stage img {
-  max-width: 68%;
-  max-height: 88%;
+  max-width: 76%;
+  max-height: 98%;
   width: auto;
   height: auto;
   object-fit: contain;
-  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
-  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, .45));
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 68%, transparent 98%);
+  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, .45));
   transform: translate(var(--px), var(--py)) scale(1);
   transition: transform .5s cubic-bezier(.2, .8, .2, 1);
   animation: cardFloat 5s ease-in-out infinite;
@@ -901,57 +902,85 @@
   font-style: normal;
 }
 
-/* ---------- پنل شیشه‌ای پایین ---------- */
+/* ---------- پنل شیشه‌ای پایین (کادر تیره با فضای بازتر برای تایتل و قیمت) ---------- */
 .card .panel {
   position: absolute;
-  right: 10px;
-  left: 10px;
-  bottom: 10px;
+  right: 8px;
+  left: 8px;
+  bottom: 8px;
   z-index: 3;
-  padding: 14px 16px 16px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(32, 9, 15, .55), rgba(24, 6, 11, .82));
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  border: 1px solid rgba(255, 255, 255, .09);
+  padding: 18px 14px 16px;
+  min-height: 140px;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(34, 10, 16, .82), rgba(18, 4, 8, .96));
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .1);
+  direction: rtl;
+  text-align: right;
 }
 
 .card .meta {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2px;
+  width: 100%;
+  gap: 12px;
+  margin-bottom: 10px;
+  direction: rtl;
+  box-sizing: border-box;
 }
 
 .card .cat {
-  font-size: 12px;
+  flex: 1 1 0%;
+  min-width: 0;
+  text-align: right;
+  direction: rtl;
+  unicode-bidi: plaintext;
+  font-size: 11.5px;
+  font-weight: 600;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.35;
+  letter-spacing: 0.1px;
 }
 
 .card .stock {
-  flex: none;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: #6af0a8;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: left;
+  margin-inline-start: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(53, 208, 127, 0.08);
+  border: 1px solid rgba(53, 208, 127, 0.22);
 }
 
 .card .stock::before {
   content: "";
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #35d07f;
   animation: cardPulse 2s ease-out infinite;
 }
 
 .card .stock.off {
-  color: #ff7b7b;
+  color: #ff8585;
+  background: rgba(255, 77, 77, 0.08);
+  border-color: rgba(255, 77, 77, 0.22);
 }
 
 .card .stock.off::before {
@@ -984,48 +1013,58 @@
 }
 
 .card .title {
-  font-size: 18px;
+  font-size: 15.5px;
   font-weight: 800;
+  line-height: 1.35;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 0;
+  margin: 0 0 10px 0;
   color: #fff;
+  display: block;
+  text-align: right;
+  direction: rtl;
 }
 
 .card .priceRow {
-  margin-top: 8px;
+  margin: 0;
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: 8px;
 }
 
 .card .price {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   white-space: nowrap;
   color: #fff;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
 }
 
 .card .price small {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11.5px;
+  font-weight: 600;
   color: var(--muted);
   margin-inline-start: 4px;
 }
 
 .card .from {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--muted);
-  margin-inline-end: 4px;
+  margin-inline-end: 2px;
 }
 
 .card .old {
   font-size: 12.5px;
+  font-weight: 500;
   color: var(--muted);
   text-decoration: line-through;
   white-space: nowrap;
+  opacity: 0.8;
 }
 
 /* دکمه‌ها: پنل موقع هاور باز می‌شود و دکمه‌ها در جای خودشان ظاهر می‌شوند */
@@ -1041,6 +1080,11 @@
   overflow: hidden;
 }
 
+.card:hover .reveal > div,
+.card:focus-within .reveal > div {
+  overflow: visible;
+}
+
 .card:hover .reveal,
 .card:focus-within .reveal {
   grid-template-rows: 1fr;
@@ -1048,9 +1092,11 @@
 
 .card .actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  padding-top: 14px;
+  padding: 14px 2px 2px 2px;
+  width: 100%;
+  box-sizing: border-box;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity .3s .05s, transform .4s .05s cubic-bezier(.2, .8, .2, 1);
@@ -1065,11 +1111,14 @@
 .card .view {
   flex: 1;
   height: 44px;
+  min-height: 44px;
   border: 0;
+  outline: none;
   cursor: pointer;
-  font: inherit;
-  font-size: 14px;
+  font-family: inherit;
+  font-size: 13.5px;
   font-weight: 800;
+  line-height: 44px;
   color: var(--ink-dark);
   background: #fff;
   border-radius: 999px;
@@ -1077,13 +1126,18 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  white-space: nowrap;
+  padding: 0 20px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   transition: transform .2s, background .2s, color .2s, box-shadow .2s;
 }
 
 .card .view:hover {
   background: var(--accent);
   color: #fff;
-  transform: scale(1.03);
+  transform: scale(1.02);
   box-shadow: 0 10px 22px rgba(0, 0, 0, .35);
 }
 
@@ -1100,28 +1154,35 @@
 
 .card .fav {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   background: rgba(255, 255, 255, .07);
   border: 1px solid rgba(255, 255, 255, .18);
   color: #fff;
-  transition: transform .2s, background .2s, border-color .2s;
   padding: 0;
+  box-sizing: border-box;
+  margin-left: 3px;
+  transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
 }
 
 .card .fav svg {
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
   transition: transform .25s;
 }
 
 .card .fav:hover {
-  transform: scale(1.08);
+  transform: scale(1.06);
   border-color: var(--accent);
+  background: rgba(255, 255, 255, .12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
 }
 
 .card .fav.active {

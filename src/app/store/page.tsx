@@ -302,6 +302,7 @@ function ProductCard({
   return (
     <article
       className={`card ${product.inStock ? '' : 'sold'} spot reveal`}
+      dir="rtl"
       style={
         {
           '--accent': accent,
@@ -360,15 +361,17 @@ function ProductCard({
       </div>
 
       {/* Glass Bottom Info Panel with Expandable Actions */}
-      <div className="panel">
-        <div className="meta">
-          <span className="cat">{categoryLabel}</span>
-          <span className={`stock ${product.inStock ? '' : 'off'}`}>
+      <div className="panel" dir="rtl">
+        <div className="meta" dir="rtl">
+          <span className="cat" title={categoryLabel} dir="rtl">
+            {categoryLabel}
+          </span>
+          <span className={`stock ${product.inStock ? '' : 'off'}`} dir="rtl">
             {product.inStock ? 'موجود' : 'ناموجود'}
           </span>
         </div>
 
-        <h3 className="title" title={product.title}>
+        <h3 className="title" title={product.title} dir="rtl">
           <Link href={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
             {product.title}
           </Link>
