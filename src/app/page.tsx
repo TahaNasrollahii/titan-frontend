@@ -71,7 +71,9 @@ function buildSceneData(data: Home) {
       descMobile,
       watch: t.viewerCount,
       eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
-      art: HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.png` : t.coverImage,
+      art: t.game.slug === 'fortnite'
+        ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+        : (HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.png` : t.coverImage),
       artClass: HERO_ART[t.game.slug] ?? '',
       href: `/tournaments/${t.slug}`,
     };

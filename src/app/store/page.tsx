@@ -108,7 +108,14 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
           </div>
           <div className="sp-art-wrap">
             <img
-              src={promo.image ?? '/images/support-robot.png'}
+              src={
+                (promo.title.toLowerCase().includes('fortnite') ||
+                promo.product === 'fortnite-crew-pack' ||
+                promo.subtitle.includes('فورتنایت') ||
+                (promo.image && promo.image.includes('fortnite')))
+                  ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+                  : (promo.image ?? '/images/support-robot.png')
+              }
               alt=""
               className="sp-art discount-art"
               style={{
@@ -178,7 +185,14 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
           </div>
           <div className="sp-art-wrap side-art-wrap">
             <img
-              src={promo.image ?? '/images/character-behind-login-form.png'}
+              src={
+                (promo.title.toLowerCase().includes('fortnite') ||
+                promo.product === 'fortnite-crew-pack' ||
+                promo.subtitle.includes('فورتنایت') ||
+                (promo.image && promo.image.includes('fortnite')))
+                  ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+                  : (promo.image ?? '/images/character-behind-login-form.png')
+              }
               alt=""
               className="sp-art"
               style={{
@@ -252,7 +266,7 @@ function ProductCard({
     (product.slug.includes('elden') ? TEMPLATE_CHARACTER : null) ||
     (product.image && !product.image.endsWith('.jpg') ? product.image : null) ||
     (gameSlug === 'fortnite'
-      ? '/images/hero/characters/fortnite.png'
+      ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
       : gameSlug === 'apex-legends'
       ? '/images/hero/characters/apexlegends.png'
       : gameSlug === 'valorant'
