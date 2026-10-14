@@ -617,7 +617,7 @@ function StorePageContent() {
 
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
     (games.data ?? []).map(game => {
-      const localIcon = LOCAL_ICONS[game.slug] ? `/images/categories/.webp` : null;
+      const localIcon = LOCAL_ICONS[game.slug] ? `/images/categories/${LOCAL_ICONS[game.slug]}.webp` : null;
       return { slug: game.slug, title: game.title, icon: game.iconImage ?? localIcon };
     }),
   );

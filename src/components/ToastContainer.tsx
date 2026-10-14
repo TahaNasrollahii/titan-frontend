@@ -19,7 +19,7 @@ const LEGACY_ICONS: Record<string, string> = {
   chat: 'support',
 };
 
-const iconSrc = (icon?: string) => `/icons/.webp`;
+const iconSrc = (icon?: string) => `/icons/${icon ? (LEGACY_ICONS[icon] ?? icon) : 'notif'}.webp`;
 
 /** Size of the bubble that drops in before it stretches open. */
 const PILL = 46;

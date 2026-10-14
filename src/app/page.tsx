@@ -44,7 +44,7 @@ function buildSceneData(data: Home) {
         descMobile: 'شارژ قانونی انواع بسته‌های اپکس کوین',
         watch: 0,
         eta: 0,
-        art: `/images/hero/characters/.webp`,
+        art: `/images/hero/characters/${HERO_ART['apex-legends']}.webp`,
         artClass: HERO_ART['apex-legends'],
         href: '/store?game=apex-legends',
       };
@@ -73,7 +73,7 @@ function buildSceneData(data: Home) {
       eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
       art: t.game.slug === 'fortnite'
         ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-        : (HERO_ART[t.game.slug] ? `/images/hero/characters/.webp` : t.coverImage),
+        : (HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.webp` : t.coverImage),
       artClass: HERO_ART[t.game.slug] ?? '',
       href: `/tournaments/${t.slug}`,
     };
@@ -96,8 +96,8 @@ function buildSceneData(data: Home) {
         fig: 'game',
         crest: i % 2 === 0,
         slug: g.slug,
-        bg: g.slug === 'premium' ? '/images/games/premium.webp' : (art ? `/images/games/-background.webp` : (g.backgroundImage ?? g.coverImage)),
-        char: g.slug === 'premium' ? null : (art ? `/images/games/-character.webp` : g.characterImage),
+        bg: g.slug === 'premium' ? '/images/games/premium.webp' : (art ? `/images/games/${art}-background.webp` : (g.backgroundImage ?? g.coverImage)),
+        char: g.slug === 'premium' ? null : (art ? `/images/games/${art}-character.webp` : g.characterImage),
       };
     }),
     stats: data.myStats,
