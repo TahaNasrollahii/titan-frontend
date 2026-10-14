@@ -121,7 +121,7 @@ export function AccountsTab() {
         <div key={account.id} className={styles.listItem}>
           <div className={styles.listItemInfo}>
             <div className={styles.itemIcon} style={{ background: '#222' }}>
-              <img src="/icons/accounts.png" alt="" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+              <img src="/icons/accounts.webp" alt="" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
             </div>
             <div className={styles.itemDetails}>
               <h4>{account.title}</h4>
@@ -148,7 +148,7 @@ export function AccountsTab() {
       {accounts.data?.length === 0 && editing === null && (
         <div className={styles.emptyState}>
           <img
-            src="/icons/accounts.png"
+            src="/icons/accounts.webp"
             alt=""
             style={{ width: '64px', height: '64px', objectFit: 'contain', opacity: 0.7, marginBottom: '8px' }}
           />

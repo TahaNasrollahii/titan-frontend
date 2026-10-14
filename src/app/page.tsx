@@ -44,7 +44,7 @@ function buildSceneData(data: Home) {
         descMobile: 'شارژ قانونی انواع بسته‌های اپکس کوین',
         watch: 0,
         eta: 0,
-        art: `/images/hero/characters/${HERO_ART['apex-legends']}.png`,
+        art: `/images/hero/characters/.webp`,
         artClass: HERO_ART['apex-legends'],
         href: '/store?game=apex-legends',
       };
@@ -73,7 +73,7 @@ function buildSceneData(data: Home) {
       eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
       art: t.game.slug === 'fortnite'
         ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-        : (HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.png` : t.coverImage),
+        : (HERO_ART[t.game.slug] ? `/images/hero/characters/.webp` : t.coverImage),
       artClass: HERO_ART[t.game.slug] ?? '',
       href: `/tournaments/${t.slug}`,
     };
@@ -96,8 +96,8 @@ function buildSceneData(data: Home) {
         fig: 'game',
         crest: i % 2 === 0,
         slug: g.slug,
-        bg: g.slug === 'premium' ? '/images/games/premium.png' : (art ? `/images/games/${art}-background.png` : (g.backgroundImage ?? g.coverImage)),
-        char: g.slug === 'premium' ? null : (art ? `/images/games/${art}-character.png` : g.characterImage),
+        bg: g.slug === 'premium' ? '/images/games/premium.webp' : (art ? `/images/games/-background.webp` : (g.backgroundImage ?? g.coverImage)),
+        char: g.slug === 'premium' ? null : (art ? `/images/games/-character.webp` : g.characterImage),
       };
     }),
     stats: data.myStats,
@@ -638,7 +638,7 @@ function HomeScene({ data }: { data: Home }) {
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
             <a href="/tournament" class="tb-btn">اطلاعات بیشتر</a>
           </div>
-          <img src="/images/tournoment-banner.png" alt="" class="tb-img" />
+          <img src="/images/tournoment-banner.webp" alt="" class="tb-img" />
           <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none">
             <circle cx="160" cy="40" r="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="30" />
             <circle cx="160" cy="40" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="20" />

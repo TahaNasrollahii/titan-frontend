@@ -50,7 +50,7 @@ function pickFocus(summary: Dashboard | undefined, unread: number): Focus {
       text: live.currentStage ?? 'مسابقه‌ات شروع شده؛ حریفت منتظره.',
       cta: 'ورود به براکت',
       href: `/tournaments/${live.tournament.slug}/bracket`,
-      icon: '/icons/tournament.png',
+      icon: '/icons/tournament.webp',
       tone: '255 77 94',
       live: true,
       cover: live.tournament.coverImage,
@@ -66,7 +66,7 @@ function pickFocus(summary: Dashboard | undefined, unread: number): Focus {
       text: `شروع ${timeAgo(next.tournament.startsAt)} · ${next.tournament.game.title}`,
       cta: 'جزئیات مسابقه',
       href: `/tournaments/${next.tournament.slug}`,
-      icon: '/icons/tournament.png',
+      icon: '/icons/tournament.webp',
       tone: '240 193 75',
       cover: next.tournament.coverImage,
     };
@@ -79,7 +79,7 @@ function pickFocus(summary: Dashboard | undefined, unread: number): Focus {
       text: order.items[0]?.title ?? 'سفارشت در جریانه.',
       cta: 'پیگیری سفارش',
       href: '/dashboard?tab=orders',
-      icon: '/icons/cart.png',
+      icon: '/icons/cart.webp',
       tone: '255 146 64',
     };
 
@@ -90,7 +90,7 @@ function pickFocus(summary: Dashboard | undefined, unread: number): Focus {
       text: 'دعوت تیم، نتیجه مسابقه یا خبر تازه از تایتان.',
       cta: 'خواندن پیام‌ها',
       href: '/dashboard?tab=notifications',
-      icon: '/icons/notif.png',
+      icon: '/icons/notif.webp',
       tone: '47 210 122',
     };
 
@@ -101,7 +101,7 @@ function pickFocus(summary: Dashboard | undefined, unread: number): Focus {
     text: isNew ? 'یه تورنومنت باز انتخاب کن و ثبت‌نام کن.' : 'تورنومنت‌های باز این هفته رو ببین.',
     cta: 'دیدن تورنومنت‌ها',
     href: '/tournaments',
-    icon: '/icons/tournament.png',
+    icon: '/icons/tournament.webp',
     tone: '240 193 75',
   };
 }

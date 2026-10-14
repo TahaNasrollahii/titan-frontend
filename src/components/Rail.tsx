@@ -47,7 +47,7 @@ export function Rail() {
           {!isAuthenticated ? (
             /* Guest "avatar": a person (sign in), not the door-and-arrow used for logout */
             <Link href="/login" className="rail-icon-btn rail-login" data-tip="ورود یا ثبت‌نام" aria-label="ورود یا ثبت‌نام">
-              <img src="/icons/account.png" alt="" />
+              <img src="/icons/account.webp" alt="" />
             </Link>
           ) : (
             <div className="acct" style={{ marginBottom: '8px' }}>
@@ -72,26 +72,26 @@ export function Rail() {
                   </div>
                 </div>
                 <Link href="/dashboard?tab=overview" className="menu-item">
-                  <img className="menu-ic" src="/icons/dashboard.png" alt="" /> پیشخوان
+                  <img className="menu-ic" src="/icons/dashboard.webp" alt="" /> پیشخوان
                 </Link>
                 <Link href="/dashboard?tab=profile" className="menu-item">
-                  <img className="menu-ic" src="/icons/account.png" alt="" /> اطلاعات حساب کاربری
+                  <img className="menu-ic" src="/icons/account.webp" alt="" /> اطلاعات حساب کاربری
                 </Link>
                 <Link href="/dashboard?tab=notifications" className="menu-item">
-                  <img className="menu-ic" src="/icons/notif.png" alt="" /> پیام‌ها و اعلان‌ها
+                  <img className="menu-ic" src="/icons/notif.webp" alt="" /> پیام‌ها و اعلان‌ها
                 </Link>
 
                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '4px 0' }}></div>
 
                 <button className="menu-item danger" onClick={() => logout()}>
-                  <img className="menu-ic" src="/icons/login.png" alt="" /> خروج از حساب
+                  <img className="menu-ic" src="/icons/login.webp" alt="" /> خروج از حساب
                 </button>
               </div>
             </div>
           )}
 
           <i className="rail-ic">
-            <img src="/icons/team.png" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+            <img src="/icons/team.webp" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
           </i>
           <div className="list">
             {(teams.data ?? []).map(team => {

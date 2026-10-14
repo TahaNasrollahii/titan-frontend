@@ -62,7 +62,7 @@ export function Sidebar() {
     <aside className="nav panel reveal" style={{ '--d': 0 } as React.CSSProperties} aria-label="منوی اصلی">
       <div className="sticky-nav-inner">
         <Link href="/" className="logo" aria-label="خانه تایتان">
-          <img src="/titan-logo.png" alt="تایتان" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+          <img src="/titan-logo.webp" alt="تایتان" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
         </Link>
         <nav className="nav-list" id="navList">
           <span className="nav-ind" style={navIndStyle}>
@@ -78,7 +78,7 @@ export function Sidebar() {
             data-label="خانه"
             ref={el => { navRefs.current['/'] = el; }}
           >
-            <img src="/icons/home.png" alt="home" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/home.webp" alt="home" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -87,7 +87,7 @@ export function Sidebar() {
             data-label="فروشگاه"
             ref={el => { navRefs.current['/store'] = el; }}
           >
-            <img src="/icons/store.png" alt="store" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/store.webp" alt="store" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -96,7 +96,7 @@ export function Sidebar() {
             data-label="تورنومنت"
             ref={el => { navRefs.current['/tournament'] = el; }}
           >
-            <img src="/icons/tournament.png" alt="tournament" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/tournament.webp" alt="tournament" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
           <Link
             href="/contact"
@@ -104,7 +104,7 @@ export function Sidebar() {
             data-label="ارتباط با ما"
             ref={el => { navRefs.current['/contact'] = el; }}
           >
-            <img src="/icons/contact-us.png" alt="contact-us" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <img src="/icons/contact-us.webp" alt="contact-us" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -113,7 +113,7 @@ export function Sidebar() {
             data-label="درباره ما"
             ref={el => { navRefs.current['/about'] = el; }}
           >
-            <img src="/icons/about-us.png" alt="about-us" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/about-us.webp" alt="about-us" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -122,7 +122,7 @@ export function Sidebar() {
             data-label="داشبورد"
             ref={el => { navRefs.current['/dashboard'] = el; }}
           >
-            <img src="/icons/dashboard.png" alt="dashboard" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/dashboard.webp" alt="dashboard" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
         </nav>

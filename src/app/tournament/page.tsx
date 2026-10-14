@@ -214,7 +214,7 @@ export default function TournamentPage() {
               </div>
             </div>
             <div className="th-art-wrap">
-              <img src={promo?.image ?? '/images/banner-hero.png'} alt="" className="th-art" />
+              <img src={promo?.image ?? '/images/banner-hero.webp'} alt="" className="th-art" />
             </div>
           </article>
         </section>

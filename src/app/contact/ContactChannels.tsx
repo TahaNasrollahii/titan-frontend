@@ -109,7 +109,7 @@ export function ContactPanel() {
           <div className={styles.spinRing}></div>
           <div className={styles.floatParticle1}></div>
           <div className={styles.floatParticle2}></div>
-          <img src="/images/support-robot.png" alt="پشتیبانی تایتان" className={styles.robotImage} />
+          <img src="/images/support-robot.webp" alt="پشتیبانی تایتان" className={styles.robotImage} />
         </div>
       </div>
 

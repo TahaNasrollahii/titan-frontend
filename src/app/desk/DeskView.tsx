@@ -130,7 +130,7 @@ const isTransient = (error: unknown) => !(error instanceof ApiError) || error.st
 function notify(title: string, body: string, onClick: () => void) {
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || !document.hidden) return;
   try {
-    const notification = new Notification(title, { body, tag: title, icon: '/titan-logo.png' });
+    const notification = new Notification(title, { body, tag: title, icon: '/titan-logo.webp' });
     notification.onclick = () => {
       window.focus();
       onClick();

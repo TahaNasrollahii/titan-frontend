@@ -96,7 +96,7 @@ export function OverviewTab() {
       <section className={styles.statsGrid}>
         <div className={`${styles.statCard} ${styles.wallet}`}>
           <div className={styles.statIcon}>
-            <img src="/icons/cart.png" alt="" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <img src="/icons/cart.webp" alt="" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </div>
           <div style={{ flex: 1 }}>
             <div className={styles.statValue}>{faNumber(data.walletBalance)}</div>
@@ -109,7 +109,7 @@ export function OverviewTab() {
 
         <div className={`${styles.statCard} ${styles.tourney}`}>
           <div className={styles.statIcon}>
-            <img src="/icons/tournament.png" alt="" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <img src="/icons/tournament.webp" alt="" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </div>
           <div>
             <div className={styles.statValue}>{faNumber(data.tournamentsJoined)}</div>
@@ -119,7 +119,7 @@ export function OverviewTab() {
 
         <div className={`${styles.statCard} ${styles.teams}`}>
           <div className={styles.statIcon}>
-            <img src="/icons/team.png" alt="" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <img src="/icons/team.webp" alt="" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </div>
           <div>
             <div className={styles.statValue}>{faNumber(data.activeTeams)}</div>

@@ -113,7 +113,7 @@ export function ProfileTab() {
 
       <div className={styles.mobileLogoutRow}>
         <AppRow
-          icon="/icons/login.png"
+          icon="/icons/login.webp"
           tone="255 90 80"
           label="خروج از حساب"
           danger

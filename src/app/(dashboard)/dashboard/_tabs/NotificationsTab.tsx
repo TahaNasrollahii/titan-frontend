@@ -15,13 +15,13 @@ import { useApi } from '@/lib/hooks/useApi';
 import styles from '../page.module.css';
 
 const KIND_ICONS: Record<Notification['kind'], string> = {
-  system: '/icons/notif.png',
-  tournament: '/icons/tournament.png',
-  team_invite: '/icons/team.png',
-  team: '/icons/team.png',
-  friend_request: '/icons/team.png',
-  order: '/icons/cart.png',
-  payment: '/icons/cart.png',
+  system: '/icons/notif.webp',
+  tournament: '/icons/tournament.webp',
+  team_invite: '/icons/team.webp',
+  team: '/icons/team.webp',
+  friend_request: '/icons/team.webp',
+  order: '/icons/cart.webp',
+  payment: '/icons/cart.webp',
 };
 
 /** Where clicking a notification should take the user, based on its action payload. */

@@ -35,9 +35,9 @@ function tabFor(pathname: string): TabKey {
 }
 
 const LINK_TABS: { key: Exclude<TabKey, 'me' | 'more'>; href: string; label: string; icon: string }[] = [
-  { key: 'home', href: '/', label: 'خانه', icon: '/icons/home.png' },
-  { key: 'store', href: '/store', label: 'فروشگاه', icon: '/icons/store.png' },
-  { key: 'tournament', href: '/tournament', label: 'تورنومنت', icon: '/icons/tournament.png' },
+  { key: 'home', href: '/', label: 'خانه', icon: '/icons/home.webp' },
+  { key: 'store', href: '/store', label: 'فروشگاه', icon: '/icons/store.webp' },
+  { key: 'tournament', href: '/tournament', label: 'تورنومنت', icon: '/icons/tournament.webp' },
 ];
 
 const ACCOUNT_TABS = ['orders', 'teams', 'favorites', 'accounts'].map(sectionByTab);
@@ -98,7 +98,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           ) : (
             <div className={styles.guestCard}>
               <span className={styles.guestGlow} aria-hidden />
-              <img src="/titan-logo.png" alt="" className={styles.guestLogo} />
+              <img src="/titan-logo.webp" alt="" className={styles.guestLogo} />
               <div>
                 <b>به تایتان خوش اومدی</b>
                 <small>وارد شو تا سفارش‌ها، تیم‌ها و تورنومنت‌هات اینجا باشن.</small>
@@ -112,7 +112,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 
         <motion.div className={styles.quick} variants={fadeUp}>
           <Link href="/cart" className={styles.quickCard} onClick={onClose}>
-            <ToneIcon icon="/icons/cart.png" tone="255 146 64" className={styles.quickIcon} />
+            <ToneIcon icon="/icons/cart.webp" tone="255 146 64" className={styles.quickIcon} />
             <span>
               <b>سبد خرید</b>
               <small>{cartCount > 0 ? `${faNumber(cartCount)} کالا` : 'خالی'}</small>
@@ -123,7 +123,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             className={styles.quickCard}
             onClick={onClose}
           >
-            <ToneIcon icon="/icons/notif.png" tone="47 210 122" className={styles.quickIcon} badge={unread} />
+            <ToneIcon icon="/icons/notif.webp" tone="47 210 122" className={styles.quickIcon} badge={unread} />
             <span>
               <b>اعلان‌ها</b>
               <small>
@@ -166,7 +166,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           />
           <AppRow
             href="/contact"
-            icon="/icons/contact-us.png"
+            icon="/icons/contact-us.webp"
             tone="45 212 191"
             label="ارتباط با ما"
             hint="پشتیبانی، تلگرام و دیسکورد"
@@ -174,7 +174,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           />
           <AppRow
             href="/about"
-            icon="/icons/about-us.png"
+            icon="/icons/about-us.webp"
             tone="196 160 255"
             label="درباره ما"
             hint="داستان تایتان"
@@ -185,7 +185,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
         {isAuthenticated && (
           <motion.div variants={fadeUp}>
             <AppRow
-              icon="/icons/login.png"
+              icon="/icons/login.webp"
               tone="255 90 80"
               label="خروج از حساب"
               danger
@@ -250,7 +250,7 @@ export function MobileNav() {
               isAuthenticated && user ? (
                 <RankAvatar user={user} size={34} uid="-tabbar" tuckOrnament />
               ) : (
-                <img src="/icons/account.png" alt="" />
+                <img src="/icons/account.webp" alt="" />
               )
             }
           />

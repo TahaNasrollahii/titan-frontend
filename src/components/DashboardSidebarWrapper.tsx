@@ -66,7 +66,7 @@ function DashboardSidebarContent() {
         <div className={styles.menuDivider}></div>
 
         <button className={`${styles.menuItem} ${styles.logoutBtn}`} onClick={handleLogout}>
-          <img src="/icons/login.png" alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> خروج از حساب
+          <img src="/icons/login.webp" alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> خروج از حساب
         </button>
       </aside>
 

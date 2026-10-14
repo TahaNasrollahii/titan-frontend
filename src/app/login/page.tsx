@@ -25,25 +25,25 @@ function safeNext(next: string | null) {
 /** Floating logo data */
 const floatingLogos = [
   {
-    src: '/images/glossy-apex-logo.png',
+    src: '/images/glossy-apex-logo.webp',
     alt: 'Apex Legends',
     className: 'logoApex',
     delay: 0,
   },
   {
-    src: '/images/glossy-valorant-logo.png',
+    src: '/images/glossy-valorant-logo.webp',
     alt: 'Valorant',
     className: 'logoValorant',
     delay: 0.15,
   },
   {
-    src: '/images/glossy-fortnite-logo.png',
+    src: '/images/glossy-fortnite-logo.webp',
     alt: 'Fortnite',
     className: 'logoFortnite',
     delay: 0.3,
   },
   {
-    src: '/images/login-premium.png',
+    src: '/images/login-premium.webp',
     alt: 'Premium',
     className: 'logoPremium',
     delay: 0.45,
@@ -174,7 +174,7 @@ function LoginForm() {
         <div className={styles.characterWrapper}>
           <Image
             className={styles.characterBehind}
-            src="/images/character-behind-login-v2.png"
+            src="/images/character-behind-login-v2.webp"
             alt="Gaming character"
             width={340}
             height={400}
@@ -203,7 +203,7 @@ function LoginForm() {
                 transition={{ duration: 0.3 }}
               >
                 {step === 'phone' ? (
-                  <Image src="/titan-logo.png" alt="Titan Logo" width={42} height={42} priority style={{ objectFit: 'contain', display: 'block' }} />
+                  <Image src="/titan-logo.webp" alt="Titan Logo" width={42} height={42} priority style={{ objectFit: 'contain', display: 'block' }} />
                 ) : (
                   <Icon name="lock" />
                 )}

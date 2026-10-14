@@ -49,7 +49,7 @@ export function TournamentsTab() {
             <div className={styles.listItemInfo}>
               <div className={styles.itemIcon} style={{ background: '#222' }}>
                 <img
-                  src={live ? '/icons/tournament.png' : '/icons/clock.png'}
+                  src={live ? '/icons/tournament.webp' : '/icons/clock.webp'}
                   alt=""
                   style={{ width: '28px', height: '28px', objectFit: 'contain' }}
                 />

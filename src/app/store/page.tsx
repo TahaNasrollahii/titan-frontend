@@ -75,7 +75,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
       onPointerLeave={() => setPaused(false)}
     >
       <div className="sp-bg discount-bg"></div>
-      <img src={promos[index]?.backgroundImage ?? '/images/discount.png'} alt="" className="sp-discount-overlay" />
+      <img src={promos[index]?.backgroundImage ?? '/images/discount.webp'} alt="" className="sp-discount-overlay" />
       {promos.map((promo, i) => (
         <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
           <div className="sp-content">
@@ -114,7 +114,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
                 promo.subtitle.includes('فورتنایت') ||
                 (promo.image && promo.image.includes('fortnite')))
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-                  : (promo.image ?? '/images/support-robot.png')
+                  : (promo.image ?? '/images/support-robot.webp')
               }
               alt=""
               className="sp-art discount-art"
@@ -153,7 +153,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
           <div
             className="sp-bg side-bg"
             style={{
-              backgroundImage: [promo.backgroundGradient, `url(${promo.backgroundImage ?? '/images/banner-hero.png'})`]
+              backgroundImage: [promo.backgroundGradient, `url(${promo.backgroundImage ?? '/images/banner-hero.webp'})`]
                 .filter(Boolean)
                 .join(', '),
               backgroundSize: 'cover',
@@ -191,7 +191,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
                 promo.subtitle.includes('فورتنایت') ||
                 (promo.image && promo.image.includes('fortnite')))
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-                  : (promo.image ?? '/images/character-behind-login-form.png')
+                  : (promo.image ?? '/images/character-behind-login-form.webp')
               }
               alt=""
               className="sp-art"
@@ -238,13 +238,13 @@ const GAME_ACCENTS: Record<string, string> = {
 
 const LOCAL_CHARACTERS = [
   TEMPLATE_CHARACTER,
-  '/images/hero/characters/fortnite.png',
-  '/images/hero/characters/apexlegends.png',
-  '/images/hero/characters/valorant.png',
-  '/images/products/vbucks.png',
-  '/images/character-behind-login-form.png',
-  '/images/support-robot.png',
-  '/images/games/premium.png',
+  '/images/hero/characters/fortnite.webp',
+  '/images/hero/characters/apexlegends.webp',
+  '/images/hero/characters/valorant.webp',
+  '/images/products/vbucks.webp',
+  '/images/character-behind-login-form.webp',
+  '/images/support-robot.webp',
+  '/images/games/premium.webp',
 ];
 
 function ProductCard({
@@ -268,11 +268,11 @@ function ProductCard({
     (gameSlug === 'fortnite'
       ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
       : gameSlug === 'apex-legends'
-      ? '/images/hero/characters/apexlegends.png'
+      ? '/images/hero/characters/apexlegends.webp'
       : gameSlug === 'valorant'
-      ? '/images/hero/characters/valorant.png'
+      ? '/images/hero/characters/valorant.webp'
       : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
-      ? '/images/products/vbucks.png'
+      ? '/images/products/vbucks.webp'
       : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
 
   const [imgSrc, setImgSrc] = useState(defaultImage);
@@ -617,7 +617,7 @@ function StorePageContent() {
 
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
     (games.data ?? []).map(game => {
-      const localIcon = LOCAL_ICONS[game.slug] ? `/images/categories/${LOCAL_ICONS[game.slug]}.png` : null;
+      const localIcon = LOCAL_ICONS[game.slug] ? `/images/categories/.webp` : null;
       return { slug: game.slug, title: game.title, icon: game.iconImage ?? localIcon };
     }),
   );

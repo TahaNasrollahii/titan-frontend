@@ -91,12 +91,12 @@ export function Topbar() {
     <header className={barClass} style={{ '--d': 1 } as React.CSSProperties}>
       {/* Mobile app bar only */}
       <Link href="/" className="top-logo" aria-label="خانه تایتان">
-        <img src="/titan-logo.png" alt="" />
+        <img src="/titan-logo.webp" alt="" />
       </Link>
 
       <div className={`search ${searchOpen ? 'open' : ''}`} id="search" role="search">
         <img
-          src="/icons/search.png"
+          src="/icons/search.webp"
           alt=""
           style={{ width: '20px', height: '20px', objectFit: 'contain', marginLeft: '10px' }}
         />
@@ -135,7 +135,7 @@ export function Topbar() {
           aria-label="جستجو"
           onClick={() => setMobileSearchPath(pathname)}
         >
-          <img src="/icons/search.png" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+          <img src="/icons/search.webp" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </button>
 
         <Link
@@ -144,12 +144,12 @@ export function Topbar() {
           aria-label="اعلان‌ها"
           style={{ textDecoration: 'none' }}
         >
-          <img src="/icons/notif.png" alt="" style={iconStyle} />
+          <img src="/icons/notif.webp" alt="" style={iconStyle} />
           <span className="dot" hidden={unreadNotifications === 0}></span>
         </Link>
 
         <Link href="/cart" className="round" aria-label="سبد خرید" id="cartBtn" style={{ textDecoration: 'none' }}>
-          <img src="/icons/cart.png" alt="" style={iconStyle} />
+          <img src="/icons/cart.webp" alt="" style={iconStyle} />
           <span className={`badge ${cartPop ? 'pop' : ''}`} hidden={cartCount === 0}>
             {cartCount}
           </span>
@@ -166,7 +166,7 @@ export function Topbar() {
               {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
             </span>
           ) : (
-            <img src="/icons/account.png" alt="" style={iconStyle} />
+            <img src="/icons/account.webp" alt="" style={iconStyle} />
           )}
         </Link>
       </div>

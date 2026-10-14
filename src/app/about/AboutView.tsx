@@ -29,7 +29,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 /** One of the site's own icons from /public/icons (solid, rounded, white). */
 function SiteIcon({ name }: { name: string }) {
-  return <img className={styles.siteIcon} src={`/icons/${name}.png`} alt="" draggable={false} />;
+  return <img className={styles.siteIcon} src={`/icons/.webp`} alt="" draggable={false} />;
 }
 
 const stagger: Variants = { show: { transition: { staggerChildren: 0.09 } } };
@@ -65,16 +65,16 @@ function SectionHead({ kicker, title, text }: { kicker: string; title: string; t
 
 // ------------------------------------------------------------------ hero
 const CHARACTERS = [
-  { src: '/images/hero/characters/apexlegends.png', alt: 'Apex Legends', className: styles.charLeft, delay: 0.35 },
-  { src: '/images/hero/characters/fortnite.png', alt: 'Fortnite', className: styles.charRight, delay: 0.5 },
-  { src: '/images/hero/characters/valorant.png', alt: 'Valorant', className: styles.charCenter, delay: 0.2 },
+  { src: '/images/hero/characters/apexlegends.webp', alt: 'Apex Legends', className: styles.charLeft, delay: 0.35 },
+  { src: '/images/hero/characters/fortnite.webp', alt: 'Fortnite', className: styles.charRight, delay: 0.5 },
+  { src: '/images/hero/characters/valorant.webp', alt: 'Valorant', className: styles.charCenter, delay: 0.2 },
 ];
 
 const ORBIT_LOGOS = [
-  { src: '/images/glossy-valorant-logo.png', className: styles.orbitA },
-  { src: '/images/glossy-apex-logo.png', className: styles.orbitB },
-  { src: '/images/glossy-fortnite-logo.png', className: styles.orbitC },
-  { src: '/images/login-premium.png', className: styles.orbitD },
+  { src: '/images/glossy-valorant-logo.webp', className: styles.orbitA },
+  { src: '/images/glossy-apex-logo.webp', className: styles.orbitB },
+  { src: '/images/glossy-fortnite-logo.webp', className: styles.orbitC },
+  { src: '/images/login-premium.webp', className: styles.orbitD },
 ];
 
 function Hero() {
@@ -332,7 +332,7 @@ function FinalCta() {
     <Reveal className={styles.section}>
       <motion.div className={styles.cta} variants={rise}>
         <div className={styles.ctaGlow} aria-hidden />
-        <Image className={styles.ctaLogo} src="/titan-logo.png" alt="" width={72} height={72} />
+        <Image className={styles.ctaLogo} src="/titan-logo.webp" alt="" width={72} height={72} />
         <h2>{finalCta.title}</h2>
         <p>{finalCta.text}</p>
         <div className={styles.actions}>

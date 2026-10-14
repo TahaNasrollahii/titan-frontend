@@ -27,7 +27,7 @@ export default function CartPage() {
       {cart.lines.length === 0 ? (
         <div className="cart-empty">
           <div className="cart-empty-icon">
-            <img src="/icons/cart.png" alt="" />
+            <img src="/icons/cart.webp" alt="" />
           </div>
           <h2>سبد خرید شما خالی است</h2>
           <p>برای مشاهده محصولات به فروشگاه سر بزنید</p>
