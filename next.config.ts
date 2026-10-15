@@ -4,9 +4,68 @@ import type { NextConfig } from "next";
 // backends return absolute media URLs (Vercel Blob), so this only matters for relative ones.
 const API_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1").origin;
 
+const isProd = process.env.NODE_ENV === "production";
+
+// Content Security Policy directive string
+const cspDirectives = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https://*.vercel.app https://*.public.blob.vercel-storage.com https://*.zarinpal.com https://cdn.zarinpal.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  `connect-src 'self' ${API_ORIGIN} https://titan-backend-taha.vercel.app http://localhost:8000 https://*.vercel.app https://*.zarinpal.com https://challenges.cloudflare.com`,
+  "frame-src https://challenges.cloudflare.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https://*.zarinpal.com https://payment.zarinpal.com https://sandbox.zarinpal.com",
+  "object-src 'none'",
+  isProd ? "upgrade-insecure-requests" : "",
+]
+  .filter(Boolean)
+  .join("; ");
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   logging: {
     browserToTerminal: true,
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: cspDirectives,
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+        ],
+      },
+    ];
   },
   async rewrites() {
     return [
