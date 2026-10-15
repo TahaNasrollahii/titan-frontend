@@ -35,6 +35,12 @@ export const metadata: Metadata = {
 export default function TitanPage() {
   return (
     <>
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero/characters/apexlegends.webp"
+        fetchPriority="high"
+      />
       <h1 className="sr-only">تایتان — پلتفرم گیمینگ، خرید پول بازی‌ها و مسابقات آنلاین</h1>
       <TitanHomeClient />
     </>

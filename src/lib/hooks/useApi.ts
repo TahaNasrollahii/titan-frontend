@@ -16,10 +16,14 @@ export interface ApiState<T> {
  * Load data on mount and whenever ``deps`` change. Pass ``null`` as the fetcher to skip loading
  * (e.g. while the user is not logged in). Stale responses from superseded requests are ignored.
  */
-export function useApi<T>(fetcher: (() => Promise<T>) | null, deps: DependencyList = []): ApiState<T> {
-  const [data, setDataState] = useState<T>();
+export function useApi<T>(
+  fetcher: (() => Promise<T>) | null,
+  deps: DependencyList = [],
+  initialData?: T,
+): ApiState<T> {
+  const [data, setDataState] = useState<T | undefined>(initialData);
   const [error, setError] = useState<ApiError | null>(null);
-  const [loading, setLoading] = useState(fetcher !== null);
+  const [loading, setLoading] = useState(initialData === undefined && fetcher !== null);
   const requestId = useRef(0);
   const fetcherRef = useRef(fetcher);
 

@@ -575,7 +575,11 @@ function HomeScene({ data }: { data: Home }) {
             </div>
           </div>
 
-          <div class="hero-art" id="heroArt" aria-hidden="true"></div>
+          <div class="hero-art" id="heroArt" aria-hidden="true">
+            <div class="art on" data-hue="0">
+              <img src="/images/hero/characters/apexlegends.webp" class="hero-char apexlegends" alt="Apex Legends" width="256" height="265" fetchpriority="high" />
+            </div>
+          </div>
 
           <div class="dashes" id="dashes"></div>
         </article>

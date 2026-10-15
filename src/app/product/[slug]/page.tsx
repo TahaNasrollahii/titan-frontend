@@ -172,7 +172,15 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <ProductDetailClient />
+      {product?.image && (
+        <link
+          rel="preload"
+          as="image"
+          href={product.image.startsWith('http') ? product.image : `${SITE_URL}/${product.image.replace(/^\//, '')}`}
+          fetchPriority="high"
+        />
+      )}
+      <ProductDetailClient initialData={product as any} />
     </>
   );
 }

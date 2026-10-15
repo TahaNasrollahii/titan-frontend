@@ -1,9 +1,8 @@
 /* Generated from titan.html */
 
-@import url('https://cdn.jsdelivr.net/fontsource/css/estedad:vf@latest/index.css');
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
 :root {
+  --font-persian: var(--font-vazirmatn), 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  --font-en: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --gutter: clamp(12px, 2.2vw, 32px);
   --bg-page: #fbd8d8;
   --frame-a: #65232d;
@@ -45,7 +44,7 @@ html {
 }
 
 body {
-  font-family: 'Estedad Variable', 'Vazirmatn', 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-vazirmatn), 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   min-height: 100vh;
   padding: var(--gutter);

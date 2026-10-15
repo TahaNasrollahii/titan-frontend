@@ -624,12 +624,31 @@ function StorePageContent() {
 
   return (
     <div className="store-content reveal" style={{ '--d': 2 } as React.CSSProperties}>
-      {(discountPromos.data?.length || bestsellerPromos.data?.length) ? (
-        <div className="store-promos reveal" style={{ '--d': 3 } as React.CSSProperties}>
-          <DiscountPromos promos={discountPromos.data ?? []} />
-          <BestsellerPromos promos={bestsellerPromos.data ?? []} />
-        </div>
-      ) : null}
+      <div
+        className="store-promos reveal"
+        style={{
+          '--d': 3,
+          minHeight: (discountPromos.loading && !discountPromos.data) || discountPromos.data?.length || bestsellerPromos.data?.length ? '240px' : '0px',
+        } as React.CSSProperties}
+      >
+        {discountPromos.loading && !discountPromos.data ? (
+          <div
+            className="store-promo promo-skeleton"
+            style={{
+              flex: 1,
+              minHeight: '240px',
+              borderRadius: '34px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+            }}
+          />
+        ) : (
+          <>
+            {Boolean(discountPromos.data?.length) && <DiscountPromos promos={discountPromos.data ?? []} />}
+            {Boolean(bestsellerPromos.data?.length) && <BestsellerPromos promos={bestsellerPromos.data ?? []} />}
+          </>
+        )}
+      </div>
 
       <div className="store-sec-h">
         <div className="store-sec-l">

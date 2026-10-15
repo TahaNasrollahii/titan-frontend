@@ -21,3 +21,4 @@ export const DEFAULT_OG_IMAGE = {
   height: 630,
   alt: 'پلتفرم گیمینگ و مسابقات تایتان',
 };
+

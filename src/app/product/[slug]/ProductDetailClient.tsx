@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Flame, Heart, MessageSquare, Minus, Plus, ShieldCheck, Trophy, Zap } from 'lucide-react';
 import Link from 'next/link';
@@ -40,13 +40,13 @@ function defaultVariant(product: Product): ProductVariant | null {
   return product.variants.find(v => v.inStock) ?? product.variants[0] ?? null;
 }
 
-export default function ProductPage() {
+export default function ProductPage({ initialData }: { initialData?: Product | null }) {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { addToCart, addToast } = useAppContext();
 
-  const product = useApi(() => catalogApi.product(slug), [slug]);
+  const product = useApi(() => catalogApi.product(slug), [slug], initialData ?? undefined);
   const related = useApi(() => catalogApi.related(slug), [slug]);
 
   const [variantId, setVariantId] = useState<number | null>(null);
