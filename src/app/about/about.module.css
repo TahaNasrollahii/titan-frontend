@@ -793,17 +793,6 @@
   padding: 0 16px;
 }
 
-.quoteMark {
-  position: absolute;
-  top: -45px;
-  right: -20px;
-  font-size: 110px;
-  line-height: 1;
-  font-family: Georgia, serif;
-  color: rgba(226, 69, 63, 0.14);
-  pointer-events: none;
-  user-select: none;
-}
 
 .manifestoParagraph {
   font-size: clamp(18px, 2.6vw, 30px);
@@ -1066,11 +1055,19 @@
 }
 
 .valueIndexNumber {
-  font-size: 26px;
+  font-size: clamp(28px, 3.4vw, 38px);
   font-weight: 900;
-  color: rgba(226, 69, 63, 0.3);
-  font-family: var(--font-en);
   line-height: 1;
+  font-family: var(--font-persian), 'Vazirmatn', sans-serif;
+  color: var(--red-2);
+  background: linear-gradient(180deg, #ffffff 15%, var(--red-2) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  user-select: none;
 }
 
 .valueBadge {
@@ -1621,9 +1618,6 @@
     border-radius: 26px;
   }
 
-  .quoteMark {
-    display: none;
-  }
 
   .statFeatured {
     padding: 22px 18px;

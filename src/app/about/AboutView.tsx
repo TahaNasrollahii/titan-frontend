@@ -379,9 +379,6 @@ function Manifesto() {
         </div>
 
         <div className={styles.quoteBlock}>
-          <span className={styles.quoteMark} aria-hidden>
-            «
-          </span>
           <p ref={ref} className={styles.manifestoParagraph}>
             {words.map((word, index) => (
               <Word
