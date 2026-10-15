@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import TitanHomeClient from './TitanHomeClient';
+import type { Home } from '@/lib/api/types';
 import {
   SITE_URL,
   SITE_NAME,
@@ -32,17 +33,33 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TitanPage() {
+async function getHomeData(): Promise<Home | null> {
+  try {
+    const res = await fetch('https://titan-backend-taha.vercel.app/api/v1/home/', {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      return (await res.json()) as Home;
+    }
+  } catch {
+    // Graceful fallback on network error
+  }
+  return null;
+}
+
+export default async function TitanPage() {
+  const initialData = await getHomeData();
+
   return (
     <>
       <link
         rel="preload"
         as="image"
-        href="/images/hero/characters/apexlegends.webp"
+        href="/images/hero/characters/valorant.webp"
         fetchPriority="high"
       />
       <h1 className="sr-only">تایتان — پلتفرم گیمینگ، خرید پول بازی‌ها و مسابقات آنلاین</h1>
-      <TitanHomeClient />
+      <TitanHomeClient initialData={initialData} />
     </>
   );
 }

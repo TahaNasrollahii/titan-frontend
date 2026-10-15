@@ -63,6 +63,17 @@ function promoHref(promo: Promo) {
   return promo.link || '/store';
 }
 
+function getOptimizedAssetUrl(url: string | null | undefined, fallback: string): string {
+  if (!url) return fallback;
+  if (url.includes('games-apexlegends-background')) return '/images/games/apexlegends-background.webp';
+  if (url.includes('games-fortnite-background')) return '/images/games/fortnite-background.webp';
+  if (url.includes('games-valorant-background')) return '/images/games/valorant-background.webp';
+  if (url.includes('games-apexlegends-character')) return '/images/games/apexlegends-character.webp';
+  if (url.includes('games-fortnite-character')) return '/images/games/fortnite-character.webp';
+  if (url.includes('games-valorant-character')) return '/images/games/valorant-character.webp';
+  return url;
+}
+
 function DiscountPromos({ promos }: { promos: Promo[] }) {
   const { index, setIndex, setPaused } = useRotation(promos.length, 6000);
   const secondsLeft = useSecondsUntil(promos[index]?.endsAt);
@@ -75,7 +86,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
       onPointerLeave={() => setPaused(false)}
     >
       <div className="sp-bg discount-bg"></div>
-      <img src={promos[index]?.backgroundImage ?? '/images/discount.webp'} alt="" className="sp-discount-overlay" />
+      <img src={getOptimizedAssetUrl(promos[index]?.backgroundImage, '/images/discount.webp')} alt="" className="sp-discount-overlay" />
       {promos.map((promo, i) => (
         <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
           <div className="sp-content">
@@ -114,7 +125,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
                 promo.subtitle.includes('فورتنایت') ||
                 (promo.image && promo.image.includes('fortnite')))
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-                  : (promo.image ?? '/images/support-robot.webp')
+                  : getOptimizedAssetUrl(promo.image, '/images/support-robot.webp')
               }
               alt=""
               className="sp-art discount-art"
@@ -153,7 +164,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
           <div
             className="sp-bg side-bg"
             style={{
-              backgroundImage: [promo.backgroundGradient, `url(${promo.backgroundImage ?? '/images/banner-hero.webp'})`]
+              backgroundImage: [promo.backgroundGradient, `url(${getOptimizedAssetUrl(promo.backgroundImage, '/images/banner-hero.webp')})`]
                 .filter(Boolean)
                 .join(', '),
               backgroundSize: 'cover',
@@ -191,7 +202,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
                 promo.subtitle.includes('فورتنایت') ||
                 (promo.image && promo.image.includes('fortnite')))
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-                  : (promo.image ?? '/images/character-behind-login-form.webp')
+                  : getOptimizedAssetUrl(promo.image, '/images/character-behind-login-form.webp')
               }
               alt=""
               className="sp-art"

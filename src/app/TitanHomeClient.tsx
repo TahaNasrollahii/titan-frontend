@@ -25,9 +25,9 @@ function enamadSeal() {
   return `<a class="th-seal" referrerpolicy="origin" target="_blank" rel="noopener" href="https://trustseal.enamad.ir/?${q}" aria-label="نماد اعتماد الکترونیکی">${inner}<span class="th-seal-face"><img referrerpolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?${q}" alt="نماد اعتماد الکترونیکی" code="${ENAMAD.code}" /></span></a>`;
 }
 
-export default function TitanPage() {
-  const home = useApi(contentApi.home);
-  if (home.loading) return <Loading />;
+export default function TitanPage({ initialData }: { initialData?: Home | null }) {
+  const home = useApi(contentApi.home, [], initialData ?? undefined);
+  if (home.loading && !home.data) return <Loading />;
   if (!home.data) return <ErrorState error={home.error} onRetry={home.reload} />;
   return <HomeScene data={home.data} />;
 }
@@ -577,7 +577,7 @@ function HomeScene({ data }: { data: Home }) {
 
           <div class="hero-art" id="heroArt" aria-hidden="true">
             <div class="art on" data-hue="0">
-              <img src="/images/hero/characters/apexlegends.webp" class="hero-char apexlegends" alt="Apex Legends" width="256" height="265" fetchpriority="high" />
+              <img src="/images/hero/characters/valorant.webp" class="hero-char valorant" alt="Valorant" width="256" height="265" fetchpriority="high" />
             </div>
           </div>
 
