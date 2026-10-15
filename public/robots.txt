@@ -8,3 +8,4 @@ Disallow: /_next/
 Allow: /
 
 Sitemap: https://titan-front.vercel.app/sitemap.xml
+
