@@ -1058,7 +1058,8 @@
   font-size: clamp(28px, 3.4vw, 38px);
   font-weight: 900;
   line-height: 1;
-  font-family: var(--font-persian), 'Vazirmatn', sans-serif;
+  font-family: var(--font-en);
+  letter-spacing: -0.5px;
   color: var(--red-2);
   background: linear-gradient(180deg, #ffffff 15%, var(--red-2) 90%);
   -webkit-background-clip: text;
