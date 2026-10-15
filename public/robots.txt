@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /dashboard/
+Disallow: /desk/
+Disallow: /checkout/
+Disallow: /payment/
+Disallow: /api/
+Disallow: /_next/
+Allow: /
+
+Sitemap: https://titan-front.vercel.app/sitemap.xml
