@@ -78,7 +78,7 @@ export function Sidebar() {
             data-label="خانه"
             ref={el => { navRefs.current['/'] = el; }}
           >
-            <img src="/icons/home.webp" alt="home" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/home.webp" alt="خانه" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -87,7 +87,7 @@ export function Sidebar() {
             data-label="فروشگاه"
             ref={el => { navRefs.current['/store'] = el; }}
           >
-            <img src="/icons/store.webp" alt="store" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/store.webp" alt="فروشگاه" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -96,7 +96,7 @@ export function Sidebar() {
             data-label="تورنومنت"
             ref={el => { navRefs.current['/tournament'] = el; }}
           >
-            <img src="/icons/tournament.webp" alt="tournament" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/tournament.webp" alt="تورنومنت" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
           <Link
             href="/contact"
@@ -104,7 +104,7 @@ export function Sidebar() {
             data-label="ارتباط با ما"
             ref={el => { navRefs.current['/contact'] = el; }}
           >
-            <img src="/icons/contact-us.webp" alt="contact-us" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <img src="/icons/contact-us.webp" alt="ارتباط با ما" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -113,7 +113,7 @@ export function Sidebar() {
             data-label="درباره ما"
             ref={el => { navRefs.current['/about'] = el; }}
           >
-            <img src="/icons/about-us.webp" alt="about-us" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/about-us.webp" alt="درباره ما" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
@@ -122,7 +122,7 @@ export function Sidebar() {
             data-label="داشبورد"
             ref={el => { navRefs.current['/dashboard'] = el; }}
           >
-            <img src="/icons/dashboard.webp" alt="dashboard" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/dashboard.webp" alt="داشبورد" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
         </nav>

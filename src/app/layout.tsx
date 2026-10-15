@@ -11,9 +11,70 @@ import { MobileNav } from "@/components/MobileNav";
 import { RouteScrollReset } from "@/components/RouteScrollReset";
 import { SupportWidget } from "@/components/support/SupportWidget";
 
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_DEFAULT_TITLE,
+  SITE_DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from "@/lib/siteConfig";
+
 export const metadata: Metadata = {
-  title: "TITAN — پلتفرم گیمینگ و اسپورت",
-  description: "بازی کن. رقابت کن. فتح کن. پلتفرم گیمینگ و مسابقات اسپورت تایتان",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_DEFAULT_TITLE,
+    template: "%s | تایتان",
+  },
+  description: SITE_DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "خرید ویباکس فورتنایت",
+    "خرید ولورانت پوینت",
+    "خرید اپکس کوین",
+    "تورنومنت گیمینگ",
+    "مسابقات آنلاین بازی",
+    "گیفت کارت استیم",
+    "گیفت کارت پلی استیشن",
+    "اکانت پرمیوم",
+    "تایتان گیمینگ",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "fa_IR",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: SITE_DEFAULT_TITLE,
+    description: SITE_DEFAULT_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_DEFAULT_TITLE,
+    description: SITE_DEFAULT_DESCRIPTION,
+    images: [`${SITE_URL}/images/banner-hero.webp`],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icons/home.webp",
+  },
+  manifest: "/manifest.webmanifest",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export const viewport: Viewport = {
@@ -24,6 +85,37 @@ export const viewport: Viewport = {
   themeColor: "#2a0b12",
 };
 
+const globalJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/titan-logo.webp`,
+      description: SITE_DEFAULT_DESCRIPTION,
+      sameAs: ["https://t.me/titan", "https://discord.gg/titan"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      description: SITE_DEFAULT_DESCRIPTION,
+      publisher: {
+        "@id": `${SITE_URL}/#organization`,
+      },
+      inLanguage: "fa-IR",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/store?search={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,6 +124,10 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalJsonLd) }}
+        />
         <AuthProvider>
           <AppProvider>
             <div className="frame" id="frame">

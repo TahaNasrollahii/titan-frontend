@@ -91,7 +91,7 @@ export function Topbar() {
     <header className={barClass} style={{ '--d': 1 } as React.CSSProperties}>
       {/* Mobile app bar only */}
       <Link href="/" className="top-logo" aria-label="خانه تایتان">
-        <img src="/titan-logo.webp" alt="" />
+        <img src="/titan-logo.webp" alt="لوگوی تایتان" />
       </Link>
 
       <div className={`search ${searchOpen ? 'open' : ''}`} id="search" role="search">
@@ -163,10 +163,14 @@ export function Topbar() {
         >
           {isAuthenticated && user ? (
             <span className="top-account-av">
-              {user.avatar ? <img src={user.avatar} alt="" /> : <Avatar seed={user.avatarSeed || 5} />}
+              {user.avatar ? (
+                <img src={user.avatar} alt={user.fullName || user.username || 'تصویر پروفایل کاربر'} />
+              ) : (
+                <Avatar seed={user.avatarSeed || 5} />
+              )}
             </span>
           ) : (
-            <img src="/icons/account.webp" alt="" style={iconStyle} />
+            <img src="/icons/account.webp" alt="حساب کاربری" style={iconStyle} />
           )}
         </Link>
       </div>
