@@ -80,6 +80,7 @@
   }
 }
 
+.headerContent h1,
 .headerContent h2 {
   font-size: clamp(24px, 4vw, 36px);
   font-weight: 800;
@@ -88,6 +89,7 @@
   letter-spacing: -1px;
 }
 
+.headerContent h1 span,
 .headerContent h2 span {
   color: transparent;
   background: linear-gradient(135deg, #ff4b4b, #bd312c);

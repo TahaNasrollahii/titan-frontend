@@ -99,9 +99,9 @@ export function ContactPanel() {
               {contact.data.supportOnline ? 'تیم پشتیبانی آنلاین است' : 'پشتیبانی در حال حاضر آفلاین است'}
             </div>
           )}
-          <h2>
+          <h1>
             ارتباط <span>مستقیم</span> با تایتان
-          </h2>
+          </h1>
           <p>تایتان فقط یک پلتفرم نیست؛ یک خانواده است. از طریق کانال‌های زیر همیشه در کنار ما باشید.</p>
         </div>
         <div className={styles.robotImageWrapper}>
