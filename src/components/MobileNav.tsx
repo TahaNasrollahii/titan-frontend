@@ -25,13 +25,15 @@ const TAB_ORDER: TabKey[] = ['home', 'store', 'tournament', 'me', 'more'];
 const SPRING = { type: 'spring', stiffness: 520, damping: 38 } as const;
 
 /** Which tab a route belongs to. */
-function tabFor(pathname: string): TabKey {
-  if (pathname === '/') return 'home';
-  if (/^\/(store|product|cart|checkout|payment)/.test(pathname)) return 'store';
-  if (/^\/tournaments\/[^/]+\/bracket/.test(pathname)) return 'me';
-  if (/^\/tournaments?(\/|$)/.test(pathname)) return 'tournament';
-  if (/^\/(contact|about)/.test(pathname)) return 'more';
-  return 'me';
+function tabFor(pathname: string | null | undefined): TabKey {
+  const p = pathname?.replace(/\/+$/, '') || '/';
+  if (p === '/') return 'home';
+  if (/^\/(store|product|cart|checkout|payment)/.test(p)) return 'store';
+  if (/^\/tournaments\/[^/]+\/bracket/.test(p)) return 'me';
+  if (/^\/tournaments?(\/|$)/.test(p)) return 'tournament';
+  if (/^\/(contact|about)/.test(p)) return 'more';
+  if (/^\/(dashboard|login|teams|invite|desk)/.test(p)) return 'me';
+  return 'home';
 }
 
 const LINK_TABS: { key: Exclude<TabKey, 'me' | 'more'>; href: string; label: string; icon: string }[] = [
@@ -43,7 +45,13 @@ const LINK_TABS: { key: Exclude<TabKey, 'me' | 'more'>; href: string; label: str
 const ACCOUNT_TABS = ['orders', 'teams', 'favorites', 'accounts'].map(sectionByTab);
 
 /** A light tap on phones that support it. */
-const tick = () => navigator.vibrate?.(8);
+const tick = () => {
+  try {
+    navigator.vibrate?.(8);
+  } catch {
+    // Ignore vibration failure
+  }
+};
 
 /** Icon, which rises into the floating bubble while active, with its label shown underneath. */
 function TabInner({ icon, label, dot }: { icon: React.ReactNode; label: string; dot?: boolean }) {
@@ -212,6 +220,7 @@ export function MobileNav() {
   const closeSheet = useCallback(() => setSheetPath(null), []);
 
   const current = sheetOpen ? 'more' : tabFor(pathname);
+  const tabIndex = Math.max(0, TAB_ORDER.indexOf(current));
   const tabClass = (key: TabKey) => `${styles.tab} ${current === key ? styles.active : ''}`;
 
   return (
@@ -219,7 +228,7 @@ export function MobileNav() {
       <nav
         className={styles.bar}
         aria-label="منوی اصلی"
-        style={{ '--tab-i': TAB_ORDER.indexOf(current) } as React.CSSProperties}
+        style={{ '--tab-i': tabIndex } as React.CSSProperties}
       >
         {/* Glass with a notch cut under the bubble, the notch's rim, and the bubble itself */}
         <span className={styles.bg} aria-hidden />
@@ -231,7 +240,12 @@ export function MobileNav() {
             href={tab.href}
             className={tabClass(tab.key)}
             aria-current={current === tab.key ? 'page' : undefined}
-            onClick={tick}
+            onClick={() => {
+              tick();
+              if (tab.key === 'home' && (pathname === '/' || !pathname)) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
           >
             <TabInner label={tab.label} icon={<img src={tab.icon} alt="" />} />
           </Link>
