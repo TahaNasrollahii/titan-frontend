@@ -392,7 +392,7 @@ export function useSupportChat({ open, onIncoming }: { open: boolean; onIncoming
 
   // ---------------------------------------------------------------- actions
   const start = useCallback(
-    async (input: StartInput) => {
+    async (input: StartInput & { turnstileToken?: string }) => {
       const data = await supportApi.start({ ...input, pageUrl: window.location.pathname });
       storage.set(TOKEN_KEY, JSON.stringify({ token: data.token, userId: user?.id ?? null } satisfies StoredChat));
       notifiedRef.current = null;

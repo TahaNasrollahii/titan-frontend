@@ -38,6 +38,7 @@ import {
 } from './SupportIcons';
 import styles from './SupportWidget.module.css';
 import { chime, soundPreference, useSupportChat, type PendingMessage, type StartInput } from './useSupportChat';
+import { TurnstileWidget } from '@/components/TurnstileWidget';
 
 export const SUPPORT_OPEN_EVENT = 'titan:support-open';
 export const SUPPORT_TOGGLE_EVENT = 'titan:support-toggle';
@@ -99,7 +100,7 @@ function WelcomeView({
   online: boolean;
   agents: SupportAgent[];
   avgSeconds: number | null;
-  onStart: (input: StartInput) => Promise<void>;
+  onStart: (input: StartInput & { turnstileToken?: string }) => Promise<void>;
   autoFocus: boolean;
 }) {
   const [values, setValues] = useState<StartInput>(defaults);
@@ -120,6 +121,8 @@ function WelcomeView({
     lastName: v => (isValidName(v) ? undefined : 'نام خانوادگی رو درست وارد کن'),
     phone: v => (isValidPhone(v) ? undefined : 'شماره موبایل باید ۱۱ رقم و با ۰۹ شروع بشه'),
   };
+
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const update = (key: keyof StartInput, value: string) => {
     const next = key === 'phone' ? normalizePhone(value) : value;
@@ -142,7 +145,7 @@ function WelcomeView({
     setBusy(true);
     setFormError('');
     try {
-      await onStart({ firstName: values.firstName.trim(), lastName: values.lastName.trim(), phone: values.phone });
+      await onStart({ firstName: values.firstName.trim(), lastName: values.lastName.trim(), phone: values.phone, turnstileToken });
     } catch (error) {
       if (error instanceof ApiError && Object.keys(error.errors).length) {
         const fieldErrors: typeof errors = {};
@@ -223,6 +226,10 @@ function WelcomeView({
           autoComplete: 'tel',
           placeholder: '۰۹۱۲ ۳۴۵ ۶۷۸۹',
         })}
+        <TurnstileWidget
+          onVerify={token => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken('')}
+        />
         <button className={styles.cta} type="submit" aria-busy={busy}>
           <span>شروع گفتگو</span>
           <span className={styles.spin} />

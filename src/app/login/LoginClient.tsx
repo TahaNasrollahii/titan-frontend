@@ -14,8 +14,9 @@ import { toEnglishDigits } from '@/lib/format';
 
 import styles from './login.module.css';
 import { OTP_SUCCESS_MS, OtpBubbles, type OtpStatus } from './OtpBubbles';
+import { TurnstileWidget } from '@/components/TurnstileWidget';
 
-const OTP_LENGTH = 4;
+const OTP_LENGTH = 6;
 
 /** Only allow redirects back into this site. */
 function safeNext(next: string | null) {
@@ -64,6 +65,7 @@ function LoginForm() {
   const [resendIn, setResendIn] = useState(0);
   const [otpStatus, setOtpStatus] = useState<OtpStatus>('idle');
   const [redirecting, setRedirecting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   useEffect(() => {
     if (status === 'authenticated' && !redirecting) router.replace(next);
@@ -79,7 +81,7 @@ function LoginForm() {
     setBusy(true);
     setError('');
     try {
-      const response = await authApi.requestOtp(toEnglishDigits(phone));
+      const response = await authApi.requestOtp(toEnglishDigits(phone), turnstileToken || undefined);
       setPhone(response.phone);
       setResendIn(response.resendIn);
       setCode('');
@@ -98,7 +100,7 @@ function LoginForm() {
     setError('');
     setOtpStatus('verifying');
     try {
-      const response = await authApi.verifyOtp(phone, value);
+      const response = await authApi.verifyOtp(phone, value, turnstileToken || undefined);
       // Let the bubbles celebrate before logging in (which redirects).
       setOtpStatus('success');
       window.setTimeout(() => {
@@ -245,7 +247,7 @@ function LoginForm() {
                 </div>
               ) : (
                 <div className={styles.field}>
-                  <label htmlFor="code">کد ۴ رقمی</label>
+                  <label htmlFor="code">کد ۶ رقمی</label>
                   <OtpBubbles
                     id="code"
                     length={OTP_LENGTH}
@@ -258,6 +260,11 @@ function LoginForm() {
               )}
             </motion.div>
           </AnimatePresence>
+
+          <TurnstileWidget
+            onVerify={token => setTurnstileToken(token)}
+            onExpire={() => setTurnstileToken('')}
+          />
 
           <AnimatePresence>
             {error && (

@@ -58,10 +58,10 @@ import type {
 } from './types';
 
 export const authApi = {
-  requestOtp: (phone: string) =>
-    api<OtpRequestResponse>('auth/otp/request/', { method: 'POST', body: { phone }, auth: false }),
-  verifyOtp: (phone: string, code: string) =>
-    api<LoginResponse>('auth/otp/verify/', { method: 'POST', body: { phone, code }, auth: false }),
+  requestOtp: (phone: string, turnstileToken?: string) =>
+    api<OtpRequestResponse>('auth/otp/request/', { method: 'POST', body: { phone, turnstileToken }, auth: false }),
+  verifyOtp: (phone: string, code: string, turnstileToken?: string) =>
+    api<LoginResponse>('auth/otp/verify/', { method: 'POST', body: { phone, code, turnstileToken }, auth: false }),
   logout: (refresh: string) => api<void>('auth/logout/', { method: 'POST', body: { refresh } }),
 };
 
@@ -266,7 +266,7 @@ const visitor = (token: string) => ({ auth: false, headers: { 'X-Support-Token':
 
 export const supportApi = {
   status: () => api<SupportStatus>('support/status/', { auth: false }),
-  start: (data: { firstName: string; lastName: string; phone: string; pageUrl?: string }) =>
+  start: (data: { firstName: string; lastName: string; phone: string; pageUrl?: string; turnstileToken?: string }) =>
     api<SupportStart>('support/chat/start/', { method: 'POST', body: data }),
   sync: (token: string, after: number) =>
     api<VisitorSync>('support/chat/sync/', { ...visitor(token), query: { after } }),
