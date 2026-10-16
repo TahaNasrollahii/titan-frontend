@@ -75,3 +75,4 @@ export function TurnstileWidget({ onVerify, onExpire, className }: Props) {
     />
   );
 }
+
