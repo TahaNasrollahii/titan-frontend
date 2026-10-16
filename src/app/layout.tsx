@@ -25,6 +25,8 @@ import {
   SITE_DEFAULT_TITLE,
   SITE_DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
+  SOCIAL_TELEGRAM,
+  SOCIAL_DISCORD,
 } from "@/lib/siteConfig";
 
 export const metadata: Metadata = {
@@ -93,6 +95,8 @@ export const viewport: Viewport = {
   themeColor: "#2a0b12",
 };
 
+const verifiedSocials = [SOCIAL_TELEGRAM, SOCIAL_DISCORD].filter(Boolean);
+
 const globalJsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -103,7 +107,7 @@ const globalJsonLd = {
       url: SITE_URL,
       logo: `${SITE_URL}/titan-logo.webp`,
       description: SITE_DEFAULT_DESCRIPTION,
-      sameAs: ["https://t.me/titan", "https://discord.gg/titan"],
+      ...(verifiedSocials.length ? { sameAs: verifiedSocials } : {}),
     },
     {
       "@type": "WebSite",
