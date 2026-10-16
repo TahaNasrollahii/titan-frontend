@@ -2,7 +2,7 @@
 
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { getTokens, onAuthChange, setTokens } from '@/lib/api/client';
+import { getTokens, onAuthChange, refreshTokens, setTokens } from '@/lib/api/client';
 import { authApi, meApi } from '@/lib/api/endpoints';
 import type { LoginResponse, Me } from '@/lib/api/types';
 
@@ -24,8 +24,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<Me | null>(null);
-  // Without stored tokens we already know the visitor is anonymous; otherwise wait for /me.
-  const [status, setStatus] = useState<AuthStatus>(() => (getTokens() ? 'loading' : 'anonymous'));
+  const [status, setStatus] = useState<AuthStatus>('loading');
 
   const signOutLocally = useCallback(() => {
     setUserState(null);
@@ -49,22 +48,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadUser, signOutLocally]);
 
   useEffect(() => {
-    if (getTokens()) {
-      meApi
-        .get()
-        .then(me => {
-          setUserState(me);
-          setStatus('authenticated');
-        })
-        .catch(() => {
-          setTokens(null);
-          signOutLocally();
-        });
-    }
-    // Token expiry or logout in another tab clears the session here too.
-    return onAuthChange(() => {
-      if (!getTokens()) signOutLocally();
+    let active = true;
+
+    const initAuth = async () => {
+      if (!getTokens()?.access) {
+        const refreshed = await refreshTokens();
+        if (!refreshed || !active) {
+          if (active) setStatus('anonymous');
+          return;
+        }
+      }
+
+      try {
+        const me = await meApi.get();
+        if (!active) return;
+        setUserState(me);
+        setStatus('authenticated');
+      } catch {
+        if (!active) return;
+        setTokens(null);
+        signOutLocally();
+      }
+    };
+
+    void initAuth();
+
+    const unsub = onAuthChange(() => {
+      if (!getTokens()?.access) signOutLocally();
     });
+
+    // Token expiry or logout clears the session
+    return () => {
+      active = false;
+      unsub();
+    };
   }, [signOutLocally]);
 
   const completeLogin = useCallback((response: LoginResponse) => {

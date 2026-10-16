@@ -6,18 +6,18 @@ const API_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:
 
 const isProd = process.env.NODE_ENV === "production";
 
-// Content Security Policy directive string
+// Content Security Policy directive string for static/fallback routes
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com ${isProd ? '' : "'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://*.vercel.app https://*.public.blob.vercel-storage.com https://*.zarinpal.com https://cdn.zarinpal.com",
+  "img-src 'self' data: blob: https://titan-backend-taha.vercel.app https://*.public.blob.vercel-storage.com https://cdn.zarinpal.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  `connect-src 'self' ${API_ORIGIN} https://titan-backend-taha.vercel.app http://localhost:8000 https://*.vercel.app https://*.zarinpal.com https://challenges.cloudflare.com`,
+  `connect-src 'self' https://titan-backend-taha.vercel.app https://payment.zarinpal.com https://challenges.cloudflare.com${isProd ? '' : ' http://localhost:8000'}`,
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
-  "form-action 'self' https://*.zarinpal.com https://payment.zarinpal.com https://sandbox.zarinpal.com",
+  "form-action 'self' https://payment.zarinpal.com",
   "object-src 'none'",
   isProd ? "upgrade-insecure-requests" : "",
 ]
@@ -32,11 +32,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.vercel-storage.com',
+        hostname: '*.public.blob.vercel-storage.com',
       },
       {
         protocol: 'https',
-        hostname: '**.vercel.app',
+        hostname: 'titan-backend-taha.vercel.app',
       },
     ],
   },
@@ -77,6 +77,10 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "Cross-Origin-Resource-Policy",
             value: "same-origin",
           },
         ],

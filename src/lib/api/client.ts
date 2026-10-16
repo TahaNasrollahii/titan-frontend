@@ -6,24 +6,43 @@ const TOKENS_KEY = 'titan.tokens';
 const AUTH_EVENT = 'titan:auth-changed';
 
 // ------------------------------------------------------------------ token storage
+// In-memory access token storage prevents XSS script access to tokens
+let memoryAccessToken: string | null = null;
+
 export function getTokens(): AuthTokens | null {
+  if (memoryAccessToken) {
+    return { access: memoryAccessToken, refresh: '' };
+  }
   if (typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(TOKENS_KEY);
-    return raw ? (JSON.parse(raw) as AuthTokens) : null;
+    if (raw) {
+      const parsed = JSON.parse(raw) as AuthTokens;
+      memoryAccessToken = parsed.access || null;
+      // Immediately purge refresh token from localStorage if present (migrating to HttpOnly cookie)
+      if (parsed.refresh) {
+        window.localStorage.removeItem(TOKENS_KEY);
+      }
+      return memoryAccessToken ? { access: memoryAccessToken, refresh: '' } : null;
+    }
   } catch {
     return null;
   }
+  return null;
 }
 
 export function setTokens(tokens: AuthTokens | null): void {
-  if (tokens) window.localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
-  else window.localStorage.removeItem(TOKENS_KEY);
-  window.dispatchEvent(new Event(AUTH_EVENT));
+  memoryAccessToken = tokens?.access ?? null;
+  if (typeof window !== 'undefined') {
+    // Only keep access token in memory. Clear refresh token from localStorage.
+    window.localStorage.removeItem(TOKENS_KEY);
+    window.dispatchEvent(new Event(AUTH_EVENT));
+  }
 }
 
 /** Subscribe to login/logout happening anywhere (including token expiry). Returns an unsubscribe function. */
 export function onAuthChange(listener: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
   window.addEventListener(AUTH_EVENT, listener);
   return () => window.removeEventListener(AUTH_EVENT, listener);
 }
@@ -77,22 +96,25 @@ function buildUrl(path: string, query?: Query): string {
 
 let refreshInFlight: Promise<boolean> | null = null;
 
-/** Exchange the refresh token for new tokens. Concurrent callers share one request. */
-function refreshTokens(): Promise<boolean> {
+/** Exchange the HttpOnly cookie (or fallback body refresh) for a new access token. Concurrent callers share one request. */
+export function refreshTokens(): Promise<boolean> {
   refreshInFlight ??= (async () => {
-    const refresh = getTokens()?.refresh;
-    if (!refresh) return false;
     try {
       const response = await fetch(buildUrl('auth/token/refresh/'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
+        body: JSON.stringify({}),
       });
       if (!response.ok) {
         setTokens(null);
         return false;
       }
-      setTokens((await response.json()) as AuthTokens);
+      const data = (await response.json()) as AuthTokens;
+      setTokens(data);
       return true;
     } catch {
       return false;
@@ -104,7 +126,12 @@ function refreshTokens(): Promise<boolean> {
 }
 
 async function send(path: string, options: RequestOptions): Promise<Response> {
-  const headers: Record<string, string> = { Accept: 'application/json', 'Accept-Language': 'fa', ...options.headers };
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    'Accept-Language': 'fa',
+    'X-Requested-With': 'XMLHttpRequest',
+    ...options.headers,
+  };
   const access = options.auth === false ? undefined : getTokens()?.access;
   if (access) headers.Authorization = `Bearer ${access}`;
 
@@ -114,7 +141,12 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
     headers['Content-Type'] = 'application/json';
     body = JSON.stringify(options.body);
   }
-  return fetch(buildUrl(path, options.query), { method: options.method ?? 'GET', headers, body });
+  return fetch(buildUrl(path, options.query), {
+    method: options.method ?? 'GET',
+    headers,
+    credentials: 'include',
+    body,
+  });
 }
 
 async function toApiError(response: Response): Promise<ApiError> {
@@ -130,11 +162,12 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   let response: Response;
   try {
     response = await send(path, options);
-    if (response.status === 401 && options.auth !== false && getTokens()?.refresh) {
-      // A dead session must not break public endpoints: once the refresh fails the tokens are
-      // cleared, so the retry goes out anonymously.
-      await refreshTokens();
-      response = await send(path, options);
+    if (response.status === 401 && options.auth !== false) {
+      // Attempt silent refresh via HttpOnly cookie
+      const refreshed = await refreshTokens();
+      if (refreshed) {
+        response = await send(path, options);
+      }
     }
   } catch {
     throw new ApiError(0, 'network_error', 'ارتباط با سرور برقرار نشد.');
