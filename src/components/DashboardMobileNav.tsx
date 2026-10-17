@@ -9,7 +9,11 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { faNumber } from '@/lib/format';
 
-import { DashboardHub } from './DashboardHub';
+import dynamic from 'next/dynamic';
+
+const DashboardHub = dynamic(() => import('./DashboardHub').then(mod => mod.DashboardHub), {
+  ssr: false,
+});
 import styles from './DashboardMobileNav.module.css';
 import { DASHBOARD_SECTIONS, PHONE_HUB_TILES, sectionByTab } from './dashboardSections';
 import { ProfileHero } from './ProfileHero';

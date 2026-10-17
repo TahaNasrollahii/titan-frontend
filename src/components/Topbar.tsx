@@ -8,8 +8,12 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { KIND_LABELS, useSearchRows } from '@/lib/hooks/useSearch';
 
+import dynamic from 'next/dynamic';
 import { Avatar } from './Icons';
-import { MobileSearch } from './MobileSearch';
+
+const MobileSearch = dynamic(() => import('./MobileSearch').then(mod => mod.MobileSearch), {
+  ssr: false,
+});
 
 /** Mobile app bar: hide after scrolling down this far, show again on any upward scroll. */
 const HIDE_AFTER_PX = 120;

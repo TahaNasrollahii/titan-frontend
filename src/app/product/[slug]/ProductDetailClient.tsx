@@ -5,8 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
 
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
@@ -352,29 +350,27 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             </div>
           </div>
 
-          <Swiper className={styles.recommendedScroll} spaceBetween={16} slidesPerView="auto" grabCursor dir="rtl">
+          <div className={styles.recommendedScroll} dir="rtl">
             {related.data!.map(item => (
-              <SwiperSlide key={item.id} style={{ width: 'auto' }}>
-                <Link href={`/product/${item.slug}`} className={styles.recCard}>
-                  {item.image && (
-                    <Image
-                      src={item.image}
-                      className={styles.recImage}
-                      alt={item.title}
-                      width={180}
-                      height={180}
-                      sizes="160px"
-                      draggable={false}
-                    />
-                  )}
-                  <div className={styles.recOverlay}>
-                    <h3 className={styles.recTitle}>{item.title}</h3>
-                    <p className={styles.recPrice}>{productPrice(item)}</p>
-                  </div>
-                </Link>
-              </SwiperSlide>
+              <Link key={item.id} href={`/product/${item.slug}`} className={styles.recCard}>
+                {item.image && (
+                  <Image
+                    src={item.image}
+                    className={styles.recImage}
+                    alt={item.title}
+                    width={180}
+                    height={180}
+                    sizes="160px"
+                    draggable={false}
+                  />
+                )}
+                <div className={styles.recOverlay}>
+                  <h3 className={styles.recTitle}>{item.title}</h3>
+                  <p className={styles.recPrice}>{productPrice(item)}</p>
+                </div>
+              </Link>
             ))}
-          </Swiper>
+          </div>
         </div>
       )}
     </div>

@@ -5,9 +5,14 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
-import { BracketView } from '@/components/BracketView';
+import dynamic from 'next/dynamic';
 import { Avatar, Icon } from '@/components/Icons';
 import { Empty, ErrorState, Loading } from '@/components/ui/State';
+
+const BracketView = dynamic(
+  () => import('@/components/BracketView').then((m) => m.BracketView),
+  { ssr: false, loading: () => <Loading /> }
+);
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL, errorMessage } from '@/lib/api/client';

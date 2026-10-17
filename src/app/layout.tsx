@@ -7,8 +7,9 @@ const vazirmatn = Vazirmatn({
   subsets: ["arabic", "latin"],
   display: "swap",
   variable: "--font-vazirmatn",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
+import dynamic from "next/dynamic";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
 import { Sidebar } from "@/components/Sidebar";
@@ -17,7 +18,8 @@ import { ToastContainer } from "@/components/ToastContainer";
 import { Rail } from "@/components/Rail";
 import { MobileNav } from "@/components/MobileNav";
 import { RouteScrollReset } from "@/components/RouteScrollReset";
-import { SupportWidget } from "@/components/support/SupportWidget";
+
+import { SupportWidgetClient } from "@/components/support/SupportWidgetClient";
 
 import {
   SITE_URL,
@@ -141,7 +143,7 @@ export default function RootLayout({
               <ToastContainer />
             </div>
             <MobileNav />
-            <SupportWidget />
+            <SupportWidgetClient />
             <RouteScrollReset />
           </AppProvider>
         </AuthProvider>

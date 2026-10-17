@@ -1,0 +1,8 @@
+# Ignore heavy dev/local tools and artifacts from Vercel deployments
+.agents/
+.git/
+.github/
+.vscode/
+scratch/
+*.log
+
