@@ -185,7 +185,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       /* =====================================================
          Hero key art (SVG). Replace with your own <img> per slide
          ===================================================== */
-      const heroArt = k => (SLIDES[k].art ? `<img src="${esc(SLIDES[k].art)}" class="hero-char ${SLIDES[k].artClass}" alt="${esc(SLIDES[k].title)} — فروشگاه تایتان" />` : '');
+      const heroArt = k => (SLIDES[k].art ? `<img src="${esc(SLIDES[k].art)}" class="hero-char ${SLIDES[k].artClass}" alt="${esc(SLIDES[k].title)} — فروشگاه تایتان" width="256" height="265" ${k === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'} decoding="async" />` : '');
 
       /* =====================================================
          Data
@@ -278,9 +278,9 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       function cardArt(g, idx) {
         if (g.bg || g.char) {
           return `
-            ${g.bg ? `<img src="${esc(g.bg)}" alt="${esc(g.t)}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
+            ${g.bg ? `<img src="${esc(g.bg)}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-            ${g.char ? `<img src="${esc(g.char)}" alt="${esc(g.t)}" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
+            ${g.char ? `<img src="${esc(g.char)}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
           `;
         }
         const t = THEME[g.theme], id = 'c' + idx;
@@ -647,7 +647,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
             <a href="/tournament" class="tb-btn">اطلاعات بیشتر</a>
           </div>
-          <img src="/images/tournoment-banner.webp" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" />
+          <img src="/images/tournoment-banner.webp" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" width="320" height="180" loading="lazy" decoding="async" />
           <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none">
             <circle cx="160" cy="40" r="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="30" />
             <circle cx="160" cy="40" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="20" />

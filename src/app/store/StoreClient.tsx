@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -86,7 +87,14 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
       onPointerLeave={() => setPaused(false)}
     >
       <div className="sp-bg discount-bg"></div>
-      <img src={getOptimizedAssetUrl(promos[index]?.backgroundImage, '/images/discount.webp')} alt={promos[index]?.title || 'طرح تخفیف فروشگاه تایتان'} className="sp-discount-overlay" />
+      <Image
+        src={getOptimizedAssetUrl(promos[index]?.backgroundImage, '/images/discount.webp')}
+        alt={promos[index]?.title || 'طرح تخفیف فروشگاه تایتان'}
+        className="sp-discount-overlay"
+        width={360}
+        height={240}
+        priority
+      />
       {promos.map((promo, i) => (
         <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
           <div className="sp-content">
@@ -118,7 +126,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
             </div>
           </div>
           <div className="sp-art-wrap">
-            <img
+            <Image
               src={
                 (promo.title.toLowerCase().includes('fortnite') ||
                 promo.product === 'fortnite-crew-pack' ||
@@ -129,6 +137,10 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
               }
               alt={promo.title || 'محصول ویژه فروشگاه تایتان'}
               className="sp-art discount-art"
+              width={340}
+              height={300}
+              priority={i === 0}
+              sizes="(max-width: 768px) 100vw, 340px"
               style={{
                 transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px))`,
               }}
@@ -195,7 +207,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
             </div>
           </div>
           <div className="sp-art-wrap side-art-wrap">
-            <img
+            <Image
               src={
                 (promo.title.toLowerCase().includes('fortnite') ||
                 promo.product === 'fortnite-crew-pack' ||
@@ -206,6 +218,10 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
               }
               alt={promo.title || 'محصول پرفروش فروشگاه تایتان'}
               className="sp-art"
+              width={280}
+              height={260}
+              priority={i === 0}
+              sizes="(max-width: 768px) 100vw, 280px"
               style={{
                 transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px))`,
               }}
@@ -377,10 +393,15 @@ function ProductCard({
 
       {/* Floating Character / Artwork Stage */}
       <div className="stage">
-        <img
+        <Image
           className="pic"
           src={imgSrc}
           alt={product.title}
+          width={260}
+          height={285}
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 260px"
+          priority={index < 2}
+          unoptimized={typeof imgSrc === 'string' && (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:'))}
           onError={() => setImgSrc(SILHOUETTE_PLACEHOLDER)}
         />
       </div>
@@ -716,6 +737,8 @@ function StorePageContent({
                 <img
                   src={tab.icon}
                   alt=""
+                  width={tab.slug === PREMIUM_SLUG ? 34 : 32}
+                  height={tab.slug === PREMIUM_SLUG ? 34 : 32}
                   style={{
                     width: tab.slug === PREMIUM_SLUG ? '34px' : '32px',
                     height: tab.slug === PREMIUM_SLUG ? '34px' : '32px',

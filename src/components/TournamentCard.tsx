@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -32,10 +33,17 @@ export function TournamentCard({ tournament, index }: { tournament: TournamentSu
 
   return (
     <article className="match-card-premium spot spot-track reveal" style={{ '--d': 5 + index } as React.CSSProperties}>
-      <div
-        className="mc-hero"
-        style={tournament.coverImage ? { backgroundImage: `url(${tournament.coverImage})` } : undefined}
-      >
+      <div className="mc-hero" style={{ overflow: 'hidden', position: 'relative' }}>
+        {tournament.coverImage && (
+          <Image
+            src={tournament.coverImage}
+            alt={tournament.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            priority={index < 2}
+            style={{ objectFit: 'cover' }}
+          />
+        )}
         <div className="mc-hero-overlay"></div>
 
         <div className="mc-status-bar">

@@ -91,7 +91,7 @@ export function Topbar() {
     <header className={barClass} style={{ '--d': 1 } as React.CSSProperties}>
       {/* Mobile app bar only */}
       <Link href="/" className="top-logo" aria-label="خانه تایتان">
-        <img src="/titan-logo.webp" alt="لوگوی تایتان" />
+        <img src="/titan-logo.webp" alt="لوگوی تایتان" width="42" height="42" />
       </Link>
 
       <div className={`search ${searchOpen ? 'open' : ''}`} id="search" role="search">

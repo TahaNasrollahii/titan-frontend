@@ -2,6 +2,7 @@
 
 import { Flame, Heart, MessageSquare, Minus, Plus, ShieldCheck, Trophy, Zap } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -145,7 +146,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               {data.platforms.map(platform => (
                 <span key={platform.slug} className={styles.iconBtn} title={platform.name}>
                   {platform.icon ? (
-                    <img src={platform.icon} alt={platform.name} className={styles.boldIcon} />
+                    <img src={platform.icon} alt={platform.name} className={styles.boldIcon} width="20" height="20" />
                   ) : (
                     <small>{platform.name}</small>
                   )}
@@ -275,7 +276,17 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
 
         <div className={styles.imageColumn}>
           <div className={styles.mainImageArea}>
-            {data.image && <img src={data.image} alt={data.title} className={styles.mainImage} />}
+            {data.image && (
+              <Image
+                src={data.image}
+                alt={data.title}
+                className={styles.mainImage}
+                width={500}
+                height={500}
+                priority
+                sizes="(max-width: 768px) 100vw, 500px"
+              />
+            )}
           </div>
         </div>
       </div>
@@ -345,7 +356,17 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             {related.data!.map(item => (
               <SwiperSlide key={item.id} style={{ width: 'auto' }}>
                 <Link href={`/product/${item.slug}`} className={styles.recCard}>
-                  {item.image && <img src={item.image} className={styles.recImage} alt={item.title} draggable={false} />}
+                  {item.image && (
+                    <Image
+                      src={item.image}
+                      className={styles.recImage}
+                      alt={item.title}
+                      width={180}
+                      height={180}
+                      sizes="160px"
+                      draggable={false}
+                    />
+                  )}
                   <div className={styles.recOverlay}>
                     <h3 className={styles.recTitle}>{item.title}</h3>
                     <p className={styles.recPrice}>{productPrice(item)}</p>

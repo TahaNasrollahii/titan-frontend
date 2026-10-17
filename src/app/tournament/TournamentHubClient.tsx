@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -214,7 +215,15 @@ export default function TournamentPage() {
               </div>
             </div>
             <div className="th-art-wrap">
-              <img src={promo?.image ?? '/images/banner-hero.webp'} alt={promo?.title ?? 'بنر تورنومنت تایتان'} className="th-art" />
+              <Image
+                src={promo?.image ?? '/images/banner-hero.webp'}
+                alt={promo?.title ?? 'بنر تورنومنت تایتان'}
+                className="th-art"
+                width={500}
+                height={500}
+                priority
+                sizes="(max-width: 768px) 100vw, 500px"
+              />
             </div>
           </article>
         </section>

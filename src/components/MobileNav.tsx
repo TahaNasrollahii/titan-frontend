@@ -247,7 +247,7 @@ export function MobileNav() {
               }
             }}
           >
-            <TabInner label={tab.label} icon={<img src={tab.icon} alt="" aria-hidden="true" />} />
+            <TabInner label={tab.label} icon={<img src={tab.icon} alt="" aria-hidden="true" width="24" height="24" />} />
           </Link>
         ))}
 
@@ -264,7 +264,7 @@ export function MobileNav() {
               isAuthenticated && user ? (
                 <RankAvatar user={user} size={34} uid="-tabbar" tuckOrnament />
               ) : (
-                <img src="/icons/account.webp" alt="" aria-hidden="true" />
+                <img src="/icons/account.webp" alt="" aria-hidden="true" width="24" height="24" />
               )
             }
           />

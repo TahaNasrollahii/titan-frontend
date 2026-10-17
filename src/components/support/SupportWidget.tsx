@@ -986,7 +986,7 @@ function Widget() {
         <span className={styles.pulse} />
         <span className={styles.pulse} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/support.svg" alt="پشتیبانی" className={cx(styles.orbIcon, styles.orbHeadset)} />
+        <img src="/icons/support.svg" alt="پشتیبانی" width="28" height="28" className={cx(styles.orbIcon, styles.orbHeadset)} />
         <XIcon className={cx(styles.orbIcon, styles.orbClose)} />
         {unread > 0 && !open && <span className={styles.badge}>{faDigits(unread > 9 ? '9+' : unread)}</span>}
       </button>

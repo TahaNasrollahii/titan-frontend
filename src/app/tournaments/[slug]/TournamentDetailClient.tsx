@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -490,7 +491,16 @@ export default function TournamentDetailsPage() {
 
       <div className={styles.topLayout}>
         <div className={`${styles.heroSection} spot spot-track reveal`} style={{ '--d': 1 } as React.CSSProperties}>
-          {t.coverImage && <img src={t.coverImage} alt={`تصویر کاور مسابقه ${t.title} - ${t.game.title}`} className={styles.heroImage} />}
+          {t.coverImage && (
+            <Image
+              src={t.coverImage}
+              alt={`تصویر کاور مسابقه ${t.title} - ${t.game.title}`}
+              className={styles.heroImage}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 1200px"
+            />
+          )}
           <div className={styles.heroOverlay}></div>
           <div className={styles.heroContent}>
             <div className={styles.titleArea}>
