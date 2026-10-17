@@ -7,29 +7,34 @@ import { useEffect, useRef } from 'react';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { contentApi } from '@/lib/api/endpoints';
 import type { Home } from '@/lib/api/types';
+import { useAuth } from '@/context/AuthContext';
 import { prize } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 /** Hero character art bundled with the frontend, keyed by game slug (value = CSS modifier class). */
 const HERO_ART: Record<string, string> = { fortnite: 'fortnite', valorant: 'valorant', 'apex-legends': 'apexlegends' };
 
-/** eNamad trust seal — paste the id & Code from the enamad.ir panel. While empty, a placeholder emblem is shown. */
-const ENAMAD = { id: '', code: '' };
+/** eNamad trust seal — conditional on NEXT_PUBLIC_ENAMAD_CODE / NEXT_PUBLIC_ENAMAD_ID. If unconfigured, hidden until verified. */
+const ENAMAD = {
+  id: process.env.NEXT_PUBLIC_ENAMAD_ID || '',
+  code: process.env.NEXT_PUBLIC_ENAMAD_CODE || '',
+};
 
 function enamadSeal() {
-  const inner = '<span class="th-seal-ring" aria-hidden="true"></span><span class="th-seal-check" aria-hidden="true"><i data-icon="check"></i></span>';
-  if (!ENAMAD.id) {
-    return `<div class="th-seal">${inner}<span class="th-seal-face"><span class="th-seal-ph"><i data-icon="shield"></i><b>اینماد</b></span></span></div>`;
+  if (!ENAMAD.id || !ENAMAD.code) {
+    return '';
   }
+  const inner = '<span class="th-seal-ring" aria-hidden="true"></span><span class="th-seal-check" aria-hidden="true"><i data-icon="check"></i></span>';
   const q = `id=${encodeURIComponent(ENAMAD.id)}&Code=${encodeURIComponent(ENAMAD.code)}`;
   return `<a class="th-seal" referrerpolicy="origin" target="_blank" rel="noopener" href="https://trustseal.enamad.ir/?${q}" aria-label="نماد اعتماد الکترونیکی">${inner}<span class="th-seal-face"><img referrerpolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?${q}" alt="نماد اعتماد الکترونیکی" code="${ENAMAD.code}" /></span></a>`;
 }
 
 export default function TitanPage({ initialData }: { initialData?: Home | null }) {
+  const { user } = useAuth();
   const home = useApi(contentApi.home, [], initialData ?? undefined);
   if (home.loading && !home.data) return <Loading />;
   if (!home.data) return <ErrorState error={home.error} onRetry={home.reload} />;
-  return <HomeScene data={home.data} />;
+  return <HomeScene data={home.data} user={user} />;
 }
 
 function buildSceneData(data: Home) {
@@ -105,7 +110,7 @@ function buildSceneData(data: Home) {
   };
 }
 
-function HomeScene({ data }: { data: Home }) {
+function HomeScene({ data, user }: { data: Home; user?: any }) {
   const router = useRouter();
   const initialized = useRef(false);
 
@@ -139,7 +144,7 @@ function HomeScene({ data }: { data: Home }) {
          Config — change these
          ===================================================== */
       const CONFIG = {
-        userName: 'طاها',   // shown in the greeting
+        userName: user?.fullName || user?.displayName || user?.username || 'کاربر گرامی',
         slideMs: 6500         // hero auto-rotation time
       };
 
