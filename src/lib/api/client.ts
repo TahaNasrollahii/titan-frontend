@@ -61,8 +61,10 @@ export class ApiError extends Error {
 
   /** First field-level message, falling back to the general detail. */
   get firstMessage(): string {
-    const first = Object.values(this.errors)[0];
-    return (Array.isArray(first) ? first[0] : undefined) ?? this.detail;
+    const first = Object.values(this.errors)[0] as unknown;
+    if (typeof first === 'string' && first.trim()) return first;
+    if (Array.isArray(first) && first.length > 0 && typeof first[0] === 'string') return first[0];
+    return this.detail;
   }
 }
 
