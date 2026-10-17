@@ -129,9 +129,9 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
             <Image
               src={
                 (promo.title.toLowerCase().includes('fortnite') ||
-                promo.product === 'fortnite-crew-pack' ||
-                promo.subtitle.includes('فورتنایت') ||
-                (promo.image && promo.image.includes('fortnite')))
+                  promo.product === 'fortnite-crew-pack' ||
+                  promo.subtitle.includes('فورتنایت') ||
+                  (promo.image && promo.image.includes('fortnite')))
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
                   : getOptimizedAssetUrl(promo.image, '/images/support-robot.webp')
               }
@@ -210,9 +210,9 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
             <Image
               src={
                 (promo.title.toLowerCase().includes('fortnite') ||
-                promo.product === 'fortnite-crew-pack' ||
-                promo.subtitle.includes('فورتنایت') ||
-                (promo.image && promo.image.includes('fortnite')))
+                  promo.product === 'fortnite-crew-pack' ||
+                  promo.subtitle.includes('فورتنایت') ||
+                  (promo.image && promo.image.includes('fortnite')))
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
                   : getOptimizedAssetUrl(promo.image, '/images/character-behind-login-form.webp')
               }
@@ -246,8 +246,8 @@ const SILHOUETTE_PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200">' +
-      '<circle cx="80" cy="62" r="34" fill="rgba(255,255,255,.22)"/>' +
-      '<path d="M14 200 C14 130 42 100 80 100 C118 100 146 130 146 200 Z" fill="rgba(255,255,255,.22)"/></svg>'
+    '<circle cx="80" cy="62" r="34" fill="rgba(255,255,255,.22)"/>' +
+    '<path d="M14 200 C14 130 42 100 80 100 C118 100 146 130 146 200 Z" fill="rgba(255,255,255,.22)"/></svg>'
   );
 
 const TEMPLATE_CHARACTER =
@@ -295,12 +295,12 @@ function ProductCard({
     (gameSlug === 'fortnite'
       ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
       : gameSlug === 'apex-legends'
-      ? '/images/hero/characters/apexlegends.webp'
-      : gameSlug === 'valorant'
-      ? '/images/hero/characters/valorant.webp'
-      : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
-      ? '/images/products/vbucks.webp'
-      : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
+        ? '/images/hero/characters/apexlegends.webp'
+        : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
+          ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'
+          : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
+            ? '/images/products/vbucks.webp'
+            : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
 
   const [imgSrc, setImgSrc] = useState(defaultImage);
 
@@ -312,8 +312,8 @@ function ProductCard({
     product.discountPercent > 0
       ? product.discountPercent
       : product.originalPrice && product.price && product.originalPrice > product.price
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-      : 0;
+        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+        : 0;
 
   const hasDiscount = discountPercent > 0 || product.badges.includes('discount');
   const isHot = product.badges.includes('bestseller') || ((product.popularity ?? 0) > 80);
@@ -835,8 +835,8 @@ function StorePageContent({
         query={query}
         initialProducts={
           query.game === (activeGame || undefined) &&
-          !query.price_max &&
-          query.ordering === SORTS[0].ordering
+            !query.price_max &&
+            query.ordering === SORTS[0].ordering
             ? initialProducts
             : null
         }

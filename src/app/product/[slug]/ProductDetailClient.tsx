@@ -274,9 +274,9 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
 
         <div className={styles.imageColumn}>
           <div className={styles.mainImageArea}>
-            {data.image && (
+            {(data.image || (data.slug?.includes('valorant') || data.game?.slug === 'valorant' ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp' : null)) && (
               <Image
-                src={data.image}
+                src={data.image || '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'}
                 alt={data.title}
                 className={styles.mainImage}
                 width={500}
