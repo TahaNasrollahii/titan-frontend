@@ -2,6 +2,31 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
+
+  // Canonical custom domain redirect (if NEXT_PUBLIC_SITE_URL is set)
+  const canonicalUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (canonicalUrl) {
+    try {
+      const canonicalHost = new URL(canonicalUrl).host;
+      const requestHost = request.headers.get('host');
+      if (
+        requestHost &&
+        canonicalHost &&
+        requestHost !== canonicalHost &&
+        !requestHost.startsWith('localhost') &&
+        !requestHost.startsWith('127.0.0.1')
+      ) {
+        const url = request.nextUrl.clone();
+        url.host = canonicalHost;
+        url.protocol = 'https:';
+        url.port = '';
+        return NextResponse.redirect(url, 301);
+      }
+    } catch {
+      // Ignore invalid URL
+    }
+  }
+
   if (pathname === '/store' && searchParams.has('game')) {
     const game = searchParams.get('game');
     if (game) {

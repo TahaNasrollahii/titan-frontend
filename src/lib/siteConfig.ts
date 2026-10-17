@@ -5,8 +5,11 @@
 
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.SITE_URL ||
   (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : 'https://titan-front.vercel.app')
 ).replace(/\/$/, '');
 
