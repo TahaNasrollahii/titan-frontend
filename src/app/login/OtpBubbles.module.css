@@ -1,13 +1,15 @@
 .otp {
-  --size: 62px;
-  --gap: 14px;
+  --size: 46px;
+  --gap: 9px;
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: var(--gap);
-  padding: 6px 0 4px;
+  padding: 8px 0 6px;
   /* Digits read left-to-right even on an RTL page */
   direction: ltr;
+  width: 100%;
 }
 
 /* One real input stretched over the bubbles: keeps paste, SMS autofill and the
@@ -39,12 +41,12 @@
   position: relative;
   width: var(--size);
   height: var(--size);
-  flex: none;
+  flex: 0 0 var(--size);
   display: grid;
   place-items: center;
   border-radius: 50%;
   color: #fff;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 800;
   background:
     radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 45%),
@@ -202,12 +204,12 @@
 
 @media (max-width: 540px) {
   .otp {
-    --size: 54px;
-    --gap: 12px;
+    --size: clamp(36px, calc((100vw - 80px) / 6), 42px);
+    --gap: clamp(4px, 1.6vw, 7px);
   }
 
   .bubble {
-    font-size: 22px;
+    font-size: clamp(15px, 4.2vw, 18px);
   }
 }
 

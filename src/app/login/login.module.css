@@ -97,8 +97,8 @@
 
 /* ─── Login Card (glass) ─── */
 .card {
-  width: min(380px, 100%);
-  padding: 24px 28px;
+  width: min(410px, calc(100vw - 32px));
+  padding: 24px 24px;
   border-radius: 28px;
   background:
     linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 60%),
@@ -453,6 +453,10 @@
 
 /* ─── Responsive ─── */
 @media (max-width: 540px) {
+  .card {
+    padding: 24px 16px;
+  }
+
   .logoApex {
     width: 60px;
     height: 60px;
