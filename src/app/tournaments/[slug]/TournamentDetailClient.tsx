@@ -13,6 +13,7 @@ const BracketView = dynamic(
   () => import('@/components/BracketView').then((m) => m.BracketView),
   { ssr: false, loading: () => <Loading /> }
 );
+import { SpecialEventBracket } from '@/components/SpecialEventBracket';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL, errorMessage } from '@/lib/api/client';
@@ -402,14 +403,95 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
   );
 }
 
+const FIFA_DETAIL_MOCK: Tournament = {
+  id: 9999,
+  slug: 'fifa',
+  title: 'مسابقات فیفا',
+  game: {
+    id: 10,
+    slug: 'fifa',
+    title: 'فیفا ۲۴',
+    titleEn: 'FIFA 24',
+    genre: 'ورزشی',
+    kind: 'game',
+  },
+  coverImage: null,
+  status: 'live',
+  participantType: 'team',
+  teamSize: 1,
+  format: 'single_elimination',
+  formatLabel: 'تیمی حذفی — ۱۶ تیم',
+  bestOf: 1,
+  region: 'me',
+  maxParticipants: 16,
+  participantsCount: 16,
+  entryFee: 0,
+  entryFeeOriginal: null,
+  entryDiscountPercent: 0,
+  isFree: true,
+  isFull: true,
+  prizePool: 150000000,
+  prizeCurrency: 'IRT',
+  registrationOpensAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+  registrationClosesAt: new Date(Date.now() - 86400000).toISOString(),
+  startsAt: new Date(Date.now() - 12 * 3600000).toISOString(),
+  endsAt: new Date(Date.now() + 4 * 86400000).toISOString(),
+  isFeatured: true,
+  viewerCount: 12408,
+  isRegistered: false,
+  featuredMatch: null,
+  description: 'تورنمنت حذفی جام ویژه فیفا ۲۴ با حضور ۱۶ تیم برتر و جدول مسابقات زنده تایتان.',
+  rules: [
+    'مسابقات به صورت تک‌حذفی (Knockout) برگزار می‌شود',
+    'زمان هر بازی: دو نیمه ۶ دقیقه‌ای',
+    'استفاده از تمام تیم‌های رسمی مجاز است',
+    'در صورت تساوی، بازی در وقت اضافه و ضربات پنالتی تعیین می‌شود',
+  ],
+  prizes: [
+    { place: 1, label: 'قهرمان جام فیفا', amount: 80000000, points: 1000 },
+    { place: 2, label: 'نایب‌قهرمان', amount: 45000000, points: 600 },
+    { place: 3, label: 'مقام سوم', amount: 25000000, points: 300 },
+  ],
+  season: {
+    number: 1,
+    name: 'فصل اول تایتان',
+    startsAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+    endsAt: new Date(Date.now() + 60 * 86400000).toISOString(),
+    isCurrent: true,
+  },
+  streamUrl: '',
+  myRegistration: null,
+};
+
+const FIFA_PARTICIPANTS_MOCK = [
+  { id: 1, kind: 'team' as const, name: 'Shadow Wolves', logo: null, avatarSeed: 1, teamId: null, username: null, points: 9240, rank: 'قهرمان', seed: 1, finalPlacement: 1 },
+  { id: 2, kind: 'team' as const, name: 'Red Titans', logo: null, avatarSeed: 2, teamId: null, username: null, points: 8980, rank: 'نایب‌قهرمان', seed: 2, finalPlacement: 2 },
+  { id: 3, kind: 'team' as const, name: 'Arctic Wolves', logo: null, avatarSeed: 3, teamId: null, username: null, points: 8520, rank: 'نیمه‌نهایی', seed: 3, finalPlacement: 3 },
+  { id: 4, kind: 'team' as const, name: 'Crimson Fangs', logo: null, avatarSeed: 4, teamId: null, username: null, points: 8100, rank: 'یک‌چهارم', seed: 4, finalPlacement: 4 },
+  { id: 5, kind: 'team' as const, name: 'Night Phantoms', logo: null, avatarSeed: 5, teamId: null, username: null, points: 7850, rank: 'یک‌چهارم', seed: 5, finalPlacement: 5 },
+  { id: 6, kind: 'team' as const, name: 'Neon Vipers', logo: null, avatarSeed: 6, teamId: null, username: null, points: 7420, rank: 'یک‌چهارم', seed: 6, finalPlacement: 6 },
+  { id: 7, kind: 'team' as const, name: 'Ghost Unit', logo: null, avatarSeed: 7, teamId: null, username: null, points: 7200, rank: 'یک‌چهارم', seed: 7, finalPlacement: 7 },
+  { id: 8, kind: 'team' as const, name: 'Iron Falcons', logo: null, avatarSeed: 8, teamId: null, username: null, points: 6900, rank: 'یک‌هشتم', seed: 8, finalPlacement: null },
+  { id: 9, kind: 'team' as const, name: 'Dark Orbit', logo: null, avatarSeed: 9, teamId: null, username: null, points: 6700, rank: 'یک‌هشتم', seed: 9, finalPlacement: null },
+  { id: 10, kind: 'team' as const, name: 'Pixel Kings', logo: null, avatarSeed: 10, teamId: null, username: null, points: 6500, rank: 'یک‌هشتم', seed: 10, finalPlacement: null },
+  { id: 11, kind: 'team' as const, name: 'Thunder Lynx', logo: null, avatarSeed: 11, teamId: null, username: null, points: 6300, rank: 'یک‌هشتم', seed: 11, finalPlacement: null },
+  { id: 12, kind: 'team' as const, name: 'Solar Hawks', logo: null, avatarSeed: 12, teamId: null, username: null, points: 6100, rank: 'یک‌هشتم', seed: 12, finalPlacement: null },
+  { id: 13, kind: 'team' as const, name: 'Storm Riders', logo: null, avatarSeed: 13, teamId: null, username: null, points: 5900, rank: 'یک‌هشتم', seed: 13, finalPlacement: null },
+  { id: 14, kind: 'team' as const, name: 'Omega Five', logo: null, avatarSeed: 14, teamId: null, username: null, points: 5700, rank: 'یک‌هشتم', seed: 14, finalPlacement: null },
+  { id: 15, kind: 'team' as const, name: 'Void Walkers', logo: null, avatarSeed: 15, teamId: null, username: null, points: 5500, rank: 'یک‌هشتم', seed: 15, finalPlacement: null },
+  { id: 16, kind: 'team' as const, name: 'Cyber Lions', logo: null, avatarSeed: 16, teamId: null, username: null, points: 5300, rank: 'یک‌هشتم', seed: 16, finalPlacement: null },
+];
+
 function Participants({ slug }: { slug: string }) {
+  const isFifa = /fifa/i.test(slug);
   const participants = useApi(() => tournamentsApi.participants(slug), [slug]);
-  if (participants.loading) return <Loading compact />;
-  if (!participants.data?.length) return <Empty icon="users">هنوز شرکت‌کننده‌ای ثبت‌نام نکرده است.</Empty>;
+  if (participants.loading && !isFifa) return <Loading compact />;
+  const data = (participants.data?.length ? participants.data : isFifa ? FIFA_PARTICIPANTS_MOCK : []);
+  if (!data.length) return <Empty icon="users">هنوز شرکت‌کننده‌ای ثبت‌نام نکرده است.</Empty>;
 
   return (
     <div className={styles.participantsList}>
-      {participants.data.map((p, i) => {
+      {data.map((p, i) => {
         const row = (
           <div className={`${styles.participantListRow} spot spot-track`} style={{ '--d': i } as React.CSSProperties}>
             <div className={styles.participantIndex}>{String(i + 1).padStart(2, '0')}</div>
@@ -458,29 +540,34 @@ function Participants({ slug }: { slug: string }) {
   );
 }
 
-function Bracket({ slug }: { slug: string }) {
+function Bracket({ slug, gameSlug }: { slug: string; gameSlug?: string }) {
+  const isFifa = (gameSlug && /fifa|fc/i.test(gameSlug)) || /fifa|fc/i.test(slug);
+  if (isFifa) {
+    return <SpecialEventBracket />;
+  }
   const bracket = useApi(() => tournamentsApi.bracket(slug), [slug]);
   if (bracket.loading) return <Loading compact />;
-  if (!bracket.data?.length) {
-    return (
-      <div className={styles.emptyTab}>
-        <Icon name="chart" />
-        <p>براکت و جدول مسابقات پس از بسته شدن ثبت‌نام و قرعه‌کشی منتشر می‌شود.</p>
-      </div>
-    );
+  if (bracket.data?.length) {
+    return <BracketView rounds={bracket.data} />;
   }
-  return <BracketView rounds={bracket.data} />;
+  return (
+    <div className={styles.emptyTab}>
+      <Icon name="chart" />
+      <p>براکت و جدول مسابقات پس از بسته شدن ثبت‌نام و قرعه‌کشی منتشر می‌شود.</p>
+    </div>
+  );
 }
 
 export default function TournamentDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
+  const isFifa = /fifa/i.test(slug);
   const tournament = useApi(() => tournamentsApi.get(slug), [slug]);
   const [tab, setTab] = useState<Tab>('overview');
 
   useSpotlight('.spot-track', [tab, tournament.data]);
 
-  if (tournament.loading && !tournament.data) return <Loading />;
-  const t = tournament.data;
+  const t = tournament.data ?? (isFifa ? FIFA_DETAIL_MOCK : null);
+  if (tournament.loading && !t) return <Loading />;
   if (!t) return <ErrorState error={tournament.error} onRetry={tournament.reload} />;
 
   const isTeam = t.participantType === 'team';
@@ -551,7 +638,13 @@ export default function TournamentDetailsPage() {
               <button
                 key={key}
                 className={`${styles.tabBtn} ${tab === key ? styles.activeTab : ''}`}
-                onClick={() => setTab(key)}
+                onClick={() => {
+                  setTab(key);
+                  if (key === 'bracket') {
+                    const el = document.getElementById('tournament-bracket-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
               >
                 {label}
               </button>
@@ -607,7 +700,23 @@ export default function TournamentDetailsPage() {
             )}
 
             {tab === 'participants' && <Participants slug={t.slug} />}
-            {tab === 'bracket' && <Bracket slug={t.slug} />}
+            {tab === 'bracket' && (
+              <div className={styles.overviewPane}>
+                <h3>جدول مسابقات</h3>
+                <p>جدول کامل حذفی مسابقات در بخش پایین به صورت تمام‌عرض همیشه فعال و قابل مشاهده است.</p>
+                <button
+                  type="button"
+                  className={styles.tabBtn}
+                  style={{ background: 'var(--red)', color: '#fff', marginTop: '8px' }}
+                  onClick={() => {
+                    const el = document.getElementById('tournament-bracket-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                >
+                  مشاهده جدول کامل حذفی ↓
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -615,6 +724,11 @@ export default function TournamentDetailsPage() {
           <RegistrationWidget tournament={t} onChanged={tournament.reload} />
         </aside>
       </div>
+
+      {/* Full-width Tournament Bracket Section: Always at the bottom below registration & tournament info */}
+      <section id="tournament-bracket-section" className={`${styles.fullWidthBracketSection} reveal`} style={{ '--d': 4 } as React.CSSProperties}>
+        <Bracket slug={t.slug} gameSlug={t.game?.slug} />
+      </section>
     </main>
   );
 }

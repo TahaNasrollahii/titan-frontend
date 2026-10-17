@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>سکشن جدول حذفی رویداد ویژه — TITAN Esports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================================
+   TITAN ESPORTS DESIGN TOKENS
+   Dark maroon/near-black background, accent orange-red #ff5a35,
+   gold #f0c866 (scores, badge, prize only), minor purple #a97bd6.
+   ========================================================================= */
+:root {
+  --bg-void: #120708;
+  --bg-page-2: #1d0c0e;
+  --flame: #ff5a35;
+  --flame-deep: #c23a1d;
+  --flame-glow: rgba(255, 90, 53, 0.45);
+  --gold: #f0c866;
+  --gold-glow: rgba(240, 200, 102, 0.4);
+  --purple: #a97bd6;
+  --text-primary: #f9efe9;
+  --text-secondary: #d1ada7;
+  --text-muted: #9c7570;
+  --border-soft: rgba(255, 236, 230, 0.1);
+  --border-strong: rgba(255, 236, 230, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  background:
+    radial-gradient(1000px 600px at 10% -10%, rgba(255, 90, 53, 0.18) 0%, transparent 60%),
+    radial-gradient(800px 600px at 100% 100%, rgba(169, 123, 214, 0.14) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-void) 0%, var(--bg-page-2) 100%);
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  line-height: 1.7;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background Atmosphere */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  z-index: 0;
+  pointer-events: none;
+}
+.orb1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(255, 90, 53, 0.26), transparent 70%);
+  animation: drift1 18s ease-in-out infinite;
+}
+.orb2 {
+  width: 380px;
+  height: 380px;
+  bottom: -120px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(169, 123, 214, 0.22), transparent 70%);
+  animation: drift2 22s ease-in-out infinite;
+}
+@keyframes drift1 { 50% { transform: translate(-30px, 40px); } }
+@keyframes drift2 { 50% { transform: translate(40px, -30px); } }
+
+/* Page Demo Shell (Container for the embeddable section) */
+.page-shell {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Demo Control Bar: allows testing conditional rendering and dynamic event config */
+.demo-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 18px;
+  margin-bottom: 24px;
+  background: rgba(18, 7, 8, 0.75);
+  border: 1px dashed rgba(255, 236, 230, 0.2);
+  border-radius: 14px;
+  backdrop-filter: blur(14px);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 90, 53, 0.15);
+  color: var(--flame);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.demo-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.demo-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.demo-btn:hover {
+  background: rgba(255, 90, 53, 0.2);
+  border-color: rgba(255, 90, 53, 0.4);
+}
+.demo-btn.active {
+  background: var(--flame);
+  color: #2a0f08;
+  border-color: var(--flame);
+  font-weight: 800;
+}
+.empty-placeholder {
+  display: none;
+  text-align: center;
+  padding: 48px 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 236, 230, 0.15);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+.empty-placeholder.visible {
+  display: block;
+}
+
+/* =========================================================================
+   EMBEDDABLE COMPONENT: .tsb-section (Titan Special Bracket Section)
+   Self-contained styles prefixed with .tsb- to guarantee seamless embedding
+   without collisions on any host page.
+   ========================================================================= */
+.tsb-section {
+  position: relative;
+  width: 100%;
+}
+
+/* Header */
+.tsb-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.tsb-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tsb-accent-bar {
+  width: 4px;
+  height: 38px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--flame), var(--flame-deep));
+}
+.tsb-head h2 {
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.tsb-head p {
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+.tsb-head-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tsb-badge-ev {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #3a2603;
+  background: linear-gradient(135deg, var(--gold), #e0a94a);
+  box-shadow: 0 6px 16px -6px rgba(240, 200, 102, 0.5);
+  display: inline-flex;
+  align-items: center;
+}
+.tsb-chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+}
+
+/* Glass Stage */
+.tsb-stage {
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  background:
+    radial-gradient(520px 300px at 50% 0%, rgba(255, 90, 53, 0.14), transparent 70%),
+    linear-gradient(165deg, rgba(43, 17, 20, 0.6), rgba(23, 10, 11, 0.72));
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255, 236, 230, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+}
+.tsb-stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  z-index: 6;
+}
+.tsb-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Filter Segmented Control */
+.tsb-toolbar {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+.tsb-seg {
+  position: relative;
+  pointer-events: auto;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(10, 4, 5, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 236, 230, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px -12px rgba(0, 0, 0, 0.8);
+}
+.tsb-seg .tsb-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  z-index: 1;
+  background: linear-gradient(135deg, #ff6a45, var(--flame-deep));
+  box-shadow: 0 8px 22px -8px rgba(255, 90, 53, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: left 0.45s cubic-bezier(0.3, 1.25, 0.5, 1), width 0.45s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.tsb-seg button {
+  position: relative;
+  z-index: 2;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: color 0.25s;
+}
+.tsb-seg button:hover {
+  color: var(--text-primary);
+}
+.tsb-seg button[aria-selected="true"] {
+  color: #2a0f08;
+}
+.tsb-seg .tsb-cnt {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.25s;
+}
+.tsb-seg button[aria-selected="true"] .tsb-cnt {
+  background: rgba(42, 15, 8, 0.2);
+}
+.tsb-seg button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Bracket Scroller & Geometry Holder */
+.tsb-scroller {
+  position: relative;
+  z-index: 2;
+  overflow-x: auto;
+  padding: 50px 0 0;
+  direction: ltr;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 90, 53, 0.4) transparent;
+}
+.tsb-scroller::-webkit-scrollbar {
+  height: 5px;
+}
+.tsb-scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 90, 53, 0.4);
+  border-radius: 3px;
+}
+.tsb-holder {
+  position: relative;
+  margin: 0 auto;
+  transition: width 0.5s cubic-bezier(0.3, 1.2, 0.5, 1), height 0.5s cubic-bezier(0.3, 1.2, 0.5, 1);
+}
+.tsb-hint {
+  display: none;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  padding: 6px 0 0;
+  position: relative;
+  z-index: 3;
+}
+.tsb-hint.tsb-on {
+  display: block;
+}
+
+.tsb-bracket {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: top left;
+  direction: ltr;
+  transition: opacity 0.2s ease;
+}
+.tsb-bracket.tsb-leaving {
+  opacity: 0;
+}
+svg.tsb-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 5px rgba(255, 90, 53, 0.5));
+}
+
+/* Silver Trophy Glow + Spinning Light Rays */
+.tsb-rays {
+  position: absolute;
+  top: -114px;
+  width: 380px;
+  height: 380px;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 170, 110, 0.2) 0 6deg, transparent 6deg 17deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0 22%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 0 22%, transparent 68%);
+  animation: tsb-spin 46s linear infinite;
+}
+.tsb-halo {
+  position: absolute;
+  top: -44px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 150, 90, 0.38), rgba(255, 90, 53, 0.12) 45%, transparent 70%);
+  animation: tsb-breathe 4s ease-in-out infinite;
+}
+@keyframes tsb-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes tsb-breathe {
+  50% { transform: scale(1.12); opacity: 0.8; }
+}
+
+/* Round Labels */
+.tsb-round-label {
+  position: absolute;
+  width: 136px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+  z-index: 3;
+  direction: rtl;
+  animation: tsb-rise 0.6s calc(0.1s * var(--k, 1)) backwards;
+}
+.tsb-round-label::after {
+  content: "";
+  display: block;
+  width: 22px;
+  height: 2px;
+  margin: 4px auto 0;
+  border-radius: 2px;
+  background: var(--border-strong);
+}
+
+/* Match Cards */
+.tsb-m {
+  position: absolute;
+  border-radius: 13px;
+  direction: rtl;
+  z-index: 3;
+  background: linear-gradient(165deg, rgba(56, 21, 26, 0.88), rgba(32, 14, 17, 0.92));
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 26px -16px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  animation: tsb-rise 0.7s calc(var(--d, 0s) * var(--k, 1)) backwards;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.tsb-m.tsb-oL {
+  animation-name: tsb-slideL;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tsb-m.tsb-oR {
+  animation-name: tsb-slideR;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tsb-m:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 90, 53, 0.45);
+}
+@keyframes tsb-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+}
+@keyframes tsb-slideL {
+  from { opacity: 0; transform: translateX(150px) scale(0.9); }
+}
+@keyframes tsb-slideR {
+  from { opacity: 0; transform: translateX(-150px) scale(0.9); }
+}
+.tsb-m::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -80%;
+  width: 45%;
+  height: 220%;
+  background: linear-gradient(75deg, transparent 30%, rgba(255, 255, 255, 0.13) 50%, transparent 70%);
+  transform: rotate(10deg);
+  animation: tsb-shine 9s var(--sd, 0s) ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes tsb-shine {
+  0% { left: -80%; }
+  18% { left: 140%; }
+  100% { left: 140%; }
+}
+
+/* Team Rows inside Match Cards */
+.tsb-t {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 7px;
+  position: relative;
+  font-size: 10px;
+  font-weight: 600;
+  transition: opacity 0.2s, background 0.2s;
+}
+.tsb-t + .tsb-t {
+  border-top: 1px solid var(--border-soft);
+}
+.tsb-crest {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6.5px;
+  font-weight: 800;
+  color: #fff;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Team Name: NEVER truncated, full name displayed cleanly with crisp Latin alignment */
+.tsb-t .tsb-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  direction: ltr;
+  text-align: right;
+  font-size: 9.5px;
+  line-height: 1;
+  letter-spacing: -0.15px;
+}
+.tsb-t .tsb-score {
+  font-weight: 800;
+  font-size: 12px;
+  min-width: 12px;
+  text-align: center;
+}
+.tsb-t.win {
+  background: linear-gradient(270deg, rgba(255, 90, 53, 0.15), transparent);
+}
+.tsb-t.win::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--flame);
+  box-shadow: 0 0 10px var(--flame);
+}
+.tsb-t.win .tsb-score {
+  color: var(--gold);
+}
+.tsb-t.lose {
+  color: var(--text-muted);
+}
+.tsb-t.lose .tsb-crest {
+  opacity: 0.45;
+}
+
+/* Center Final Match Card */
+.tsb-m.final {
+  overflow: visible;
+  background: linear-gradient(165deg, rgba(74, 24, 17, 0.92), rgba(32, 14, 17, 0.96));
+  border-color: rgba(240, 200, 102, 0.45);
+  box-shadow: 0 0 40px -8px rgba(240, 200, 102, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.tsb-m.final .tsb-crest {
+  width: 22px;
+  height: 22px;
+  font-size: 7.5px;
+}
+.tsb-m.final .tsb-t {
+  font-size: 11px;
+  padding: 0 8px;
+  gap: 6px;
+}
+.tsb-m.final .tsb-t .tsb-name {
+  font-size: 10.5px;
+}
+.tsb-tag {
+  position: absolute;
+  top: -19px;
+  left: 10px;
+  font-size: 9.5px;
+  box-shadow: 0 4px 10px -3px rgba(0, 0, 0, 0.6);
+  font-weight: 800;
+  color: #2a0f08;
+  background: linear-gradient(135deg, var(--gold), #e0a94a);
+  padding: 2px 11px;
+  border-radius: 8px;
+  z-index: 4;
+}
+
+/* Champion Area & Silver Trophy (NOT GOLD) */
+.tsb-champ-label {
+  position: absolute;
+  top: 2px;
+  width: 200px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.6px;
+  z-index: 3;
+  direction: rtl;
+  animation: tsb-rise 0.8s calc(1.6s * var(--k, 1)) backwards;
+}
+.tsb-trophy {
+  position: absolute;
+  top: 24px;
+  width: 112px;
+  height: 104px;
+  z-index: 3;
+  animation: tsb-rise 0.9s calc(1.5s * var(--k, 1)) backwards, tsb-bob 5s calc(2.4s * var(--k, 1)) ease-in-out infinite;
+  filter: drop-shadow(0 8px 20px rgba(255, 120, 70, 0.5));
+}
+@keyframes tsb-bob {
+  50% { transform: translateY(-6px); }
+}
+.tsb-spark {
+  position: absolute;
+  z-index: 3;
+  width: 14px;
+  height: 14px;
+  animation: tsb-twinkle 2.6s var(--sd, 0s) ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes tsb-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.5) rotate(0); }
+  50% { opacity: 1; transform: scale(1.15) rotate(45deg); }
+}
+
+.tsb-champ {
+  position: absolute;
+  top: 134px;
+  width: 190px;
+  height: 46px;
+  z-index: 4;
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(165deg, rgba(74, 24, 17, 0.9), rgba(43, 17, 20, 0.92));
+  border: 1px solid rgba(240, 200, 102, 0.55);
+  box-shadow: 0 0 32px -4px rgba(240, 200, 102, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  animation: tsb-rise 0.8s calc(1.8s * var(--k, 1)) backwards;
+}
+.tsb-champ::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -80%;
+  width: 45%;
+  height: 220%;
+  background: linear-gradient(75deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+  transform: rotate(10deg);
+  animation: tsb-shine 5s 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.tsb-champ .tsb-crest {
+  width: 32px;
+  height: 32px;
+  font-size: 10px;
+}
+.tsb-champ .tsb-txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.tsb-champ .tsb-k {
+  font-size: 9.5px;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.tsb-champ .tsb-v {
+  font-size: 14px;
+  font-weight: 900;
+  direction: ltr;
+  text-align: right;
+  white-space: nowrap;
+}
+.tsb-pulse {
+  position: absolute;
+  top: 134px;
+  width: 190px;
+  height: 46px;
+  border-radius: 16px;
+  z-index: 3;
+  pointer-events: none;
+  border: 2px solid rgba(240, 200, 102, 0.5);
+  animation: tsb-ring 2.8s calc(2.4s * var(--k, 1)) ease-out infinite;
+}
+@keyframes tsb-ring {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.35, 1.7); opacity: 0; }
+}
+
+.tsb-final-meta {
+  position: absolute;
+  width: 260px;
+  text-align: center;
+  z-index: 3;
+  direction: rtl;
+  animation: tsb-rise 0.7s calc(1.5s * var(--k, 1)) backwards;
+}
+.tsb-final-meta .tsb-a {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.tsb-final-meta .tsb-b {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* SVG Connectors */
+.tsb-adv {
+  fill: none;
+  stroke: var(--flame);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: tsb-draw 0.8s calc(var(--d, 0s) * var(--k, 1)) backwards;
+  transition: stroke 0.2s, opacity 0.2s, stroke-width 0.2s;
+}
+@keyframes tsb-draw {
+  from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+}
+.tsb-champ-line {
+  fill: none;
+  stroke: url(#tsb-gl);
+  stroke-width: 3;
+  stroke-linecap: round;
+  animation: tsb-draw 0.9s calc(1.5s * var(--k, 1)) backwards;
+}
+.tsb-champ-flow {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 3 12;
+  opacity: 0.85;
+  animation: tsb-flow 1s linear infinite;
+}
+@keyframes tsb-flow {
+  to { stroke-dashoffset: -30; }
+}
+
+/* Hover Path Highlight */
+.tsb-stage.tsb-hovering .tsb-t:not(.tsb-hl),
+.tsb-stage.tsb-hovering .tsb-champ:not(.tsb-hl) {
+  opacity: 0.35;
+}
+.tsb-stage.tsb-hovering .tsb-adv:not(.tsb-hl) {
+  opacity: 0.12;
+}
+.tsb-stage.tsb-hovering .tsb-adv.tsb-hl {
+  stroke: var(--gold);
+  stroke-width: 3;
+}
+.tsb-t.tsb-hl {
+  background: linear-gradient(270deg, rgba(240, 200, 102, 0.18), transparent);
+}
+
+/* Legend */
+.tsb-legend {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 6px 20px 16px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 3;
+}
+.tsb-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tsb-legend i {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  display: inline-block;
+}
+.tsb-lg-adv { background: var(--flame); }
+.tsb-lg-hl { background: var(--gold); }
+.tsb-lg-champ { background: linear-gradient(90deg, var(--flame), var(--gold)); }
+
+/* Demo Leaderboard Section */
+.demo-leaderboard-section {
+  margin-top: 40px;
+  background: linear-gradient(160deg, rgba(43, 17, 20, 0.5), rgba(28, 13, 15, 0.55));
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 236, 230, 0.16);
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px -20px rgba(0, 0, 0, 0.7);
+}
+.demo-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.demo-head-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.demo-tabs {
+  display: flex;
+  gap: 8px;
+}
+.demo-tab {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.demo-tab:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 90, 53, 0.3);
+}
+.demo-tab.active {
+  background: linear-gradient(135deg, rgba(255, 90, 53, 0.2), rgba(169, 123, 214, 0.15));
+  color: var(--flame);
+  border-color: rgba(255, 90, 53, 0.45);
+}
+.lb-table {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.lb-table.active {
+  display: flex;
+}
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-soft);
+  transition: transform 0.2s, border-color 0.2s;
+}
+.lb-row:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 90, 53, 0.35);
+}
+.lb-row.r1 { background: linear-gradient(90deg, rgba(240, 200, 102, 0.12), rgba(0, 0, 0, 0.2)); border-color: rgba(240, 200, 102, 0.3); }
+.lb-row.r2 { background: linear-gradient(90deg, rgba(207, 211, 218, 0.08), rgba(0, 0, 0, 0.2)); border-color: rgba(207, 211, 218, 0.25); }
+.lb-row.r3 { background: linear-gradient(90deg, rgba(214, 154, 99, 0.09), rgba(0, 0, 0, 0.2)); border-color: rgba(214, 154, 99, 0.25); }
+
+.lb-rank {
+  width: 28px;
+  font-weight: 800;
+  font-size: 15px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.lb-row.r1 .lb-rank { color: var(--gold); font-size: 18px; }
+.lb-row.r2 .lb-rank { color: #cfd3da; }
+.lb-row.r3 .lb-rank { color: #d69a63; }
+
+.lb-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lb-team-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.lb-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.lb-pts {
+  font-weight: 800;
+  color: var(--gold);
+  font-size: 14px;
+}
+.lb-record {
+  font-size: 12px;
+  color: var(--text-muted);
+  width: 90px;
+  text-align: left;
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="page-shell">
+
+  <!-- Interactive Demo Controls for testing Special Event lifecycle -->
+  <aside class="demo-control-bar" aria-label="کنترل‌های شبیه‌ساز رویداد">
+    <div>
+      <span class="demo-badge">★ ماژول رویدادهای ویژه تایتان</span>
+      <span>کامپوننت مستقل حذفی · فقط در صورت فعال بودن رویداد نمایش داده می‌شود.</span>
+    </div>
+    <div class="demo-actions">
+      <button type="button" class="demo-btn active" id="btnToggleEvent">رویداد: فعال (نمایش)</button>
+      <button type="button" class="demo-btn" id="btnSwitchData">تعویض دیتای رویداد</button>
+    </div>
+  </aside>
+
+  <!-- Empty state placeholder when event is inactive -->
+  <div class="empty-placeholder" id="emptyPlaceholder">
+    رویداد ویژه‌ای در حال حاضر فعال نیست. (کامپوننت به طور خودکار از صفحه پاک شد)
+  </div>
+
+  <!-- TARGET MOUNT ELEMENT: This is where the self-contained component renders -->
+  <div id="titan-special-bracket-mount"></div>
+
+  <!-- LEADERBOARD SECTION FOR FIFA 24 -->
+  <section class="demo-leaderboard-section" id="demoLeaderboard">
+    <div class="demo-section-head">
+      <div class="demo-head-title">
+        <div class="tsb-accent-bar" style="height:28px"></div>
+        <div>
+          <h3 style="font-size:18px;font-weight:800;">جدول بهترین‌های بازی فیفا ۲۴ (Leaderboard)</h3>
+          <p style="font-size:12px;color:var(--text-muted);">رتبه‌بندی تیم‌ها و برترین بازیکنان فصل در تورنمنت‌های فیفا</p>
+        </div>
+      </div>
+      <div class="demo-tabs" id="demoLbTabs">
+        <button type="button" class="demo-tab active" data-target="lbTeams">بهترین تیم‌های فیفا</button>
+        <button type="button" class="demo-tab" data-target="lbPlayers">بهترین بازیکنان فیفا</button>
+      </div>
+    </div>
+
+    <!-- Teams Table -->
+    <div class="lb-table active" id="lbTeams">
+      <div class="lb-row r1">
+        <div class="lb-rank">۱</div>
+        <div class="crest" style="background:linear-gradient(140deg,#a97bd6,#5a2b6e);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">SW</div>
+        <div class="lb-info"><div class="lb-team-name">Shadow Wolves</div><span class="lb-sub">قهرمان جام حذفی فیفا تایتان</span></div>
+        <div class="lb-pts">9,240 امتیاز</div>
+        <div class="lb-record">۴۲ برد · ۳ باخت</div>
+      </div>
+      <div class="lb-row r2">
+        <div class="lb-rank">۲</div>
+        <div class="crest" style="background:linear-gradient(140deg,#ff5a35,#c23a1d);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">RT</div>
+        <div class="lb-info"><div class="lb-team-name">Red Titans</div><span class="lb-sub">نایب‌قهرمان فینال</span></div>
+        <div class="lb-pts">8,980 امتیاز</div>
+        <div class="lb-record">۳۹ برد · ۶ باخت</div>
+      </div>
+      <div class="lb-row r3">
+        <div class="lb-rank">۳</div>
+        <div class="crest" style="background:linear-gradient(140deg,#7fd6ff,#1c6f99);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">AW</div>
+        <div class="lb-info"><div class="lb-team-name">Arctic Wolves</div><span class="lb-sub">صعود تا نیمه‌نهایی</span></div>
+        <div class="lb-pts">8,520 امتیاز</div>
+        <div class="lb-record">۳۶ برد · ۸ باخت</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank">۴</div>
+        <div class="crest" style="background:linear-gradient(140deg,#ff5a35,#7a1f16);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">CF</div>
+        <div class="lb-info"><div class="lb-team-name">Crimson Fangs</div><span class="lb-sub">حضور در یک‌چهارم</span></div>
+        <div class="lb-pts">8,100 امتیاز</div>
+        <div class="lb-record">۳۳ برد · ۱۰ باخت</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank">۵</div>
+        <div class="crest" style="background:linear-gradient(140deg,#9aa0ac,#3a3e48);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">GU</div>
+        <div class="lb-info"><div class="lb-team-name">Ghost Unit</div><span class="lb-sub">تیم برگزیده تماشاگران</span></div>
+        <div class="lb-pts">7,850 امتیاز</div>
+        <div class="lb-record">۳۰ برد · ۱۱ باخت</div>
+      </div>
+    </div>
+
+    <!-- Players Table -->
+    <div class="lb-table" id="lbPlayers">
+      <div class="lb-row r1">
+        <div class="lb-rank">۱</div>
+        <div class="crest" style="background:linear-gradient(140deg,#f0c866,#c23a1d);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">WK</div>
+        <div class="lb-info"><div class="lb-team-name">آریا «WolfKing»</div><span class="lb-sub">تیم Shadow Wolves · MVP تورنمنت</span></div>
+        <div class="lb-pts">2,950 امتیاز</div>
+        <div class="lb-record">۲۴ برد فردی</div>
+      </div>
+      <div class="lb-row r2">
+        <div class="lb-rank">۲</div>
+        <div class="crest" style="background:linear-gradient(140deg,#cfd3da,#5c6270);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">TS</div>
+        <div class="lb-info"><div class="lb-team-name">سهراب «TitanStriker»</div><span class="lb-sub">تیم Red Titans · بهترین گلزن</span></div>
+        <div class="lb-pts">2,810 امتیاز</div>
+        <div class="lb-record">۲۱ برد فردی</div>
+      </div>
+      <div class="lb-row r3">
+        <div class="lb-rank">۳</div>
+        <div class="crest" style="background:linear-gradient(140deg,#d69a63,#7a4b28);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;">FB</div>
+        <div class="lb-info"><div class="lb-team-name">نوید «FrostBite»</div><span class="lb-sub">تیم Arctic Wolves</span></div>
+        <div class="lb-pts">2,640 امتیاز</div>
+        <div class="lb-record">۱۹ برد فردی</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/**
+ * TITAN SPECIAL EVENT KNOCKOUT BRACKET COMPONENT
+ * Self-contained, embeddable component driven by a single config object.
+ * When event is inactive or null, unmounts cleanly without leaving DOM traces.
+ */
+var TitanSpecialBracket = (function () {
+  'use strict';
+
+  var CW = 136, CH = 58, FW = 160, FH = 64;
+
+  function toFa(n) {
+    return String(n).replace(/[0-9]/g, function (d) {
+      return '۰۱۲۳۴۵۶۷۸۹'[d];
+    });
+  }
+
+  function getGradientStyle(teamsMap, code) {
+    if (!teamsMap[code]) return 'background: #555;';
+    return 'background:linear-gradient(140deg,' + teamsMap[code][1] + ',' + teamsMap[code][2] + ')';
+  }
+
+  function getWinner(match) {
+    return match[1] > match[3] ? match[0] : match[2];
+  }
+
+  function geom(m) {
+    if (m === 'r16') {
+      return {
+        W: 1072, H: 496, CX: 536, YF: 300,
+        X: { l0: 0, l1: 152, l2: 304, f: 456, r2: 632, r1: 784, r0: 936 },
+        Y16: [150, 250, 350, 450],
+        YQF: [200, 400],
+        labels: [
+          [0, 'یک‌هشتم نهایی', 87],
+          [152, 'یک‌چهارم نهایی', 137],
+          [304, 'نیمه‌نهایی', 237],
+          [632, 'نیمه‌نهایی', 237],
+          [784, 'یک‌چهارم نهایی', 137],
+          [936, 'یک‌هشتم نهایی', 87]
+        ]
+      };
+    }
+    return {
+      W: 768, H: 396, CX: 384, YF: 276,
+      X: { l1: 0, l2: 152, f: 304, r2: 480, r1: 632 },
+      YQF: [206, 346],
+      labels: [
+        [0, 'یک‌چهارم نهایی', 143],
+        [152, 'نیمه‌نهایی', 213],
+        [480, 'نیمه‌نهایی', 213],
+        [632, 'یک‌چهارم نهایی', 143]
+      ]
+    };
+  }
+
+  function renderTeamRow(teamsMap, code, score, isWin) {
+    var teamData = teamsMap[code] || [code, '#888', '#333'];
+    return '<div class="tsb-t ' + (isWin ? 'win' : 'lose') + '" data-t="' + code + '">' +
+      '<span class="tsb-crest" style="' + getGradientStyle(teamsMap, code) + '">' + code + '</span>' +
+      '<span class="tsb-name">' + teamData[0] + '</span>' +
+      '<span class="tsb-score">' + toFa(score) + '</span></div>';
+  }
+
+  function renderMatchCard(teamsMap, match, x, yc, w, h, delay, cls, tag) {
+    var wn = getWinner(match);
+    return '<div class="tsb-m ' + (cls || '') + '" style="left:' + x + 'px;top:' + (yc - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;--d:' + delay.toFixed(2) + 's;--sd:' + (delay * 2 + 1).toFixed(2) + 's">' +
+      (tag ? '<span class="tsb-tag">' + tag + '</span>' : '') +
+      renderTeamRow(teamsMap, match[0], match[1], wn === match[0]) +
+      renderTeamRow(teamsMap, match[2], match[3], wn === match[2]) +
+      '</div>';
+  }
+
+  function renderSparkle(x, y, d) {
+    return '<svg class="tsb-spark" style="left:' + x + 'px;top:' + y + 'px;--sd:' + d + 's" viewBox="0 0 24 24" fill="#fff"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>';
+  }
+
+  function buildBracketMarkup(config, m, champCode) {
+    var g = geom(m), X = g.X, html = '', lines = '';
+    var off = (m === 'r16') ? 0 : 0.4;
+    var teams = config.teams;
+
+    function link(x1, y1, x2, y2, code, delay) {
+      var xm = (x1 + x2) / 2;
+      lines += '<path class="tsb-adv" pathLength="1" data-t="' + code + '" style="--d:' + delay.toFixed(2) + 's" d="M' + x1 + ' ' + y1 + ' H' + xm + ' V' + y2 + ' H' + x2 + '"/>';
+    }
+
+    g.labels.forEach(function (l) {
+      html += '<div class="tsb-round-label" style="left:' + l[0] + 'px;top:' + l[2] + 'px">' + l[1] + '</div>';
+    });
+
+    if (m === 'r16' && config.r16L && config.r16R) {
+      config.r16L.forEach(function (mm, i) {
+        html += renderMatchCard(teams, mm, X.l0, g.Y16[i], CW, CH, 0.1 + i * 0.06, 'tsb-oL');
+        link(X.l0 + CW, g.Y16[i], X.l1, g.YQF[Math.floor(i / 2)], getWinner(mm), 0.55);
+      });
+      config.r16R.forEach(function (mm, i) {
+        html += renderMatchCard(teams, mm, X.r0, g.Y16[i], CW, CH, 0.1 + i * 0.06, 'tsb-oR');
+        link(X.r0, g.Y16[i], X.r1 + CW, g.YQF[Math.floor(i / 2)], getWinner(mm), 0.55);
+      });
+    }
+
+    config.qfL.forEach(function (mm, i) {
+      html += renderMatchCard(teams, mm, X.l1, g.YQF[i], CW, CH, 0.5 + i * 0.06 - off);
+      link(X.l1 + CW, g.YQF[i], X.l2, g.YF, getWinner(mm), 0.95 - off);
+    });
+    config.qfR.forEach(function (mm, i) {
+      html += renderMatchCard(teams, mm, X.r1, g.YQF[i], CW, CH, 0.5 + i * 0.06 - off);
+      link(X.r1, g.YQF[i], X.r2 + CW, g.YF, getWinner(mm), 0.95 - off);
+    });
+
+    config.sfL.forEach(function (mm) {
+      html += renderMatchCard(teams, mm, X.l2, g.YF, CW, CH, 0.9 - off);
+      link(X.l2 + CW, g.YF, X.f, g.YF, getWinner(mm), 1.3 - off);
+    });
+    config.sfR.forEach(function (mm) {
+      html += renderMatchCard(teams, mm, X.r2, g.YF, CW, CH, 0.9 - off);
+      link(X.r2, g.YF, X.f + FW, g.YF, getWinner(mm), 1.3 - off);
+    });
+
+    html += renderMatchCard(teams, config.final, X.f, g.YF, FW, FH, 1.3 - off, 'final', 'فینال');
+
+    var CX = g.CX, finalTop = g.YF - FH / 2, plateBottom = 180;
+    var cl = 'M' + CX + ' ' + finalTop + ' V' + (plateBottom + 2);
+
+    var svg =
+      '<svg class="tsb-lines" width="' + g.W + '" height="' + g.H + '" viewBox="0 0 ' + g.W + ' ' + g.H + '" fill="none">' +
+        '<defs><linearGradient id="tsb-gl" gradientUnits="userSpaceOnUse" x1="0" y1="' + finalTop + '" x2="0" y2="' + plateBottom + '">' +
+          '<stop offset="0" stop-color="#ff5a35"/><stop offset="1" stop-color="#f0c866"/></linearGradient></defs>' +
+        lines +
+        '<path class="tsb-champ-line" pathLength="1" data-t="' + champCode + '" d="' + cl + '"/>' +
+        '<path class="tsb-champ-flow" d="' + cl + '"/>' +
+        '<circle r="4" fill="#ffffff"><animateMotion dur="2.2s" repeatCount="indefinite" path="' + cl + '"/></circle>' +
+      '</svg>';
+
+    /* SILVER TROPHY with Red Base */
+    var trophy =
+      '<svg class="tsb-trophy" style="left:' + (CX - 56) + 'px" viewBox="0 0 140 130" fill="none">' +
+        '<defs>' +
+          '<linearGradient id="tsb-cup" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="#ffffff"/>' +
+            '<stop offset="0.5" stop-color="#c9ced6"/>' +
+            '<stop offset="1" stop-color="#7d8492"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="tsb-redbase" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="#ff6b48"/>' +
+            '<stop offset="1" stop-color="#c23a1d"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<path d="M40 14h60v34c0 20-13 34-30 34S40 68 40 48z" fill="url(#tsb-cup)"/>' +
+        '<path d="M40 24H22c0 22 8 34 22 36M100 24h18c0 22-8 34-22 36" stroke="url(#tsb-cup)" stroke-width="7" stroke-linecap="round"/>' +
+        '<rect x="63" y="80" width="14" height="18" fill="url(#tsb-cup)"/>' +
+        '<rect x="46" y="98" width="48" height="12" rx="4" fill="url(#tsb-cup)"/>' +
+        '<rect x="38" y="110" width="64" height="10" rx="4" fill="url(#tsb-redbase)"/>' +
+        '<path d="M52 22c-2 14 0 28 10 38" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round"/>' +
+      '</svg>';
+
+    var champPlate =
+      '<div class="tsb-pulse" style="left:' + (CX - 95) + 'px"></div>' +
+      '<div class="tsb-champ" style="left:' + (CX - 95) + 'px" data-t="' + champCode + '">' +
+        '<span class="tsb-crest" style="' + getGradientStyle(teams, champCode) + '">' + champCode + '</span>' +
+        '<span class="tsb-txt"><span class="tsb-k">قهرمان تورنمنت</span><span class="tsb-v">' + teams[champCode][0] + '</span></span>' +
+      '</div>';
+
+    var finalMeta =
+      '<div class="tsb-final-meta" style="left:' + (CX - 130) + 'px;top:' + (g.YF + FH / 2 + 10) + 'px">' +
+        '<div class="tsb-a">فینال · ' + config.finalWhen + ' · نتیجه ' + toFa(config.final[1]) + ' – ' + toFa(config.final[3]) + '</div>' +
+      '</div>';
+
+    var raysAndHalo = '<div class="tsb-rays" style="left:' + (CX - 190) + 'px"></div><div class="tsb-halo" style="left:' + (CX - 120) + 'px"></div>';
+
+    var sparkles =
+      renderSparkle(CX - 80, 38, 0) +
+      renderSparkle(CX + 80, 54, 0.9) +
+      renderSparkle(CX - 62, 112, 1.6) +
+      renderSparkle(CX + 66, 110, 0.4) +
+      renderSparkle(CX + 6, 4, 1.3);
+
+    html = raysAndHalo + svg + html + trophy + sparkles + champPlate + finalMeta;
+
+    return { html: html, g: g };
+  }
+
+  /**
+   * Mounts the Special Event Bracket section into the specified DOM element.
+   * If config.active is false or config is null, unmounts/hides automatically.
+   */
+  function mount(container, config) {
+    if (!container) return;
+
+    // Check if event is active. If not, remove completely from DOM.
+    if (!config || config.active === false) {
+      container.innerHTML = '';
+      container.style.display = 'none';
+      return null;
+    }
+
+    container.style.display = 'block';
+
+    var teams = config.teams || {};
+    var champCode = getWinner(config.final);
+    var mode = 'qf'; // Default: Quarter-finals (8 teams)
+    var currentW = 0, currentH = 0;
+    var swapTimer = null;
+    var particleAnimId = null;
+    var ro = null;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Base Scaffold
+    var sectionHtml =
+      '<section class="tsb-section" aria-label="' + config.title + '">' +
+        '<!-- Header -->' +
+        '<div class="tsb-head">' +
+          '<div class="tsb-head-left">' +
+            '<div class="tsb-accent-bar"></div>' +
+            '<div>' +
+              '<h2>' + config.title + '</h2>' +
+              '<p>' + config.sub + '</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tsb-head-right">' +
+            '<span class="tsb-badge-ev">' + config.badge + '</span>' +
+            '<span class="tsb-chip">' + config.status + '</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- Glass Stage -->' +
+        '<div class="tsb-stage" id="tsbStage">' +
+          '<canvas class="tsb-fx-canvas" id="tsbFx"></canvas>' +
+
+          '<!-- Glass Segmented Filter -->' +
+          '<div class="tsb-toolbar">' +
+            '<div class="tsb-seg" id="tsbSeg" role="tablist" aria-label="نمای جدول مسابقات">' +
+              '<span class="tsb-pill" id="tsbPill"></span>' +
+              '<button type="button" role="tab" data-mode="qf" aria-selected="true" tabindex="0">' +
+                'یک‌چهارم تا فینال <span class="tsb-cnt">۸ تیم</span>' +
+              '</button>' +
+              '<button type="button" role="tab" data-mode="r16" aria-selected="false" tabindex="-1">' +
+                'یک‌هشتم تا فینال <span class="tsb-cnt">۱۶ تیم</span>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+
+          '<!-- Scroller & Holder -->' +
+          '<div class="tsb-scroller" id="tsbScroller">' +
+            '<div class="tsb-holder" id="tsbHolder">' +
+              '<div class="tsb-bracket" id="tsbBracket" role="group" aria-label="جدول مسابقات حذفی"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tsb-hint" id="tsbHint">برای دیدن کل جدول به چپ و راست بکشید ↔</div>' +
+
+          '<!-- Legend -->' +
+          '<div class="tsb-legend">' +
+            '<span><i class="tsb-lg-adv"></i> تیم صعودکرده</span>' +
+            '<span><i class="tsb-lg-hl"></i> مسیر تیم (نشانگر روی نام تیم)</span>' +
+            '<span><i class="tsb-lg-champ"></i> مسیر قهرمان مسابقات</span>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+
+    container.innerHTML = sectionHtml;
+
+    // Element references
+    var stage = container.querySelector('#tsbStage');
+    var bracket = container.querySelector('#tsbBracket');
+    var scroller = container.querySelector('#tsbScroller');
+    var holder = container.querySelector('#tsbHolder');
+    var hint = container.querySelector('#tsbHint');
+    var seg = container.querySelector('#tsbSeg');
+    var pill = container.querySelector('#tsbPill');
+    var tabs = Array.prototype.slice.call(seg.querySelectorAll('button'));
+
+    function fit() {
+      if (!scroller || !bracket || !holder) return;
+      var avail = scroller.clientWidth;
+      var s = Math.max(avail < 640 ? 0.82 : 0.5, Math.min(1, avail / currentW));
+      bracket.style.transform = 'scale(' + s + ')';
+      holder.style.width = (currentW * s) + 'px';
+      holder.style.height = (currentH * s) + 'px';
+      var isOverflowing = (currentW * s) > (avail + 2);
+      if (hint) {
+        if (isOverflowing) hint.classList.add('tsb-on');
+        else hint.classList.remove('tsb-on');
+      }
+      if (isOverflowing) {
+        scroller.scrollLeft = (currentW * s - avail) / 2;
+      }
+    }
+
+    function render(m, k) {
+      var b = buildBracketMarkup(config, m, champCode);
+      currentW = b.g.W;
+      currentH = b.g.H;
+      bracket.style.width = currentW + 'px';
+      bracket.style.height = currentH + 'px';
+      bracket.style.setProperty('--k', k);
+      bracket.innerHTML = b.html;
+      stage.setAttribute('data-mode', m);
+      fit();
+    }
+
+    function movePill() {
+      var selectedTab = seg.querySelector('[aria-selected="true"]');
+      if (selectedTab && pill) {
+        pill.style.left = selectedTab.offsetLeft + 'px';
+        pill.style.width = selectedTab.offsetWidth + 'px';
+      }
+    }
+
+    function clearHL() {
+      stage.classList.remove('tsb-hovering');
+      bracket.querySelectorAll('.tsb-hl').forEach(function (el) {
+        el.classList.remove('tsb-hl');
+      });
+    }
+
+    function setHL(code) {
+      stage.classList.add('tsb-hovering');
+      bracket.querySelectorAll('[data-t="' + code + '"]').forEach(function (el) {
+        el.classList.add('tsb-hl');
+      });
+    }
+
+    function setMode(m) {
+      if (m === mode) return;
+      mode = m;
+      tabs.forEach(function (t) {
+        var on = t.getAttribute('data-mode') === m;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.setAttribute('tabindex', on ? '0' : '-1');
+      });
+      movePill();
+      clearHL();
+      if (swapTimer) clearTimeout(swapTimer);
+      if (reduceMotion) {
+        render(m, 0);
+        return;
+      }
+      bracket.classList.add('tsb-leaving');
+      swapTimer = setTimeout(function () {
+        render(m, 0.5);
+        bracket.classList.remove('tsb-leaving');
+      }, 210);
+    }
+
+    // Tab Click & Keyboard Navigation
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        setMode(t.getAttribute('data-mode'));
+      });
+    });
+
+    seg.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        var nextMode = mode === 'qf' ? 'r16' : 'qf';
+        setMode(nextMode);
+        var targetBtn = seg.querySelector('[data-mode="' + nextMode + '"]');
+        if (targetBtn) targetBtn.focus();
+      }
+    });
+
+    // Team Path Highlight on Hover
+    bracket.addEventListener('mouseover', function (e) {
+      var el = e.target.closest ? e.target.closest('[data-t]') : null;
+      if (el && el.tagName.toLowerCase() !== 'path') {
+        clearHL();
+        setHL(el.getAttribute('data-t'));
+      }
+    });
+    bracket.addEventListener('mouseleave', clearHL);
+
+    var onResize = function () {
+      fit();
+      movePill();
+    };
+    window.addEventListener('resize', onResize);
+
+    // Initial render in 8-team Quarter-finals mode
+    render(mode, 0.8);
+    movePill();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(movePill);
+    }
+
+    // ============ CONFETTI & EMBER PARTICLES (STAGE-WIDE) ============
+    if (!reduceMotion) {
+      var cv = stage.querySelector('#tsbFx');
+      if (cv) {
+        var ctx = cv.getContext('2d');
+        var SW_ = 1, SH_ = 1;
+
+        function sizeCv() {
+          SW_ = stage.clientWidth;
+          SH_ = stage.clientHeight;
+          cv.width = SW_;
+          cv.height = SH_;
+        }
+        sizeCv();
+
+        if (window.ResizeObserver) {
+          ro = new ResizeObserver(sizeCv);
+          ro.observe(stage);
+        }
+
+        var colors = ['#ff5a35', '#f0c866', '#a97bd6', '#ffffff', '#ff9a6a'];
+        var particles = [];
+
+        function createParticle(type, isInitial) {
+          if (type === 'c') {
+            return {
+              t: 'c',
+              x: Math.random() * SW_,
+              y: isInitial ? Math.random() * SH_ : -12,
+              w: 5 + Math.random() * 5,
+              h: 3 + Math.random() * 3,
+              vy: 0.5 + Math.random() * 0.9,
+              ph: Math.random() * 6.28,
+              sp: 0.01 + Math.random() * 0.02,
+              rot: Math.random() * 6.28,
+              vr: (Math.random() - 0.5) * 0.08,
+              col: colors[Math.floor(Math.random() * colors.length)],
+              a: 0.25 + Math.random() * 0.4
+            };
+          }
+          return {
+            t: 'e',
+            x: Math.random() * SW_,
+            y: isInitial ? Math.random() * SH_ : SH_ + 10,
+            r: 0.8 + Math.random() * 1.8,
+            vy: 0.3 + Math.random() * 0.7,
+            vx: (Math.random() - 0.5) * 0.3,
+            life: 0,
+            max: 260 + Math.random() * 240,
+            col: Math.random() > 0.5 ? '255,90,53' : '240,200,102'
+          };
+        }
+
+        for (var i = 0; i < 30; i++) particles.push(createParticle('c', true));
+        for (var j = 0; j < 30; j++) particles.push(createParticle('e', true));
+
+        function tick() {
+          ctx.clearRect(0, 0, SW_, SH_);
+          for (var k = 0; k < particles.length; k++) {
+            var p = particles[k];
+            if (p.t === 'c') {
+              p.y += p.vy;
+              p.ph += p.sp;
+              p.x += Math.sin(p.ph) * 0.5;
+              p.rot += p.vr;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.rot);
+              ctx.globalAlpha = p.a;
+              ctx.fillStyle = p.col;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+              if (p.y > SH_ + 12) particles[k] = createParticle('c', false);
+            } else {
+              p.y -= p.vy;
+              p.x += p.vx;
+              p.life++;
+              var t = p.life / p.max;
+              var a = (t < 0.15 ? t / 0.15 : 1 - (t - 0.15) / 0.85);
+              a = Math.max(0, Math.min(1, a)) * 0.7;
+              ctx.globalAlpha = 1;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r, 0, 6.283);
+              ctx.fillStyle = 'rgba(' + p.col + ',' + a + ')';
+              ctx.fill();
+              if (p.life >= p.max || p.y < -10) particles[k] = createParticle('e', false);
+            }
+          }
+          particleAnimId = requestAnimationFrame(tick);
+        }
+        tick();
+      }
+    }
+
+    // Return instance controller with unmount cleanup
+    return {
+      unmount: function () {
+        if (swapTimer) clearTimeout(swapTimer);
+        if (particleAnimId) cancelAnimationFrame(particleAnimId);
+        if (ro) ro.disconnect();
+        window.removeEventListener('resize', onResize);
+        container.innerHTML = '';
+        container.style.display = 'none';
+      },
+      update: function (newConfig) {
+        this.unmount();
+        return mount(container, newConfig);
+      }
+    };
+  }
+
+  return {
+    mount: mount
+  };
+})();
+
+/* =========================================================================
+   APPLICATION DATA & DEMO INITIALIZATION
+   Config is 100% data-driven; any event can be swapped in without markup changes.
+   ========================================================================= */
+
+// Event 1: FIFA Special Cup (Reference Tournament)
+var EVENT_FIFA = {
+  active: true,
+  badge: '★ رویداد ویژه',
+  title: 'جدول حذفی — جام ویژه فیفا',
+  sub: '۱۶ تیم · حذف مستقیم · ۱۵ بازی',
+  status: 'پایان‌یافته',
+  finalWhen: 'جمعه ۲۲:۰۰',
+  prize: '۱۵۰٬۰۰۰٬۰۰۰ تومان',
+  viewers: '۱۲٬۴۰۸ نفر',
+  teams: {
+    SW: ['Shadow Wolves', '#a97bd6', '#5a2b6e'],
+    IF: ['Iron Falcons', '#6fa8dc', '#1c4a7a'],
+    DO: ['Dark Orbit', '#7b7fe0', '#2a2c6e'],
+    CF: ['Crimson Fangs', '#ff5a35', '#7a1f16'],
+    NP: ['Night Phantoms', '#6b7080', '#22252c'],
+    PK: ['Pixel Kings', '#e06fb0', '#7a2358'],
+    TL: ['Thunder Lynx', '#f2b24a', '#8a5a14'],
+    AW: ['Arctic Wolves', '#7fd6ff', '#1c6f99'],
+    NV: ['Neon Vipers', '#4ad0a0', '#1a6b52'],
+    SH: ['Solar Hawks', '#ff9a4a', '#9a4a14'],
+    SR: ['Storm Riders', '#8aa0ff', '#2a3a8a'],
+    RT: ['Red Titans', '#ff5a35', '#c23a1d'],
+    GU: ['Ghost Unit', '#9aa0ac', '#3a3e48'],
+    OF: ['Omega Five', '#c07bff', '#4a1f7a'],
+    VW: ['Void Walkers', '#a07bd6', '#2a1a4a'],
+    CL: ['Cyber Lions', '#5fd07a', '#1a6b3a']
+  },
+  r16L: [
+    ['SW', 3, 'IF', 1],
+    ['DO', 2, 'CF', 3],
+    ['NP', 2, 'PK', 0],
+    ['TL', 1, 'AW', 2]
+  ],
+  qfL: [
+    ['SW', 2, 'CF', 1],
+    ['NP', 1, 'AW', 2]
+  ],
+  sfL: [
+    ['SW', 3, 'AW', 1]
+  ],
+  r16R: [
+    ['NV', 3, 'SH', 1],
+    ['SR', 0, 'RT', 2],
+    ['GU', 2, 'OF', 1],
+    ['VW', 1, 'CL', 3]
+  ],
+  qfR: [
+    ['NV', 1, 'RT', 2],
+    ['GU', 3, 'CL', 2]
+  ],
+  sfR: [
+    ['RT', 2, 'GU', 1]
+  ],
+  final: ['SW', 3, 'RT', 2]
+};
+
+// Event 2: Tekken Masters Cup (Alternate Special Event Demo)
+var EVENT_TEKKEN = {
+  active: true,
+  badge: '★ مسترز پاییزه',
+  title: 'تورنمنت نهایی تکن تایتان',
+  sub: '۸ تیم برتر لیگ تایتان · جایزه نقدی',
+  status: 'پایان‌یافته',
+  finalWhen: 'شنبه ۲۱:۳۰',
+  prize: '۲۰۰٬۰۰۰٬۰۰۰ تومان',
+  viewers: '۱۸٬۹۵۰ نفر',
+  teams: {
+    SW: ['Iron Fist', '#ff5a35', '#7a1f16'],
+    CF: ['Devil Jin', '#a97bd6', '#3b1c60'],
+    NP: ['Mishima Clan', '#f0c866', '#8a5a14'],
+    AW: ['Vortex Strike', '#6fa8dc', '#1a4066'],
+    NV: ['Dragon Fang', '#4ad0a0', '#135c42'],
+    RT: ['Red Titans', '#ff5a35', '#c23a1d'],
+    GU: ['Shadow Ops', '#9aa0ac', '#2b2f38'],
+    CL: ['Cyber Lions', '#5fd07a', '#1a6b3a'],
+    IF: ['Iron Falcons', '#6fa8dc', '#1c4a7a'],
+    DO: ['Dark Orbit', '#7b7fe0', '#2a2c6e'],
+    PK: ['Pixel Kings', '#e06fb0', '#7a2358'],
+    TL: ['Thunder Lynx', '#f2b24a', '#8a5a14'],
+    SH: ['Solar Hawks', '#ff9a4a', '#9a4a14'],
+    SR: ['Storm Riders', '#8aa0ff', '#2a3a8a'],
+    OF: ['Omega Five', '#c07bff', '#4a1f7a'],
+    VW: ['Void Walkers', '#a07bd6', '#2a1a4a']
+  },
+  r16L: [
+    ['SW', 3, 'IF', 0],
+    ['DO', 1, 'CF', 3],
+    ['NP', 3, 'PK', 1],
+    ['TL', 0, 'AW', 3]
+  ],
+  qfL: [
+    ['SW', 3, 'CF', 2],
+    ['NP', 1, 'AW', 3]
+  ],
+  sfL: [
+    ['SW', 3, 'AW', 2]
+  ],
+  r16R: [
+    ['NV', 3, 'SH', 0],
+    ['SR', 1, 'RT', 3],
+    ['GU', 3, 'OF', 2],
+    ['VW', 0, 'CL', 3]
+  ],
+  qfR: [
+    ['NV', 1, 'RT', 3],
+    ['GU', 3, 'CL', 1]
+  ],
+  sfR: [
+    ['RT', 3, 'GU', 0]
+  ],
+  final: ['SW', 3, 'RT', 1]
+};
+
+// Mount Component on Page Load
+var mountEl = document.getElementById('titan-special-bracket-mount');
+var currentConfig = EVENT_FIFA;
+var currentInstance = TitanSpecialBracket.mount(mountEl, currentConfig);
+
+// Demo Bar Interactivity: Toggle active/inactive and switch datasets
+var btnToggle = document.getElementById('btnToggleEvent');
+var btnSwitch = document.getElementById('btnSwitchData');
+var emptyPlaceholder = document.getElementById('emptyPlaceholder');
+
+btnToggle.addEventListener('click', function () {
+  currentConfig.active = !currentConfig.active;
+  if (currentConfig.active) {
+    btnToggle.textContent = 'رویداد: فعال (نمایش)';
+    btnToggle.classList.add('active');
+    emptyPlaceholder.classList.remove('visible');
+    currentInstance = TitanSpecialBracket.mount(mountEl, currentConfig);
+  } else {
+    btnToggle.textContent = 'رویداد: غیرفعال (پنهان)';
+    btnToggle.classList.remove('active');
+    emptyPlaceholder.classList.add('visible');
+    if (currentInstance) {
+      currentInstance.unmount();
+      currentInstance = null;
+    }
+  }
+});
+
+btnSwitch.addEventListener('click', function () {
+  var isFifa = currentConfig.title.indexOf('فیفا') !== -1;
+  currentConfig = isFifa ? EVENT_TEKKEN : EVENT_FIFA;
+  currentConfig.active = true;
+  btnToggle.textContent = 'رویداد: فعال (نمایش)';
+  btnToggle.classList.add('active');
+  emptyPlaceholder.classList.remove('visible');
+  if (currentInstance) {
+    currentInstance = currentInstance.update(currentConfig);
+  } else {
+    currentInstance = TitanSpecialBracket.mount(mountEl, currentConfig);
+  }
+});
+
+// Demo Leaderboard Tabs Switching
+var demoLbTabs = document.querySelectorAll('#demoLbTabs .demo-tab');
+var demoLbTables = {
+  lbTeams: document.getElementById('lbTeams'),
+  lbPlayers: document.getElementById('lbPlayers')
+};
+
+demoLbTabs.forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    demoLbTabs.forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+
+    var target = tab.getAttribute('data-target');
+    Object.keys(demoLbTables).forEach(function (key) {
+      if (demoLbTables[key]) {
+        if (key === target) {
+          demoLbTables[key].classList.add('active');
+        } else {
+          demoLbTables[key].classList.remove('active');
+        }
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

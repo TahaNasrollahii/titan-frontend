@@ -10,6 +10,7 @@ import { catalogApi, tournamentsApi } from '@/lib/api/endpoints';
 import type { Game, Paginated, TournamentStatus, TournamentSummary } from '@/lib/api/types';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
+import { FIFA_SUMMARY_MOCK } from '../tournament/TournamentHubClient';
 
 import '../tournament/tournament.css';
 import './list.css';
@@ -149,13 +150,21 @@ function TournamentResults({
     );
   }
 
+  const allItems = [...items];
+  const matchesFifa =
+    (!filters.game || filters.game === 'fifa' || filters.game === 'ea-fc') &&
+    (!filters.search || /fifa|فیفا/i.test(filters.search));
+  if (matchesFifa && !allItems.some(t => t.slug === 'fifa')) {
+    allItems.unshift(FIFA_SUMMARY_MOCK);
+  }
+
   return (
     <>
       <div className="tour-matches reveal" style={{ '--d': 3, marginTop: '24px' } as React.CSSProperties}>
-        {items.map((tournament, i) => (
+        {allItems.map((tournament, i) => (
           <TournamentCard key={tournament.id} tournament={tournament} index={i % PAGE_SIZE} />
         ))}
-        {!loading && items.length === 0 && (
+        {!loading && allItems.length === 0 && (
           <div className="empty-state">
             <Icon name="search" />
             <p>هیچ تورنومنتی با این مشخصات یافت نشد!</p>
@@ -199,6 +208,9 @@ export default function TournamentsListPage({
   const gameOptions = [{ value: '', label: 'همه بازی‌ها' }].concat(
     (games.data ?? []).filter(g => g.kind === 'game').map(g => ({ value: g.slug, label: g.titleEn })),
   );
+  if (!gameOptions.some(g => g.value === 'fifa')) {
+    gameOptions.push({ value: 'fifa', label: 'FIFA 24' });
+  }
 
   return (
     <main className="tour-wrapper">

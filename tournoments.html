@@ -238,6 +238,294 @@ section{margin-top:50px;}
 .lb-points{font-weight:800;color:var(--gold);font-size:14.5px;}
 .lb-wins{font-size:12px;color:var(--text-muted);width:70px;text-align:left;}
 
+/* ---------- Game Pills & Leaderboard Panes ---------- */
+.game-filter-pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.game-pill{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border-soft);color:var(--text-secondary);
+  padding:7px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .25s ease;
+}
+.game-pill:hover{background:rgba(255,90,53,0.15);color:var(--text-primary);border-color:rgba(255,90,53,0.3);}
+.game-pill.active{
+  background:linear-gradient(135deg,rgba(255,90,53,0.25),rgba(194,58,29,0.35));
+  border-color:var(--flame);color:#fff;box-shadow:0 0 16px rgba(255,90,53,0.3);
+}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{
+  padding:10px 22px;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;
+  border:1px solid var(--border-soft);color:var(--text-muted);background:rgba(43,17,20,0.5);
+  backdrop-filter:blur(10px);transition:all .25s ease;
+}
+.tab:hover{color:var(--text-primary);border-color:rgba(255,90,53,0.3);}
+.tab.active{
+  background:linear-gradient(135deg,rgba(255,90,53,0.2),rgba(169,123,214,0.15));
+  color:var(--flame);border-color:rgba(255,90,53,0.45);box-shadow:0 4px 18px -4px rgba(255,90,53,0.4);
+}
+
+.lb-pane{display:none;}
+.lb-pane.active{display:block;}
+
+/* ---------- TITAN SPECIAL BRACKET SCOPED STYLES ---------- */
+.tsb-section{position:relative;width:100%;margin-bottom:20px;}
+.tsb-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.tsb-head-left{display:flex;align-items:center;gap:12px;}
+.tsb-accent-bar{width:4px;height:38px;border-radius:2px;background:linear-gradient(180deg,var(--flame),var(--flame-deep));}
+.tsb-head h2{font-size:22px;font-weight:800;line-height:1.3;}
+.tsb-head p{color:var(--text-muted);font-size:12.5px;}
+.tsb-head-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.tsb-badge-ev{
+  padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:800;color:#3a2603;
+  background:linear-gradient(135deg,var(--gold),#e0a94a);box-shadow:0 6px 16px -6px rgba(240,200,102,0.5);
+  display:inline-flex;align-items:center;
+}
+.tsb-chip{padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:700;border:1px solid var(--border-soft);background:rgba(255,255,255,0.03);color:var(--text-muted);}
+
+.tsb-stage{
+  position:relative;border-radius:26px;overflow:hidden;
+  background:
+    radial-gradient(520px 300px at 50% 0%, rgba(255,90,53,0.14), transparent 70%),
+    linear-gradient(165deg, rgba(43,17,20,0.6), rgba(23,10,11,0.72));
+  backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);
+  border:1px solid rgba(255,236,230,0.2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 30px 80px -30px rgba(0,0,0,0.8);
+}
+.tsb-stage::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);z-index:6;}
+.tsb-fx-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+
+.tsb-toolbar{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:center;z-index:5;pointer-events:none;}
+.tsb-seg{
+  position:relative;pointer-events:auto;display:inline-flex;padding:4px;border-radius:999px;
+  background:rgba(10,4,5,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,236,230,0.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 30px -12px rgba(0,0,0,0.8);
+}
+.tsb-seg .tsb-pill{
+  position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;z-index:1;
+  background:linear-gradient(135deg,#ff6a45,var(--flame-deep));
+  box-shadow:0 8px 22px -8px rgba(255,90,53,0.85), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition:left .45s cubic-bezier(.3,1.25,.5,1), width .45s cubic-bezier(.3,1.25,.5,1);
+}
+.tsb-seg button{
+  position:relative;z-index:2;border:0;background:transparent;color:var(--text-muted);
+  font:inherit;font-weight:700;font-size:12.5px;padding:7px 15px;border-radius:999px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;transition:color .25s;
+}
+.tsb-seg button:hover{color:var(--text-primary);}
+.tsb-seg button[aria-selected="true"]{color:#2a0f08;}
+.tsb-seg .tsb-cnt{font-size:10.5px;font-weight:800;padding:0 8px;border-radius:999px;background:rgba(255,255,255,0.08);transition:background .25s;}
+.tsb-seg button[aria-selected="true"] .tsb-cnt{background:rgba(42,15,8,0.2);}
+.tsb-seg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+
+.tsb-scroller{position:relative;z-index:2;overflow-x:auto;padding:50px 0 0;direction:ltr;scrollbar-width:thin;}
+.tsb-holder{position:relative;margin:0 auto;transition:width .5s cubic-bezier(.3,1.2,.5,1), height .5s cubic-bezier(.3,1.2,.5,1);}
+.tsb-hint{display:none;text-align:center;font-size:11.5px;color:var(--text-muted);padding:6px 0 0;position:relative;z-index:3;}
+.tsb-hint.tsb-on{display:block;}
+
+.tsb-bracket{position:absolute;left:0;top:0;transform-origin:top left;direction:ltr;transition:opacity .2s ease;}
+.tsb-bracket.tsb-leaving{opacity:0;}
+svg.tsb-lines{position:absolute;inset:0;pointer-events:none;z-index:2;filter:drop-shadow(0 0 5px rgba(255,90,53,0.5));}
+
+.tsb-rays{
+  position:absolute;top:-114px;width:380px;height:380px;z-index:1;pointer-events:none;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,170,110,0.2) 0 6deg, transparent 6deg 17deg);
+  -webkit-mask-image:radial-gradient(circle, #000 0 22%, transparent 68%);
+  mask-image:radial-gradient(circle, #000 0 22%, transparent 68%);
+  animation:tsb-spin 46s linear infinite;
+}
+.tsb-halo{
+  position:absolute;top:-44px;width:240px;height:240px;border-radius:50%;z-index:1;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,150,90,0.38),rgba(255,90,53,0.12) 45%,transparent 70%);
+  animation:tsb-breathe 4s ease-in-out infinite;
+}
+@keyframes tsb-spin{to{transform:rotate(360deg);}}
+@keyframes tsb-breathe{50%{transform:scale(1.12);opacity:0.8;}}
+
+.tsb-round-label{
+  position:absolute;width:136px;text-align:center;font-size:11px;font-weight:700;
+  color:var(--text-muted);letter-spacing:0.2px;z-index:3;direction:rtl;
+  animation:tsb-rise .6s calc(.1s * var(--k,1)) backwards;
+}
+.tsb-round-label::after{content:"";display:block;width:22px;height:2px;margin:4px auto 0;border-radius:2px;background:var(--border-strong);}
+
+.tsb-m{
+  position:absolute;border-radius:13px;direction:rtl;z-index:3;
+  background:linear-gradient(165deg, rgba(56,21,26,0.88), rgba(32,14,17,0.92));
+  border:1px solid var(--border-soft);overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 26px -16px rgba(0,0,0,0.8);
+  display:flex;flex-direction:column;
+  animation:tsb-rise .7s calc(var(--d,0s) * var(--k,1)) backwards;
+  transition:transform .2s,border-color .2s;
+}
+.tsb-m.tsb-oL{animation-name:tsb-slideL;animation-timing-function:cubic-bezier(.2,.8,.2,1);}
+.tsb-m.tsb-oR{animation-name:tsb-slideR;animation-timing-function:cubic-bezier(.2,.8,.2,1);}
+.tsb-m:hover{transform:translateY(-3px);border-color:rgba(255,90,53,0.45);}
+@keyframes tsb-rise{from{opacity:0;transform:translateY(14px) scale(.96);}}
+@keyframes tsb-slideL{from{opacity:0;transform:translateX(150px) scale(.9);}}
+@keyframes tsb-slideR{from{opacity:0;transform:translateX(-150px) scale(.9);}}
+.tsb-m::after{
+  content:"";position:absolute;top:-50%;left:-80%;width:45%;height:220%;
+  background:linear-gradient(75deg,transparent 30%,rgba(255,255,255,0.13) 50%,transparent 70%);
+  transform:rotate(10deg);animation:tsb-shine 9s var(--sd,0s) ease-in-out infinite;pointer-events:none;
+}
+@keyframes tsb-shine{0%{left:-80%;}18%{left:140%;}100%{left:140%;}}
+
+.tsb-t{flex:1;display:flex;align-items:center;gap:5px;padding:0 7px;position:relative;font-size:10px;font-weight:600;transition:opacity .2s,background .2s;}
+.tsb-t + .tsb-t{border-top:1px solid var(--border-soft);}
+.tsb-crest{
+  width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:6.5px;font-weight:800;color:#fff;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+}
+.tsb-t .tsb-name{
+  flex:1;min-width:0;white-space:nowrap;overflow:visible;text-overflow:clip;
+  direction:ltr;text-align:right;font-size:9.5px;line-height:1;letter-spacing:-0.15px;
+}
+.tsb-t .tsb-score{font-weight:800;font-size:12px;min-width:12px;text-align:center;}
+.tsb-t.win{background:linear-gradient(270deg,rgba(255,90,53,0.15),transparent);}
+.tsb-t.win::before{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;background:var(--flame);box-shadow:0 0 10px var(--flame);}
+.tsb-t.win .tsb-score{color:var(--gold);}
+.tsb-t.lose{color:var(--text-muted);}
+.tsb-t.lose .tsb-crest{opacity:0.45;}
+
+.tsb-m.final{
+  overflow:visible;
+  background:linear-gradient(165deg, rgba(74,24,17,0.92), rgba(32,14,17,0.96));
+  border-color:rgba(240,200,102,0.45);
+  box-shadow:0 0 40px -8px rgba(240,200,102,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.tsb-m.final .tsb-crest{width:22px;height:22px;font-size:7.5px;}
+.tsb-m.final .tsb-t{font-size:11px;padding:0 8px;gap:6px;}
+.tsb-m.final .tsb-t .tsb-name{font-size:10.5px;}
+.tsb-tag{
+  position:absolute;top:-19px;left:10px;font-size:9.5px;box-shadow:0 4px 10px -3px rgba(0,0,0,0.6);font-weight:800;color:#2a0f08;
+  background:linear-gradient(135deg,var(--gold),#e0a94a);padding:2px 11px;border-radius:8px;z-index:4;
+}
+
+.tsb-trophy{
+  position:absolute;top:24px;width:112px;height:104px;z-index:3;
+  animation:tsb-rise .9s calc(1.5s * var(--k,1)) backwards, tsb-bob 5s calc(2.4s * var(--k,1)) ease-in-out infinite;
+  filter:drop-shadow(0 8px 20px rgba(255,120,70,0.5));
+}
+@keyframes tsb-bob{50%{transform:translateY(-6px);}}
+.tsb-spark{position:absolute;z-index:3;width:14px;height:14px;animation:tsb-twinkle 2.6s var(--sd,0s) ease-in-out infinite;pointer-events:none;}
+@keyframes tsb-twinkle{0%,100%{opacity:0.15;transform:scale(0.5) rotate(0);}50%{opacity:1;transform:scale(1.15) rotate(45deg);}}
+
+.tsb-champ{
+  position:absolute;top:134px;width:190px;height:46px;z-index:4;direction:rtl;
+  display:flex;align-items:center;gap:10px;padding:0 12px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(165deg, rgba(74,24,17,0.9), rgba(43,17,20,0.92));
+  border:1px solid rgba(240,200,102,0.55);
+  box-shadow:0 0 32px -4px rgba(240,200,102,0.45), inset 0 1px 0 rgba(255,255,255,0.18);
+  animation:tsb-rise .8s calc(1.8s * var(--k,1)) backwards;
+}
+.tsb-champ::after{
+  content:"";position:absolute;top:-50%;left:-80%;width:45%;height:220%;
+  background:linear-gradient(75deg,transparent 30%,rgba(255,255,255,0.28) 50%,transparent 70%);
+  transform:rotate(10deg);animation:tsb-shine 5s 2.4s ease-in-out infinite;pointer-events:none;
+}
+.tsb-champ .tsb-crest{width:32px;height:32px;font-size:10px;}
+.tsb-champ .tsb-txt{display:flex;flex-direction:column;line-height:1.3;}
+.tsb-champ .tsb-k{font-size:9.5px;color:var(--gold);font-weight:700;letter-spacing:0.4px;}
+.tsb-champ .tsb-v{font-size:14px;font-weight:900;direction:ltr;text-align:right;white-space:nowrap;}
+.tsb-pulse{position:absolute;top:134px;width:190px;height:46px;border-radius:16px;z-index:3;pointer-events:none;border:2px solid rgba(240,200,102,0.5);animation:tsb-ring 2.8s calc(2.4s * var(--k,1)) ease-out infinite;}
+@keyframes tsb-ring{0%{transform:scale(1);opacity:0.7;}100%{transform:scale(1.35,1.7);opacity:0;}}
+
+.tsb-final-meta{position:absolute;width:260px;text-align:center;z-index:3;direction:rtl;animation:tsb-rise .7s calc(1.5s * var(--k,1)) backwards;}
+.tsb-final-meta .tsb-a{font-size:11.5px;color:var(--text-secondary);font-weight:600;}
+
+.tsb-adv{fill:none;stroke:var(--flame);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:tsb-draw .8s calc(var(--d,0s) * var(--k,1)) backwards;transition:stroke .2s,opacity .2s,stroke-width .2s;}
+@keyframes tsb-draw{from{stroke-dasharray:1;stroke-dashoffset:1;}to{stroke-dasharray:1;stroke-dashoffset:0;}}
+.tsb-champ-line{fill:none;stroke:url(#tsb-gl);stroke-width:3;stroke-linecap:round;animation:tsb-draw .9s calc(1.5s * var(--k,1)) backwards;}
+.tsb-champ-flow{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-dasharray:3 12;opacity:0.85;animation:tsb-flow 1s linear infinite;}
+@keyframes tsb-flow{to{stroke-dashoffset:-30;}}
+
+.tsb-stage.tsb-hovering .tsb-t:not(.tsb-hl),.tsb-stage.tsb-hovering .tsb-champ:not(.tsb-hl){opacity:0.35;}
+.tsb-stage.tsb-hovering .tsb-adv:not(.tsb-hl){opacity:0.12;}
+.tsb-stage.tsb-hovering .tsb-adv.tsb-hl{stroke:var(--gold);stroke-width:3;}
+.tsb-t.tsb-hl{background:linear-gradient(270deg,rgba(240,200,102,0.18),transparent);}
+
+.tsb-legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;padding:6px 20px 16px;font-size:11.5px;color:var(--text-muted);position:relative;z-index:3;}
+.tsb-legend span{display:flex;align-items:center;gap:6px;}
+.tsb-legend i{width:16px;height:3px;border-radius:2px;display:inline-block;}
+.tsb-lg-adv{background:var(--flame);}
+.tsb-lg-hl{background:var(--gold);}
+.tsb-lg-champ{background:linear-gradient(90deg,var(--flame),var(--gold));}
+
+/* FIFA Tournament Modal */
+.fifa-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 4, 5, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.fifa-modal-backdrop.open {
+  display: flex;
+}
+.fifa-modal-box {
+  background: linear-gradient(165deg, rgba(38, 15, 18, 0.96), rgba(18, 7, 8, 0.98));
+  border: 1px solid rgba(255, 236, 230, 0.22);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 1120px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px 32px;
+  box-shadow: 0 30px 90px -20px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+  animation: tsb-rise .35s ease-out;
+}
+.fifa-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.fifa-modal-title-wrap h2 {
+  margin: 10px 0 4px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.fifa-modal-title-wrap p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.fifa-badge-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.fifa-modal-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+.fifa-modal-close:hover {
+  background: rgba(255, 90, 53, 0.2);
+  color: var(--flame);
+  border-color: rgba(255, 90, 53, 0.4);
+}
 footer{margin-top:60px;padding:28px 0 40px;text-align:center;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border-soft);}
 </style>
 </head>
@@ -302,8 +590,43 @@ footer{margin-top:60px;padding:28px 0 40px;text-align:center;color:var(--text-mu
     </div>
   </div>
 
-  <section>
-    <div class="section-head"><div class="head-left"><div class="accent-bar"></div><div><h2>مسابقات پیش رو</h2><p>ثبت‌نام کن و منتظر شروع نبرد بمون</p></div></div></div>
+  <!-- ==================== UPCOMING TOURNAMENTS SECTION ==================== -->
+  <section id="upcoming-matches-section">
+    <div class="section-head">
+      <div class="head-left">
+        <div class="accent-bar"></div>
+        <div>
+          <h2>مسابقات پیش رو</h2>
+          <p>ثبت‌نام کن و منتظر شروع نبرد بمون</p>
+        </div>
+      </div>
+      <div class="game-filter-pills">
+        <button type="button" class="game-pill active">همه مسابقات</button>
+      </div>
+    </div>
+
+    <!-- NEW TOURNAMENT CARD: مسابقات فیفا -->
+    <div class="match-card m-fifa" style="border: 1px solid rgba(240,200,102,0.4); background: linear-gradient(135deg, rgba(74,24,17,0.7), rgba(43,17,20,0.85)); box-shadow: 0 0 24px -6px rgba(240,200,102,0.25);">
+      <span class="match-status" style="background:rgba(240,200,102,0.18);color:var(--gold);border:1px solid rgba(240,200,102,0.4);">⚽ در جریان (Live)</span>
+      <div class="match-side">
+        <div class="crest" style="background:linear-gradient(140deg,var(--flame),var(--flame-deep));font-weight:900;">FIFA</div>
+        <div>
+          <div class="team-name" style="font-size:16px;color:var(--gold);">مسابقات فیفا (FIFA 24)</div>
+          <div class="team-tag">جام ویژه حذفی ۱۶ تیم برتر · ۱۵ مسابقه زنده</div>
+        </div>
+      </div>
+      <div class="match-center">
+        <span class="vs-badge" style="color:var(--gold);">حذفی</span>
+        <svg class="vs-bolt" viewBox="0 0 24 24" fill="#f0c866"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+        <div class="match-time" style="color:#fff;font-weight:700;">مرحله نهایی</div>
+      </div>
+      <div class="match-side right" style="display:flex;justify-content:flex-end;">
+        <button type="button" id="btn-open-fifa-tour" class="btn-primary" style="padding:10px 20px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <span>ورود به مسابقه فیفا و جدول حذفی</span>
+          <span>←</span>
+        </button>
+      </div>
+    </div>
 
     <div class="match-card m1">
       <span class="match-status">ثبت‌نام باز است</span>
@@ -328,6 +651,94 @@ footer{margin-top:60px;padding:28px 0 40px;text-align:center;color:var(--text-mu
     </div>
   </section>
 
+  <!-- ==================== FIFA TOURNAMENT DETAIL VIEW & BRACKET ==================== -->
+  <div class="fifa-modal-backdrop" id="fifaModal" role="dialog" aria-modal="true" aria-label="صفحه مسابقه فیفا">
+    <div class="fifa-modal-box">
+      <div class="fifa-modal-head">
+        <div class="fifa-modal-title-wrap">
+          <div class="fifa-badge-row">
+            <span class="tsb-badge-ev">⚽ مسابقات فیفا ۲۴ (FIFA)</span>
+            <span class="tsb-chip" style="background:rgba(255,90,53,0.18);color:var(--flame);border-color:rgba(255,90,53,0.4);">● در جریان (Live)</span>
+            <span class="tsb-chip">تیمی حذفی — ۱۶ تیم</span>
+          </div>
+          <h2>مسابقات رسمی جام ویژه فیفا ۲۴</h2>
+          <p>۱۶ تیم برتر لیگ تایتان در رقابت حذفی مستقیم برای قهرمانی فصل</p>
+        </div>
+        <button type="button" class="fifa-modal-close" id="btn-close-fifa-modal" aria-label="بستن">✕</button>
+      </div>
+
+      <!-- Top Row: Match Info (Tabs) & Registration Box -->
+      <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:20px;margin-top:20px;align-items:start;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-soft);border-radius:20px;padding:22px;">
+          <div class="tabs" id="fifaTourTabs" style="margin-bottom:16px;">
+            <div class="tab active" data-ftab="overview">اطلاعات مسابقه</div>
+            <div class="tab" data-ftab="teams">تیم‌های حاضر (۱۶ تیم)</div>
+            <div class="tab" data-ftab="rules">قوانین مسابقه</div>
+          </div>
+
+          <div class="fifa-tab-pane" id="pane-fifa-overview">
+            <h3 style="color:#fff;margin:0 0 10px;font-size:17px;">درباره مسابقات فیفا ۲۴</h3>
+            <p style="color:var(--text-secondary);font-size:13.5px;line-height:1.8;margin:0 0 14px;">
+              ۱۶ تیم برتر لیگ تایتان در رقابت حذفی مستقیم (Knockout) به مصاف یکدیگر رفته‌اند. برنده هر مسابقه مستقیماً به مرحله بعد صعود کرده و قهرمان جام در فینال مشخص می‌شود.
+            </p>
+            <div style="display:flex;gap:12px;font-size:12.5px;color:var(--text-muted);flex-wrap:wrap;">
+              <span>⏱ مدت هر بازی: ۱۲ دقیقه</span>
+              <span>🏆 فرمت: تک‌حذفی Best of 1</span>
+              <span>⚡ سرور: خاورمیانه</span>
+            </div>
+          </div>
+
+          <div class="fifa-tab-pane" id="pane-fifa-teams" style="display:none;">
+            <div class="lb">
+              <div class="lb-row r1"><div class="lb-rank">۱</div><div class="lb-avatar" style="background:linear-gradient(140deg,#a97bd6,#5a2b6e)"></div><div class="lb-name">Shadow Wolves</div><div class="lb-points">سید ۱ · قهرمان</div></div>
+              <div class="lb-row r2"><div class="lb-rank">۲</div><div class="lb-avatar" style="background:linear-gradient(140deg,#ff5a35,#c23a1d)"></div><div class="lb-name">Red Titans</div><div class="lb-points">سید ۲ · نایب‌قهرمان</div></div>
+              <div class="lb-row r3"><div class="lb-rank">۳</div><div class="lb-avatar" style="background:linear-gradient(140deg,#7fd6ff,#1c6f99)"></div><div class="lb-name">Arctic Wolves</div><div class="lb-points">سید ۳ · نیمه‌نهایی</div></div>
+              <div class="lb-row"><div class="lb-rank">۴</div><div class="lb-avatar" style="background:linear-gradient(140deg,#ff5a35,#7a1f16)"></div><div class="lb-name">Crimson Fangs</div><div class="lb-points">سید ۴ · صعود به یک‌چهارم</div></div>
+              <div class="lb-row"><div class="lb-rank">۵</div><div class="lb-avatar" style="background:linear-gradient(140deg,#9aa0ac,#3a3e48)"></div><div class="lb-name">Ghost Unit</div><div class="lb-points">سید ۵ · صعود به یک‌چهارم</div></div>
+              <div class="lb-row"><div class="lb-rank">۶</div><div class="lb-avatar" style="background:linear-gradient(140deg,#4ad0a0,#1a6b52)"></div><div class="lb-name">Neon Vipers</div><div class="lb-points">سید ۶ · صعود به یک‌چهارم</div></div>
+              <div class="lb-row"><div class="lb-rank">۷</div><div class="lb-avatar" style="background:linear-gradient(140deg,#6b7080,#22252c)"></div><div class="lb-name">Night Phantoms</div><div class="lb-points">سید ۷ · صعود به یک‌چهارم</div></div>
+              <div class="lb-row"><div class="lb-rank">۸</div><div class="lb-avatar" style="background:linear-gradient(140deg,#5fd07a,#1a6b3a)"></div><div class="lb-name">Cyber Lions</div><div class="lb-points">سید ۸ · صعود به یک‌چهارم</div></div>
+            </div>
+          </div>
+
+          <div class="fifa-tab-pane" id="pane-fifa-rules" style="display:none;padding:8px 0;line-height:2.1;color:var(--text-secondary);font-size:13.5px;">
+            <ul style="padding-right:20px;margin:0;">
+              <li>تمام بازی‌ها به صورت تک‌حذفی (Knockout) برگزار می‌گردد.</li>
+              <li>مدت زمان هر مسابقه: دو نیمه ۶ دقیقه‌ای (Overall: 12 دقیقه).</li>
+              <li>در صورت تساوی در ۹۰ دقیقه، بازی در وقت اضافه و پنالتی دنبال می‌شود.</li>
+              <li>استفاده از تمام تیم‌های رسمی مجاز است.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Registration Box -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-soft);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;">
+          <h4 style="color:#fff;margin:0;font-size:16px;">ثبت‌نام در مسابقه فیفا</h4>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12.5px;color:var(--text-muted);">وضعیت</span>
+            <span style="font-size:12.5px;color:var(--gold);font-weight:700;">در حال برگزاری</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12.5px;color:var(--text-muted);">ظرفیت</span>
+            <strong style="color:#fff;font-size:13.5px;">۱۶ / ۱۶ تیم (تکمیل)</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12.5px;color:var(--text-muted);">هزینه ورودی</span>
+            <strong style="color:var(--gold);font-size:13.5px;">رایگان (جام ویژه)</strong>
+          </div>
+          <button type="button" class="btn-primary" style="width:100%;padding:12px;font-weight:700;font-size:13.5px;margin-top:6px;opacity:0.8;cursor:default;">
+            ثبت‌نام تکمیل شده است
+          </button>
+        </div>
+      </div>
+
+      <!-- FULL-WIDTH BRACKET: Always at the bottom below info & registration -->
+      <div style="margin-top:28px;width:100%;">
+        <div id="fifa-bracket-mount"></div>
+      </div>
+    </div>
+  </div>
+
   <section>
     <div class="section-head"><div class="head-left"><div class="accent-bar"></div><h2>چطور ثبت‌نام کنم؟</h2></div></div>
     <div class="steps">
@@ -350,22 +761,695 @@ footer{margin-top:60px;padding:28px 0 40px;text-align:center;color:var(--text-mu
     </div>
   </section>
 
-  <section>
-    <div class="section-head"><div class="head-left"><div class="accent-bar"></div><h2>جدول رتبه‌بندی</h2></div></div>
-    <div class="tabs">
-      <div class="tab active">بهترین تیم‌ها</div>
-      <div class="tab">بهترین بازیکنان</div>
+  <!-- ==================== LEADERBOARD SECTION ==================== -->
+  <section id="leaderboard-section">
+    <div class="section-head">
+      <div class="head-left">
+        <div class="accent-bar"></div>
+        <div>
+          <h2>جدول رتبه‌بندی و بهترین‌ها</h2>
+          <p>مشاهده برترین تیم‌ها و رنکینگ بازیکنان برتر مسابقات</p>
+        </div>
+      </div>
+      <div class="game-filter-pills" id="gamePills">
+        <button type="button" class="game-pill active" data-game="fifa">⚽ فیفا ۲۴ (FIFA)</button>
+        <button type="button" class="game-pill" data-game="valorant">🎯 ولورانت</button>
+        <button type="button" class="game-pill" data-game="all">🌐 همه بازی‌ها</button>
+      </div>
     </div>
-    <div class="lb">
-      <div class="lb-row r1"><div class="lb-rank">۱</div><div class="lb-avatar"></div><div class="lb-name">Shadow Wolves</div><div class="lb-points">9,240</div><div class="lb-wins">۴۲ برد</div></div>
-      <div class="lb-row r2"><div class="lb-rank">۲</div><div class="lb-avatar"></div><div class="lb-name">Crimson Fangs</div><div class="lb-points">8,910</div><div class="lb-wins">۳۹ برد</div></div>
-      <div class="lb-row r3"><div class="lb-rank">۳</div><div class="lb-avatar"></div><div class="lb-name">Night Phantoms</div><div class="lb-points">8,470</div><div class="lb-wins">۳۵ برد</div></div>
-      <div class="lb-row"><div class="lb-rank">۴</div><div class="lb-avatar"></div><div class="lb-name">Iron Falcons</div><div class="lb-points">7,930</div><div class="lb-wins">۳۱ برد</div></div>
+
+    <!-- Leaderboard Sub Tabs -->
+    <div class="tabs" id="lbTabs">
+      <div class="tab active" data-tab="teams">بهترین تیم‌های فیفا</div>
+      <div class="tab" data-tab="players">بهترین بازیکنان فیفا</div>
+    </div>
+
+    <!-- Tab Pane 1: FIFA Top Teams -->
+    <div class="lb-pane active" id="pane-teams">
+      <div class="lb">
+        <div class="lb-row r1"><div class="lb-rank">۱</div><div class="lb-avatar" style="background:linear-gradient(140deg,#a97bd6,#5a2b6e)"></div><div class="lb-name">Shadow Wolves (قهرمان جام حذفی فیفا)</div><div class="lb-points">9,240 امتیاز</div><div class="lb-wins">۴۲ برد</div></div>
+        <div class="lb-row r2"><div class="lb-rank">۲</div><div class="lb-avatar" style="background:linear-gradient(140deg,#ff5a35,#c23a1d)"></div><div class="lb-name">Red Titans (نایب‌قهرمان)</div><div class="lb-points">8,980 امتیاز</div><div class="lb-wins">۳۹ برد</div></div>
+        <div class="lb-row r3"><div class="lb-rank">۳</div><div class="lb-avatar" style="background:linear-gradient(140deg,#7fd6ff,#1c6f99)"></div><div class="lb-name">Arctic Wolves (نیمه‌نهایی)</div><div class="lb-points">8,520 امتیاز</div><div class="lb-wins">۳۶ برد</div></div>
+        <div class="lb-row"><div class="lb-rank">۴</div><div class="lb-avatar" style="background:linear-gradient(140deg,#ff5a35,#7a1f16)"></div><div class="lb-name">Crimson Fangs</div><div class="lb-points">8,100 امتیاز</div><div class="lb-wins">۳۳ برد</div></div>
+        <div class="lb-row"><div class="lb-rank">۵</div><div class="lb-avatar" style="background:linear-gradient(140deg,#9aa0ac,#3a3e48)"></div><div class="lb-name">Ghost Unit</div><div class="lb-points">7,850 امتیاز</div><div class="lb-wins">۳۰ برد</div></div>
+        <div class="lb-row"><div class="lb-rank">۶</div><div class="lb-avatar" style="background:linear-gradient(140deg,#4ad0a0,#1a6b52)"></div><div class="lb-name">Neon Vipers</div><div class="lb-points">7,420 امتیاز</div><div class="lb-wins">۲۸ برد</div></div>
+      </div>
+    </div>
+
+    <!-- Tab Pane 2: FIFA Top Players -->
+    <div class="lb-pane" id="pane-players">
+      <div class="lb">
+        <div class="lb-row r1"><div class="lb-rank">۱</div><div class="lb-avatar" style="background:linear-gradient(140deg,#f0c866,#c23a1d)"></div><div class="lb-name">آریا «WolfKing» — Shadow Wolves</div><div class="lb-points">2,950 امتیاز</div><div class="lb-wins">۲۴ برد</div></div>
+        <div class="lb-row r2"><div class="lb-rank">۲</div><div class="lb-avatar" style="background:linear-gradient(140deg,#cfd3da,#5c6270)"></div><div class="lb-name">سهراب «TitanStriker» — Red Titans</div><div class="lb-points">2,810 امتیاز</div><div class="lb-wins">۲۱ برد</div></div>
+        <div class="lb-row r3"><div class="lb-rank">۳</div><div class="lb-avatar" style="background:linear-gradient(140deg,#d69a63,#7a4b28)"></div><div class="lb-name">نوید «FrostBite» — Arctic Wolves</div><div class="lb-points">2,640 امتیاز</div><div class="lb-wins">۱۹ برد</div></div>
+        <div class="lb-row"><div class="lb-rank">۴</div><div class="lb-avatar" style="background:linear-gradient(140deg,#c96a4a,#7a2f2f)"></div><div class="lb-name">کیان «GhostRider» — Ghost Unit</div><div class="lb-points">2,490 امتیاز</div><div class="lb-wins">۱۷ برد</div></div>
+      </div>
     </div>
   </section>
 
   <footer>© تایتان — پلتفرم گیمینگ و اسپورت</footer>
 </div>
+
+<!-- ==================== BRACKET COMPONENT & TAB CONTROLLER ==================== -->
+<script>
+/**
+ * TITAN SPECIAL EVENT KNOCKOUT BRACKET COMPONENT
+ * Self-contained, embeddable component driven by a single config object.
+ */
+var TitanSpecialBracket = (function () {
+  'use strict';
+
+  var CW = 136, CH = 58, FW = 160, FH = 64;
+
+  function toFa(n) {
+    return String(n).replace(/[0-9]/g, function (d) {
+      return '۰۱۲۳۴۵۶۷۸۹'[d];
+    });
+  }
+
+  function getGradientStyle(teamsMap, code) {
+    if (!teamsMap[code]) return 'background: #555;';
+    return 'background:linear-gradient(140deg,' + teamsMap[code][1] + ',' + teamsMap[code][2] + ')';
+  }
+
+  function getWinner(match) {
+    return match[1] > match[3] ? match[0] : match[2];
+  }
+
+  function geom(m) {
+    if (m === 'r16') {
+      return {
+        W: 1072, H: 496, CX: 536, YF: 300,
+        X: { l0: 0, l1: 152, l2: 304, f: 456, r2: 632, r1: 784, r0: 936 },
+        Y16: [150, 250, 350, 450],
+        YQF: [200, 400],
+        labels: [
+          [0, 'یک‌هشتم نهایی', 87],
+          [152, 'یک‌چهارم نهایی', 137],
+          [304, 'نیمه‌نهایی', 237],
+          [632, 'نیمه‌نهایی', 237],
+          [784, 'یک‌چهارم نهایی', 137],
+          [936, 'یک‌هشتم نهایی', 87]
+        ]
+      };
+    }
+    return {
+      W: 768, H: 396, CX: 384, YF: 276,
+      X: { l1: 0, l2: 152, f: 304, r2: 480, r1: 632 },
+      YQF: [206, 346],
+      labels: [
+        [0, 'یک‌چهارم نهایی', 143],
+        [152, 'نیمه‌نهایی', 213],
+        [480, 'نیمه‌نهایی', 213],
+        [632, 'یک‌چهارم نهایی', 143]
+      ]
+    };
+  }
+
+  function renderTeamRow(teamsMap, code, score, isWin) {
+    var teamData = teamsMap[code] || [code, '#888', '#333'];
+    return '<div class="tsb-t ' + (isWin ? 'win' : 'lose') + '" data-t="' + code + '">' +
+      '<span class="tsb-crest" style="' + getGradientStyle(teamsMap, code) + '">' + code + '</span>' +
+      '<span class="tsb-name">' + teamData[0] + '</span>' +
+      '<span class="tsb-score">' + toFa(score) + '</span></div>';
+  }
+
+  function renderMatchCard(teamsMap, match, x, yc, w, h, delay, cls, tag) {
+    var wn = getWinner(match);
+    return '<div class="tsb-m ' + (cls || '') + '" style="left:' + x + 'px;top:' + (yc - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;--d:' + delay.toFixed(2) + 's;--sd:' + (delay * 2 + 1).toFixed(2) + 's">' +
+      (tag ? '<span class="tsb-tag">' + tag + '</span>' : '') +
+      renderTeamRow(teamsMap, match[0], match[1], wn === match[0]) +
+      renderTeamRow(teamsMap, match[2], match[3], wn === match[2]) +
+      '</div>';
+  }
+
+  function renderSparkle(x, y, d) {
+    return '<svg class="tsb-spark" style="left:' + x + 'px;top:' + y + 'px;--sd:' + d + 's" viewBox="0 0 24 24" fill="#fff"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>';
+  }
+
+  function buildBracketMarkup(config, m, champCode) {
+    var g = geom(m), X = g.X, html = '', lines = '';
+    var off = (m === 'r16') ? 0 : 0.4;
+    var teams = config.teams;
+
+    function link(x1, y1, x2, y2, code, delay) {
+      var xm = (x1 + x2) / 2;
+      lines += '<path class="tsb-adv" pathLength="1" data-t="' + code + '" style="--d:' + delay.toFixed(2) + 's" d="M' + x1 + ' ' + y1 + ' H' + xm + ' V' + y2 + ' H' + x2 + '"/>';
+    }
+
+    g.labels.forEach(function (l) {
+      html += '<div class="tsb-round-label" style="left:' + l[0] + 'px;top:' + l[2] + 'px">' + l[1] + '</div>';
+    });
+
+    if (m === 'r16' && config.r16L && config.r16R) {
+      config.r16L.forEach(function (mm, i) {
+        html += renderMatchCard(teams, mm, X.l0, g.Y16[i], CW, CH, 0.1 + i * 0.06, 'tsb-oL');
+        link(X.l0 + CW, g.Y16[i], X.l1, g.YQF[Math.floor(i / 2)], getWinner(mm), 0.55);
+      });
+      config.r16R.forEach(function (mm, i) {
+        html += renderMatchCard(teams, mm, X.r0, g.Y16[i], CW, CH, 0.1 + i * 0.06, 'tsb-oR');
+        link(X.r0, g.Y16[i], X.r1 + CW, g.YQF[Math.floor(i / 2)], getWinner(mm), 0.55);
+      });
+    }
+
+    config.qfL.forEach(function (mm, i) {
+      html += renderMatchCard(teams, mm, X.l1, g.YQF[i], CW, CH, 0.5 + i * 0.06 - off);
+      link(X.l1 + CW, g.YQF[i], X.l2, g.YF, getWinner(mm), 0.95 - off);
+    });
+    config.qfR.forEach(function (mm, i) {
+      html += renderMatchCard(teams, mm, X.r1, g.YQF[i], CW, CH, 0.5 + i * 0.06 - off);
+      link(X.r1, g.YQF[i], X.r2 + CW, g.YF, getWinner(mm), 0.95 - off);
+    });
+
+    config.sfL.forEach(function (mm) {
+      html += renderMatchCard(teams, mm, X.l2, g.YF, CW, CH, 0.9 - off);
+      link(X.l2 + CW, g.YF, X.f, g.YF, getWinner(mm), 1.3 - off);
+    });
+    config.sfR.forEach(function (mm) {
+      html += renderMatchCard(teams, mm, X.r2, g.YF, CW, CH, 0.9 - off);
+      link(X.r2, g.YF, X.f + FW, g.YF, getWinner(mm), 1.3 - off);
+    });
+
+    html += renderMatchCard(teams, config.final, X.f, g.YF, FW, FH, 1.3 - off, 'final', 'فینال');
+
+    var CX = g.CX, finalTop = g.YF - FH / 2, plateBottom = 180;
+    var cl = 'M' + CX + ' ' + finalTop + ' V' + (plateBottom + 2);
+
+    var svg =
+      '<svg class="tsb-lines" width="' + g.W + '" height="' + g.H + '" viewBox="0 0 ' + g.W + ' ' + g.H + '" fill="none">' +
+        '<defs><linearGradient id="tsb-gl" gradientUnits="userSpaceOnUse" x1="0" y1="' + finalTop + '" x2="0" y2="' + plateBottom + '">' +
+          '<stop offset="0" stop-color="#ff5a35"/><stop offset="1" stop-color="#f0c866"/></linearGradient></defs>' +
+        lines +
+        '<path class="tsb-champ-line" pathLength="1" data-t="' + champCode + '" d="' + cl + '"/>' +
+        '<path class="tsb-champ-flow" d="' + cl + '"/>' +
+        '<circle r="4" fill="#ffffff"><animateMotion dur="2.2s" repeatCount="indefinite" path="' + cl + '"/></circle>' +
+      '</svg>';
+
+    /* SILVER TROPHY with Red Base */
+    var trophy =
+      '<svg class="tsb-trophy" style="left:' + (CX - 56) + 'px" viewBox="0 0 140 130" fill="none">' +
+        '<defs>' +
+          '<linearGradient id="tsb-cup" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="#ffffff"/>' +
+            '<stop offset="0.5" stop-color="#c9ced6"/>' +
+            '<stop offset="1" stop-color="#7d8492"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="tsb-redbase" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="#ff6b48"/>' +
+            '<stop offset="1" stop-color="#c23a1d"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<path d="M40 14h60v34c0 20-13 34-30 34S40 68 40 48z" fill="url(#tsb-cup)"/>' +
+        '<path d="M40 24H22c0 22 8 34 22 36M100 24h18c0 22-8 34-22 36" stroke="url(#tsb-cup)" stroke-width="7" stroke-linecap="round"/>' +
+        '<rect x="63" y="80" width="14" height="18" fill="url(#tsb-cup)"/>' +
+        '<rect x="46" y="98" width="48" height="12" rx="4" fill="url(#tsb-cup)"/>' +
+        '<rect x="38" y="110" width="64" height="10" rx="4" fill="url(#tsb-redbase)"/>' +
+        '<path d="M52 22c-2 14 0 28 10 38" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round"/>' +
+      '</svg>';
+
+    var champPlate =
+      '<div class="tsb-pulse" style="left:' + (CX - 95) + 'px"></div>' +
+      '<div class="tsb-champ" style="left:' + (CX - 95) + 'px" data-t="' + champCode + '">' +
+        '<span class="tsb-crest" style="' + getGradientStyle(teams, champCode) + '">' + champCode + '</span>' +
+        '<span class="tsb-txt"><span class="tsb-k">قهرمان تورنمنت</span><span class="tsb-v">' + teams[champCode][0] + '</span></span>' +
+      '</div>';
+
+    var finalMeta =
+      '<div class="tsb-final-meta" style="left:' + (CX - 130) + 'px;top:' + (g.YF + FH / 2 + 10) + 'px">' +
+        '<div class="tsb-a">فینال · ' + config.finalWhen + ' · نتیجه ' + toFa(config.final[1]) + ' – ' + toFa(config.final[3]) + '</div>' +
+      '</div>';
+
+    var raysAndHalo = '<div class="tsb-rays" style="left:' + (CX - 190) + 'px"></div><div class="tsb-halo" style="left:' + (CX - 120) + 'px"></div>';
+
+    var sparkles =
+      renderSparkle(CX - 80, 38, 0) +
+      renderSparkle(CX + 80, 54, 0.9) +
+      renderSparkle(CX - 62, 112, 1.6) +
+      renderSparkle(CX + 66, 110, 0.4) +
+      renderSparkle(CX + 6, 4, 1.3);
+
+    html = raysAndHalo + svg + html + trophy + sparkles + champPlate + finalMeta;
+
+    return { html: html, g: g };
+  }
+
+  function mount(container, config) {
+    if (!container) return;
+
+    if (!config || config.active === false) {
+      container.innerHTML = '';
+      container.style.display = 'none';
+      return null;
+    }
+
+    container.style.display = 'block';
+
+    var teams = config.teams || {};
+    var champCode = getWinner(config.final);
+    var mode = 'qf'; // Default: Quarter-finals (8 teams)
+    var currentW = 0, currentH = 0;
+    var swapTimer = null;
+    var particleAnimId = null;
+    var ro = null;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var sectionHtml =
+      '<section class="tsb-section" aria-label="' + config.title + '">' +
+        '<div class="tsb-head">' +
+          '<div class="tsb-head-left">' +
+            '<div class="tsb-accent-bar"></div>' +
+            '<div>' +
+              '<h2>' + config.title + '</h2>' +
+              '<p>' + config.sub + '</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tsb-head-right">' +
+            '<span class="tsb-badge-ev">' + config.badge + '</span>' +
+            '<span class="tsb-chip">' + config.status + '</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="tsb-stage" id="tsbStage">' +
+          '<canvas class="tsb-fx-canvas" id="tsbFx"></canvas>' +
+
+          '<div class="tsb-toolbar">' +
+            '<div class="tsb-seg" id="tsbSeg" role="tablist" aria-label="نمای جدول مسابقات">' +
+              '<span class="tsb-pill" id="tsbPill"></span>' +
+              '<button type="button" role="tab" data-mode="qf" aria-selected="true" tabindex="0">' +
+                'یک‌چهارم تا فینال <span class="tsb-cnt">۸ تیم</span>' +
+              '</button>' +
+              '<button type="button" role="tab" data-mode="r16" aria-selected="false" tabindex="-1">' +
+                'یک‌هشتم تا فینال <span class="tsb-cnt">۱۶ تیم</span>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="tsb-scroller" id="tsbScroller">' +
+            '<div class="tsb-holder" id="tsbHolder">' +
+              '<div class="tsb-bracket" id="tsbBracket" role="group" aria-label="جدول مسابقات حذفی"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tsb-hint" id="tsbHint">برای دیدن کل جدول به چپ و راست بکشید ↔</div>' +
+
+          '<div class="tsb-legend">' +
+            '<span><i class="tsb-lg-adv"></i> تیم صعودکرده</span>' +
+            '<span><i class="tsb-lg-hl"></i> مسیر تیم (نشانگر روی نام تیم)</span>' +
+            '<span><i class="tsb-lg-champ"></i> مسیر قهرمان مسابقات</span>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+
+    container.innerHTML = sectionHtml;
+
+    var stage = container.querySelector('#tsbStage');
+    var bracket = container.querySelector('#tsbBracket');
+    var scroller = container.querySelector('#tsbScroller');
+    var holder = container.querySelector('#tsbHolder');
+    var hint = container.querySelector('#tsbHint');
+    var seg = container.querySelector('#tsbSeg');
+    var pill = container.querySelector('#tsbPill');
+    var tabs = Array.prototype.slice.call(seg.querySelectorAll('button'));
+
+    function fit() {
+      if (!scroller || !bracket || !holder) return;
+      var avail = scroller.clientWidth;
+      var s = Math.max(avail < 640 ? 0.82 : 0.5, Math.min(1, avail / currentW));
+      bracket.style.transform = 'scale(' + s + ')';
+      holder.style.width = (currentW * s) + 'px';
+      holder.style.height = (currentH * s) + 'px';
+      var isOverflowing = (currentW * s) > (avail + 2);
+      if (hint) {
+        if (isOverflowing) hint.classList.add('tsb-on');
+        else hint.classList.remove('tsb-on');
+      }
+      if (isOverflowing) {
+        scroller.scrollLeft = (currentW * s - avail) / 2;
+      }
+    }
+
+    function render(m, k) {
+      var b = buildBracketMarkup(config, m, champCode);
+      currentW = b.g.W;
+      currentH = b.g.H;
+      bracket.style.width = currentW + 'px';
+      bracket.style.height = currentH + 'px';
+      bracket.style.setProperty('--k', k);
+      bracket.innerHTML = b.html;
+      stage.setAttribute('data-mode', m);
+      fit();
+    }
+
+    function movePill() {
+      var selectedTab = seg.querySelector('[aria-selected="true"]');
+      if (selectedTab && pill) {
+        pill.style.left = selectedTab.offsetLeft + 'px';
+        pill.style.width = selectedTab.offsetWidth + 'px';
+      }
+    }
+
+    function clearHL() {
+      stage.classList.remove('tsb-hovering');
+      bracket.querySelectorAll('.tsb-hl').forEach(function (el) {
+        el.classList.remove('tsb-hl');
+      });
+    }
+
+    function setHL(code) {
+      stage.classList.add('tsb-hovering');
+      bracket.querySelectorAll('[data-t="' + code + '"]').forEach(function (el) {
+        el.classList.add('tsb-hl');
+      });
+    }
+
+    function setMode(m) {
+      if (m === mode) return;
+      mode = m;
+      tabs.forEach(function (t) {
+        var on = t.getAttribute('data-mode') === m;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.setAttribute('tabindex', on ? '0' : '-1');
+      });
+      movePill();
+      clearHL();
+      if (swapTimer) clearTimeout(swapTimer);
+      if (reduceMotion) {
+        render(m, 0);
+        return;
+      }
+      bracket.classList.add('tsb-leaving');
+      swapTimer = setTimeout(function () {
+        render(m, 0.5);
+        bracket.classList.remove('tsb-leaving');
+      }, 210);
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        setMode(t.getAttribute('data-mode'));
+      });
+    });
+
+    seg.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        var nextMode = mode === 'qf' ? 'r16' : 'qf';
+        setMode(nextMode);
+        var targetBtn = seg.querySelector('[data-mode="' + nextMode + '"]');
+        if (targetBtn) targetBtn.focus();
+      }
+    });
+
+    bracket.addEventListener('mouseover', function (e) {
+      var el = e.target.closest ? e.target.closest('[data-t]') : null;
+      if (el && el.tagName.toLowerCase() !== 'path') {
+        clearHL();
+        setHL(el.getAttribute('data-t'));
+      }
+    });
+    bracket.addEventListener('mouseleave', clearHL);
+
+    var onResize = function () {
+      fit();
+      movePill();
+    };
+    window.addEventListener('resize', onResize);
+
+    render(mode, 0.8);
+    movePill();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(movePill);
+    }
+
+    if (!reduceMotion) {
+      var cv = stage.querySelector('#tsbFx');
+      if (cv) {
+        var ctx = cv.getContext('2d');
+        var SW_ = 1, SH_ = 1;
+
+        function sizeCv() {
+          SW_ = stage.clientWidth;
+          SH_ = stage.clientHeight;
+          cv.width = SW_;
+          cv.height = SH_;
+        }
+        sizeCv();
+
+        if (window.ResizeObserver) {
+          ro = new ResizeObserver(sizeCv);
+          ro.observe(stage);
+        }
+
+        var colors = ['#ff5a35', '#f0c866', '#a97bd6', '#ffffff', '#ff9a6a'];
+        var particles = [];
+
+        function createParticle(type, isInitial) {
+          if (type === 'c') {
+            return {
+              t: 'c',
+              x: Math.random() * SW_,
+              y: isInitial ? Math.random() * SH_ : -12,
+              w: 5 + Math.random() * 5,
+              h: 3 + Math.random() * 3,
+              vy: 0.5 + Math.random() * 0.9,
+              ph: Math.random() * 6.28,
+              sp: 0.01 + Math.random() * 0.02,
+              rot: Math.random() * 6.28,
+              vr: (Math.random() - 0.5) * 0.08,
+              col: colors[Math.floor(Math.random() * colors.length)],
+              a: 0.25 + Math.random() * 0.4
+            };
+          }
+          return {
+            t: 'e',
+            x: Math.random() * SW_,
+            y: isInitial ? Math.random() * SH_ : SH_ + 10,
+            r: 0.8 + Math.random() * 1.8,
+            vy: 0.3 + Math.random() * 0.7,
+            vx: (Math.random() - 0.5) * 0.3,
+            life: 0,
+            max: 260 + Math.random() * 240,
+            col: Math.random() > 0.5 ? '255,90,53' : '240,200,102'
+          };
+        }
+
+        for (var i = 0; i < 30; i++) particles.push(createParticle('c', true));
+        for (var j = 0; j < 30; j++) particles.push(createParticle('e', true));
+
+        function tick() {
+          ctx.clearRect(0, 0, SW_, SH_);
+          for (var k = 0; k < particles.length; k++) {
+            var p = particles[k];
+            if (p.t === 'c') {
+              p.y += p.vy;
+              p.ph += p.sp;
+              p.x += Math.sin(p.ph) * 0.5;
+              p.rot += p.vr;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.rot);
+              ctx.globalAlpha = p.a;
+              ctx.fillStyle = p.col;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+              if (p.y > SH_ + 12) particles[k] = createParticle('c', false);
+            } else {
+              p.y -= p.vy;
+              p.x += p.vx;
+              p.life++;
+              var t = p.life / p.max;
+              var a = (t < 0.15 ? t / 0.15 : 1 - (t - 0.15) / 0.85);
+              a = Math.max(0, Math.min(1, a)) * 0.7;
+              ctx.globalAlpha = 1;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r, 0, 6.283);
+              ctx.fillStyle = 'rgba(' + p.col + ',' + a + ')';
+              ctx.fill();
+              if (p.life >= p.max || p.y < -10) particles[k] = createParticle('e', false);
+            }
+          }
+          particleAnimId = requestAnimationFrame(tick);
+        }
+        tick();
+      }
+    }
+
+    return {
+      unmount: function () {
+        if (swapTimer) clearTimeout(swapTimer);
+        if (particleAnimId) cancelAnimationFrame(particleAnimId);
+        if (ro) ro.disconnect();
+        window.removeEventListener('resize', onResize);
+        container.innerHTML = '';
+        container.style.display = 'none';
+      }
+    };
+  }
+
+  return {
+    mount: mount
+  };
+})();
+
+// FIFA Special Event Config
+var EVENT_FIFA = {
+  active: true,
+  badge: '★ رویداد ویژه',
+  title: 'جدول حذفی — جام ویژه فیفا ۲۴',
+  sub: '۱۶ تیم برتر لیگ تایتان · حذف مستقیم · ۱۵ مسابقه زنده',
+  status: 'پایان‌یافته',
+  finalWhen: 'جمعه ۲۲:۰۰',
+  prize: '۱۵۰٬۰۰۰٬۰۰۰ تومان',
+  viewers: '۱۲٬۴۰۸ نفر',
+  teams: {
+    SW: ['Shadow Wolves', '#a97bd6', '#5a2b6e'],
+    IF: ['Iron Falcons', '#6fa8dc', '#1c4a7a'],
+    DO: ['Dark Orbit', '#7b7fe0', '#2a2c6e'],
+    CF: ['Crimson Fangs', '#ff5a35', '#7a1f16'],
+    NP: ['Night Phantoms', '#6b7080', '#22252c'],
+    PK: ['Pixel Kings', '#e06fb0', '#7a2358'],
+    TL: ['Thunder Lynx', '#f2b24a', '#8a5a14'],
+    AW: ['Arctic Wolves', '#7fd6ff', '#1c6f99'],
+    NV: ['Neon Vipers', '#4ad0a0', '#1a6b52'],
+    SH: ['Solar Hawks', '#ff9a4a', '#9a4a14'],
+    SR: ['Storm Riders', '#8aa0ff', '#2a3a8a'],
+    RT: ['Red Titans', '#ff5a35', '#c23a1d'],
+    GU: ['Ghost Unit', '#9aa0ac', '#3a3e48'],
+    OF: ['Omega Five', '#c07bff', '#4a1f7a'],
+    VW: ['Void Walkers', '#a07bd6', '#2a1a4a'],
+    CL: ['Cyber Lions', '#5fd07a', '#1a6b3a']
+  },
+  r16L: [
+    ['SW', 3, 'IF', 1],
+    ['DO', 2, 'CF', 3],
+    ['NP', 2, 'PK', 0],
+    ['TL', 1, 'AW', 2]
+  ],
+  qfL: [
+    ['SW', 2, 'CF', 1],
+    ['NP', 1, 'AW', 2]
+  ],
+  sfL: [
+    ['SW', 3, 'AW', 1]
+  ],
+  r16R: [
+    ['NV', 3, 'SH', 1],
+    ['SR', 0, 'RT', 2],
+    ['GU', 2, 'OF', 1],
+    ['VW', 1, 'CL', 3]
+  ],
+  qfR: [
+    ['NV', 1, 'RT', 2],
+    ['GU', 3, 'CL', 2]
+  ],
+  sfR: [
+    ['RT', 2, 'GU', 1]
+  ],
+  final: ['SW', 3, 'RT', 2]
+};
+
+// Mount Bracket directly inside FIFA Tournament section
+var fifaMount = document.getElementById('fifa-bracket-mount');
+if (fifaMount) {
+  TitanSpecialBracket.mount(fifaMount, EVENT_FIFA);
+}
+
+// FIFA Tournament Modal Controls
+var fifaModal = document.getElementById('fifaModal');
+var btnOpenFifa = document.getElementById('btn-open-fifa-tour');
+var btnCloseFifa = document.getElementById('btn-close-fifa-modal');
+
+if (btnOpenFifa && fifaModal) {
+  btnOpenFifa.addEventListener('click', function () {
+    fifaModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () {
+      window.dispatchEvent(new Event('resize'));
+    }, 120);
+  });
+}
+
+if (btnCloseFifa && fifaModal) {
+  btnCloseFifa.addEventListener('click', function () {
+    fifaModal.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+}
+
+if (fifaModal) {
+  fifaModal.addEventListener('click', function (e) {
+    if (e.target === fifaModal) {
+      fifaModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && fifaModal.classList.contains('open')) {
+      fifaModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+}
+
+// FIFA Tournament Internal Tabs Switching
+var fifaTourTabs = document.querySelectorAll('#fifaTourTabs .tab');
+var fifaTourPanes = {
+  bracket: document.getElementById('pane-fifa-bracket'),
+  teams: document.getElementById('pane-fifa-teams'),
+  rules: document.getElementById('pane-fifa-rules')
+};
+
+fifaTourTabs.forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    fifaTourTabs.forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+
+    var target = tab.getAttribute('data-ftab');
+    Object.keys(fifaTourPanes).forEach(function (key) {
+      if (fifaTourPanes[key]) {
+        fifaTourPanes[key].style.display = (key === target) ? 'block' : 'none';
+      }
+    });
+
+    if (target === 'bracket') {
+      window.dispatchEvent(new Event('resize'));
+    }
+  });
+});
+
+// Leaderboard Sub Tabs Switching (Teams & Players)
+var lbTabs = document.querySelectorAll('#lbTabs .tab');
+var lbPanes = {
+  teams: document.getElementById('pane-teams'),
+  players: document.getElementById('pane-players')
+};
+
+lbTabs.forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    lbTabs.forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+
+    var target = tab.getAttribute('data-tab');
+    Object.keys(lbPanes).forEach(function (key) {
+      if (lbPanes[key]) {
+        if (key === target) {
+          lbPanes[key].classList.add('active');
+        } else {
+          lbPanes[key].classList.remove('active');
+        }
+      }
+    });
+  });
+});
+
+// Game Filter Pills
+var gamePills = document.querySelectorAll('#gamePills .game-pill');
+gamePills.forEach(function (pill) {
+  pill.addEventListener('click', function () {
+    gamePills.forEach(function (p) { p.classList.remove('active'); });
+    pill.classList.add('active');
+  });
+});
+</script>
 
 </body>
 </html>

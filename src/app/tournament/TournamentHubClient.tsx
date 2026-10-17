@@ -11,12 +11,50 @@ import { TournamentCard } from '@/components/TournamentCard';
 import { Empty, Loading } from '@/components/ui/State';
 import { useAuth } from '@/context/AuthContext';
 import { catalogApi, contentApi, meApi, tournamentsApi } from '@/lib/api/endpoints';
+import type { TournamentSummary } from '@/lib/api/types';
 import { faNumber, initials, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
 import { getOrnamentSVGWrapper, getRingSVG, rankFromApi } from '@/utils/ranks';
 
 import './tournament.css';
+
+export const FIFA_SUMMARY_MOCK: TournamentSummary = {
+  id: 9999,
+  slug: 'fifa',
+  title: 'مسابقات فیفا',
+  game: { id: 10, slug: 'fifa', title: 'فیفا ۲۴', titleEn: 'FIFA 24', genre: 'ورزشی', kind: 'game' },
+  season: { id: 1, name: 'فصل اول', slug: 'season-1' },
+  status: 'live',
+  participantType: 'team',
+  teamSize: 1,
+  format: 'single_elimination',
+  formatLabel: 'تیمی حذفی — ۱۶ تیم',
+  bestOf: 1,
+  region: 'me',
+  maxParticipants: 16,
+  participantsCount: 16,
+  entryFee: 0,
+  entryDiscountPercent: 0,
+  isFree: true,
+  isFull: true,
+  prizePool: 150000000,
+  prizeCurrency: 'IRT',
+  registrationOpensAt: new Date(Date.now() - 5 * 86400000).toISOString(),
+  registrationClosesAt: new Date(Date.now() - 86400000).toISOString(),
+  startsAt: new Date(Date.now() - 12 * 3600000).toISOString(),
+  endsAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+  isFeatured: true,
+  viewerCount: 12408,
+  featuredMatch: {
+    id: 1,
+    round: 3,
+    position: 0,
+    startsAt: new Date(Date.now() + 86400000).toISOString(),
+    participantA: { id: 1, name: 'Shadow Wolves', seed: 1, rank: 'قهرمان', points: 9240 },
+    participantB: { id: 2, name: 'Red Titans', seed: 2, rank: 'نایب‌قهرمان', points: 8980 },
+  },
+};
 
 const STEPS = [
   { num: '۱', icon: 'users', t: 'تیم خود را بسازید', d: 'یک تیم جدید با دوستان خود بسازید یا با لینک دعوت به تیمی که قبلاً ساخته شده ملحق شوید.' },
@@ -289,9 +327,15 @@ export default function TournamentPage() {
         <Loading compact />
       ) : (
         <div className="tour-matches">
-          {(upcoming.data?.results ?? []).map((tournament, i) => (
-            <TournamentCard key={tournament.id} tournament={tournament} index={i} />
-          ))}
+          {(() => {
+            const list = [...(upcoming.data?.results ?? [])];
+            if (!list.some(t => t.slug === 'fifa')) {
+              list.unshift(FIFA_SUMMARY_MOCK);
+            }
+            return list.map((tournament, i) => (
+              <TournamentCard key={tournament.id} tournament={tournament} index={i} />
+            ));
+          })()}
         </div>
       )}
 
