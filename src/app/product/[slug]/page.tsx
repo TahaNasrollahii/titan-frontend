@@ -95,18 +95,25 @@ export default async function ProductPage({
   const product = await getProduct(slug);
 
   // Generate Structured Data (JSON-LD)
+  const productPriceInRials = (product?.price || 0) * 10;
   const productJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product?.title || slug,
     description: product?.description || 'محصول گیمینگ فروشگاه تایتان',
+    sku: product?.slug || slug,
+    brand: {
+      '@type': 'Brand',
+      name: product?.game?.title || SITE_NAME,
+    },
     image: product?.image
       ? [product.image.startsWith('http') ? product.image : `${SITE_URL}/${product.image.replace(/^\//, '')}`]
       : [`${SITE_URL}/images/banner-hero.webp`],
     offers: {
       '@type': 'Offer',
-      price: product?.price || 0,
-      priceCurrency: 'IRT',
+      price: productPriceInRials,
+      priceCurrency: 'IRR',
+      priceValidUntil: '2026-12-31',
       availability: product?.inStock !== false ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `${SITE_URL}/product/${slug}`,
     },
@@ -142,7 +149,7 @@ export default async function ProductPage({
               '@type': 'ListItem',
               position: 3,
               name: product.game.title,
-              item: `${SITE_URL}/store?game=${product.game.slug}`,
+              item: `${SITE_URL}/store/${product.game.slug}`,
             },
             {
               '@type': 'ListItem',

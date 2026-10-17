@@ -11,6 +11,10 @@ interface TournamentData {
   coverImage?: string;
   prizePool?: number;
   prizeCurrency?: string;
+  entryFee?: number;
+  status?: string;
+  startsAt?: string;
+  endsAt?: string;
   game?: {
     slug: string;
     title: string;
@@ -88,6 +92,55 @@ export default async function TournamentDetailPage({
   const { slug } = await params;
   const tournament = await getTournament(slug);
 
+  const imageUrl = tournament?.coverImage
+    ? tournament.coverImage.startsWith('http')
+      ? tournament.coverImage
+      : `${SITE_URL}${tournament.coverImage.startsWith('/') ? '' : '/'}${tournament.coverImage}`
+    : `${SITE_URL}/images/tournoment-banner.webp`;
+
+  const sportsEventJsonLd = tournament
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'SportsEvent',
+        name: tournament.title,
+        description:
+          (Array.isArray(tournament.rules) ? (tournament.rules as string[]).join(' — ') : tournament.rules) ||
+          `مسابقه و تورنومنت آنلاین ${tournament.title} با جوایز نقدی در پلتفرم گیمینگ تایتان.`,
+        startDate: tournament.startsAt,
+        endDate: tournament.endsAt,
+        eventStatus:
+          tournament.status === 'completed'
+            ? 'https://schema.org/EventMovedOnline'
+            : 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
+        location: {
+          '@type': 'VirtualLocation',
+          url: `${SITE_URL}/tournaments/${slug}`,
+        },
+        image: [imageUrl],
+        organizer: {
+          '@type': 'Organization',
+          name: SITE_NAME,
+          url: SITE_URL,
+        },
+        ...(tournament.prizePool
+          ? {
+              award: `${tournament.prizePool.toLocaleString()} ${tournament.prizeCurrency || 'USD'}`,
+            }
+          : {}),
+        offers: {
+          '@type': 'Offer',
+          url: `${SITE_URL}/tournaments/${slug}`,
+          price: (tournament.entryFee || 0) * 10,
+          priceCurrency: 'IRR',
+          availability:
+            tournament.status === 'registration_open'
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/SoldOut',
+        },
+      }
+    : null;
+
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -115,6 +168,12 @@ export default async function TournamentDetailPage({
 
   return (
     <>
+      {sportsEventJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsEventJsonLd) }}
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
