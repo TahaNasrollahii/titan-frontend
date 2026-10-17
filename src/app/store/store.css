@@ -188,6 +188,7 @@
 .store-promos {
   display: flex;
   gap: 24px;
+  min-height: 240px;
 }
 
 /* Slides are stacked in one grid cell instead of being absolutely positioned, so the banner grows
@@ -747,6 +748,7 @@
   right: 0;
   left: 0;
   height: 285px;
+  aspect-ratio: 1 / 1;
   z-index: 1;
   display: grid;
   place-items: center;
@@ -1487,6 +1489,7 @@
   .card .stage {
     top: 10px;
     height: 195px;
+    aspect-ratio: 1 / 1;
   }
 
   .card .stage img {
