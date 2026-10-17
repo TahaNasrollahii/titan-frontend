@@ -177,7 +177,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
                 <Icon name="trophy" /> {promo.badge || 'پرفروش‌ها'}
               </span>
             </div>
-            <h3>{promo.title}</h3>
+            <h2>{promo.title}</h2>
             <p className="side-subtitle">{promo.subtitle}</p>
             <div className="sp-foot">
               <Link
@@ -688,7 +688,7 @@ function StorePageContent({
 
       <div className="store-sec-h">
         <div className="store-sec-l">
-          <h3>همه محصولات</h3>
+          <h2>همه محصولات</h2>
         </div>
       </div>
 

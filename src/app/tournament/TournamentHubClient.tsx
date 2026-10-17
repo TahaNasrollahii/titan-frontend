@@ -76,7 +76,7 @@ function Leaderboards() {
   return (
     <>
       <div className="tour-sec-h reveal" style={{ '--d': 9 } as React.CSSProperties}>
-        <h3>جدول رتبه‌بندی فصل</h3>
+        <h2>جدول رتبه‌بندی فصل</h2>
         <div className="lb-games-tabs">
           <span className="lb-game-tab-ind" ref={indicatorRef}></span>
           {playable.map(item => (
@@ -247,7 +247,7 @@ export default function TournamentPage() {
       `}</style>
 
       <div className="tour-sec-h reveal" style={{ '--d': 3 } as React.CSSProperties}>
-        <h3>مسیر پیشرفت و رنک‌ها</h3>
+        <h2>مسیر پیشرفت و رنک‌ها</h2>
       </div>
       <div className="tour-timeline-wrap reveal" style={{ '--d': 4 } as React.CSSProperties}>
         <div className="tour-ranks-row">
@@ -271,7 +271,7 @@ export default function TournamentPage() {
       </div>
 
       <div className="tour-sec-h reveal" style={{ '--d': 4 } as React.CSSProperties}>
-        <h3>مسابقات پیش‌رو</h3>
+        <h2>مسابقات پیش‌رو</h2>
         <Link href="/tournaments" className="arrow" aria-label="مشاهده تمام مسابقات">
           <Icon name="arrow" />
         </Link>
@@ -287,7 +287,7 @@ export default function TournamentPage() {
       )}
 
       <div className="tour-sec-h reveal" style={{ '--d': 7 } as React.CSSProperties}>
-        <h3>چطور در مسابقات شرکت کنم؟</h3>
+        <h2>چطور در مسابقات شرکت کنم؟</h2>
       </div>
       <div className="tour-steps-grid reveal" style={{ '--d': 8 } as React.CSSProperties}>
         {STEPS.map((step, i) => (

@@ -9,8 +9,16 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  alternates: {
+    canonical: '/login',
+  },
 };
 
 export default function LoginPage() {
-  return <LoginClient />;
+  return (
+    <>
+      <h1 className="sr-only">ورود به حساب کاربری تایتان</h1>
+      <LoginClient />
+    </>
+  );
 }

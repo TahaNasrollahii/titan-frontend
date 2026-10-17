@@ -9,8 +9,16 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  alternates: {
+    canonical: '/cart',
+  },
 };
 
 export default function CartPage() {
-  return <CartClient />;
+  return (
+    <>
+      <h1 className="sr-only">سبد خرید تایتان</h1>
+      <CartClient />
+    </>
+  );
 }

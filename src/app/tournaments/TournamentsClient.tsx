@@ -209,7 +209,7 @@ export default function TournamentsListPage({
       </div>
 
       <div className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as React.CSSProperties}>
-        <h3>لیست مسابقات</h3>
+        <h2>لیست مسابقات</h2>
       </div>
 
       <div className="filter-bar-wrapper spot reveal" style={{ '--d': 2 } as React.CSSProperties}>

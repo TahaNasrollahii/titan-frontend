@@ -605,6 +605,7 @@
   gap: 12px;
 }
 
+.store-sec-l h2,
 .store-sec-l h3 {
   font-size: 24px;
   font-weight: 800;
@@ -615,6 +616,7 @@
   letter-spacing: -0.5px;
 }
 
+.store-sec-l h2::before,
 .store-sec-l h3::before {
   content: '';
   display: block;

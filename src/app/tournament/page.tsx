@@ -36,10 +36,5 @@ export const metadata: Metadata = {
 };
 
 export default function TournamentHubPage() {
-  return (
-    <>
-      <h1 className="sr-only">مرکز مسابقات گیمینگ و جدول رده‌بندی تایتان</h1>
-      <TournamentHubClient />
-    </>
-  );
+  return <TournamentHubClient />;
 }

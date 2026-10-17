@@ -117,7 +117,7 @@ export function Topbar() {
           }}
         />
         <div className="results" id="results" onMouseDown={e => e.preventDefault()}>
-          {!query && <h5>پیشنهادهای محبوب</h5>}
+          {!query && <div className="results-title">پیشنهادهای محبوب</div>}
           {rows.map(row => (
             <button key={row.key} type="button" onClick={() => openResult(row.href)}>
               <span>{row.title}</span>
