@@ -14,6 +14,81 @@ import { useApi } from '@/lib/hooks/useApi';
 /** Hero character art bundled with the frontend, keyed by game slug (value = CSS modifier class). */
 const HERO_ART: Record<string, string> = { fortnite: 'fortnite', valorant: 'valorant', 'apex-legends': 'apexlegends' };
 
+const THEME: Record<string, { a: string; b: string; glow: string; fig: string }> = {
+  noir: { a: '#120c14', b: '#3a2a30', glow: '#c98d92', fig: '#08050a' },
+  flame: { a: '#7d2410', b: '#f27a20', glow: '#ffd58a', fig: '#3a1508' },
+  mist: { a: '#2e1216', b: '#6b323a', glow: '#e0a3a8', fig: '#1b070b' },
+  neon: { a: '#160f3a', b: '#6b33d6', glow: '#ff6ab0', fig: '#0b0722' },
+  ice: { a: '#0f2436', b: '#2f86b8', glow: '#c6ecff', fig: '#06131f' },
+  ember: { a: '#3a0e28', b: '#cf3f5c', glow: '#ffb9a6', fig: '#1a0512' }
+};
+
+const I: Record<string, [string, boolean?]> = {
+  flame: ['<path d="M12 3c.6 3.4 4.8 5 4.8 9.6a4.8 4.8 0 0 1-9.6 0c0-1.9.8-3.2 2-4.2.1 1.5.9 2.5 2 2.7C11 8.6 10.8 5.6 12 3z"/>'],
+  chev: ['<path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>'],
+  bag: ['<path d="M5 8.5h14l-1 11.5H6z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/>'],
+  chat: ['<path d="M4 5.5h16v11H10l-4.5 4v-4H4z"/><path d="M8 10h8M8 13h5"/>'],
+  like: ['<path d="M2.5 10.5h4v10h-4z"/><path d="M6.5 10.5 10.5 3c1.9 0 3 1.4 2.6 3.3L12.4 9.5h6.3a2 2 0 0 1 2 2.4l-1.4 6.6a2 2 0 0 1-2 1.5H6.5z"/>', true],
+  shield: ['<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'],
+  trophy: ['<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a1.5 1.5 0 0 0 0 3H8M16 6h2.5a1.5 1.5 0 0 1 0 3H16"/><path d="M12 13v4M8.5 20.5h7M10 17h4v3.5h-4z"/>'],
+  arrow: ['<path d="M4 12h15.5M13.5 6l6 6-6 6"/>'],
+  check: ['<path d="m5.5 12.5 4 4 9-9.5"/>'],
+  info: ['<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/>']
+};
+
+function esc(s: any) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c));
+}
+
+function ico(name: string) {
+  const [inner, filled] = I[name] || ['', false];
+  return `<svg viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="${filled ? 'none' : 'currentColor'}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+}
+
+function renderCardArt(g: any, idx: number) {
+  if (g.bg || g.char) {
+    return `
+      ${g.bg ? `<img src="${esc(g.bg)}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
+      <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
+      ${g.char ? `<img src="${esc(g.char)}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
+    `;
+  }
+  const t = THEME[g.theme] || THEME.noir, id = 'c' + idx;
+  let topo = '';
+  for (let i = 1; i <= 6; i++) topo += `<ellipse cx="${60 + (idx * 13) % 40}" cy="70" rx="${i * 24}" ry="${i * 16}" fill="none" stroke="${t.glow}" stroke-opacity="${(0.24 - i * 0.03).toFixed(2)}" transform="rotate(${-20 + idx * 9} 100 110)"/>`;
+  let fig;
+  if (g.fig === 'headset') {
+    fig = `<path d="M52 128a48 48 0 0 1 96 0" fill="none" stroke="${t.fig}" stroke-width="9" stroke-linecap="round"/><rect x="40" y="120" width="22" height="42" rx="10" fill="${t.fig}"/><rect x="138" y="120" width="22" height="42" rx="10" fill="${t.fig}"/><path d="M50 158q0 20 30 22" stroke="${t.fig}" fill="none" stroke-width="5" stroke-linecap="round"/><circle cx="84" cy="181" r="5" fill="${t.glow}"/>`;
+  } else if (g.fig === 'keyboard') {
+    let k = '';
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 9; c++) k += `<rect x="${26 + c * 16}" y="${112 + r * 17}" width="12" height="12" rx="3" fill="${t.glow}" opacity="${(0.25 + ((r * 9 + c) % 5) * 0.12).toFixed(2)}"/>`;
+    fig = `<rect x="16" y="102" width="168" height="80" rx="14" fill="${t.fig}" transform="rotate(-8 100 142)"/><g transform="rotate(-8 100 142)">${k}</g>`;
+  } else {
+    fig = `${g.crest ? `<path d="M80 100l6-34 10 24 8-30 8 30 10-24 6 34z" fill="${t.glow}" opacity=".85"/>` : ''}<circle cx="100" cy="112" r="24" fill="${t.fig}"/><path d="M40 230c2-46 26-74 60-74s58 28 60 74z" fill="${t.fig}"/>`;
+  }
+  return `<svg viewBox="0 0 200 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.a}"/><stop offset="1" stop-color="${t.b}"/></linearGradient>
+      <radialGradient id="${id}g"><stop offset="0" stop-color="${t.glow}" stop-opacity=".75"/><stop offset="1" stop-color="${t.glow}" stop-opacity="0"/></radialGradient>
+    </defs>
+    <rect width="200" height="220" fill="url(#${id}b)"/>
+    ${topo}
+    <circle cx="150" cy="52" r="46" fill="url(#${id}g)"/>
+    ${fig}
+  </svg>`;
+}
+
+function renderScrollerCards(games: any[]) {
+  return games.map((g, i) => `
+  <article class="gcard spot${i === 3 ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
+    <div class="gart">${renderCardArt(g, i)}</div>
+    <div class="gbody">
+      <h4>${esc(g.t)}</h4>
+      <div class="gdesc"><p>${esc(g.d)}</p><button class="gbtn-view" data-view="${i}">${esc(g.p)}</button></div>
+    </div>
+  </article>`).join('');
+}
+
 /** eNamad trust seal — conditional on NEXT_PUBLIC_ENAMAD_CODE / NEXT_PUBLIC_ENAMAD_ID. If unconfigured, hidden until verified. */
 const ENAMAD = {
   id: process.env.NEXT_PUBLIC_ENAMAD_ID || '',
@@ -24,7 +99,7 @@ function enamadSeal() {
   if (!ENAMAD.id || !ENAMAD.code) {
     return '';
   }
-  const inner = '<span class="th-seal-ring" aria-hidden="true"></span><span class="th-seal-check" aria-hidden="true"><i data-icon="check"></i></span>';
+  const inner = `<span class="th-seal-ring" aria-hidden="true"></span><span class="th-seal-check" aria-hidden="true"><i data-icon="check">${ico('check')}</i></span>`;
   const q = `id=${encodeURIComponent(ENAMAD.id)}&Code=${encodeURIComponent(ENAMAD.code)}`;
   return `<a class="th-seal" referrerpolicy="origin" target="_blank" rel="noopener" href="https://trustseal.enamad.ir/?${q}" aria-label="نماد اعتماد الکترونیکی">${inner}<span class="th-seal-face"><img referrerpolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?${q}" alt="نماد اعتماد الکترونیکی" code="${ENAMAD.code}" /></span></a>`;
 }
@@ -549,6 +624,14 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sceneData = buildSceneData(data);
+  const firstSlide = sceneData.slides[0] || {
+    title: 'Valorant',
+    desc: '',
+    descMobile: '',
+    href: '/tournaments',
+  };
+
   return (
     <div
       suppressHydrationWarning
@@ -568,12 +651,12 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
 
           <div class="hero-body" id="heroBody">
             <div class="hero-tags">
-              <span class="badge-pop"><i data-icon="flame"></i>محبوب</span>
+              <span class="badge-pop"><i data-icon="flame">${ico('flame')}</i>محبوب</span>
             </div>
-            <h2 id="heroTitle">Valorant</h2>
-            <p id="heroDesc"></p>
+            <h2 id="heroTitle">${esc(firstSlide.title)}</h2>
+            <p id="heroDesc"><span class="desc-pc">${firstSlide.desc}</span><span class="desc-mobile">${firstSlide.descMobile || firstSlide.desc}</span></p>
             <div class="hero-foot">
-              <a href="/tournaments" id="heroLink" class="pill-white"><span>مشاهده محصول</span></a>
+              <a href="${esc(firstSlide.href)}" id="heroLink" class="pill-white"><span>مشاهده محصول</span></a>
               <div class="hero-price">
                 <span class="new-price">۲۹۵,۰۰۰ تومان</span>
               </div>
@@ -581,18 +664,20 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
           </div>
 
           <div class="hero-art" id="heroArt" aria-hidden="true">
-            <div class="art on" data-hue="0">
-              <img src="/images/hero/characters/valorant.webp" class="hero-char valorant" alt="شخصیت ولورانت — فروشگاه گیمینگ تایتان" width="256" height="265" fetchpriority="high" />
-            </div>
+            ${sceneData.slides.map((s, i) => `<div class="art${i === 0 ? ' on' : ''}" data-hue="${i}">${s.art ? `<img src="${esc(s.art)}" class="hero-char ${s.artClass}" alt="${esc(s.title)} — فروشگاه تایتان" width="256" height="265" ${i === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'} decoding="async" />` : ''}</div>`).join('')}
           </div>
 
-          <div class="dashes" id="dashes"></div>
+          <div class="dashes" id="dashes">
+            ${sceneData.slides.map((s, i) => `<button class="dash${i === 0 ? ' on' : ''}" aria-label="نمایش ${esc(s.title)}"><span><i></i></span></button>`).join('')}
+          </div>
         </article>
 
         <div class="sec-h reveal" style="--d:3"><h3>دسته‌بندی‌ها</h3></div>
         <div class="carousel">
-          <div class="scroller" id="scroller" tabindex="0" aria-label="دسته‌بندی‌ها"></div>
-          <button class="next reveal" style="--d:3" id="nextBtn" aria-label="بازی‌های بعدی"><i data-icon="chev"></i></button>
+          <div class="scroller" id="scroller" tabindex="0" aria-label="دسته‌بندی‌ها">
+            ${renderScrollerCards(sceneData.games)}
+          </div>
+          <button class="next reveal" style="--d:3" id="nextBtn" aria-label="بازی‌های بعدی"><i data-icon="chev">${ico('chev')}</i></button>
         </div>
 
         <article class="dl spot reveal trust-badges" style="--d:6; margin-top: 24px;">
@@ -606,7 +691,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
           </svg>
           <div class="dl-content trust-content">
             <div class="trust-item">
-              <div class="trust-icon"><i data-icon="flame"></i><div class="glow"></div></div>
+              <div class="trust-icon"><i data-icon="flame">${ico('flame')}</i><div class="glow"></div></div>
               <div class="trust-text">
                 <span>تحویل آنی</span>
                 <small>در کمتر از یک دقیقه</small>
@@ -614,7 +699,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
             </div>
             <div class="trust-divider"></div>
             <div class="trust-item">
-              <div class="trust-icon"><i data-icon="shield"></i><div class="glow"></div></div>
+              <div class="trust-icon"><i data-icon="shield">${ico('shield')}</i><div class="glow"></div></div>
               <div class="trust-text">
                 <span>پرداخت امن</span>
                 <small>از طریق درگاه‌های معتبر</small>
@@ -622,7 +707,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
             </div>
             <div class="trust-divider"></div>
             <div class="trust-item">
-              <div class="trust-icon"><i data-icon="like"></i><div class="glow"></div></div>
+              <div class="trust-icon"><i data-icon="like">${ico('like')}</i><div class="glow"></div></div>
               <div class="trust-text">
                 <span>ضمانت اصالت کالا</span>
                 <small>۱۰۰٪ قانونی و اورجینال</small>
@@ -642,7 +727,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
             <span class="sheen"></span>
           </div>
           <div class="tb-content">
-            <span class="tb-badge"><i data-icon="trophy"></i> تورنمنت‌های تایتان</span>
+            <span class="tb-badge"><i data-icon="trophy">${ico('trophy')}</i> تورنمنت‌های تایتان</span>
             <h3>رقابت با بهترین‌ها</h3>
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
             <a href="/tournament" class="tb-btn">اطلاعات بیشتر</a>
@@ -655,7 +740,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
         </article>
 
         <div class="stat-wrap col reveal" style="--d:4">
-          <div class="sec-h"><h3>امتیاز شما</h3><a class="arrow" href="/tournament" aria-label="باز کردن آمار"><i data-icon="arrow"></i></a></div>
+          <div class="sec-h"><h3>امتیاز شما</h3><a class="arrow" href="/tournament" aria-label="باز کردن آمار"><i data-icon="arrow">${ico('arrow')}</i></a></div>
           <article class="stat spot reveal" style="--d:5">
             <div class="blob" id="blob">
               <canvas id="blobCanvas" aria-hidden="true"></canvas>
@@ -675,7 +760,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       <div class="th-badge">
         ${enamadSeal()}
         <div class="th-copy">
-          <span class="th-kicker"><i data-icon="check"></i>فروشگاه تاییدشده</span>
+          <span class="th-kicker"><i data-icon="check">${ico('check')}</i>فروشگاه تاییدشده</span>
           <h3>خرید مطمئن با نماد اعتماد</h3>
           <p>تایتان دارای نماد اعتماد الکترونیکی است؛ با خیال راحت خرید کنید.</p>
         </div>
@@ -683,14 +768,14 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
 
       <nav class="th-links" aria-label="بیشتر بدانید">
         <a class="th-link spot" href="/about" data-nav>
-          <span class="th-link-ic"><i data-icon="info"></i></span>
+          <span class="th-link-ic"><i data-icon="info">${ico('info')}</i></span>
           <span class="th-link-tx"><b>درباره ما</b><small><span>با تیم تایتان آشنا شوید</span></small></span>
-          <span class="th-link-go"><i data-icon="arrow"></i></span>
+          <span class="th-link-go"><i data-icon="arrow">${ico('arrow')}</i></span>
         </a>
         <a class="th-link th-link--hot spot" href="/contact" data-nav>
-          <span class="th-link-ic"><i data-icon="chat"></i></span>
+          <span class="th-link-ic"><i data-icon="chat">${ico('chat')}</i></span>
           <span class="th-link-tx"><b>ارتباط با ما</b><small><span class="th-live"></span><span>پاسخ‌گویی سریع</span></small></span>
-          <span class="th-link-go"><i data-icon="arrow"></i></span>
+          <span class="th-link-go"><i data-icon="arrow">${ico('arrow')}</i></span>
         </a>
       </nav>
     </section>

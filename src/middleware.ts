@@ -37,12 +37,11 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const isProd = process.env.NODE_ENV === 'production';
 
   const scriptSrc = isProd
-    ? `'self' 'nonce-${nonce}' 'strict-dynamic' https://challenges.cloudflare.com`
-    : `'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://challenges.cloudflare.com`;
+    ? `'self' 'unsafe-inline' https://challenges.cloudflare.com`
+    : `'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com`;
 
   const cspHeader = [
     "default-src 'self'",
@@ -62,7 +61,6 @@ export function middleware(request: NextRequest) {
     .join('; ');
 
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('Content-Security-Policy', cspHeader);
 
   const response = NextResponse.next({
