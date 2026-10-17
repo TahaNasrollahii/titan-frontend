@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
 import { TournamentCard } from '@/components/TournamentCard';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { errorMessage } from '@/lib/api/client';
 import { catalogApi, tournamentsApi } from '@/lib/api/endpoints';
-import type { TournamentStatus, TournamentSummary } from '@/lib/api/types';
+import type { Game, Paginated, TournamentStatus, TournamentSummary } from '@/lib/api/types';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
 
@@ -77,11 +77,18 @@ interface TournamentFilters {
 }
 
 /** Paginated tournament cards. Keyed by its filters, so changing them starts again from page 1. */
-function TournamentResults({ filters }: { filters: TournamentFilters }) {
-  const [items, setItems] = useState<TournamentSummary[]>([]);
+function TournamentResults({
+  filters,
+  initialTournaments,
+}: {
+  filters: TournamentFilters;
+  initialTournaments?: Paginated<TournamentSummary> | null;
+}) {
+  const isInitialMatch = useRef(Boolean(initialTournaments));
+  const [items, setItems] = useState<TournamentSummary[]>(() => initialTournaments?.results ?? []);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(() => Boolean(initialTournaments?.next));
+  const [loading, setLoading] = useState(!initialTournaments);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPage = useCallback(
@@ -112,6 +119,10 @@ function TournamentResults({ filters }: { filters: TournamentFilters }) {
   );
 
   useEffect(() => {
+    if (isInitialMatch.current) {
+      isInitialMatch.current = false;
+      return;
+    }
     let active = true;
     void fetchPage(1, () => active);
     return () => {
@@ -164,8 +175,16 @@ function TournamentResults({ filters }: { filters: TournamentFilters }) {
   );
 }
 
-export default function TournamentsListPage() {
-  const games = useApi(() => catalogApi.games());
+export interface TournamentsClientProps {
+  initialTournaments?: Paginated<TournamentSummary> | null;
+  initialGames?: Game[] | null;
+}
+
+export default function TournamentsListPage({
+  initialTournaments,
+  initialGames,
+}: TournamentsClientProps) {
+  const games = useApi(() => catalogApi.games(), [], initialGames ?? undefined);
   const [game, setGame] = useState('');
   const [status, setStatus] = useState('');
   const [ordering, setOrdering] = useState('starts_at');
@@ -214,6 +233,9 @@ export default function TournamentsListPage() {
       <TournamentResults
         key={`${game}|${status}|${ordering}|${debouncedSearch}`}
         filters={{ game, status, ordering, search: debouncedSearch }}
+        initialTournaments={
+          !game && !status && ordering === 'starts_at' && !debouncedSearch ? initialTournaments : null
+        }
       />
     </main>
   );

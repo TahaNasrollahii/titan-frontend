@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import React from 'react';
 import StoreClient from './StoreClient';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
+import { getStoreProducts, getStoreGames, getStorePromos } from './getStoreData';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'فروشگاه گیمینگ، خرید پول و آیتم بازی‌ها',
@@ -35,11 +39,32 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StorePage() {
+export default async function StorePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ game?: string }>;
+}) {
+  const resolvedParams = searchParams ? await searchParams : {};
+  if (resolvedParams.game) {
+    redirect(`/store/${encodeURIComponent(resolvedParams.game)}`);
+  }
+
+  const [initialProducts, initialGames, initialDiscountPromos, initialBestsellerPromos] = await Promise.all([
+    getStoreProducts(),
+    getStoreGames(),
+    getStorePromos('store_discount'),
+    getStorePromos('store_bestseller'),
+  ]);
+
   return (
     <>
       <h1 className="sr-only">فروشگاه آنلاین گیمینگ تایتان — خرید پول و آیتم بازی‌ها</h1>
-      <StoreClient />
+      <StoreClient
+        initialProducts={initialProducts}
+        initialGames={initialGames}
+        initialDiscountPromos={initialDiscountPromos}
+        initialBestsellerPromos={initialBestsellerPromos}
+      />
     </>
   );
 }

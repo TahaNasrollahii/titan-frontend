@@ -10,7 +10,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/lib/api/client';
 import { catalogApi, contentApi } from '@/lib/api/endpoints';
-import type { Paginated, ProductSummary, Promo } from '@/lib/api/types';
+import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 import { countdown, faNumber, toman, toEnglishDigits } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
@@ -459,12 +459,19 @@ interface ProductQueryState {
 }
 
 /** Paginated product grid. Keyed by its query, so a filter change starts again from page 1. */
-function ProductResults({ query }: { query: ProductQueryState }) {
+function ProductResults({
+  query,
+  initialProducts,
+}: {
+  query: ProductQueryState;
+  initialProducts?: Paginated<ProductSummary> | null;
+}) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { addToast } = useAppContext();
-  const [pages, setPages] = useState<Paginated<ProductSummary>[]>([]);
-  const [loading, setLoading] = useState(true);
+  const isInitialMatch = useRef(Boolean(initialProducts));
+  const [pages, setPages] = useState<Paginated<ProductSummary>[]>(() => (initialProducts ? [initialProducts] : []));
+  const [loading, setLoading] = useState(!initialProducts);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPage = useCallback(
@@ -482,6 +489,10 @@ function ProductResults({ query }: { query: ProductQueryState }) {
   );
 
   useEffect(() => {
+    if (isInitialMatch.current) {
+      isInitialMatch.current = false;
+      return;
+    }
     let active = true;
     void fetchPage(1, () => active);
     return () => {
@@ -552,14 +563,28 @@ function ProductResults({ query }: { query: ProductQueryState }) {
   );
 }
 
-function StorePageContent() {
+export interface StoreClientProps {
+  initialProducts?: Paginated<ProductSummary> | null;
+  initialGames?: Game[] | null;
+  initialDiscountPromos?: Promo[] | null;
+  initialBestsellerPromos?: Promo[] | null;
+  initialGame?: string;
+}
+
+function StorePageContent({
+  initialProducts,
+  initialGames,
+  initialDiscountPromos,
+  initialBestsellerPromos,
+  initialGame,
+}: StoreClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const activeGame = searchParams.get('game') ?? '';
-  const games = useApi(() => catalogApi.games({ is_featured: true }));
-  const discountPromos = useApi(() => contentApi.promos('store_discount'));
-  const bestsellerPromos = useApi(() => contentApi.promos('store_bestseller'));
+  const activeGame = initialGame !== undefined ? initialGame : (searchParams.get('game') ?? '');
+  const games = useApi(() => catalogApi.games({ is_featured: true }), [], initialGames ?? undefined);
+  const discountPromos = useApi(() => contentApi.promos('store_discount'), [], initialDiscountPromos ?? undefined);
+  const bestsellerPromos = useApi(() => contentApi.promos('store_bestseller'), [], initialBestsellerPromos ?? undefined);
 
   const [priceMax, setPriceMax] = useState(PRICE_LIMIT);
   const [appliedPriceMax, setAppliedPriceMax] = useState(PRICE_LIMIT);
@@ -584,7 +609,7 @@ function StorePageContent() {
   );
 
   // Tab underline indicator.
-  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const tabRefs = useRef<Record<string, HTMLElement | null>>({});
   const indicatorRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const el = tabRefs.current[activeGame];
@@ -671,19 +696,20 @@ function StorePageContent() {
         <div className="store-tabs">
           <span className="store-tab-ind" ref={indicatorRef}></span>
           {tabs.map(tab => (
-            <button
+            <Link
               key={tab.slug || 'all'}
+              href={tab.slug ? `/store/${tab.slug}` : '/store'}
               ref={el => {
                 tabRefs.current[tab.slug] = el;
               }}
               className={`store-tab ${activeGame === tab.slug ? 'active' : ''}`}
-              onClick={() => selectGame(tab.slug)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '2px',
                 // The premium artwork has built-in padding; the original design compensates for it.
                 marginRight: tab.slug === PREMIUM_SLUG ? '-15px' : '0',
+                textDecoration: 'none',
               }}
             >
               {tab.icon && (
@@ -698,7 +724,7 @@ function StorePageContent() {
                 />
               )}
               {tab.title}
-            </button>
+            </Link>
           ))}
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -781,15 +807,26 @@ function StorePageContent() {
         </div>
       </div>
 
-      <ProductResults key={`${JSON.stringify(query)}:${isAuthenticated}`} query={query} />
+      <ProductResults
+        key={`${JSON.stringify(query)}:${isAuthenticated}`}
+        query={query}
+        initialProducts={
+          query.game === (activeGame || undefined) &&
+          !query.price_max &&
+          query.ordering === SORTS[0].ordering
+            ? initialProducts
+            : null
+        }
+      />
     </div>
   );
 }
 
-export default function StorePage() {
+export default function StoreClient(props: StoreClientProps) {
   return (
     <Suspense fallback={<Loading label="در حال بارگذاری فروشگاه..." />}>
-      <StorePageContent />
+      <StorePageContent {...props} />
     </Suspense>
   );
 }
+

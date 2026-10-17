@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+  if (pathname === '/store' && searchParams.has('game')) {
+    const game = searchParams.get('game');
+    if (game) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/store/${encodeURIComponent(game)}`;
+      url.searchParams.delete('game');
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const isProd = process.env.NODE_ENV === 'production';
 
