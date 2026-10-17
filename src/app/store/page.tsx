@@ -58,6 +58,7 @@ export default async function StorePage({
 
   return (
     <>
+      <link rel="preload" as="image" href="/images/discount.webp" fetchPriority="high" />
       <h1 className="sr-only">فروشگاه آنلاین گیمینگ تایتان — خرید پول و آیتم بازی‌ها</h1>
       <StoreClient
         initialProducts={initialProducts}

@@ -176,13 +176,20 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
           <div
             className="sp-bg side-bg"
             style={{
-              backgroundImage: [promo.backgroundGradient, `url(${getOptimizedAssetUrl(promo.backgroundImage, '/images/banner-hero.webp')})`]
-                .filter(Boolean)
-                .join(', '),
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+              background: promo.backgroundGradient || undefined,
             }}
-          ></div>
+          >
+            <Image
+              src={getOptimizedAssetUrl(promo.backgroundImage, '/images/banner-hero.webp')}
+              alt=""
+              fill
+              priority={i === 0}
+              sizes="(max-width: 768px) 100vw, 450px"
+              style={{ objectFit: 'cover' }}
+            />
+          </div>
           <div className="sp-content side-content">
             <div className="sp-badges">
               <span className="sp-badge cream">
