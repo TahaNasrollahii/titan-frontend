@@ -47,7 +47,7 @@ export function Rail() {
           {!isAuthenticated ? (
             /* Guest "avatar": a person (sign in), not the door-and-arrow used for logout */
             <Link href="/login" className="rail-icon-btn rail-login" data-tip="ورود یا ثبت‌نام" aria-label="ورود یا ثبت‌نام">
-              <img src="/icons/account.webp" alt="" />
+              <img src="/icons/account.webp" alt="" aria-hidden="true" />
             </Link>
           ) : (
             <div className="acct" style={{ marginBottom: '8px' }}>
@@ -61,7 +61,7 @@ export function Rail() {
                 <div className="acct-menu-head">
                   <span className="av" style={{ position: 'relative', display: 'flex', width: 36, height: 36, borderRadius: '50%', overflow: 'hidden' }}>
                     {user?.avatar ? (
-                      <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={user.avatar} alt={user?.username || 'تصویر پروفایل کاربر'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <Avatar seed={user?.avatarSeed || 5} />
                     )}
@@ -72,26 +72,26 @@ export function Rail() {
                   </div>
                 </div>
                 <Link href="/dashboard?tab=overview" className="menu-item">
-                  <img className="menu-ic" src="/icons/dashboard.webp" alt="" /> پیشخوان
+                  <img className="menu-ic" src="/icons/dashboard.webp" alt="" aria-hidden="true" /> پیشخوان
                 </Link>
                 <Link href="/dashboard?tab=profile" className="menu-item">
-                  <img className="menu-ic" src="/icons/account.webp" alt="" /> اطلاعات حساب کاربری
+                  <img className="menu-ic" src="/icons/account.webp" alt="" aria-hidden="true" /> اطلاعات حساب کاربری
                 </Link>
                 <Link href="/dashboard?tab=notifications" className="menu-item">
-                  <img className="menu-ic" src="/icons/notif.webp" alt="" /> پیام‌ها و اعلان‌ها
+                  <img className="menu-ic" src="/icons/notif.webp" alt="" aria-hidden="true" /> پیام‌ها و اعلان‌ها
                 </Link>
 
                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '4px 0' }}></div>
 
                 <button className="menu-item danger" onClick={() => logout()}>
-                  <img className="menu-ic" src="/icons/login.webp" alt="" /> خروج از حساب
+                  <img className="menu-ic" src="/icons/login.webp" alt="" aria-hidden="true" /> خروج از حساب
                 </button>
               </div>
             </div>
           )}
 
-          <i className="rail-ic">
-            <img src="/icons/team.webp" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+          <i className="rail-ic" aria-label="تیم‌ها" title="تیم‌ها">
+            <img src="/icons/team.webp" alt="" aria-hidden="true" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
           </i>
           <div className="list">
             {(teams.data ?? []).map(team => {
@@ -105,7 +105,7 @@ export function Rail() {
                 >
                   <div className="face" style={{ display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 12 }}>
                     {team.logo ? (
-                      <img src={team.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={team.logo} alt={`لوگوی تیم ${team.name}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       initials(team.name)
                     )}

@@ -135,7 +135,7 @@ export function Topbar() {
           aria-label="جستجو"
           onClick={() => setMobileSearchPath(pathname)}
         >
-          <img src="/icons/search.webp" alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+          <img src="/icons/search.webp" alt="" aria-hidden="true" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </button>
 
         <Link
@@ -144,12 +144,12 @@ export function Topbar() {
           aria-label="اعلان‌ها"
           style={{ textDecoration: 'none' }}
         >
-          <img src="/icons/notif.webp" alt="" style={iconStyle} />
+          <img src="/icons/notif.webp" alt="" aria-hidden="true" style={iconStyle} />
           <span className="dot" hidden={unreadNotifications === 0}></span>
         </Link>
 
         <Link href="/cart" className="round" aria-label="سبد خرید" id="cartBtn" style={{ textDecoration: 'none' }}>
-          <img src="/icons/cart.webp" alt="" style={iconStyle} />
+          <img src="/icons/cart.webp" alt="" aria-hidden="true" style={iconStyle} />
           <span className={`badge ${cartPop ? 'pop' : ''}`} hidden={cartCount === 0}>
             {cartCount}
           </span>
@@ -170,7 +170,7 @@ export function Topbar() {
               )}
             </span>
           ) : (
-            <img src="/icons/account.webp" alt="حساب کاربری" style={iconStyle} />
+            <img src="/icons/account.webp" alt="" aria-hidden="true" style={iconStyle} />
           )}
         </Link>
       </div>

@@ -23,7 +23,7 @@ export function Loading({ label = 'در حال بارگذاری', compact = fals
           <span className={styles.spark} />
         </span>
         <span className={styles.core}>
-          <img src="/titan-logo.webp" alt="" />
+          <img src="/titan-logo.webp" alt="" aria-hidden="true" />
         </span>
       </span>
       <span className={styles.label}>

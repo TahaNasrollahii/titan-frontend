@@ -88,7 +88,7 @@ function Leaderboards() {
               className={`lb-game-tab ${game === item.slug ? 'active' : ''}`}
               onClick={() => setActiveGame(item.slug)}
             >
-              {item.iconImage && <img src={item.iconImage} alt="" />}
+              {item.iconImage && <img src={item.iconImage} alt="" aria-hidden="true" />}
               {item.title}
             </button>
           ))}
@@ -214,7 +214,7 @@ export default function TournamentPage() {
               </div>
             </div>
             <div className="th-art-wrap">
-              <img src={promo?.image ?? '/images/banner-hero.webp'} alt="" className="th-art" />
+              <img src={promo?.image ?? '/images/banner-hero.webp'} alt={promo?.title ?? 'بنر تورنومنت تایتان'} className="th-art" />
             </div>
           </article>
         </section>

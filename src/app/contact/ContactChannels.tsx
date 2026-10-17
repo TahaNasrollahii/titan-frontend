@@ -32,7 +32,7 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
     <>
       {channel.icon && (
         <div className={styles.iconWrap}>
-          <img src={channel.icon} alt="" />
+          <img src={channel.icon} alt="" aria-hidden="true" />
         </div>
       )}
       <div className={styles.textWrap}>
@@ -109,7 +109,7 @@ export function ContactPanel() {
           <div className={styles.spinRing}></div>
           <div className={styles.floatParticle1}></div>
           <div className={styles.floatParticle2}></div>
-          <img src="/images/support-robot.webp" alt="پشتیبانی تایتان" className={styles.robotImage} />
+          <img src="/images/support-robot.webp" alt="ربات پشتیبانی تایتان" className={styles.robotImage} />
         </div>
       </div>
 

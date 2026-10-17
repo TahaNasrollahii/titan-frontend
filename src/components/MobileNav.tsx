@@ -106,7 +106,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           ) : (
             <div className={styles.guestCard}>
               <span className={styles.guestGlow} aria-hidden />
-              <img src="/titan-logo.webp" alt="تایتان" className={styles.guestLogo} />
+              <img src="/titan-logo.webp" alt="لوگوی فروشگاه تایتان" className={styles.guestLogo} />
               <div>
                 <b>به تایتان خوش اومدی</b>
                 <small>وارد شو تا سفارش‌ها، تیم‌ها و تورنومنت‌هات اینجا باشن.</small>
@@ -247,7 +247,7 @@ export function MobileNav() {
               }
             }}
           >
-            <TabInner label={tab.label} icon={<img src={tab.icon} alt="" />} />
+            <TabInner label={tab.label} icon={<img src={tab.icon} alt="" aria-hidden="true" />} />
           </Link>
         ))}
 
@@ -264,7 +264,7 @@ export function MobileNav() {
               isAuthenticated && user ? (
                 <RankAvatar user={user} size={34} uid="-tabbar" tuckOrnament />
               ) : (
-                <img src="/icons/account.webp" alt="ورود به حساب" />
+                <img src="/icons/account.webp" alt="" aria-hidden="true" />
               )
             }
           />

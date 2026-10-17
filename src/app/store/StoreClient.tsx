@@ -86,7 +86,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
       onPointerLeave={() => setPaused(false)}
     >
       <div className="sp-bg discount-bg"></div>
-      <img src={getOptimizedAssetUrl(promos[index]?.backgroundImage, '/images/discount.webp')} alt="" className="sp-discount-overlay" />
+      <img src={getOptimizedAssetUrl(promos[index]?.backgroundImage, '/images/discount.webp')} alt={promos[index]?.title || 'طرح تخفیف فروشگاه تایتان'} className="sp-discount-overlay" />
       {promos.map((promo, i) => (
         <div key={promo.id} className={`promo-slide-layer ${index === i ? 'active' : ''}`}>
           <div className="sp-content">
@@ -127,7 +127,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
                   : getOptimizedAssetUrl(promo.image, '/images/support-robot.webp')
               }
-              alt=""
+              alt={promo.title || 'محصول ویژه فروشگاه تایتان'}
               className="sp-art discount-art"
               style={{
                 transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px))`,
@@ -138,7 +138,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
       ))}
       <div className="sp-dots">
         {promos.map((promo, i) => (
-          <button key={promo.id} className={`sp-dot ${index === i ? 'active' : ''}`} onClick={() => setIndex(i)}>
+          <button key={promo.id} className={`sp-dot ${index === i ? 'active' : ''}`} onClick={() => setIndex(i)} aria-label={`مشاهده اسلاید ${i + 1}`}>
             <span>
               <i></i>
             </span>
@@ -204,7 +204,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
                   ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
                   : getOptimizedAssetUrl(promo.image, '/images/character-behind-login-form.webp')
               }
-              alt=""
+              alt={promo.title || 'محصول پرفروش فروشگاه تایتان'}
               className="sp-art"
               style={{
                 transform: `translate(calc(var(--px) * 10px), calc(var(--py) * 10px))`,
@@ -215,7 +215,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
       ))}
       <div className="sp-dots">
         {promos.map((promo, i) => (
-          <button key={promo.id} className={`sp-dot ${index === i ? 'active' : ''}`} onClick={() => setIndex(i)}>
+          <button key={promo.id} className={`sp-dot ${index === i ? 'active' : ''}`} onClick={() => setIndex(i)} aria-label={`مشاهده اسلاید پرفروش ${i + 1}`}>
             <span>
               <i></i>
             </span>

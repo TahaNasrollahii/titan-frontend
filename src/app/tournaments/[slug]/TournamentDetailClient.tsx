@@ -409,7 +409,7 @@ function Participants({ slug }: { slug: string }) {
             <div className={styles.participantIndex}>{String(i + 1).padStart(2, '0')}</div>
             <div className={`${styles.participantAvatar} ${p.kind === 'team' ? styles.participantCrest : ''}`}>
               {p.logo ? (
-                <img src={p.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={p.logo} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : p.kind === 'team' ? (
                 initials(p.name)
               ) : (
@@ -490,7 +490,7 @@ export default function TournamentDetailsPage() {
 
       <div className={styles.topLayout}>
         <div className={`${styles.heroSection} spot spot-track reveal`} style={{ '--d': 1 } as React.CSSProperties}>
-          {t.coverImage && <img src={t.coverImage} alt={t.game.titleEn} className={styles.heroImage} />}
+          {t.coverImage && <img src={t.coverImage} alt={`تصویر کاور مسابقه ${t.title} - ${t.game.title}`} className={styles.heroImage} />}
           <div className={styles.heroOverlay}></div>
           <div className={styles.heroContent}>
             <div className={styles.titleArea}>

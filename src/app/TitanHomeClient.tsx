@@ -180,7 +180,7 @@ function HomeScene({ data }: { data: Home }) {
       /* =====================================================
          Hero key art (SVG). Replace with your own <img> per slide
          ===================================================== */
-      const heroArt = k => (SLIDES[k].art ? `<img src="${esc(SLIDES[k].art)}" class="hero-char ${SLIDES[k].artClass}" alt="" />` : '');
+      const heroArt = k => (SLIDES[k].art ? `<img src="${esc(SLIDES[k].art)}" class="hero-char ${SLIDES[k].artClass}" alt="${esc(SLIDES[k].title)} — فروشگاه تایتان" />` : '');
 
       /* =====================================================
          Data
@@ -577,7 +577,7 @@ function HomeScene({ data }: { data: Home }) {
 
           <div class="hero-art" id="heroArt" aria-hidden="true">
             <div class="art on" data-hue="0">
-              <img src="/images/hero/characters/valorant.webp" class="hero-char valorant" alt="Valorant" width="256" height="265" fetchpriority="high" />
+              <img src="/images/hero/characters/valorant.webp" class="hero-char valorant" alt="شخصیت ولورانت — فروشگاه گیمینگ تایتان" width="256" height="265" fetchpriority="high" />
             </div>
           </div>
 
@@ -642,7 +642,7 @@ function HomeScene({ data }: { data: Home }) {
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
             <a href="/tournament" class="tb-btn">اطلاعات بیشتر</a>
           </div>
-          <img src="/images/tournoment-banner.webp" alt="" class="tb-img" />
+          <img src="/images/tournoment-banner.webp" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" />
           <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none">
             <circle cx="160" cy="40" r="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="30" />
             <circle cx="160" cy="40" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="20" />

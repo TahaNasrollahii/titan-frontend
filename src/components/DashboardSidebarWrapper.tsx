@@ -54,7 +54,7 @@ function DashboardSidebarContent() {
               className={`${styles.menuItem} ${activeTab === item.tab ? styles.active : ''}`}
               onClick={() => router.push(`/dashboard?tab=${item.tab}`)}
             >
-              <img src={item.icon} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+              <img src={item.icon} alt="" aria-hidden="true" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
               {item.label}
               {item.tab === 'notifications' && unreadNotifications > 0 && (
                 <span className={styles.menuBadge}>{unreadNotifications.toLocaleString('fa-IR')}</span>
@@ -66,7 +66,7 @@ function DashboardSidebarContent() {
         <div className={styles.menuDivider}></div>
 
         <button className={`${styles.menuItem} ${styles.logoutBtn}`} onClick={handleLogout}>
-          <img src="/icons/login.webp" alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> خروج از حساب
+          <img src="/icons/login.webp" alt="" aria-hidden="true" style={{ width: '24px', height: '24px', objectFit: 'contain' }} /> خروج از حساب
         </button>
       </aside>
 

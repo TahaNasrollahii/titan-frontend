@@ -40,7 +40,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 /** One of the site's own icons from /public/icons (solid, rounded, white). */
 function SiteIcon({ name }: { name: string }) {
-  return <img className={styles.siteIcon} src={`/icons/${name}.webp`} alt="" draggable={false} />;
+  return <img className={styles.siteIcon} src={`/icons/${name}.webp`} alt="" aria-hidden="true" draggable={false} />;
 }
 
 const stagger: Variants = { show: { transition: { staggerChildren: 0.08 } } };

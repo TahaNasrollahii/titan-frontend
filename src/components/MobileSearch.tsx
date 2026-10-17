@@ -61,7 +61,7 @@ export function MobileSearch({ open, onClose }: { open: boolean; onClose: () => 
             }}
           >
             <label className={styles.field}>
-              <img src="/icons/search.webp" alt="" />
+              <img src="/icons/search.webp" alt="" aria-hidden="true" />
               <input
                 ref={inputRef}
                 type="search"
