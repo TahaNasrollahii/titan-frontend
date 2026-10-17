@@ -22,6 +22,23 @@ interface ProductData {
   };
 }
 
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${API_URL}/products/?page_size=12&ordering=-popularity`, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const results = Array.isArray(data) ? data : data.results || [];
+    return results.map((p: { slug: string }) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
+}
+
 async function getProduct(slug: string): Promise<ProductData | null> {
   try {
     const res = await fetch(`${API_URL}/products/${slug}/`, {
