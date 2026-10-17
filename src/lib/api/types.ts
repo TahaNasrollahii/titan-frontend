@@ -489,6 +489,7 @@ export interface Tournament extends TournamentSummary {
   registrationOpensAt: string;
   streamUrl: string;
   myRegistration: MyRegistration | null;
+  specialBracket?: any;
 }
 
 export interface MyTournament extends Registration {

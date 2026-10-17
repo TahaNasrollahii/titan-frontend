@@ -14,6 +14,7 @@ const BracketView = dynamic(
   { ssr: false, loading: () => <Loading /> }
 );
 import { SpecialEventBracket } from '@/components/SpecialEventBracket';
+import { convertBracketRoundsToEventData, getSpecialEvent } from '@/lib/specialEvents';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL, errorMessage } from '@/lib/api/client';
@@ -540,16 +541,23 @@ function Participants({ slug }: { slug: string }) {
   );
 }
 
-function Bracket({ slug, gameSlug }: { slug: string; gameSlug?: string }) {
-  const isFifa = (gameSlug && /fifa|fc/i.test(gameSlug)) || /fifa|fc/i.test(slug);
-  if (isFifa) {
-    return <SpecialEventBracket />;
+function Bracket({ tournament }: { tournament: Tournament }) {
+  // 1. Direct custom special bracket from Django Admin (specialBracket) or local registry
+  const specialEvent = getSpecialEvent(tournament.slug, tournament.game?.slug, tournament);
+  if (specialEvent) {
+    return <SpecialEventBracket event={specialEvent} />;
   }
-  const bracket = useApi(() => tournamentsApi.bracket(slug), [slug]);
+
+  // 2. Fetch database matches (from Django Admin "Generate bracket & start")
+  const bracket = useApi(() => tournamentsApi.bracket(tournament.slug), [tournament.slug]);
   if (bracket.loading) return <Loading compact />;
-  if (bracket.data?.length) {
-    return <BracketView rounds={bracket.data} />;
+
+  // 3. If database matches exist, automatically convert them into SpecialEventBracket!
+  if (bracket.data && bracket.data.length > 0) {
+    const convertedEvent = convertBracketRoundsToEventData(bracket.data, tournament);
+    return <SpecialEventBracket event={convertedEvent} />;
   }
+
   return (
     <div className={styles.emptyTab}>
       <Icon name="chart" />
@@ -561,12 +569,22 @@ function Bracket({ slug, gameSlug }: { slug: string; gameSlug?: string }) {
 export default function TournamentDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const isFifa = /fifa/i.test(slug);
+  const specialEvent = getSpecialEvent(slug);
   const tournament = useApi(() => tournamentsApi.get(slug), [slug]);
   const [tab, setTab] = useState<Tab>('overview');
 
   useSpotlight('.spot-track', [tab, tournament.data]);
 
-  const t = tournament.data ?? (isFifa ? FIFA_DETAIL_MOCK : null);
+  const fallbackTournament = specialEvent
+    ? {
+        ...FIFA_DETAIL_MOCK,
+        slug,
+        title: specialEvent.title.replace('جدول حذفی — ', ''),
+        description: specialEvent.sub,
+      }
+    : (isFifa ? FIFA_DETAIL_MOCK : null);
+
+  const t = tournament.data ?? fallbackTournament;
   if (tournament.loading && !t) return <Loading />;
   if (!t) return <ErrorState error={tournament.error} onRetry={tournament.reload} />;
 
@@ -727,7 +745,7 @@ export default function TournamentDetailsPage() {
 
       {/* Full-width Tournament Bracket Section: Always at the bottom below registration & tournament info */}
       <section id="tournament-bracket-section" className={`${styles.fullWidthBracketSection} reveal`} style={{ '--d': 4 } as React.CSSProperties}>
-        <Bracket slug={t.slug} gameSlug={t.game?.slug} />
+        <Bracket tournament={t} />
       </section>
     </main>
   );
