@@ -8,16 +8,16 @@ import type { Game, Paginated, TournamentSummary } from '@/lib/api/types';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'تورنومنت‌ها و مسابقات گیمینگ',
+  title: 'لیست مسابقات و تورنومنت‌های فعال',
   description:
-    'شرکت در تورنومنت‌های هفتگی و مسابقات آنلاین تایتان؛ رقابت در فورتنایت، ولورانت، اپکس لجندز با جوایز نقدی میلیونی، براکت زنده و تیم‌سازی.',
+    'لیست کامل تورنومنت‌های فعال و رویدادهای آینده فورتنایت، ولورانت، اپکس لجندز در تایتان؛ مشاهده زمان برگزاری، ظرفیت، استخر جوایز نقدی و ثبت‌نام مسابقات.',
   alternates: {
     canonical: '/tournaments',
   },
   openGraph: {
-    title: 'تورنومنت‌ها و مسابقات گیمینگ تایتان | جوایز نقدی و رقابت آنلاین',
+    title: 'لیست مسابقات و تورنومنت‌های فعال | تایتان',
     description:
-      'در مسابقات آنلاین تایتان ثبت‌نام کنید، رقابت کنید و جوایز نقدی کسب کنید. مسابقات انفرادی و تیمی.',
+      'مشاهده رویدادهای در حال ثبت‌نام و فعال، استخر جوایز نقدی و ثبت‌نام تیمی یا انفرادی در مسابقات آنلاین تایتان.',
     url: `${SITE_URL}/tournaments`,
     siteName: SITE_NAME,
     images: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/images/tournoment-banner.webp`,
         width: 1200,
         height: 630,
-        alt: 'تورنومنت‌های گیمینگ تایتان',
+        alt: 'لیست مسابقات و تورنومنت‌های فعال تایتان',
       },
     ],
     locale: 'fa_IR',
@@ -33,8 +33,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'تورنومنت‌ها و مسابقات گیمینگ تایتان',
-    description: 'شرکت در مسابقات هفتگی فورتنایت، ولورانت و اپکس با جوایز نقدی در تایتان',
+    title: 'لیست مسابقات و تورنومنت‌های فعال | تایتان',
+    description: 'مشاهده رویدادهای فعال و ثبت‌نام مسابقات هفتگی بازی‌ها در تایتان با جوایز نقدی',
     images: [`${SITE_URL}/images/tournoment-banner.webp`],
   },
 };

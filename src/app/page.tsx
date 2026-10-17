@@ -11,7 +11,7 @@ import {
 } from '@/lib/siteConfig';
 
 export const metadata: Metadata = {
-  title: 'تایتان | پلتفرم گیمینگ، خرید پول بازی‌ها و مسابقات آنلاین',
+  title: SITE_DEFAULT_TITLE,
   description: SITE_DEFAULT_DESCRIPTION,
   alternates: {
     canonical: '/',
