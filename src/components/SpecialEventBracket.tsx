@@ -89,7 +89,18 @@ function winner(match: [string, number, string, number]): string {
   return match[1] > match[3] ? match[0] : match[2];
 }
 
-function geom(m: 'qf' | 'r16') {
+interface BracketGeom {
+  W: number;
+  H: number;
+  CX: number;
+  YF: number;
+  X: Record<string, number>;
+  Y16: number[];
+  YQF: number[];
+  labels: { x: number; text: string; y: number }[];
+}
+
+function geom(m: 'qf' | 'r16'): BracketGeom {
   if (m === 'r16') {
     return {
       W: 1072,
@@ -114,7 +125,8 @@ function geom(m: 'qf' | 'r16') {
     H: 396,
     CX: 384,
     YF: 276,
-    X: { l1: 0, l2: 152, f: 304, r2: 480, r1: 632 } as Record<string, number>,
+    X: { l1: 0, l2: 152, f: 304, r2: 480, r1: 632 },
+    Y16: [],
     YQF: [206, 346],
     labels: [
       { x: 0, text: 'یک‌چهارم نهایی', y: 143 },
