@@ -526,7 +526,7 @@
 .mc-crest {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: 50%;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.5));
   border: 1px solid rgba(255, 255, 255, 0.25);
   display: grid;
@@ -697,6 +697,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   position: relative;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 1024px) {
@@ -881,7 +882,7 @@
   align-items: flex-end;
   gap: 16px;
   flex-wrap: wrap;
-  margin-top: 24px;
+  margin-top: 56px;
   margin-bottom: 20px;
 }
 
@@ -1330,7 +1331,7 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Hex Shield Crest */
+/* Circular Shield Crest */
 .lb-crest {
   width: 40px;
   height: 40px;
@@ -1341,7 +1342,8 @@
   font-size: 12px;
   font-weight: 900;
   color: #fff;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border-radius: 50%;
+  overflow: hidden;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -1425,8 +1427,9 @@
   min-width: 0;
 }
 
-.tour-wrapper > .tour-sec-h {
-  margin-top: 48px;
+.tour-wrapper > .tour-sec-h,
+.tour-wrapper > .lb-header {
+  margin-top: 52px;
 }
 
 @media (max-width: 1024px) {
@@ -1445,7 +1448,8 @@
   }
 
   /* Clear separation between sections: room above each header, a little below it */
-  .tour-wrapper > .tour-sec-h {
+  .tour-wrapper > .tour-sec-h,
+  .tour-wrapper > .lb-header {
     margin-top: 40px;
     margin-bottom: 6px;
   }
