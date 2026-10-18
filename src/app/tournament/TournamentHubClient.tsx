@@ -15,6 +15,7 @@ import type { TournamentSummary } from '@/lib/api/types';
 import { faNumber, initials, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
+import { DEFAULT_FIFA_EVENT, SpecialEventBracket } from '@/components/SpecialEventBracket';
 import { getOrnamentSVGWrapper, getRingSVG, rankFromApi } from '@/utils/ranks';
 
 import './tournament.css';
@@ -338,6 +339,15 @@ export default function TournamentPage() {
           })()}
         </div>
       )}
+
+      {/* جدول و براکت حذفی مسابقات ویژه فیفا */}
+      <section
+        id="tournament-bracket-section"
+        className="reveal"
+        style={{ '--d': 6, width: '100%', margin: '40px 0 20px' } as React.CSSProperties}
+      >
+        <SpecialEventBracket event={DEFAULT_FIFA_EVENT} />
+      </section>
 
       <div className="tour-sec-h reveal" style={{ '--d': 7 } as React.CSSProperties}>
         <h2>چطور در مسابقات شرکت کنم؟</h2>
