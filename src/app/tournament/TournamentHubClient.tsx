@@ -252,35 +252,47 @@ function Leaderboards() {
           <table className={`tour-table ${mode === 'players' ? 'table-players' : ''}`}>
             <thead>
               <tr>
-                <th>رتبه</th>
-                <th>{mode === 'teams' ? 'تیم' : 'بازیکن'}</th>
-                <th>تعداد برد</th>
-                <th>تعداد باخت</th>
-                <th>امتیاز کلی</th>
+                <th className="lb-col-rank">رتبه</th>
+                <th className="lb-col-name">{mode === 'teams' ? 'تیم' : 'بازیکن'}</th>
+                <th className="lb-col-wins">تعداد برد</th>
+                <th className="lb-col-losses">تعداد باخت</th>
+                <th className="lb-col-pts">امتیاز کلی</th>
               </tr>
             </thead>
             <tbody>
               {rows.map(row => (
                 <tr key={row.key} className={row.rank <= 3 ? `top-rank-${row.rank}` : ''}>
-                  <td>
+                  <td className="lb-col-rank">
                     <div className="lb-rank-badge">
                       {row.rank <= 3 ? <Icon name="trophy" /> : <span>{faNumber(row.rank)}</span>}
                     </div>
                   </td>
-                  <td>
+                  <td className="lb-col-name">
                     <div className={mode === 'teams' ? 'lb-team-cell' : 'lb-player-cell'}>
                       {row.badge}
-                      <strong className="lb-name-txt">{row.name}</strong>
+                      <div className="lb-name-meta">
+                        <strong className="lb-name-txt" title={row.name}>
+                          {row.name}
+                        </strong>
+                        <div className="lb-mobile-stats">
+                          <span className="lb-stat stat-wins">برد: {faNumber(row.wins)}</span>
+                          <span className="lb-stat-sep">·</span>
+                          <span className="lb-stat stat-losses">باخت: {faNumber(row.losses)}</span>
+                        </div>
+                      </div>
                     </div>
                   </td>
-                  <td>
+                  <td className="lb-col-wins">
                     <span className="lb-stat stat-wins">{faNumber(row.wins)}</span>
                   </td>
-                  <td>
+                  <td className="lb-col-losses">
                     <span className="lb-stat stat-losses">{faNumber(row.losses)}</span>
                   </td>
-                  <td>
-                    <strong className="lb-pts-stat">{faNumber(row.points)}</strong>
+                  <td className="lb-col-pts">
+                    <div className="lb-pts-box">
+                      <strong className="lb-pts-stat">{faNumber(row.points)}</strong>
+                      <span className="lb-pts-label">امتیاز</span>
+                    </div>
                   </td>
                 </tr>
               ))}

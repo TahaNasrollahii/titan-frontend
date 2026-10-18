@@ -1323,6 +1323,25 @@
   gap: 14px;
 }
 
+.lb-name-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lb-mobile-stats {
+  display: none;
+}
+
+.lb-pts-box {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.lb-pts-label {
+  display: none;
+}
+
 .lb-name-txt {
   font-size: 15px;
   font-weight: 800;
@@ -1646,11 +1665,25 @@
     gap: 14px;
   }
 
+  .lb-title-wrap h2 {
+    font-size: 19px;
+  }
+
+  .lb-badge-season {
+    font-size: 10.5px;
+    padding: 3px 10px;
+  }
+
+  .lb-head-sub {
+    font-size: 12px;
+  }
+
   .lb-games-tabs {
     display: flex;
     max-width: 100%;
     overflow-x: auto;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .lb-games-tabs::-webkit-scrollbar {
@@ -1682,15 +1715,17 @@
     justify-content: center;
   }
 
-  /* Leaderboard rows become cards: rank | name with wins/losses below | points */
+  /* Leaderboard rows become compact horizontal cards */
   .tour-table-wrapper {
-    padding: 12px;
-    border-radius: 22px;
+    padding: 10px;
+    border-radius: 20px;
+    overflow-x: hidden;
   }
 
   .tour-table {
     display: block;
     min-width: 0;
+    width: 100%;
     border-spacing: 0;
   }
 
@@ -1702,22 +1737,20 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
   }
 
   .tour-table tbody tr {
-    display: grid;
-    grid-template-columns: 40px auto minmax(0, 1fr) auto;
-    grid-template-areas:
-      'rank name name pts'
-      'rank wins losses pts';
+    display: flex;
     align-items: center;
-    column-gap: 12px;
-    row-gap: 4px;
-    padding: 12px 14px;
+    gap: 10px;
+    padding: 10px 12px;
     border: 1px solid rgba(255, 236, 230, 0.08);
-    border-radius: 18px;
+    border-radius: 16px;
     background: linear-gradient(165deg, rgba(56, 21, 26, 0.8), rgba(32, 14, 17, 0.92));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 18px -10px rgba(0, 0, 0, 0.7);
+    box-sizing: border-box;
+    width: 100%;
   }
 
   .tour-table tbody tr:hover {
@@ -1756,74 +1789,187 @@
     text-align: right;
   }
 
-  .tour-table td:nth-child(1) {
-    grid-area: rank;
+  /* Hide separate wins and losses columns on mobile */
+  .tour-table td.lb-col-wins,
+  .tour-table td.lb-col-losses {
+    display: none !important;
   }
 
-  .tour-table td:nth-child(2) {
-    grid-area: name;
-    min-width: 0;
-  }
-
-  .tour-table td:nth-child(3) {
-    grid-area: wins;
-  }
-
-  .tour-table td:nth-child(4) {
-    grid-area: losses;
-  }
-
-  .tour-table td:nth-child(5) {
-    grid-area: pts;
-  }
-
-  .tour-table td:nth-child(3)::before,
-  .tour-table td:nth-child(4)::before {
-    margin-left: 4px;
-    color: var(--text-muted, #9c7570);
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .tour-table td:nth-child(3)::before {
-    content: 'برد: ';
-  }
-
-  .tour-table td:nth-child(4)::before {
-    content: 'باخت: ';
-  }
-
-  .lb-stat {
-    font-size: 12.5px;
+  /* Rank Badge Column */
+  .tour-table td.lb-col-rank {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .lb-rank-badge {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  /* Name & Identity Column */
+  .tour-table td.lb-col-name {
+    flex: 1 1 0%;
+    min-width: 0;
   }
 
   .lb-team-cell,
   .lb-player-cell {
+    display: flex;
+    align-items: center;
     gap: 10px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .lb-crest {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 11px;
+  }
+
+  .lb-avatar {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lb-avatar > div {
+    transform: scale(0.82);
+    transform-origin: center center;
+  }
+
+  .lb-name-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .lb-name-txt {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 1.35;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .lb-mobile-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .lb-mobile-stats .stat-wins {
+    color: #4ad0a0;
+    font-weight: 700;
+  }
+
+  .lb-mobile-stats .stat-losses {
+    color: var(--text-muted, #9c7570);
+    opacity: 0.85;
+  }
+
+  .lb-stat-sep {
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  /* Points Column */
+  .tour-table td.lb-col-pts {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: left;
+  }
+
+  .lb-pts-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: left;
+    line-height: 1.1;
+  }
+
+  .lb-pts-stat {
+    font-size: 15.5px;
+    font-weight: 900;
+    color: #f0c866;
+    white-space: nowrap;
+    display: block;
+  }
+
+  .lb-pts-label {
+    display: block;
+    font-size: 9.5px;
+    color: var(--text-muted, #9c7570);
+    margin-top: 2px;
+    letter-spacing: -0.2px;
+    text-align: left;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .tour-table tbody tr {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .lb-rank-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    border-radius: 8px;
   }
 
   .lb-crest,
   .lb-avatar {
-    flex: none;
-    width: 34px;
-    height: 34px;
-    font-size: 11px;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+  }
+
+  .lb-avatar > div {
+    transform: scale(0.74);
   }
 
   .lb-name-txt {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 14.5px;
+    font-size: 12.5px;
+  }
+
+  .lb-mobile-stats {
+    font-size: 10px;
+    gap: 4px;
   }
 
   .lb-pts-stat {
-    font-size: 16px;
+    font-size: 14px;
+  }
+
+  .lb-pts-label {
+    font-size: 9px;
   }
 }
 
