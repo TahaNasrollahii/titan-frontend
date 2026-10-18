@@ -874,31 +874,79 @@
   opacity: 1;
 }
 
-/* 5. Leaderboard (Tables Redesign) */
-.tour-table-wrapper {
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(30px) saturate(150%);
-  -webkit-backdrop-filter: blur(30px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 30px 60px -15px rgba(0, 0, 0, 0.6);
-  border-radius: 28px;
-  padding: 24px 32px 32px;
-  overflow-x: auto;
+/* 5. Leaderboard (Tables Redesign - Special Event Bracket Aesthetic) */
+.lb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  margin-bottom: 20px;
 }
 
-.tour-table-wrapper::-webkit-scrollbar {
-  height: 6px;
+.lb-head-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.tour-table-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+.lb-accent-bar {
+  width: 4px;
+  height: 42px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--flame, #ff5a35), var(--flame-deep, #c23a1d));
+  box-shadow: 0 0 14px rgba(255, 90, 53, 0.6);
+  flex-shrink: 0;
 }
 
+.lb-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lb-title-wrap h2 {
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin: 0;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.lb-badge-season {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #3a2603;
+  background: linear-gradient(135deg, var(--gold, #f0c866), #e0a94a);
+  box-shadow: 0 4px 14px -4px rgba(240, 200, 102, 0.5);
+  display: inline-flex;
+  align-items: center;
+}
+
+.lb-head-sub {
+  color: var(--text-muted, #9c7570);
+  font-size: 13px;
+  margin: 3px 0 0;
+}
+
+.lb-head-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Game selector tabs (Glass pill with flame indicator) */
 .lb-games-tabs {
   display: inline-flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(10, 4, 5, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 236, 230, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px -12px rgba(0, 0, 0, 0.8);
   border-radius: 999px;
   padding: 4px;
   position: relative;
@@ -907,35 +955,38 @@
 .lb-game-tab-ind {
   position: absolute;
   top: 4px;
+  bottom: 4px;
   left: 0;
-  height: calc(100% - 8px);
+  width: 0;
   border-radius: 999px;
-  background: var(--red);
-  box-shadow: 0 4px 12px rgba(226, 69, 63, 0.4);
-  transition: transform 0.55s var(--spring), width 0.55s var(--spring);
+  background: linear-gradient(135deg, #ff6a45, #c23a1d);
+  box-shadow: 0 8px 22px -8px rgba(255, 90, 53, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: left 0.45s cubic-bezier(0.3, 1.25, 0.5, 1), width 0.45s cubic-bezier(0.3, 1.25, 0.5, 1);
+  pointer-events: none;
 }
 
 .lb-game-tab {
   position: relative;
   z-index: 2;
-  padding: 6px 16px;
+  padding: 7px 18px;
   font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  font-weight: 700;
+  color: var(--text-muted, #9c7570);
   border-radius: 999px;
   transition: color 0.3s;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: transparent;
   border: none;
   cursor: pointer;
 }
 
 .lb-game-tab img {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
 .lb-game-tab.active {
@@ -943,34 +994,58 @@
 }
 
 .lb-game-tab:hover:not(.active) {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 236, 230, 0.95);
 }
 
+/* Controls Bar (Mode switch + Meta badge) */
 .tour-table-controls {
-  margin-top: 16px;
-  margin-bottom: 24px;
+  margin-top: 14px;
+  margin-bottom: 22px;
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .lb-tabs-new {
+  position: relative;
   display: inline-flex;
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 6px;
+  gap: 4px;
+  background: rgba(10, 4, 5, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 4px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 236, 230, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px -12px rgba(0, 0, 0, 0.8);
+}
+
+.lb-mode-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  z-index: 1;
+  background: linear-gradient(135deg, #ff6a45, #c23a1d);
+  box-shadow: 0 8px 22px -8px rgba(255, 90, 53, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: left 0.45s cubic-bezier(0.3, 1.25, 0.5, 1), width 0.45s cubic-bezier(0.3, 1.25, 0.5, 1);
+  pointer-events: none;
 }
 
 .lb-tab-btn {
+  position: relative;
+  z-index: 2;
   background: transparent;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0 24px;
-  height: 42px;
+  color: var(--text-muted, #9c7570);
+  padding: 0 20px;
+  height: 38px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: color 0.3s;
   border: none;
   cursor: pointer;
   display: flex;
@@ -979,41 +1054,97 @@
   gap: 8px;
 }
 
-.lb-tab-btn i {
-  font-size: 16px;
+.lb-tab-btn i,
+.lb-tab-btn svg {
+  font-size: 14px;
   opacity: 0.8;
 }
 
-.lb-tab-btn:hover {
+.lb-tab-btn:hover:not(.active) {
   color: #fff;
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .lb-tab-btn.active {
-  background: rgba(226, 69, 63, 0.15);
   color: #fff;
-  border: 1px solid rgba(226, 69, 63, 0.3);
-  box-shadow: 0 8px 16px rgba(226, 69, 63, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
-.lb-tab-btn.active i {
-  color: #ff8a80;
-  opacity: 1;
+.lb-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 236, 230, 0.1);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #9c7570);
 }
 
+.lb-dot-live {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff5a35;
+  box-shadow: 0 0 10px #ff5a35;
+  animation: lbPulse 2s infinite ease-in-out;
+}
+
+@keyframes lbPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+/* Glass Stage Table Wrapper */
+.tour-table-wrapper {
+  position: relative;
+  background:
+    radial-gradient(640px 320px at 50% 0%, rgba(255, 90, 53, 0.14), transparent 70%),
+    linear-gradient(165deg, rgba(43, 17, 20, 0.65), rgba(23, 10, 11, 0.8));
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255, 236, 230, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+  border-radius: 26px;
+  padding: 24px 30px 30px;
+  overflow-x: auto;
+}
+
+.tour-table-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.tour-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tour-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 90, 53, 0.35);
+  border-radius: 3px;
+}
+
+/* Table */
 .tour-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 8px;
+  border-spacing: 0 10px;
   text-align: right;
-  min-width: 800px;
+  min-width: 780px;
 }
 
 .tour-table th {
-  padding: 0 24px 12px;
-  font-size: 11px;
+  padding: 0 22px 14px;
+  font-size: 11.5px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted, #9c7570);
   background: transparent;
   border: none;
   text-transform: uppercase;
@@ -1025,221 +1156,247 @@
 }
 
 .tour-table td {
-  padding: 16px 24px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.005));
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  padding: 14px 22px;
+  background: linear-gradient(165deg, rgba(56, 21, 26, 0.72), rgba(32, 14, 17, 0.88));
+  border-top: 1px solid rgba(255, 236, 230, 0.09);
+  border-bottom: 1px solid rgba(255, 236, 230, 0.06);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   vertical-align: middle;
 }
 
 .tour-table tr td:first-child {
   border-radius: 0 16px 16px 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.03);
-  width: 80px;
+  border-right: 1px solid rgba(255, 236, 230, 0.09);
+  width: 74px;
   text-align: center;
 }
 
 .tour-table tr td:last-child {
   border-radius: 16px 0 0 16px;
-  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  border-left: 1px solid rgba(255, 236, 230, 0.09);
 }
 
 .tour-table tbody tr {
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .tour-table tbody tr:hover {
-  transform: translateX(-6px) scale(1.01);
+  transform: translateX(-4px) translateY(-2px);
   position: relative;
   z-index: 10;
 }
 
 .tour-table tbody tr:hover td {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
-  border-top-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(165deg, rgba(74, 28, 34, 0.9), rgba(43, 17, 21, 0.95));
+  border-top-color: rgba(255, 90, 53, 0.45);
+  border-bottom-color: rgba(255, 90, 53, 0.35);
+  box-shadow: 0 14px 30px -10px rgba(255, 90, 53, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
+.tour-table tbody tr:hover td:first-child {
+  border-right-color: rgba(255, 90, 53, 0.45);
+}
+
+.tour-table tbody tr:hover td:last-child {
+  border-left-color: rgba(255, 90, 53, 0.45);
+}
+
+/* Rank Badges */
 .lb-rank-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.3);
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 236, 230, 0.05);
   font-weight: 800;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-  transition: all 0.4s;
+  font-size: 14px;
+  color: var(--text-muted, #9c7570);
+  border: 1px solid rgba(255, 236, 230, 0.12);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s;
+}
+
+/* Top Rank 1 - Champion Gold */
+.top-rank-1 td {
+  background: linear-gradient(165deg, rgba(74, 38, 20, 0.88), rgba(38, 18, 14, 0.95));
+  border-top-color: rgba(240, 200, 102, 0.4);
+  border-bottom-color: rgba(240, 200, 102, 0.25);
+  box-shadow: 0 10px 28px -10px rgba(240, 200, 102, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.top-rank-1 td:first-child {
+  border-right: 3px solid #f0c866 !important;
 }
 
 .top-rank-1 .lb-rank-badge {
-  background: linear-gradient(135deg, #f0c866, #d4a017);
-  color: #000;
+  background: linear-gradient(135deg, #f0c866, #e0a94a);
+  color: #3a2603;
   border: none;
-  box-shadow: 0 8px 20px rgba(240, 200, 102, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-  font-size: 18px;
+  box-shadow: 0 6px 18px -4px rgba(240, 200, 102, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  font-size: 17px;
+}
+
+.top-rank-1 .lb-pts-stat {
+  color: #f0c866;
+  text-shadow: 0 0 18px rgba(240, 200, 102, 0.6);
+}
+
+.tour-table tbody tr.top-rank-1:hover td {
+  background: linear-gradient(165deg, rgba(92, 48, 24, 0.95), rgba(48, 22, 16, 0.98));
+  border-top-color: rgba(240, 200, 102, 0.65);
+  border-bottom-color: rgba(240, 200, 102, 0.45);
+  box-shadow: 0 16px 36px -10px rgba(240, 200, 102, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Top Rank 2 - Silver Titan */
+.top-rank-2 td {
+  background: linear-gradient(165deg, rgba(58, 30, 36, 0.85), rgba(30, 15, 20, 0.94));
+  border-top-color: rgba(207, 211, 218, 0.3);
+  border-bottom-color: rgba(207, 211, 218, 0.18);
+  box-shadow: 0 10px 26px -12px rgba(207, 211, 218, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.top-rank-2 td:first-child {
+  border-right: 3px solid #cfd3da !important;
 }
 
 .top-rank-2 .lb-rank-badge {
   background: linear-gradient(135deg, #cfd3da, #9ca3af);
-  color: #000;
+  color: #111827;
   border: none;
-  box-shadow: 0 6px 16px rgba(207, 211, 218, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-  font-size: 18px;
+  box-shadow: 0 6px 16px -4px rgba(207, 211, 218, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  font-size: 17px;
+}
+
+.top-rank-2 .lb-pts-stat {
+  color: #e2e8f0;
+  text-shadow: 0 0 14px rgba(226, 232, 240, 0.45);
+}
+
+.tour-table tbody tr.top-rank-2:hover td {
+  background: linear-gradient(165deg, rgba(72, 38, 46, 0.92), rgba(38, 20, 26, 0.98));
+  border-top-color: rgba(207, 211, 218, 0.5);
+  border-bottom-color: rgba(207, 211, 218, 0.35);
+  box-shadow: 0 14px 32px -10px rgba(207, 211, 218, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Top Rank 3 - Bronze Flame */
+.top-rank-3 td {
+  background: linear-gradient(165deg, rgba(65, 30, 24, 0.85), rgba(35, 15, 15, 0.94));
+  border-top-color: rgba(214, 154, 99, 0.3);
+  border-bottom-color: rgba(214, 154, 99, 0.18);
+  box-shadow: 0 10px 26px -12px rgba(214, 154, 99, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.top-rank-3 td:first-child {
+  border-right: 3px solid #d69a63 !important;
 }
 
 .top-rank-3 .lb-rank-badge {
   background: linear-gradient(135deg, #d69a63, #ad6e33);
-  color: #000;
+  color: #2a1103;
   border: none;
-  box-shadow: 0 6px 16px rgba(214, 154, 99, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);
-  font-size: 18px;
+  box-shadow: 0 6px 16px -4px rgba(214, 154, 99, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 17px;
 }
 
-.top-rank-1 td {
-  background: linear-gradient(90deg, rgba(240, 200, 102, 0.06), rgba(240, 200, 102, 0.01));
-  border-top-color: rgba(240, 200, 102, 0.15);
-}
-
-.top-rank-2 td {
-  background: linear-gradient(90deg, rgba(207, 211, 218, 0.04), rgba(207, 211, 218, 0.005));
-  border-top-color: rgba(207, 211, 218, 0.1);
-}
-
-.top-rank-3 td {
-  background: linear-gradient(90deg, rgba(214, 154, 99, 0.04), rgba(214, 154, 99, 0.005));
-  border-top-color: rgba(214, 154, 99, 0.1);
-}
-
-.tour-table tbody tr.top-rank-1:hover td {
-  background: linear-gradient(90deg, rgba(240, 200, 102, 0.12), rgba(240, 200, 102, 0.03));
-  border-top-color: rgba(240, 200, 102, 0.25);
-}
-
-.tour-table tbody tr.top-rank-2:hover td {
-  background: linear-gradient(90deg, rgba(207, 211, 218, 0.08), rgba(207, 211, 218, 0.02));
-  border-top-color: rgba(207, 211, 218, 0.2);
+.top-rank-3 .lb-pts-stat {
+  color: #fcd34d;
+  text-shadow: 0 0 14px rgba(252, 211, 77, 0.4);
 }
 
 .tour-table tbody tr.top-rank-3:hover td {
-  background: linear-gradient(90deg, rgba(214, 154, 99, 0.08), rgba(214, 154, 99, 0.02));
-  border-top-color: rgba(214, 154, 99, 0.2);
+  background: linear-gradient(165deg, rgba(82, 38, 30, 0.92), rgba(44, 20, 20, 0.98));
+  border-top-color: rgba(214, 154, 99, 0.5);
+  border-bottom-color: rgba(214, 154, 99, 0.35);
+  box-shadow: 0 14px 32px -10px rgba(214, 154, 99, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
+/* Cells */
 .lb-team-cell,
 .lb-player-cell {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
-.lb-team-cell strong,
-.lb-player-cell strong {
-  font-size: 16px;
+.lb-name-txt {
+  font-size: 15px;
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.3px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Hex Shield Crest */
 .lb-crest {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  display: grid;
-  place-items: center;
-  font-size: 14px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s;
-}
-
-.lb-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(226, 69, 63, 0.05);
-  border: 1px solid rgba(226, 69, 63, 0.15);
-  display: grid;
-  place-items: center;
-  color: #ff8a80;
-  font-size: 18px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s;
+  color: #fff;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .tour-table tbody tr:hover .lb-crest {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  transform: scale(1.05) rotate(-5deg);
+  transform: scale(1.08) rotate(-4deg);
+}
+
+/* Player Avatar */
+.lb-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 90, 53, 0.25) 0%, rgba(30, 12, 15, 0.8) 100%);
+  border: 1px solid rgba(255, 90, 53, 0.35);
+  box-shadow: 0 0 14px -2px rgba(255, 90, 53, 0.35);
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .tour-table tbody tr:hover .lb-avatar {
-  background: rgba(226, 69, 63, 0.15);
-  border-color: rgba(226, 69, 63, 0.3);
-  color: #fff;
-  transform: scale(1.05) rotate(-5deg);
+  transform: scale(1.08);
+  border-color: rgba(255, 90, 53, 0.6);
+  box-shadow: 0 0 20px rgba(255, 90, 53, 0.5);
 }
 
-.lb-tag {
-  font-size: 11px;
-  font-weight: 800;
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.lb-game-tag {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.7);
-  transition: all 0.3s;
-}
-
-.tour-table tbody tr:hover .lb-game-tag {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
+/* Stats */
 .lb-stat {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted, #9c7570);
   transition: color 0.3s;
 }
 
-.tour-table tbody tr:hover .lb-stat {
-  color: rgba(255, 255, 255, 0.9);
+.lb-stat.stat-wins {
+  color: #4ad0a0;
+  font-weight: 800;
 }
 
-.lb-prize-stat {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--cream);
-  text-shadow: 0 2px 10px rgba(255, 240, 179, 0.2);
+.lb-stat.stat-losses {
+  color: var(--text-muted, #9c7570);
+  opacity: 0.8;
+}
+
+.tour-table tbody tr:hover .lb-stat.stat-wins {
+  color: #6ef5c3;
+  text-shadow: 0 0 10px rgba(74, 208, 160, 0.4);
 }
 
 .lb-pts-stat {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 900;
-  color: var(--cream);
-  text-shadow: 0 2px 12px rgba(255, 240, 179, 0.3);
+  color: #f0c866;
+  text-shadow: 0 0 14px rgba(240, 200, 102, 0.4);
 }
 
 /* =====================================================
@@ -1479,7 +1636,7 @@
   }
 
   /* Leaderboard header: title on its own line, game tabs swipe */
-  .tour-sec-h:has(.lb-games-tabs) {
+  .lb-header {
     flex-direction: column;
     align-items: stretch;
     gap: 14px;
@@ -1503,7 +1660,7 @@
 
   /* Breathing room between the teams/players filter and the table below it */
   .tour-table-controls {
-    margin: 2px 0 12px;
+    margin: 4px 0 14px;
   }
 
   .lb-tabs-new {
@@ -1516,9 +1673,14 @@
     padding: 0 10px;
   }
 
+  .lb-meta-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
   /* Leaderboard rows become cards: rank | name with wins/losses below | points */
   .tour-table-wrapper {
-    padding: 10px;
+    padding: 12px;
     border-radius: 22px;
   }
 
@@ -1546,11 +1708,12 @@
       'rank wins losses pts';
     align-items: center;
     column-gap: 12px;
-    row-gap: 2px;
+    row-gap: 4px;
     padding: 12px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 236, 230, 0.08);
     border-radius: 18px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+    background: linear-gradient(165deg, rgba(56, 21, 26, 0.8), rgba(32, 14, 17, 0.92));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 18px -10px rgba(0, 0, 0, 0.7);
   }
 
   .tour-table tbody tr:hover {
@@ -1558,18 +1721,21 @@
   }
 
   .tour-table tbody tr.top-rank-1 {
-    border-color: rgba(240, 200, 102, 0.22);
-    background: linear-gradient(90deg, rgba(240, 200, 102, 0.12), rgba(240, 200, 102, 0.02));
+    border-color: rgba(240, 200, 102, 0.35);
+    background: linear-gradient(165deg, rgba(74, 38, 20, 0.9), rgba(38, 18, 14, 0.96));
+    border-right: 3px solid #f0c866 !important;
   }
 
   .tour-table tbody tr.top-rank-2 {
-    border-color: rgba(207, 211, 218, 0.16);
-    background: linear-gradient(90deg, rgba(207, 211, 218, 0.08), rgba(207, 211, 218, 0.015));
+    border-color: rgba(207, 211, 218, 0.28);
+    background: linear-gradient(165deg, rgba(58, 30, 36, 0.88), rgba(30, 15, 20, 0.95));
+    border-right: 3px solid #cfd3da !important;
   }
 
   .tour-table tbody tr.top-rank-3 {
-    border-color: rgba(214, 154, 99, 0.18);
-    background: linear-gradient(90deg, rgba(214, 154, 99, 0.09), rgba(214, 154, 99, 0.015));
+    border-color: rgba(214, 154, 99, 0.28);
+    background: linear-gradient(165deg, rgba(65, 30, 24, 0.88), rgba(35, 15, 15, 0.95));
+    border-right: 3px solid #d69a63 !important;
   }
 
   .tour-table tbody td,
@@ -1579,10 +1745,10 @@
     display: block;
     width: auto;
     padding: 0;
-    border: 0;
+    border: 0 !important;
     border-radius: 0;
-    background: none;
-    box-shadow: none;
+    background: none !important;
+    box-shadow: none !important;
     text-align: right;
   }
 
@@ -1610,17 +1776,17 @@
   .tour-table td:nth-child(3)::before,
   .tour-table td:nth-child(4)::before {
     margin-left: 4px;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-muted, #9c7570);
     font-size: 11px;
     font-weight: 600;
   }
 
   .tour-table td:nth-child(3)::before {
-    content: 'برد';
+    content: 'برد: ';
   }
 
   .tour-table td:nth-child(4)::before {
-    content: 'باخت';
+    content: 'باخت: ';
   }
 
   .lb-stat {
@@ -1628,8 +1794,8 @@
   }
 
   .lb-rank-badge {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
 
   .lb-team-cell,
@@ -1642,11 +1808,10 @@
     flex: none;
     width: 34px;
     height: 34px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
-  .lb-team-cell strong,
-  .lb-player-cell strong {
+  .lb-name-txt {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
@@ -94,6 +94,17 @@ const STEPS = [
   { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: 'پس از بسته شدن ثبت‌نام، براکت مسابقات منتشر می‌شود و حریف خود را در همین صفحه می‌بینید.' },
 ];
 
+const CREST_PALETTES = [
+  ['#ff5a35', '#7a1f16'], // Flame Crimson
+  ['#a97bd6', '#5a2b6e'], // Royal Violet
+  ['#4ad0a0', '#1a6b52'], // Neon Emerald
+  ['#6fa8dc', '#1c4a7a'], // Falcon Blue
+  ['#f0c866', '#8a5a14'], // Gold Lynx
+  ['#ff9a4a', '#9a4a14'], // Solar Hawk
+  ['#e06fb0', '#7a2358'], // Pixel Pink
+  ['#7fd6ff', '#1c6f99'], // Arctic Cyan
+];
+
 function Leaderboards() {
   const games = useApi(() => catalogApi.games({ is_featured: true }));
   const playable = (games.data ?? []).filter(game => game.kind === 'game');
@@ -109,32 +120,65 @@ function Leaderboards() {
 
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const indicatorRef = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
+  const modePillRef = useRef<HTMLSpanElement>(null);
+  const teamsBtnRef = useRef<HTMLButtonElement>(null);
+  const playersBtnRef = useRef<HTMLButtonElement>(null);
+
+  const updateGamePill = useCallback(() => {
     const el = game ? tabRefs.current[game] : null;
     const indicator = indicatorRef.current;
     if (!el || !indicator) return;
-    indicator.style.transform = `translateX(${el.offsetLeft}px)`;
+    indicator.style.left = `${el.offsetLeft}px`;
     indicator.style.width = `${el.offsetWidth}px`;
-  }, [game, games.data]);
+  }, [game]);
+
+  const updateModePill = useCallback(() => {
+    const activeBtn = mode === 'teams' ? teamsBtnRef.current : playersBtnRef.current;
+    const pill = modePillRef.current;
+    if (!activeBtn || !pill) return;
+    pill.style.left = `${activeBtn.offsetLeft}px`;
+    pill.style.width = `${activeBtn.offsetWidth}px`;
+  }, [mode]);
+
+  useEffect(() => {
+    updateGamePill();
+    updateModePill();
+    window.addEventListener('resize', updateGamePill);
+    window.addEventListener('resize', updateModePill);
+    return () => {
+      window.removeEventListener('resize', updateGamePill);
+      window.removeEventListener('resize', updateModePill);
+    };
+  }, [updateGamePill, updateModePill, games.data]);
 
   const loading = mode === 'teams' ? teams.loading : players.loading;
   const rows =
     mode === 'teams'
-      ? (teams.data?.results ?? []).map(row => ({
-          key: `t${row.team.id}`,
-          rank: row.rank,
-          name: row.team.name,
-          badge: <div className="lb-crest">{initials(row.team.name)}</div>,
-          wins: row.wins,
-          losses: row.losses,
-          points: row.points,
-        }))
+      ? (teams.data?.results ?? []).map((row, idx) => {
+          const pal = CREST_PALETTES[idx % CREST_PALETTES.length];
+          return {
+            key: `t${row.team.id}`,
+            rank: row.rank,
+            name: row.team.name,
+            badge: (
+              <div
+                className="lb-crest"
+                style={{ background: `linear-gradient(140deg, ${pal[0]}, ${pal[1]})` }}
+              >
+                {initials(row.team.name)}
+              </div>
+            ),
+            wins: row.wins,
+            losses: row.losses,
+            points: row.points,
+          };
+        })
       : (players.data?.results ?? []).map(row => ({
           key: `p${row.player.id}`,
           rank: row.rank,
           name: row.player.displayName,
           badge: (
-            <div className="lb-avatar" style={{ transform: 'scale(0.8)' }}>
+            <div className="lb-avatar">
               <ProfileAvatar seed={row.player.avatarSeed} score={row.player.points} image={row.player.avatar} />
             </div>
           ),
@@ -145,34 +189,58 @@ function Leaderboards() {
 
   return (
     <>
-      <div className="tour-sec-h reveal" style={{ '--d': 9 } as React.CSSProperties}>
-        <h2>جدول رتبه‌بندی فصل</h2>
-        <div className="lb-games-tabs">
-          <span className="lb-game-tab-ind" ref={indicatorRef}></span>
-          {playable.map(item => (
-            <button
-              key={item.slug}
-              ref={el => {
-                tabRefs.current[item.slug] = el;
-              }}
-              className={`lb-game-tab ${game === item.slug ? 'active' : ''}`}
-              onClick={() => setActiveGame(item.slug)}
-            >
-              {item.iconImage && <img src={item.iconImage} alt="" aria-hidden="true" />}
-              {item.title}
-            </button>
-          ))}
+      <div className="lb-header reveal" style={{ '--d': 9 } as React.CSSProperties}>
+        <div className="lb-head-left">
+          <div className="lb-accent-bar" />
+          <div>
+            <div className="lb-title-wrap">
+              <h2>جدول رتبه‌بندی فصل</h2>
+              <span className="lb-badge-season">★ فصل اول</span>
+            </div>
+            <p className="lb-head-sub">برترین تیم‌ها و بازیکنان لیگ تایتان · ثبت زنده امتیازات و جدول مسابقات</p>
+          </div>
+        </div>
+        <div className="lb-head-right">
+          <div className="lb-games-tabs">
+            <span className="lb-game-tab-ind" ref={indicatorRef}></span>
+            {playable.map(item => (
+              <button
+                key={item.slug}
+                ref={el => {
+                  tabRefs.current[item.slug] = el;
+                }}
+                className={`lb-game-tab ${game === item.slug ? 'active' : ''}`}
+                onClick={() => setActiveGame(item.slug)}
+              >
+                {item.iconImage && <img src={item.iconImage} alt="" aria-hidden="true" />}
+                <span>{item.title}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="tour-table-controls reveal" style={{ '--d': 10 } as React.CSSProperties}>
         <div className="lb-tabs-new">
-          <button className={`lb-tab-btn ${mode === 'teams' ? 'active' : ''}`} onClick={() => setMode('teams')}>
+          <span className="lb-mode-pill" ref={modePillRef}></span>
+          <button
+            ref={teamsBtnRef}
+            className={`lb-tab-btn ${mode === 'teams' ? 'active' : ''}`}
+            onClick={() => setMode('teams')}
+          >
             <Icon name="users" /> برترین تیم‌ها
           </button>
-          <button className={`lb-tab-btn ${mode === 'players' ? 'active' : ''}`} onClick={() => setMode('players')}>
+          <button
+            ref={playersBtnRef}
+            className={`lb-tab-btn ${mode === 'players' ? 'active' : ''}`}
+            onClick={() => setMode('players')}
+          >
             <Icon name="user" /> برترین بازیکنان
           </button>
+        </div>
+        <div className="lb-meta-badge">
+          <span className="lb-dot-live"></span>
+          <span>لیگ رسمی تایتان</span>
         </div>
       </div>
 
@@ -203,16 +271,14 @@ function Leaderboards() {
                   <td>
                     <div className={mode === 'teams' ? 'lb-team-cell' : 'lb-player-cell'}>
                       {row.badge}
-                      <strong>{row.name}</strong>
+                      <strong className="lb-name-txt">{row.name}</strong>
                     </div>
                   </td>
                   <td>
-                    <span className="lb-stat">{faNumber(row.wins)}</span>
+                    <span className="lb-stat stat-wins">{faNumber(row.wins)}</span>
                   </td>
                   <td>
-                    <span className="lb-stat" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
-                      {faNumber(row.losses)}
-                    </span>
+                    <span className="lb-stat stat-losses">{faNumber(row.losses)}</span>
                   </td>
                   <td>
                     <strong className="lb-pts-stat">{faNumber(row.points)}</strong>
