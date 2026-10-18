@@ -1350,44 +1350,10 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Circular Shield Crest */
-.lb-crest {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 900;
-  color: #fff;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.tour-table tbody tr:hover .lb-crest {
-  transform: scale(1.08) rotate(-4deg);
-}
-
-/* Player Avatar */
-.lb-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 90, 53, 0.25) 0%, rgba(30, 12, 15, 0.8) 100%);
-  border: 1px solid rgba(255, 90, 53, 0.35);
-  box-shadow: 0 0 14px -2px rgba(255, 90, 53, 0.35);
-  display: grid;
-  place-items: center;
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.tour-table tbody tr:hover .lb-avatar {
-  transform: scale(1.08);
-  border-color: rgba(255, 90, 53, 0.6);
-  box-shadow: 0 0 20px rgba(255, 90, 53, 0.5);
+/* Leaderboard Badges */
+.tour-table tbody tr:hover .rank-frame-wrap {
+  filter: brightness(1.25);
+  transition: filter 0.3s ease;
 }
 
 /* Stats */
@@ -1823,30 +1789,13 @@
     gap: 10px;
     min-width: 0;
     width: 100%;
+    overflow: visible;
   }
 
-  .lb-crest {
-    flex: 0 0 36px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 11px;
-  }
-
-  .lb-avatar {
-    flex: 0 0 36px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .lb-avatar > div {
-    transform: scale(0.82);
+  .lb-team-cell > span,
+  .lb-player-cell > span {
+    flex: 0 0 auto;
+    transform: scale(0.9);
     transform-origin: center center;
   }
 
@@ -1944,15 +1893,9 @@
     border-radius: 8px;
   }
 
-  .lb-crest,
-  .lb-avatar {
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
-  }
-
-  .lb-avatar > div {
-    transform: scale(0.74);
+  .lb-team-cell > span,
+  .lb-player-cell > span {
+    transform: scale(0.8);
   }
 
   .lb-name-txt {

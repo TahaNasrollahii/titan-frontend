@@ -5,6 +5,7 @@
   place-items: center;
   width: var(--size);
   height: var(--size);
+  overflow: visible;
 }
 
 /* The global 68px rank frame, scaled to --size */
@@ -14,6 +15,7 @@
   left: 50%;
   transform: translate(-50%, -50%) scale(var(--scale));
   pointer-events: none;
+  overflow: visible;
 }
 
 .tuck :global(.rank-frame-ornament) {
@@ -24,11 +26,14 @@
 .picture {
   position: relative;
   z-index: 2;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 54px;
   height: 54px;
   overflow: hidden;
   border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .picture img,

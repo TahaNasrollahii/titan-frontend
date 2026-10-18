@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
-import { ProfileAvatar } from '@/components/ProfileAvatar';
+import { RankAvatar } from '@/components/RankAvatar';
 import { ScoreWidget } from '@/components/ScoreWidget';
 import { TournamentCard } from '@/components/TournamentCard';
 import { Empty, Loading } from '@/components/ui/State';
@@ -15,7 +15,7 @@ import type { TournamentSummary } from '@/lib/api/types';
 import { faNumber, initials, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
-import { getOrnamentSVGWrapper, getRingSVG, rankFromApi } from '@/utils/ranks';
+import { CREST_PALETTES, getOrnamentSVGWrapper, getRingSVG, rankFromApi } from '@/utils/ranks';
 
 import './tournament.css';
 
@@ -93,17 +93,6 @@ const STEPS = [
   { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: 'پس از بسته شدن ثبت‌نام، براکت مسابقات منتشر می‌شود و حریف خود را در همین صفحه می‌بینید.' },
 ];
 
-const CREST_PALETTES = [
-  ['#ff5a35', '#7a1f16'], // Flame Crimson
-  ['#a97bd6', '#5a2b6e'], // Royal Violet
-  ['#4ad0a0', '#1a6b52'], // Neon Emerald
-  ['#6fa8dc', '#1c4a7a'], // Falcon Blue
-  ['#f0c866', '#8a5a14'], // Gold Lynx
-  ['#ff9a4a', '#9a4a14'], // Solar Hawk
-  ['#e06fb0', '#7a2358'], // Pixel Pink
-  ['#7fd6ff', '#1c6f99'], // Arctic Cyan
-];
-
 function Leaderboards() {
   const games = useApi(() => catalogApi.games({ is_featured: true }));
   const playable = (games.data ?? []).filter(game => game.kind === 'game');
@@ -160,26 +149,31 @@ function Leaderboards() {
             rank: row.rank,
             name: row.team.name,
             badge: (
-              <div
-                className="lb-crest"
-                style={{ background: `linear-gradient(140deg, ${pal[0]}, ${pal[1]})` }}
-              >
-                {initials(row.team.name)}
-              </div>
+              <RankAvatar
+                score={row.points}
+                size={42}
+                uid={`th-t-${row.team.id}-${row.rank}`}
+                crestText={initials(row.team.name)}
+                crestBackground={`linear-gradient(140deg, ${pal[0]}, ${pal[1]})`}
+              />
             ),
             wins: row.wins,
             losses: row.losses,
             points: row.points,
           };
         })
-      : (players.data?.results ?? []).map(row => ({
+      : (players.data?.results ?? []).map((row, idx) => ({
           key: `p${row.player.id}`,
           rank: row.rank,
           name: row.player.displayName,
           badge: (
-            <div className="lb-avatar">
-              <ProfileAvatar seed={row.player.avatarSeed} score={row.player.points} image={row.player.avatar} />
-            </div>
+            <RankAvatar
+              score={row.points || row.player.points}
+              size={42}
+              uid={`th-p-${row.player.id}-${idx}`}
+              avatar={row.player.avatar}
+              avatarSeed={row.player.avatarSeed}
+            />
           ),
           wins: row.wins,
           losses: row.losses,

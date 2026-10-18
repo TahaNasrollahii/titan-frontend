@@ -1,59 +1,21 @@
-import React from 'react';
+'use client';
 
-import { getOrnamentSVGWrapper, getRingSVG, getTierByScore } from '@/utils/ranks';
+import React, { useId } from 'react';
 
-import { Avatar } from './Icons';
+import { RankAvatar } from './RankAvatar';
 
 interface ProfileAvatarProps {
   seed?: number;
   score?: number;
   /** Uploaded avatar URL; falls back to the generated avatar for ``seed``. */
   image?: string | null;
+  size?: number;
 }
 
-export function ProfileAvatar({ seed = 5, score = 0, image }: ProfileAvatarProps) {
-  const rank = getTierByScore(score);
+export function ProfileAvatar({ seed = 5, score = 0, image, size = 40 }: ProfileAvatarProps) {
+  const rawId = useId();
+  const uid = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
 
-  return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div
-        className="rank-frame-wrap"
-        data-tier={rank.id}
-        style={
-          {
-            '--tier-glow': rank.glow,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(0.82)',
-            pointerEvents: 'none',
-            zIndex: 10,
-          } as React.CSSProperties
-        }
-      >
-        <span className="rank-frame-glow" aria-hidden="true"></span>
-        <span className="rank-frame-ring">{getRingSVG(rank)}</span>
-        <span className="rank-frame-ornament">{getOrnamentSVGWrapper(rank)}</span>
-      </div>
-
-      <span
-        className="face"
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          display: 'block',
-        }}
-      >
-        {image ? (
-          <img src={image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <Avatar seed={seed} />
-        )}
-      </span>
-    </div>
-  );
+  return <RankAvatar score={score} size={size} uid={uid} avatar={image} avatarSeed={seed} />;
 }
+

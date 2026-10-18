@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 
 import dynamic from 'next/dynamic';
 import { Avatar, Icon } from '@/components/Icons';
+import { RankAvatar } from '@/components/RankAvatar';
 import { Empty, ErrorState, Loading } from '@/components/ui/State';
 
 const BracketView = dynamic(
@@ -15,6 +16,7 @@ const BracketView = dynamic(
 );
 import { SpecialEventBracket } from '@/components/SpecialEventBracket';
 import { convertBracketRoundsToEventData, getSpecialEvent } from '@/lib/specialEvents';
+import { CREST_PALETTES } from '@/utils/ranks';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL, errorMessage } from '@/lib/api/client';
@@ -495,14 +497,20 @@ function Participants({ slug }: { slug: string }) {
         const row = (
           <div className={`${styles.participantListRow} spot spot-track`} style={{ '--d': i } as React.CSSProperties}>
             <div className={styles.participantIndex}>{String(i + 1).padStart(2, '0')}</div>
-            <div className={`${styles.participantAvatar} ${p.kind === 'team' ? styles.participantCrest : ''}`}>
-              {p.logo ? (
-                <img src={p.logo} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : p.kind === 'team' ? (
-                initials(p.name)
-              ) : (
-                <Avatar seed={p.avatarSeed ?? 1} />
-              )}
+            <div className={styles.participantAvatarWrap}>
+              <RankAvatar
+                score={p.points}
+                size={46}
+                uid={`td-part-${p.id}-${i}`}
+                avatar={p.logo}
+                avatarSeed={p.avatarSeed}
+                crestText={p.kind === 'team' && !p.logo ? initials(p.name) : undefined}
+                crestBackground={
+                  p.kind === 'team'
+                    ? `linear-gradient(140deg, ${CREST_PALETTES[i % CREST_PALETTES.length][0]}, ${CREST_PALETTES[i % CREST_PALETTES.length][1]})`
+                    : undefined
+                }
+              />
             </div>
             <div className={styles.participantDetails}>
               <div className={styles.participantName}>{p.name}</div>

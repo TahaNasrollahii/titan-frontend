@@ -22,6 +22,17 @@ export const RANKS: RankVisual[] = [
   { id: 'titan', name: 'Titan', pts: '+۲۰,۰۰۰ امتیاز', desc: 'خدای بی‌رقیب میدان؛ اسطوره تایتان‌ها', from: '#ff3b30', to: '#3a0000', glow: 'rgba(255,40,30,.75)', ornament: 'titan' }
 ];
 
+export const CREST_PALETTES = [
+  ['#ff5a35', '#7a1f16'], // Flame Crimson
+  ['#a97bd6', '#5a2b6e'], // Royal Violet
+  ['#4ad0a0', '#1a6b52'], // Neon Emerald
+  ['#6fa8dc', '#1c4a7a'], // Falcon Blue
+  ['#f0c866', '#8a5a14'], // Gold Lynx
+  ['#ff9a4a', '#9a4a14'], // Solar Hawk
+  ['#e06fb0', '#7a2358'], // Pixel Pink
+  ['#7fd6ff', '#1c6f99'], // Arctic Cyan
+];
+
 /** Convert a rank tier from the API into the shape the ring/ornament renderers expect. */
 export const rankFromApi = (tier: RankTier): RankVisual => ({
   id: tier.slug,
