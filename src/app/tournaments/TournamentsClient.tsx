@@ -134,6 +134,7 @@ function TournamentResults({
   useSpotlight('.spot-track', [items]);
 
   const loadMore = () => {
+    if (loading || !hasMore) return;
     setLoading(true);
     void fetchPage(page + 1);
   };

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React from 'react';
 
 import type { Participant, TournamentSummary } from '@/lib/api/types';
-import { initials, jalaliDateTime, prize, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
+import { initials, jalaliDateTime, mediaUrl, prize, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
 
 import { Icon } from './Icons';
 
@@ -36,12 +36,13 @@ export function TournamentCard({ tournament, index }: { tournament: TournamentSu
       <div className="mc-hero" style={{ overflow: 'hidden', position: 'relative' }}>
         {tournament.coverImage && (
           <Image
-            src={tournament.coverImage}
+            src={mediaUrl(tournament.coverImage)}
             alt={tournament.title}
             fill
             sizes="(max-width: 768px) 100vw, 400px"
             priority={index < 2}
             style={{ objectFit: 'cover' }}
+            unoptimized={process.env.NODE_ENV !== 'production'}
           />
         )}
         <div className="mc-hero-overlay"></div>

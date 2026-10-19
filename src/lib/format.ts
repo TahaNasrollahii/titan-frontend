@@ -88,3 +88,14 @@ export function initials(name: string): string {
 }
 
 export const PRODUCT_BADGE_LABELS: Record<string, string> = { bestseller: 'پرفروش', discount: 'تخفیف', new: 'جدید' };
+
+/** Normalize media URLs so localhost/127.0.0.1 media paths become relative /media/... */
+export function mediaUrl(url: string | null | undefined, fallback = ''): string {
+  if (!url) return fallback;
+  if (url.startsWith('/media/')) return url;
+  if (url.startsWith('media/')) return `/${url}`;
+  if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+    return `/media/${url}`;
+  }
+  return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000\/media\//, '/media/');
+}

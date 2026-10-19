@@ -4,7 +4,7 @@ import { Flame, Heart, MessageSquare, Minus, Plus, ShieldCheck, Trophy, Zap } fr
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
@@ -12,7 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/lib/api/client';
 import { catalogApi } from '@/lib/api/endpoints';
 import type { Product, ProductVariant } from '@/lib/api/types';
-import { faNumber, productPrice, toman } from '@/lib/format';
+import { faNumber, mediaUrl, productPrice, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import styles from './product.module.css';
@@ -25,11 +25,11 @@ const FEATURE_ICONS: Record<string, React.ElementType> = {
 };
 
 const SPEC_LABELS: Record<string, string> = {
-  region: '╪▒█î╪¼┘å',
-  delivery: '╪▓┘à╪º┘å ╪¬╪¡┘ê█î┘ä',
-  activation: '┘å╪¡┘ê┘ç ┘ü╪╣╪º┘äΓÇî╪│╪º╪▓█î',
-  warranty: '┌»╪º╪▒╪º┘å╪¬█î',
-  condition: '┘ê╪╢╪╣█î╪¬ ┌⌐╪º┘ä╪º',
+  region: 'ریجن',
+  delivery: 'زمان تحویل',
+  activation: 'نحوه فعال‌سازی',
+  warranty: 'گارانتی',
+  condition: 'وضعیت کالا',
 };
 
 type Tab = 'description' | 'specs' | 'reviews';
@@ -60,6 +60,24 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
     [data, variantId],
   );
 
+  const fallbackImage = useMemo(() => {
+    if (!data) return '/images/banner-hero.webp';
+    if (data.slug?.includes('valorant') || data.game?.slug === 'valorant') {
+      return '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp';
+    }
+    return '/images/banner-hero.webp';
+  }, [data]);
+
+  const [currentImage, setCurrentImage] = useState<string>('');
+
+  useEffect(() => {
+    if (data?.image) {
+      setCurrentImage(mediaUrl(data.image));
+    } else if (fallbackImage) {
+      setCurrentImage(fallbackImage);
+    }
+  }, [data?.image, fallbackImage]);
+
   if (product.loading && !data) return <Loading />;
   if (!data) return <ErrorState error={product.error} onRetry={product.reload} />;
 
@@ -82,13 +100,13 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
       else await catalogApi.addToWishlist(data.slug);
     } catch (error) {
       product.setData({ ...data, isWishlisted: wished });
-      addToast({ title: '╪╣┘ä╪º┘é┘çΓÇî┘à┘å╪»█îΓÇî┘ç╪º', text: errorMessage(error), icon: 'favorite', tone: 'error' });
+      addToast({ title: 'علاقه‌مندی‌ها', text: errorMessage(error), icon: 'favorite', tone: 'error' });
     }
   };
 
   const handleAddToCart = async () => {
     if (data.hasVariants && !variant) {
-      addToast({ title: '█î┌⌐ ┌»╪▓█î┘å┘ç ╪º┘å╪¬╪«╪º╪¿ ┌⌐┘å█î╪»', icon: 'store', tone: 'warning' });
+      addToast({ title: 'یک گزینه انتخاب کنید', icon: 'store', tone: 'warning' });
       return;
     }
     setAdding(true);
@@ -108,17 +126,17 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
   };
 
   const specs: [string, string][] = [
-    ...(data.vendor ? [['┘å╪º╪┤╪▒ / ┘ü╪▒┘ê╪┤┌»╪º┘ç', data.vendor] as [string, string]] : []),
-    ['╪»╪│╪¬┘çΓÇî╪¿┘å╪»█î', data.category.name],
-    ...(data.platforms.length ? [['┘╛┘ä╪¬┘ü╪▒┘àΓÇî┘ç╪º', data.platforms.map(p => p.name).join('╪î ')] as [string, string]] : []),
-    ...(data.deliveryInfo ? [['┘å╪¡┘ê┘ç ╪¬╪¡┘ê█î┘ä', data.deliveryInfo] as [string, string]] : []),
+    ...(data.vendor ? [['ناشر / فروشگاه', data.vendor] as [string, string]] : []),
+    ['دسته‌بندی', data.category.name],
+    ...(data.platforms.length ? [['پلتفرم‌ها', data.platforms.map(p => p.name).join('، ')] as [string, string]] : []),
+    ...(data.deliveryInfo ? [['نحوه تحویل', data.deliveryInfo] as [string, string]] : []),
     ...Object.entries(data.specs).map(([key, value]) => [SPEC_LABELS[key] ?? key, String(value)] as [string, string]),
   ];
 
   return (
     <div className={styles.container} dir="rtl">
       <nav className={styles.breadcrumb}>
-        <Link href="/store">┘ü╪▒┘ê╪┤┌»╪º┘ç</Link>
+        <Link href="/store">فروشگاه</Link>
         {data.game && (
           <>
             <span className={styles.separator}>&gt;</span>
@@ -135,7 +153,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             {data.badges.includes('bestseller') ? (
               <div className={styles.badgePopular}>
                 <Trophy size={16} className={styles.flameIcon} />
-                <span>┘╛╪▒┘ü╪▒┘ê╪┤</span>
+                <span>پرفروش</span>
               </div>
             ) : (
               <span />
@@ -166,13 +184,13 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               <Stars value={data.rating} />
             </div>
             <div className={styles.reviewers}>
-              <span className={styles.reviewersCount}>{faNumber(data.reviewCount)} ┘å╪╕╪▒</span>
+              <span className={styles.reviewersCount}>{faNumber(data.reviewCount)} نظر</span>
             </div>
           </div>
 
           {data.hasVariants && (
             <div className={styles.optionsBlock}>
-              <div className={styles.sectionLabel}>╪º┘å╪¬╪«╪º╪¿ ┌»╪▓█î┘å┘ç</div>
+              <div className={styles.sectionLabel}>انتخاب گزینه</div>
               <div className={styles.optionsGrid} role="radiogroup">
                 {data.variants.map(option => (
                   <button
@@ -185,12 +203,12 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
                     onClick={() => setVariantId(option.id)}
                   >
                     {option.discountPercent > 0 && (
-                      <span className={styles.optionTag}>┘¬{faNumber(option.discountPercent)}</span>
+                      <span className={styles.optionTag}>٪{faNumber(option.discountPercent)}</span>
                     )}
                     <span className={styles.optionLabel}>{option.label}</span>
                     <span className={styles.optionPrice}>{toman(option.price)}</span>
                     {option.originalPrice && <span className={styles.optionOld}>{faNumber(option.originalPrice)}</span>}
-                    {!option.inStock && <span className={styles.optionOld}>┘å╪º┘à┘ê╪¼┘ê╪»</span>}
+                    {!option.inStock && <span className={styles.optionOld}>ناموجود</span>}
                   </button>
                 ))}
               </div>
@@ -201,13 +219,13 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             <div className={styles.priceRow}>
               <div className={styles.priceValues}>
                 <span className={styles.currentPrice}>
-                  {price != null ? faNumber(price) : productPrice(data)} <span>╪¬┘ê┘à╪º┘å</span>
+                  {price != null ? faNumber(price) : productPrice(data)} <span>تومان</span>
                 </span>
                 {originalPrice && <span className={styles.oldPrice}>{faNumber(originalPrice)}</span>}
               </div>
               {discount > 0 && (
                 <div className={styles.discountBadge}>
-                  <Flame size={16} /> ┘¬{faNumber(discount)} ╪¬╪«┘ü█î┘ü
+                  <Flame size={16} /> ٪{faNumber(discount)} تخفیف
                 </div>
               )}
             </div>
@@ -215,13 +233,13 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               {!inStock ? (
                 <div className={styles.stockLeft}>
                   <span className={styles.redDot}></span>
-                  <span>┘å╪º┘à┘ê╪¼┘ê╪»</span>
+                  <span>ناموجود</span>
                 </div>
               ) : (
                 lowStock && (
                   <div className={styles.stockLeft}>
                     <span className={styles.redDot}></span>
-                    <span>┘ü┘é╪╖ {faNumber(lowStock)} ╪╣╪»╪» ╪¿╪º┘é█î ┘à╪º┘å╪»┘ç</span>
+                    <span>فقط {faNumber(lowStock)} عدد باقی مانده</span>
                   </div>
                 )
               )}
@@ -232,7 +250,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             <button
               className={`${styles.wishlistBtn} ${data.isWishlisted ? styles.liked : ''}`}
               onClick={toggleWishlist}
-              aria-label="╪╣┘ä╪º┘é┘çΓÇî┘à┘å╪»█î"
+              aria-label="علاقه‌مندی"
             >
               <Heart
                 size={20}
@@ -242,14 +260,14 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             </button>
             <button className={styles.addToCartBtn} onClick={handleAddToCart} disabled={!inStock || adding}>
               <Plus size={20} />
-              {inStock ? '╪º┘ü╪▓┘ê╪»┘å ╪¿┘ç ╪│╪¿╪»' : '┘å╪º┘à┘ê╪¼┘ê╪»'}
+              {inStock ? 'افزودن به سبد' : 'ناموجود'}
             </button>
             <div className={styles.quantityControl}>
-              <button onClick={() => setQuantity(q => Math.min(q + 1, 20))} aria-label="╪º┘ü╪▓╪º█î╪┤">
+              <button onClick={() => setQuantity(q => Math.min(q + 1, 20))} aria-label="افزایش">
                 <Plus size={16} />
               </button>
               <span>{faNumber(quantity)}</span>
-              <button onClick={() => setQuantity(q => Math.max(q - 1, 1))} aria-label="┌⌐╪º┘ç╪┤">
+              <button onClick={() => setQuantity(q => Math.max(q - 1, 1))} aria-label="کاهش">
                 <Minus size={16} />
               </button>
             </div>
@@ -274,18 +292,61 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
 
         <div className={styles.imageColumn}>
           <div className={styles.mainImageArea}>
-            {(data.image || (data.slug?.includes('valorant') || data.game?.slug === 'valorant' ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp' : null)) && (
+            {(currentImage || data.image || fallbackImage) && (
               <Image
-                src={data.image || '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'}
+                src={currentImage || mediaUrl(data.image) || fallbackImage}
                 alt={data.title}
                 className={styles.mainImage}
                 width={500}
                 height={500}
                 priority
                 sizes="(max-width: 768px) 100vw, 500px"
+                unoptimized={process.env.NODE_ENV !== 'production'}
+                onError={() => {
+                  if (currentImage !== fallbackImage) {
+                    setCurrentImage(fallbackImage);
+                  }
+                }}
               />
             )}
           </div>
+          {data.gallery && data.gallery.length > 0 && (
+            <div className={styles.galleryThumbnails}>
+              {data.image && (
+                <button
+                  type="button"
+                  className={`${styles.thumbBtn} ${currentImage === mediaUrl(data.image) ? styles.thumbActive : ''}`}
+                  onClick={() => setCurrentImage(mediaUrl(data.image))}
+                >
+                  <Image
+                    src={mediaUrl(data.image)}
+                    alt={data.title}
+                    width={80}
+                    height={80}
+                    unoptimized={process.env.NODE_ENV !== 'production'}
+                  />
+                </button>
+              )}
+              {data.gallery.map((g, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`${styles.thumbBtn} ${currentImage === (g.image ? mediaUrl(g.image) : '') ? styles.thumbActive : ''}`}
+                  onClick={() => g.image && setCurrentImage(mediaUrl(g.image))}
+                >
+                  {g.image && (
+                    <Image
+                      src={mediaUrl(g.image)}
+                      alt={g.alt || data.title}
+                      width={80}
+                      height={80}
+                      unoptimized={process.env.NODE_ENV !== 'production'}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -294,23 +355,23 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
           className={`${styles.tabItem} ${tab === 'description' ? styles.tabActive : ''}`}
           onClick={() => setTab('description')}
         >
-          ╪¬┘ê╪╢█î╪¡╪º╪¬
+          توضیحات
         </button>
         <button className={`${styles.tabItem} ${tab === 'specs' ? styles.tabActive : ''}`} onClick={() => setTab('specs')}>
-          ┘à╪┤╪«╪╡╪º╪¬
+          مشخصات
         </button>
         <button
           className={`${styles.tabItem} ${tab === 'reviews' ? styles.tabActive : ''}`}
           onClick={() => setTab('reviews')}
         >
-          ┘å╪╕╪▒╪º╪¬ <span className={styles.tabBadge}>{faNumber(data.reviewCount)}</span>
+          نظرات <span className={styles.tabBadge}>{faNumber(data.reviewCount)}</span>
         </button>
       </div>
 
       {tab === 'description' && (
         <div className={styles.aboutSection}>
-          <h2>╪»╪▒╪¿╪º╪▒┘ç {data.title}</h2>
-          <p>{data.description || '╪¬┘ê╪╢█î╪¡╪º╪¬█î ╪¿╪▒╪º█î ╪º█î┘å ┘à╪¡╪╡┘ê┘ä ╪½╪¿╪¬ ┘å╪┤╪»┘ç ╪º╪│╪¬.'}</p>
+          <h2>درباره {data.title}</h2>
+          <p>{data.description || 'توضیحاتی برای این محصول ثبت نشده است.'}</p>
           {data.tags.length > 0 && (
             <div className={styles.aboutTags}>
               {data.tags.map(tag => (
@@ -325,7 +386,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
 
       {tab === 'specs' && (
         <div className={styles.aboutSection}>
-          <h2>┘à╪┤╪«╪╡╪º╪¬</h2>
+          <h2>مشخصات</h2>
           <table className={styles.specTable}>
             <tbody>
               {specs.map(([label, value]) => (
@@ -346,7 +407,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
           <div className={styles.recommendedHeader}>
             <div className={styles.recommendedTitle}>
               <span className={styles.redBar}></span>
-              ╪┤╪º█î╪» ╪¿┘╛╪│┘å╪»█î╪»
+              شاید بپسندید
             </div>
           </div>
 
@@ -355,13 +416,14 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               <Link key={item.id} href={`/product/${item.slug}`} className={styles.recCard}>
                 {item.image && (
                   <Image
-                    src={item.image}
+                    src={mediaUrl(item.image)}
                     className={styles.recImage}
                     alt={item.title}
                     width={180}
                     height={180}
                     sizes="160px"
                     draggable={false}
+                    unoptimized={process.env.NODE_ENV !== 'production'}
                   />
                 )}
                 <div className={styles.recOverlay}>

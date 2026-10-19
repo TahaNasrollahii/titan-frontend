@@ -2,7 +2,9 @@ import type { NextConfig } from "next";
 
 // Same default as src/lib/api/client.ts. /media is proxied to wherever the API runs; deployed
 // backends return absolute media URLs (Vercel Blob), so this only matters for relative ones.
-const API_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1").origin;
+// Using 127.0.0.1 instead of localhost avoids Node IPv6 connection issues to Django on Windows.
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api/v1";
+const API_ORIGIN = new URL(rawApiUrl).origin.replace("localhost", "127.0.0.1");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -11,9 +13,9 @@ const cspDirectives = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com ${isProd ? '' : "'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://titan-backend-taha.vercel.app https://*.public.blob.vercel-storage.com https://cdn.zarinpal.com",
+  `img-src 'self' data: blob: https://titan-backend-taha.vercel.app https://*.public.blob.vercel-storage.com https://cdn.zarinpal.com${isProd ? '' : ' http://localhost:8000 http://127.0.0.1:8000'}`,
   "font-src 'self' data: https://fonts.gstatic.com",
-  `connect-src 'self' https://titan-backend-taha.vercel.app https://payment.zarinpal.com https://challenges.cloudflare.com${isProd ? '' : ' http://localhost:8000'}`,
+  `connect-src 'self' https://titan-backend-taha.vercel.app https://payment.zarinpal.com https://challenges.cloudflare.com${isProd ? '' : ' http://localhost:8000 http://127.0.0.1:8000'}`,
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
@@ -38,6 +40,20 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'titan-backend-taha.vercel.app',
       },
+      ...(!isProd
+        ? [
+            {
+              protocol: 'http' as const,
+              hostname: 'localhost',
+              port: '8000',
+            },
+            {
+              protocol: 'http' as const,
+              hostname: '127.0.0.1',
+              port: '8000',
+            },
+          ]
+        : []),
     ],
   },
   experimental: {

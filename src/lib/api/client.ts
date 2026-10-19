@@ -1,6 +1,15 @@
 import type { AuthTokens } from './types';
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1').replace(/\/$/, '');
+export const API_URL = (() => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname || 'localhost';
+    return `http://${host}:8000/api/v1`;
+  }
+  return 'http://127.0.0.1:8000/api/v1';
+})();
 
 const TOKENS_KEY = 'titan.tokens';
 const AUTH_EVENT = 'titan:auth-changed';
