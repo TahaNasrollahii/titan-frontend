@@ -173,6 +173,16 @@ const ShopItemCard = memo(function ShopItemCard({
   const previewBundleItems = showBundleList ? entry.bundleItems.slice(0, 3) : [];
   const extraBundleCount = showBundleList ? Math.max(0, entry.bundleItems.length - 3) : 0;
 
+  const normalizedTile = (entry.tileSize || '').toLowerCase();
+  const stageTileClass =
+    imgSrc === FALLBACK_ITEM_IMAGE
+      ? ''
+      : normalizedTile.startsWith('size_4_x_') || normalizedTile.startsWith('size_5_x_')
+        ? ' fn-card-stage--wide-4'
+        : normalizedTile.startsWith('size_3_x_')
+          ? ' fn-card-stage--wide-3'
+          : '';
+
   return (
     <article
       className="fn-card"
@@ -202,7 +212,7 @@ const ShopItemCard = memo(function ShopItemCard({
         </div>
       </div>
 
-      <div className="fn-card-stage">
+      <div className={`fn-card-stage${stageTileClass}`}>
         <Image
           src={imgSrc}
           alt={`${entry.name} — ${entry.typeFa} فورتنایت`}

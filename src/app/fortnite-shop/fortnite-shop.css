@@ -628,9 +628,9 @@
   width: 100%;
   aspect-ratio: 1 / 0.92;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: 36px 16px 12px;
+  padding: 36px 12px 2px;
   z-index: 1;
 }
 
@@ -638,6 +638,20 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: center bottom;
+}
+
+/* Epic's wide shop tiles (Size_4_x_1 & Size_3_x_1) render characters in the top ~65%
+   of a 2048x2048 square canvas with the bottom ~35% transparent. Shift and scale
+   their artwork down so characters stand cleanly above the card info panel. */
+.fn-card-stage--wide-4 .fn-card-img {
+  transform: translateY(22%) scale(1.15);
+  transform-origin: center center;
+}
+
+.fn-card-stage--wide-3 .fn-card-img {
+  transform: translateY(14%) scale(1.08);
+  transform-origin: center center;
 }
 
 /* Card Info Body */
@@ -1070,7 +1084,7 @@
   }
 
   .fn-card-stage {
-    padding: 28px 8px 8px;
+    padding: 28px 6px 2px;
   }
 
   .fn-card-body {
