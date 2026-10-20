@@ -1,5 +1,6 @@
 /* =====================================================
    Fortnite Live Item Shop — Titan Design System
+   (Optimized for iOS Safari / Mobile WebKit memory limits)
    ===================================================== */
 
 .fn-shop-page {
@@ -22,7 +23,6 @@
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   padding: clamp(22px, 3vw, 36px);
   overflow: hidden;
-  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.85fr);
   gap: 24px;
@@ -162,9 +162,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: rgba(18, 4, 8, 0.68);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(18, 4, 8, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 26px;
   padding: 20px 22px;
@@ -245,7 +243,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Sticky Filter & Search Controls ---------- */
+/* ---------- Filter & Search Controls ---------- */
 .fn-controls {
   display: flex;
   flex-direction: column;
@@ -542,25 +540,21 @@
 
 .fn-card {
   --rarity-color: #2cc1ff;
-  --card-tint: #3a121b;
   position: relative;
   display: flex;
   flex-direction: column;
   border-radius: 26px;
-  background:
-    radial-gradient(95% 65% at 50% 25%, color-mix(in srgb, var(--rarity-color) 34%, transparent), transparent 76%),
-    linear-gradient(170deg, color-mix(in srgb, var(--card-tint) 60%, #3a121b) 0%, #240910 100%);
+  background: linear-gradient(170deg, #3c121b 0%, #22080f 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.36);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
   overflow: hidden;
-  isolation: isolate;
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s var(--ease-out);
 }
 
 .fn-card:hover {
   transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--rarity-color) 65%, rgba(255, 255, 255, 0.2));
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  border-color: var(--rarity-color);
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.48);
 }
 
 /* Top Badges */
@@ -583,10 +577,8 @@
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(14, 4, 8, 0.76);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in srgb, var(--rarity-color) 55%, rgba(255, 255, 255, 0.15));
+  background: rgba(14, 4, 8, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   color: #fdf1f0;
   font-size: 11px;
   font-weight: 700;
@@ -597,7 +589,6 @@
   height: 7px;
   border-radius: 50%;
   background: var(--rarity-color);
-  box-shadow: 0 0 8px var(--rarity-color);
 }
 
 .fn-card-flags {
@@ -617,7 +608,6 @@
   color: #fff;
   font-size: 11px;
   font-weight: 800;
-  box-shadow: 0 4px 12px rgba(212, 71, 74, 0.45);
   font-variant-numeric: tabular-nums;
 }
 
@@ -632,7 +622,7 @@
   font-weight: 800;
 }
 
-/* Artwork Stage (Note: Image itself is never animated on hover per craft floor) */
+/* Artwork Stage (No GPU drop-shadow filter on image to prevent iOS Safari WebKit Jetsam crashes) */
 .fn-card-stage {
   position: relative;
   width: 100%;
@@ -648,7 +638,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.45));
 }
 
 /* Card Info Body */
@@ -656,10 +645,10 @@
   position: relative;
   z-index: 2;
   margin: 0 8px 8px;
-  padding: 14px 14px 14px;
+  padding: 14px;
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(32, 9, 15, 0.88), rgba(16, 4, 8, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #1a060b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -677,9 +666,13 @@
   font-size: 11.5px;
   font-weight: 700;
   color: #e4bcc2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fn-bundle-count-tag {
+  flex-shrink: 0;
   font-size: 11px;
   font-weight: 700;
   color: #9ce5ff;
@@ -729,7 +722,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px 3px 5px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -738,20 +731,11 @@
   max-width: 100%;
 }
 
-.fn-bundle-chip-img {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .fn-bundle-chip-name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 135px;
 }
 
 .fn-bundle-more-btn {
@@ -786,11 +770,18 @@
   gap: 7px;
 }
 
-.fn-vbuck-icon {
+.fn-vbuck-badge {
   width: 22px;
   height: 22px;
-  object-fit: contain;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #35c6ff 0%, #1d74f2 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .fn-price-nums {
@@ -838,14 +829,41 @@
   transform: translateY(-1px);
 }
 
+/* Section Load More Button */
+.fn-load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.fn-load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fdf1f0;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.fn-load-more-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
 /* ---------- Bundle Drawer / Detail Sheet ---------- */
 .fn-drawer-backdrop {
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(10, 2, 5, 0.76);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10, 2, 5, 0.84);
   display: grid;
   place-items: center;
   padding: 20px;
@@ -1111,4 +1129,3 @@
     border-radius: 22px;
   }
 }
-

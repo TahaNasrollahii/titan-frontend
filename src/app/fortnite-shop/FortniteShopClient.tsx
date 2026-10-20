@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
 import { Empty, ErrorState, Loading } from '@/components/ui/State';
@@ -34,6 +34,8 @@ const FILTER_TABS: { key: ShopFilterCategory; label: string }[] = [
 ];
 
 const FALLBACK_ITEM_IMAGE = '/images/hero/characters/fortnite.webp';
+const INITIAL_SECTION_LIMIT = 12;
+const LOAD_MORE_STEP = 24;
 
 function formatPersianShopDate(iso: string): string {
   try {
@@ -66,14 +68,98 @@ function padPersianTwoDigits(val: number): string {
   return faNumber(Math.floor(val / 10)) + faNumber(val % 10);
 }
 
-function ShopItemCard({
+/**
+ * Isolated countdown component so ticking every second only re-renders the 3 timer cells,
+ * never re-rendering the item grid on mobile devices.
+ */
+const ShopCountdownTimer = memo(function ShopCountdownTimer({
+  resetsAt,
+  totalEntries,
+  sectionsCount,
+  onResetReached,
+}: {
+  resetsAt?: string;
+  totalEntries?: number;
+  sectionsCount?: number;
+  onResetReached: () => void;
+}) {
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const current = Date.now();
+      setNowMs(current);
+
+      if (resetsAt) {
+        const targetMs = new Date(resetsAt).getTime();
+        if (current >= targetMs + 3000) {
+          onResetReached();
+        }
+      }
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resetsAt, onResetReached]);
+
+  const targetResetIso = resetsAt || getNextShopResetIso(nowMs);
+  const secondsUntilReset = Math.max(
+    0,
+    Math.floor((new Date(targetResetIso).getTime() - nowMs) / 1000),
+  );
+  const hoursLeft = Math.floor(secondsUntilReset / 3600);
+  const minutesLeft = Math.floor((secondsUntilReset % 3600) / 60);
+  const secondsLeft = secondsUntilReset % 60;
+
+  return (
+    <div className="fn-hero-side" aria-label="شمارش معکوس تا ریست بعدی آیتم شاپ">
+      <div className="fn-timer-head">
+        <span>
+          <Icon name="clock" /> زمان باقی‌مانده تا ریست بعدی شاپ
+        </span>
+        <span className="fn-timer-utc" dir="ltr">
+          00:00 UTC
+        </span>
+      </div>
+
+      <div className="fn-timer-grid" role="timer" aria-live="off">
+        <div className="fn-timer-cell">
+          <span className="fn-timer-val" suppressHydrationWarning>
+            {padPersianTwoDigits(hoursLeft)}
+          </span>
+          <span className="fn-timer-lbl">ساعت</span>
+        </div>
+        <div className="fn-timer-cell">
+          <span className="fn-timer-val" suppressHydrationWarning>
+            {padPersianTwoDigits(minutesLeft)}
+          </span>
+          <span className="fn-timer-lbl">دقیقه</span>
+        </div>
+        <div className="fn-timer-cell">
+          <span className="fn-timer-val" suppressHydrationWarning>
+            {padPersianTwoDigits(secondsLeft)}
+          </span>
+          <span className="fn-timer-lbl">ثانیه</span>
+        </div>
+      </div>
+
+      <div className="fn-stats-bar">
+        <span>
+          تعداد کل آیتم‌های امروز:{' '}
+          <strong>{totalEntries != null ? faNumber(totalEntries) : '—'}</strong>
+        </span>
+        <span>
+          کالکشن‌های فعال: <strong>{sectionsCount != null ? faNumber(sectionsCount) : '—'}</strong>
+        </span>
+      </div>
+    </div>
+  );
+});
+
+const ShopItemCard = memo(function ShopItemCard({
   entry,
-  vbuckIcon,
   priority,
   onInspectBundle,
 }: {
   entry: ShopEntry;
-  vbuckIcon: string;
   priority: boolean;
   onInspectBundle: (entry: ShopEntry) => void;
 }) {
@@ -89,11 +175,10 @@ function ShopItemCard({
 
   return (
     <article
-      className="fn-card spot"
+      className="fn-card"
       style={
         {
           '--rarity-color': entry.rarityColor,
-          '--card-tint': entry.cardBgColor || '#3a121b',
         } as React.CSSProperties
       }
     >
@@ -121,10 +206,13 @@ function ShopItemCard({
         <Image
           src={imgSrc}
           alt={`${entry.name} — ${entry.typeFa} فورتنایت`}
-          width={280}
-          height={260}
-          sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 280px"
+          width={240}
+          height={220}
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
           priority={priority}
+          unoptimized
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
           className="fn-card-img"
           onError={() => {
             if (imgSrc !== FALLBACK_ITEM_IMAGE) {
@@ -142,7 +230,7 @@ function ShopItemCard({
           </span>
           {showBundleList && (
             <span className="fn-bundle-count-tag">
-              شامل {faNumber(entry.bundleItems.length)} آیتم
+              {faNumber(entry.bundleItems.length)} آیتم
             </span>
           )}
         </div>
@@ -156,17 +244,11 @@ function ShopItemCard({
             <span className="fn-bundle-label">آیتم‌های داخل باندل:</span>
             <div className="fn-bundle-chips">
               {previewBundleItems.map(sub => (
-                <span key={`${sub.id}-${sub.typeEn}`} className="fn-bundle-chip" title={`${sub.name} (${sub.typeFa})`}>
-                  {sub.image && (
-                    <Image
-                      src={sub.image}
-                      alt={sub.name}
-                      width={18}
-                      height={18}
-                      sizes="18px"
-                      className="fn-bundle-chip-img"
-                    />
-                  )}
+                <span
+                  key={`${sub.id}-${sub.typeEn}`}
+                  className="fn-bundle-chip"
+                  title={`${sub.name} (${sub.typeFa})`}
+                >
                   <span className="fn-bundle-chip-name" dir="auto">
                     {sub.name}
                   </span>
@@ -189,14 +271,9 @@ function ShopItemCard({
 
         <div className="fn-card-foot">
           <div className="fn-price-wrap" title={`${faNumber(entry.finalPrice)} ویباکس`}>
-            <Image
-              src={vbuckIcon}
-              alt="V-Bucks"
-              width={22}
-              height={22}
-              sizes="22px"
-              className="fn-vbuck-icon"
-            />
+            <span className="fn-vbuck-badge" aria-hidden="true">
+              V
+            </span>
             <div className="fn-price-nums">
               <span className="fn-price-current">{faNumber(entry.finalPrice)}</span>
               {entry.regularPrice > entry.finalPrice && (
@@ -212,7 +289,7 @@ function ShopItemCard({
       </div>
     </article>
   );
-}
+});
 
 export default function FortniteShopClient({
   initialData,
@@ -230,8 +307,8 @@ export default function FortniteShopClient({
   const [onlyDiscounted, setOnlyDiscounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [inspectedBundle, setInspectedBundle] = useState<ShopEntry | null>(null);
+  const [visiblePerSection, setVisiblePerSection] = useState<Record<string, number>>({});
 
-  const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const refreshingRef = useRef(false);
 
   const refreshShop = useCallback(async (forceFresh = false) => {
@@ -258,22 +335,9 @@ export default function FortniteShopClient({
     }
   }, []);
 
-  // Tick countdown every second and automatically trigger a live refresh right after 00:00 UTC reset
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      const current = Date.now();
-      setNowMs(current);
-
-      if (shop?.resetsAt) {
-        const targetMs = new Date(shop.resetsAt).getTime();
-        // Trigger automatic live refresh 3 seconds after 00:00 UTC reset
-        if (current >= targetMs + 3000 && !refreshingRef.current) {
-          void refreshShop(true);
-        }
-      }
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [shop?.resetsAt, refreshShop]);
+  const handleResetReached = useCallback(() => {
+    void refreshShop(true);
+  }, [refreshShop]);
 
   // Close bundle modal on Escape
   useEffect(() => {
@@ -284,15 +348,6 @@ export default function FortniteShopClient({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [inspectedBundle]);
-
-  const targetResetIso = shop?.resetsAt || getNextShopResetIso(nowMs);
-  const secondsUntilReset = Math.max(
-    0,
-    Math.floor((new Date(targetResetIso).getTime() - nowMs) / 1000),
-  );
-  const hoursLeft = Math.floor(secondsUntilReset / 3600);
-  const minutesLeft = Math.floor((secondsUntilReset % 3600) / 60);
-  const secondsLeft = secondsUntilReset % 60;
 
   const categoryCounts = useMemo(() => {
     const counts: Record<ShopFilterCategory, number> = {
@@ -345,7 +400,6 @@ export default function FortniteShopClient({
       return true;
     };
 
-    // If a specific shop collection/section is selected, show that section sorted (Bundles -> Outfits -> Others)
     if (selectedSectionId !== 'all') {
       return shop.sections
         .filter(sec => sec.id === selectedSectionId)
@@ -356,7 +410,6 @@ export default function FortniteShopClient({
         .filter(sec => sec.entries.length > 0);
     }
 
-    // Default view: group all matching items so 1) Bundles, 2) Outfits, and 3) Remaining items are shown in priority order
     const allMatching: ShopEntry[] = [];
     for (const sec of shop.sections) {
       for (const entry of sec.entries) {
@@ -438,8 +491,15 @@ export default function FortniteShopClient({
     [filteredSections],
   );
 
-  const persianDate = shop ? formatPersianShopDate(shop.date) : formatPersianShopDate(new Date().toISOString());
-  const utcDate = shop ? formatUtcShopDate(shop.date) : formatUtcShopDate(new Date().toISOString());
+  const persianDate = shop ? formatPersianShopDate(shop.date) : '';
+  const utcDate = shop ? formatUtcShopDate(shop.date) : '';
+
+  const showMoreInSection = (secId: string, totalInSec: number) => {
+    setVisiblePerSection(prev => {
+      const current = prev[secId] ?? INITIAL_SECTION_LIMIT;
+      return { ...prev, [secId]: Math.min(totalInSec, current + LOAD_MORE_STEP) };
+    });
+  };
 
   return (
     <div className="fn-shop-page reveal" style={{ '--d': 2 } as React.CSSProperties}>
@@ -470,7 +530,7 @@ export default function FortniteShopClient({
           </div>
 
           <p className="fn-hero-desc">
-            مشاهده لحظه‌ای تمامی اسکین‌ها، باندل‌ها، ایموت‌ها و آیتم‌های امروز فورتنایت همراه با قیمت دقیق ویباکس.
+            مشاهده لحظه‌ای تمامی باندل‌ها، اسکین‌ها، ایموت‌ها و آیتم‌های امروز فورتنایت همراه با قیمت دقیق ویباکس.
             برای خرید هر آیتم یا باندل در بازی، همین حالا ویباکس قانونی و فوری را با بهترین قیمت از تایتان تهیه کنید.
           </p>
 
@@ -484,47 +544,13 @@ export default function FortniteShopClient({
           </div>
         </div>
 
-        {/* Live Countdown to 00:00 UTC */}
-        <div className="fn-hero-side" aria-label="شمارش معکوس تا ریست بعدی آیتم شاپ">
-          <div className="fn-timer-head">
-            <span>
-              <Icon name="clock" /> زمان باقی‌مانده تا ریست بعدی شاپ
-            </span>
-            <span className="fn-timer-utc" dir="ltr">
-              00:00 UTC
-            </span>
-          </div>
-
-          <div className="fn-timer-grid" role="timer" aria-live="off">
-            <div className="fn-timer-cell">
-              <span className="fn-timer-val" suppressHydrationWarning>
-                {padPersianTwoDigits(hoursLeft)}
-              </span>
-              <span className="fn-timer-lbl">ساعت</span>
-            </div>
-            <div className="fn-timer-cell">
-              <span className="fn-timer-val" suppressHydrationWarning>
-                {padPersianTwoDigits(minutesLeft)}
-              </span>
-              <span className="fn-timer-lbl">دقیقه</span>
-            </div>
-            <div className="fn-timer-cell">
-              <span className="fn-timer-val" suppressHydrationWarning>
-                {padPersianTwoDigits(secondsLeft)}
-              </span>
-              <span className="fn-timer-lbl">ثانیه</span>
-            </div>
-          </div>
-
-          <div className="fn-stats-bar">
-            <span>
-              تعداد کل آیتم‌های امروز: <strong>{shop ? faNumber(shop.totalEntries) : '—'}</strong>
-            </span>
-            <span>
-              بخش‌های فعال: <strong>{shop ? faNumber(shop.sections.length) : '—'}</strong>
-            </span>
-          </div>
-        </div>
+        {/* Isolated Live Countdown to 00:00 UTC */}
+        <ShopCountdownTimer
+          resetsAt={shop?.resetsAt}
+          totalEntries={shop?.totalEntries}
+          sectionsCount={shop?.sections.length}
+          onResetReached={handleResetReached}
+        />
       </section>
 
       {/* Error State if API is unavailable */}
@@ -551,7 +577,7 @@ export default function FortniteShopClient({
                   type="search"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="جستجوی نام اسکین، باندل، ایموت یا بخش..."
+                  placeholder="جستجوی نام اسکین، باندل، ایموت یا کالکشن..."
                   aria-label="جستجوی آیتم در شاپ فورتنایت"
                 />
                 {searchQuery && (
@@ -615,14 +641,14 @@ export default function FortniteShopClient({
 
             {/* Section Quick Filter Pills */}
             {shop.sections.length > 1 && (
-              <div className="fn-sections-nav" aria-label="فیلتر بر اساس بخش‌های شاپ">
-                <span className="fn-sections-nav-label">بخش‌ها:</span>
+              <div className="fn-sections-nav" aria-label="فیلتر بر اساس کالکشن‌های شاپ">
+                <span className="fn-sections-nav-label">کالکشن‌ها:</span>
                 <button
                   type="button"
                   className={`fn-sec-pill ${selectedSectionId === 'all' ? 'active' : ''}`}
                   onClick={() => setSelectedSectionId('all')}
                 >
-                  همه بخش‌ها <small>({faNumber(shop.sections.length)})</small>
+                  همه (به ترتیب اولویت) <small>({faNumber(shop.totalEntries)})</small>
                 </button>
                 {shop.sections.map(sec => (
                   <button
@@ -644,37 +670,61 @@ export default function FortniteShopClient({
               آیتمی با فیلتر یا عبارت جستجوی شما در شاپ امروز پیدا نشد.
             </Empty>
           ) : (
-            filteredSections.map((section, secIdx) => (
-              <section
-                key={section.id}
-                id={`section-${section.id}`}
-                className="fn-section"
-                aria-labelledby={`sec-title-${section.id}`}
-              >
-                <header className="fn-section-header">
-                  <div className="fn-section-title-wrap">
-                    <h2 id={`sec-title-${section.id}`} className="fn-section-title">
-                      <span className="fn-section-dot" aria-hidden="true" />
-                      <span dir="auto">{section.name}</span>
-                    </h2>
-                    {section.nameFa && <span className="fn-section-fa">{section.nameFa}</span>}
-                  </div>
-                  <span className="fn-section-count">{faNumber(section.entries.length)} آیتم</span>
-                </header>
+            filteredSections.map((section, secIdx) => {
+              const isFilteredView =
+                selectedCategory !== 'all' ||
+                selectedSectionId !== 'all' ||
+                Boolean(searchQuery.trim()) ||
+                onlyDiscounted;
+              const limit = isFilteredView
+                ? Math.max(24, visiblePerSection[section.id] ?? 24)
+                : (visiblePerSection[section.id] ?? INITIAL_SECTION_LIMIT);
+              const displayedEntries = section.entries.slice(0, limit);
+              const remainingCount = Math.max(0, section.entries.length - displayedEntries.length);
 
-                <div className="fn-grid">
-                  {section.entries.map((entry, entryIdx) => (
-                    <ShopItemCard
-                      key={entry.id}
-                      entry={entry}
-                      vbuckIcon={shop.vbuckIcon}
-                      priority={secIdx === 0 && entryIdx < 4}
-                      onInspectBundle={setInspectedBundle}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))
+              return (
+                <section
+                  key={section.id}
+                  id={`section-${section.id}`}
+                  className="fn-section"
+                  aria-labelledby={`sec-title-${section.id}`}
+                >
+                  <header className="fn-section-header">
+                    <div className="fn-section-title-wrap">
+                      <h2 id={`sec-title-${section.id}`} className="fn-section-title">
+                        <span className="fn-section-dot" aria-hidden="true" />
+                        <span dir="auto">{section.name}</span>
+                      </h2>
+                      {section.nameFa && <span className="fn-section-fa">{section.nameFa}</span>}
+                    </div>
+                    <span className="fn-section-count">{faNumber(section.entries.length)} آیتم</span>
+                  </header>
+
+                  <div className="fn-grid">
+                    {displayedEntries.map((entry, entryIdx) => (
+                      <ShopItemCard
+                        key={entry.id}
+                        entry={entry}
+                        priority={secIdx === 0 && entryIdx < 4}
+                        onInspectBundle={setInspectedBundle}
+                      />
+                    ))}
+                  </div>
+
+                  {remainingCount > 0 && (
+                    <div className="fn-load-more-wrap">
+                      <button
+                        type="button"
+                        className="fn-load-more-btn"
+                        onClick={() => showMoreInSection(section.id, section.entries.length)}
+                      >
+                        نمایش آیتم‌های بیشتر در «{section.name}» (+{faNumber(remainingCount)} مورد)
+                      </button>
+                    </div>
+                  )}
+                </section>
+              );
+            })
           )}
 
           {/* Bottom V-Bucks Call to Action */}
@@ -732,6 +782,8 @@ export default function FortniteShopClient({
                         width={48}
                         height={48}
                         sizes="48px"
+                        unoptimized
+                        loading="lazy"
                         className="fn-drawer-item-img"
                       />
                     )}
@@ -748,16 +800,9 @@ export default function FortniteShopClient({
 
             <div className="fn-drawer-foot">
               <div className="fn-price-wrap">
-                {shop && (
-                  <Image
-                    src={shop.vbuckIcon}
-                    alt="V-Bucks"
-                    width={24}
-                    height={24}
-                    sizes="24px"
-                    className="fn-vbuck-icon"
-                  />
-                )}
+                <span className="fn-vbuck-badge" aria-hidden="true">
+                  V
+                </span>
                 <div className="fn-price-nums">
                   <span className="fn-price-current">
                     {faNumber(inspectedBundle.finalPrice)} ویباکس
@@ -778,4 +823,3 @@ export default function FortniteShopClient({
     </div>
   );
 }
-
