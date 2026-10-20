@@ -765,7 +765,6 @@
   object-fit: contain;
   -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 98%);
   mask-image: linear-gradient(to bottom, #000 68%, transparent 98%);
-  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, .45));
   transform: translate(var(--px), var(--py)) scale(1);
   transition: transform .5s cubic-bezier(.2, .8, .2, 1);
   animation: cardFloat 5s ease-in-out infinite;
@@ -1209,7 +1208,7 @@
 
 /* ناموجود */
 .card.sold .stage img {
-  filter: saturate(.3) drop-shadow(0 18px 18px rgba(0, 0, 0, .45));
+  filter: saturate(.3);
 }
 
 .card.sold .glow {
@@ -1497,7 +1496,6 @@
   .card .stage img {
     max-width: 82%;
     max-height: 96%;
-    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .4));
   }
 
   .card .top {
