@@ -154,6 +154,7 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
   }
   return fetch(buildUrl(path, options.query), {
     method: options.method ?? 'GET',
+    cache: 'no-store',
     headers,
     credentials: 'include',
     body,

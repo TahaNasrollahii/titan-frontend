@@ -9,8 +9,9 @@ export async function getStoreProducts(game?: string, pageSize = 12): Promise<Pa
     if (game) {
       url.searchParams.set('game', game);
     }
+    const tags = game ? ['products', `products-${game}`] : ['products'];
     const res = await fetch(url.toString(), {
-      next: { revalidate: 300, tags: ['products'] },
+      next: { revalidate: 30, tags },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
@@ -23,7 +24,7 @@ export async function getStoreProducts(game?: string, pageSize = 12): Promise<Pa
 export async function getStoreGames(): Promise<Game[] | null> {
   try {
     const res = await fetch(`${API_URL}/games/?is_featured=true`, {
-      next: { revalidate: 3600, tags: ['games'] },
+      next: { revalidate: 60, tags: ['games'] },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
@@ -36,7 +37,7 @@ export async function getStoreGames(): Promise<Game[] | null> {
 export async function getAllGames(): Promise<Game[] | null> {
   try {
     const res = await fetch(`${API_URL}/games/`, {
-      next: { revalidate: 3600, tags: ['games'] },
+      next: { revalidate: 60, tags: ['games'] },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
@@ -49,7 +50,7 @@ export async function getAllGames(): Promise<Game[] | null> {
 export async function getGameBySlug(slug: string): Promise<Game | null> {
   try {
     const res = await fetch(`${API_URL}/games/${slug}/`, {
-      next: { revalidate: 3600, tags: [`game-${slug}`] },
+      next: { revalidate: 60, tags: ['games', `game-${slug}`] },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
@@ -62,7 +63,7 @@ export async function getGameBySlug(slug: string): Promise<Game | null> {
 export async function getStorePromos(placement: 'store_discount' | 'store_bestseller'): Promise<Promo[] | null> {
   try {
     const res = await fetch(`${API_URL}/content/promos/?placement=${placement}`, {
-      next: { revalidate: 300, tags: ['promos'] },
+      next: { revalidate: 60, tags: ['promos'] },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;

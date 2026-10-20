@@ -5,7 +5,7 @@ import StoreClient from './StoreClient';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import { getStoreProducts, getStoreGames, getStorePromos } from './getStoreData';
 
-export const revalidate = 300;
+export const revalidate = 30;
 
 export const metadata: Metadata = {
   title: 'فروشگاه گیمینگ، خرید پول و آیتم بازی‌ها',

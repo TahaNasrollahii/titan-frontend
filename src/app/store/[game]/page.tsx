@@ -5,7 +5,8 @@ import StoreClient from '../StoreClient';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import { getStoreProducts, getStoreGames, getStorePromos, getGameBySlug, getAllGames } from '../getStoreData';
 
-export const revalidate = 300;
+export const revalidate = 30;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const games = await getAllGames();

@@ -22,12 +22,12 @@ interface ProductData {
   };
 }
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {
     const res = await fetch(`${API_URL}/products/?page_size=12&ordering=-popularity`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 60, tags: ['products'] },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return [];
@@ -42,7 +42,7 @@ export async function generateStaticParams() {
 async function getProduct(slug: string): Promise<ProductData | null> {
   try {
     const res = await fetch(`${API_URL}/products/${slug}/`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 60, tags: ['products'] },
       signal: AbortSignal.timeout(3500),
     });
     if (!res.ok) return null;

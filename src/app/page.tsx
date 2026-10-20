@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 async function getHomeData(): Promise<Home | null> {
   try {
     const res = await fetch('https://titan-backend-taha.vercel.app/api/v1/home/', {
-      next: { revalidate: 60 },
+      next: { revalidate: 60, tags: ['home', 'products', 'games', 'promos'] },
     });
     if (res.ok) {
       return (await res.json()) as Home;

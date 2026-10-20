@@ -497,7 +497,7 @@ function ProductResults({
   const [error, setError] = useState<string | null>(null);
 
   const fetchPage = useCallback(
-    (page: number, isActive: () => boolean = () => true) =>
+    (page: number, isActive: () => boolean = () => true, silent = false) =>
       catalogApi
         .products({ ...query, page, page_size: PAGE_SIZE })
         .then(result => {
@@ -507,6 +507,7 @@ function ProductResults({
         })
         .catch(err => {
           if (!isActive()) return;
+          if (silent) return;
           const msg = errorMessage(err);
           setError(msg);
           addToast({ title: 'خطا در بارگذاری', text: msg, icon: 'store', tone: 'error' });
@@ -518,12 +519,14 @@ function ProductResults({
   );
 
   useEffect(() => {
-    if (isInitialMatch.current) {
+    const silent = isInitialMatch.current;
+    if (false && isInitialMatch.current) {
       isInitialMatch.current = false;
       return;
     }
     let active = true;
-    void fetchPage(1, () => active);
+    isInitialMatch.current = false;
+    void fetchPage(1, () => active, silent);
     return () => {
       active = false;
     };
