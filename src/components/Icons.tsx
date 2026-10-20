@@ -50,6 +50,11 @@ export const ICONS: Record<string, [string, boolean?]> = {
   'chevron-left': ['<path d="m15 18-6-6 6-6"/>'],
   map: ['<path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16M16 6v16"/>'],
   wallet: ['<path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>'],
+  grid: ['<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>'],
+  sparkles: ['<path d="m12 3-1.8 5.7L4.5 10.5l5.7 1.8L12 18l1.8-5.7 5.7-1.8-5.7-1.8z"/><path d="M19 4v4m-2-2h4M5 16v4m-2-2h4"/>'],
+  pickaxe: ['<path d="m14 4 6 6"/><path d="m17 7-10 10"/><path d="M21.5 8a13 13 0 0 0-11-5l2 2a9 9 0 0 1 7 7z"/>'],
+  parachute: ['<path d="M12 3c-5.5 0-9.5 4-9.5 8.5h19C21.5 7 17.5 3 12 3z"/><path d="M12 3v8.5"/><path d="M4.5 11.5 12 21l7.5-9.5"/>'],
+  music: ['<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'],
 };
 
 export function Icon({ name, className = '', style }: { name: string, className?: string, style?: React.CSSProperties }) {
