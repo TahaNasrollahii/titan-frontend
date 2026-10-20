@@ -751,9 +751,9 @@ function StorePageContent({
           <img
             src="/images/categories/fortnite.webp"
             alt=""
-            width={24}
-            height={24}
-            style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+            width={32}
+            height={32}
+            style={{ width: '32px', height: '32px', objectFit: 'contain' }}
           />
           <span>آیتم شاپ زنده فورتنایت</span>
         </Link>

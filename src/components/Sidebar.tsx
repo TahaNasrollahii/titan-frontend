@@ -98,7 +98,7 @@ export function Sidebar() {
             data-label="آیتم شاپ فورتنایت"
             ref={el => { navRefs.current['/fortnite-shop'] = el; }}
           >
-            <img src="/images/categories/fortnite.webp" alt="آیتم شاپ فورتنایت" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/images/categories/fortnite.webp" alt="آیتم شاپ فورتنایت" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
           </Link>
 
           <Link
