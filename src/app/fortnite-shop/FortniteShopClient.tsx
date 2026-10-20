@@ -170,8 +170,6 @@ const ShopItemCard = memo(function ShopItemCard({
   }, [entry.image]);
 
   const showBundleList = entry.isBundle && entry.bundleItems.length > 0;
-  const previewBundleItems = showBundleList ? entry.bundleItems.slice(0, 3) : [];
-  const extraBundleCount = showBundleList ? Math.max(0, entry.bundleItems.length - 3) : 0;
 
   const normalizedTile = (entry.tileSize || '').toLowerCase();
   const stageTileClass =
@@ -250,33 +248,16 @@ const ShopItemCard = memo(function ShopItemCard({
         </h3>
 
         {showBundleList && (
-          <div className="fn-bundle-box">
-            <span className="fn-bundle-label">آیتم‌های داخل باندل:</span>
-            <div className="fn-bundle-chips">
-              {previewBundleItems.map(sub => (
-                <span
-                  key={`${sub.id}-${sub.typeEn}`}
-                  className="fn-bundle-chip"
-                  title={`${sub.name} (${sub.typeFa})`}
-                >
-                  <span className="fn-bundle-chip-name" dir="auto">
-                    {sub.name}
-                  </span>
-                </span>
-              ))}
-            </div>
-            {(extraBundleCount > 0 || entry.bundleItems.length > 1) && (
-              <button
-                type="button"
-                className="fn-bundle-more-btn"
-                onClick={() => onInspectBundle(entry)}
-              >
-                {extraBundleCount > 0
-                  ? `+ ${faNumber(extraBundleCount)} آیتم دیگر (مشاهده کامل)`
-                  : 'مشاهده جزئیات اقلام باندل'}
-              </button>
-            )}
-          </div>
+          <button
+            type="button"
+            className="fn-bundle-popup-btn"
+            onClick={() => onInspectBundle(entry)}
+          >
+            <span>مشاهده آیتم‌های باندل ({faNumber(entry.bundleItems.length)} مورد)</span>
+            <span className="fn-bundle-popup-arrow" aria-hidden="true">
+              ←
+            </span>
+          </button>
         )}
 
         <div className="fn-card-foot">
