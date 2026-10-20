@@ -801,23 +801,25 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 36px;
-  padding: 0 14px;
+  height: 38px;
+  padding: 0 18px;
+  border: 0;
   border-radius: 999px;
-  background: rgba(226, 69, 63, 0.16);
-  border: 1px solid rgba(226, 69, 63, 0.42);
-  color: #ffd7d5;
-  font-size: 12px;
-  font-weight: 700;
+  background: #fff;
+  color: #2a0b12;
+  font-size: 13px;
+  font-weight: 800;
   white-space: nowrap;
-  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .fn-buy-vbucks-btn:hover {
-  background: var(--red);
-  border-color: var(--red);
+  background: var(--rarity-color, var(--red));
   color: #fff;
-  transform: translateY(-1px);
+  transform: scale(1.02);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
 }
 
 /* Section Load More Button */

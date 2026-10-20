@@ -253,7 +253,7 @@ const ShopItemCard = memo(function ShopItemCard({
             className="fn-bundle-popup-btn"
             onClick={() => onInspectBundle(entry)}
           >
-            <span>مشاهده آیتم‌های باندل ({faNumber(entry.bundleItems.length)} مورد)</span>
+            <span>مشاهده آیتم‌های باندل</span>
             <span className="fn-bundle-popup-arrow" aria-hidden="true">
               ←
             </span>
