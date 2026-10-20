@@ -8,10 +8,12 @@ import { Icon } from '@/components/Icons';
 import { Empty, ErrorState, Loading } from '@/components/ui/State';
 import { faNumber } from '@/lib/format';
 import {
+  compareShopEntries,
   type FortniteShopData,
   getNextShopResetIso,
   type ShopEntry,
   type ShopFilterCategory,
+  type ShopSection,
 } from '@/lib/fortniteShop';
 
 import './fortnite-shop.css';
@@ -136,6 +138,7 @@ function ShopItemCard({
         <div className="fn-card-meta">
           <span className="fn-type-tag">
             {entry.typeFa} ({entry.typeEn})
+            {entry.sectionName ? ` · ${entry.sectionName}` : ''}
           </span>
           {showBundleList && (
             <span className="fn-bundle-count-tag">
@@ -316,36 +319,117 @@ export default function FortniteShopClient({
     return counts;
   }, [shop]);
 
-  const filteredSections = useMemo(() => {
+  const filteredSections = useMemo<ShopSection[]>(() => {
     if (!shop) return [];
     const q = searchQuery.trim().toLowerCase();
 
-    return shop.sections
-      .filter(sec => selectedSectionId === 'all' || sec.id === selectedSectionId)
-      .map(sec => {
-        const entries = sec.entries.filter(entry => {
-          if (selectedCategory !== 'all' && entry.category !== selectedCategory) {
-            return false;
-          }
-          if (onlyDiscounted && entry.discountAmount <= 0) {
-            return false;
-          }
-          if (q) {
-            const matchEntry =
-              entry.name.toLowerCase().includes(q) ||
-              entry.typeEn.toLowerCase().includes(q) ||
-              entry.typeFa.includes(q) ||
-              entry.rarityEn.toLowerCase().includes(q) ||
-              entry.rarityFa.includes(q) ||
-              sec.name.toLowerCase().includes(q) ||
-              (sec.nameFa && sec.nameFa.includes(q)) ||
-              entry.bundleItems.some(sub => sub.name.toLowerCase().includes(q));
-            if (!matchEntry) return false;
-          }
-          return true;
-        });
-        return { ...sec, entries };
-      })
+    const matchesFilter = (entry: ShopEntry, sec: ShopSection) => {
+      if (selectedCategory !== 'all' && entry.category !== selectedCategory) {
+        return false;
+      }
+      if (onlyDiscounted && entry.discountAmount <= 0) {
+        return false;
+      }
+      if (q) {
+        const matchEntry =
+          entry.name.toLowerCase().includes(q) ||
+          entry.typeEn.toLowerCase().includes(q) ||
+          entry.typeFa.includes(q) ||
+          entry.rarityEn.toLowerCase().includes(q) ||
+          entry.rarityFa.includes(q) ||
+          sec.name.toLowerCase().includes(q) ||
+          (sec.nameFa && sec.nameFa.includes(q)) ||
+          entry.bundleItems.some(sub => sub.name.toLowerCase().includes(q));
+        if (!matchEntry) return false;
+      }
+      return true;
+    };
+
+    // If a specific shop collection/section is selected, show that section sorted (Bundles -> Outfits -> Others)
+    if (selectedSectionId !== 'all') {
+      return shop.sections
+        .filter(sec => sec.id === selectedSectionId)
+        .map(sec => ({
+          ...sec,
+          entries: sec.entries.filter(e => matchesFilter(e, sec)).sort(compareShopEntries),
+        }))
+        .filter(sec => sec.entries.length > 0);
+    }
+
+    // Default view: group all matching items so 1) Bundles, 2) Outfits, and 3) Remaining items are shown in priority order
+    const allMatching: ShopEntry[] = [];
+    for (const sec of shop.sections) {
+      for (const entry of sec.entries) {
+        if (matchesFilter(entry, sec)) {
+          allMatching.push({
+            ...entry,
+            sectionName: entry.sectionName || sec.name,
+          });
+        }
+      }
+    }
+
+    allMatching.sort(compareShopEntries);
+
+    const priorityGroups: {
+      id: string;
+      name: string;
+      nameFa: string;
+      match: (e: ShopEntry) => boolean;
+    }[] = [
+      {
+        id: 'priority-bundles',
+        name: 'باندل‌ها',
+        nameFa: 'Bundles',
+        match: e => e.category === 'bundle',
+      },
+      {
+        id: 'priority-outfits',
+        name: 'اسکین‌ها',
+        nameFa: 'Outfits',
+        match: e => e.category === 'outfit',
+      },
+      {
+        id: 'priority-emotes',
+        name: 'ایموت‌ها',
+        nameFa: 'Emotes',
+        match: e => e.category === 'emote',
+      },
+      {
+        id: 'priority-pickaxes',
+        name: 'پیککس‌ها',
+        nameFa: 'Pickaxes',
+        match: e => e.category === 'pickaxe',
+      },
+      {
+        id: 'priority-gear',
+        name: 'بک‌بلینگ، گلایدر و رپ',
+        nameFa: 'Back Blings, Gliders & Wraps',
+        match: e => e.category === 'backpack' || e.category === 'glider' || e.category === 'wrap',
+      },
+      {
+        id: 'priority-vehicles-instruments',
+        name: 'خودرو، سازها و سایر آیتم‌ها',
+        nameFa: 'Vehicles, Instruments & More',
+        match: e => e.category === 'car' || e.category === 'instrument' || e.category === 'other',
+      },
+      {
+        id: 'priority-tracks',
+        name: 'موزیک‌ها',
+        nameFa: 'Jam Tracks',
+        match: e => e.category === 'track',
+      },
+    ];
+
+    return priorityGroups
+      .map((group, idx) => ({
+        id: group.id,
+        name: group.name,
+        nameFa: group.nameFa,
+        rank: 100 - idx,
+        index: idx,
+        entries: allMatching.filter(group.match),
+      }))
       .filter(sec => sec.entries.length > 0);
   }, [shop, selectedSectionId, selectedCategory, onlyDiscounted, searchQuery]);
 

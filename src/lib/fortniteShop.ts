@@ -46,6 +46,7 @@ export interface ShopEntry {
   inDate: string | null;
   outDate: string | null;
   tileSize: string | null;
+  sectionName?: string;
 }
 
 export interface ShopSection {
@@ -299,6 +300,35 @@ function cleanDevName(devName?: string | null): string {
   return cleaned || 'Fortnite Cosmetic';
 }
 
+const CATEGORY_PRIORITY: Record<Exclude<ShopFilterCategory, 'all'>, number> = {
+  bundle: 1,
+  outfit: 2,
+  emote: 3,
+  pickaxe: 4,
+  glider: 5,
+  backpack: 6,
+  wrap: 7,
+  car: 8,
+  instrument: 9,
+  other: 10,
+  track: 11,
+};
+
+export function compareShopEntries(a: ShopEntry, b: ShopEntry): number {
+  const prioA = CATEGORY_PRIORITY[a.category] ?? 10;
+  const prioB = CATEGORY_PRIORITY[b.category] ?? 10;
+  if (prioA !== prioB) return prioA - prioB;
+
+  // Inside bundles, prioritize bundles that include an Outfit
+  if (a.category === 'bundle' && b.category === 'bundle') {
+    const aHasOutfit = a.bundleItems.some(sub => sub.typeEn === 'Outfit');
+    const bHasOutfit = b.bundleItems.some(sub => sub.typeEn === 'Outfit');
+    if (aHasOutfit !== bHasOutfit) return aHasOutfit ? -1 : 1;
+  }
+
+  return b.finalPrice - a.finalPrice;
+}
+
 function parsePrimaryApi(json: any): FortniteShopData {
   const data = json?.data ?? {};
   const rawEntries: any[] = Array.isArray(data.entries) ? data.entries : [];
@@ -527,23 +557,24 @@ function parsePrimaryApi(json: any): FortniteShopData {
       inDate: entry.inDate || null,
       outDate: entry.outDate || null,
       tileSize: entry.tileSize || null,
+      sectionName,
     });
   }
 
   const sections = Array.from(sectionMap.values())
     .map(sec => ({
       ...sec,
-      // Put bundles and higher-priced items first inside each section
-      entries: sec.entries.sort((a, b) => {
-        if (a.isBundle !== b.isBundle) return a.isBundle ? -1 : 1;
-        return b.finalPrice - a.finalPrice;
-      }),
+      // Sort: 1. Bundles, 2. Outfits, 3. Other items
+      entries: sec.entries.sort(compareShopEntries),
     }))
     .sort((a, b) => {
-      // Keep Jam Tracks at the bottom so character/cosmetic sections lead
       const aIsTracks = a.name.toLowerCase().includes('jam track');
       const bIsTracks = b.name.toLowerCase().includes('jam track');
       if (aIsTracks !== bIsTracks) return aIsTracks ? 1 : -1;
+      // Prioritize sections that contain bundles or outfits over sections that only have cars/tracks
+      const aHasTopCosmetic = a.entries.some(e => e.category === 'bundle' || e.category === 'outfit');
+      const bHasTopCosmetic = b.entries.some(e => e.category === 'bundle' || e.category === 'outfit');
+      if (aHasTopCosmetic !== bHasTopCosmetic) return aHasTopCosmetic ? -1 : 1;
       if (b.rank !== a.rank) return b.rank - a.rank;
       return a.index - b.index;
     });
@@ -692,21 +723,22 @@ function parseFallbackApi(json: any): FortniteShopData {
       inDate: entry.inDate || null,
       outDate: entry.outDate || null,
       tileSize: entry.tileSize || null,
+      sectionName,
     });
   }
 
   const sections = Array.from(sectionMap.values())
     .map(sec => ({
       ...sec,
-      entries: sec.entries.sort((a, b) => {
-        if (a.isBundle !== b.isBundle) return a.isBundle ? -1 : 1;
-        return b.finalPrice - a.finalPrice;
-      }),
+      entries: sec.entries.sort(compareShopEntries),
     }))
     .sort((a, b) => {
       const aIsTracks = a.name.toLowerCase().includes('jam track');
       const bIsTracks = b.name.toLowerCase().includes('jam track');
       if (aIsTracks !== bIsTracks) return aIsTracks ? 1 : -1;
+      const aHasTopCosmetic = a.entries.some(e => e.category === 'bundle' || e.category === 'outfit');
+      const bHasTopCosmetic = b.entries.some(e => e.category === 'bundle' || e.category === 'outfit');
+      if (aHasTopCosmetic !== bHasTopCosmetic) return aHasTopCosmetic ? -1 : 1;
       if (b.rank !== a.rank) return b.rank - a.rank;
       return a.index - b.index;
     });
