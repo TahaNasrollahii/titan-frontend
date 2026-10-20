@@ -28,7 +28,7 @@ const SPRING = { type: 'spring', stiffness: 520, damping: 38 } as const;
 function tabFor(pathname: string | null | undefined): TabKey {
   const p = pathname?.replace(/\/+$/, '') || '/';
   if (p === '/') return 'home';
-  if (/^\/(store|product|cart|checkout|payment)/.test(p)) return 'store';
+  if (/^\/(store|product|cart|checkout|payment|fortnite-shop)/.test(p)) return 'store';
   if (/^\/tournaments\/[^/]+\/bracket/.test(p)) return 'me';
   if (/^\/tournaments?(\/|$)/.test(p)) return 'tournament';
   if (/^\/(contact|about)/.test(p)) return 'more';
@@ -162,6 +162,14 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           تایتان
         </motion.h4>
         <motion.div className={styles.rows} variants={fadeUp}>
+          <AppRow
+            href="/fortnite-shop"
+            icon="/images/categories/fortnite.webp"
+            tone="53 198 255"
+            label="آیتم شاپ فورتنایت"
+            hint="مشاهده زنده اسکین‌ها و آیتم‌های امروز"
+            onClick={onClose}
+          />
           <AppRow
             icon="/icons/support.svg"
             tone="226 69 63"

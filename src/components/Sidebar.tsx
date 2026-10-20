@@ -21,7 +21,9 @@ export function Sidebar() {
   }, []);
 
   let activeKey = pathname;
-  if (pathname.startsWith('/product/')) {
+  if (pathname.startsWith('/fortnite-shop')) {
+    activeKey = '/fortnite-shop';
+  } else if (pathname.startsWith('/product/') || pathname.startsWith('/store')) {
     activeKey = '/store';
   } else if (pathname.startsWith('/tournaments') && pathname.includes('/bracket')) {
     activeKey = '/dashboard';
@@ -88,6 +90,15 @@ export function Sidebar() {
             ref={el => { navRefs.current['/store'] = el; }}
           >
             <img src="/icons/store.webp" alt="فروشگاه" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+          </Link>
+
+          <Link
+            href="/fortnite-shop"
+            className={`nav-item ${activeKey === '/fortnite-shop' ? 'active' : ''}`}
+            data-label="آیتم شاپ فورتنایت"
+            ref={el => { navRefs.current['/fortnite-shop'] = el; }}
+          >
+            <img src="/images/categories/fortnite.webp" alt="آیتم شاپ فورتنایت" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link

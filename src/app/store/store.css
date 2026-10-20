@@ -639,6 +639,35 @@
   margin-top: 2px;
 }
 
+.store-fn-shop-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(53, 198, 255, 0.12);
+  border: 1px solid rgba(53, 198, 255, 0.34);
+  color: #fdf1f0;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.25s, border-color 0.25s, transform 0.25s var(--ease-out);
+}
+
+.store-fn-shop-link:hover {
+  background: rgba(53, 198, 255, 0.22);
+  border-color: rgba(53, 198, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.store-fn-shop-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #35d07f;
+  box-shadow: 0 0 0 3px rgba(53, 208, 127, 0.24);
+}
+
 :root {
   --bg-1: #6b222c;
   --bg-2: #3d1118;

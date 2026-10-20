@@ -746,6 +746,17 @@ function StorePageContent({
         <div className="store-sec-l">
           <h2>همه محصولات</h2>
         </div>
+        <Link href="/fortnite-shop" className="store-fn-shop-link">
+          <span className="store-fn-shop-dot" aria-hidden="true" />
+          <img
+            src="/images/categories/fortnite.webp"
+            alt=""
+            width={24}
+            height={24}
+            style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+          />
+          <span>آیتم شاپ زنده فورتنایت</span>
+        </Link>
       </div>
 
       <div className="store-cat-row">

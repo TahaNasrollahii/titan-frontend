@@ -71,6 +71,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: STATIC_LASTMOD,
     },
     {
+      url: `${SITE_URL}/fortnite-shop`,
+      lastModified: new Date(),
+    },
+    {
       url: `${SITE_URL}/tournaments`,
       lastModified: STATIC_LASTMOD,
     },
