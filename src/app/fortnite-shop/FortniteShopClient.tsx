@@ -31,6 +31,7 @@ interface QuickCategoryConfig {
   title: string;
   desc: string;
   iconName: string;
+  accentColor: string;
 }
 
 const QUICK_CATEGORIES: QuickCategoryConfig[] = [
@@ -38,52 +39,60 @@ const QUICK_CATEGORIES: QuickCategoryConfig[] = [
   {
     key: 'all',
     title: 'همه آیتم‌ها',
-    desc: 'مشاهده کامل تمام آیتم‌ها و اسکین‌های شاپ امروز',
+    desc: 'کاتالوگ کامل شاپ امروز',
     iconName: 'grid',
+    accentColor: '#e2453f',
   },
   {
     key: 'outfit',
     title: 'اسکین‌های بازی',
-    desc: 'کاراکترها و اسکین‌های موجود در شاپ امروز',
+    desc: 'کاراکترها و اسکین‌ها',
     iconName: 'user',
+    accentColor: '#38bdf8',
   },
   {
     key: 'bundle',
     title: 'باندل‌های ویژه',
-    desc: 'پک‌های چندتایی به همراه تخفیف ویژه',
+    desc: 'پک‌های دارای تخفیف',
     iconName: 'gift',
+    accentColor: '#fbbf24',
   },
   {
     key: 'emote',
     title: 'ایموت و دنس‌ها',
-    desc: 'حرکات نمایشی، رقص‌ها و ایموت‌های بازی',
+    desc: 'حرکات نمایشی و دنس',
     iconName: 'sparkles',
+    accentColor: '#c084fc',
   },
 
   // ردیف ۲: ۴ آیتم
   {
     key: 'pickaxe',
     title: 'پیککس و کلنگ',
-    desc: 'کلنگ‌ها و ابزارهای استخراج و ضربه',
+    desc: 'کلنگ‌ها و ابزار ضربه',
     iconName: 'pickaxe',
+    accentColor: '#34d399',
   },
   {
     key: 'glider',
     title: 'گلایدر و چترها',
-    desc: 'گلایدرها و چترهای فرود بازی',
+    desc: 'گلایدرها و چترهای فرود',
     iconName: 'parachute',
+    accentColor: '#60a5fa',
   },
   {
     key: 'gear',
     title: 'تجهیزات و رپ',
-    desc: 'بک‌بلینگ‌ها و رپ‌های اسلحه و تجهیزات',
+    desc: 'بک‌بلینگ و رپ سلاح',
     iconName: 'bag',
+    accentColor: '#f43f5e',
   },
   {
     key: 'other',
     title: 'موزیک و ماشین',
-    desc: 'ترک‌های جم، بدنه خودرو و سازهای موسیقی',
+    desc: 'ترک جم، بدنه و سازها',
     iconName: 'music',
+    accentColor: '#818cf8',
   },
 ];
 
@@ -145,13 +154,13 @@ const ShopCountdownTimer = memo(function ShopCountdownTimer({
   const secondsLeft = secondsUntilReset % 60;
 
   return (
-    <div className="fn-hero-side fn-cartoon-timer" aria-label="شمارش معکوس تا ریست بعدی آیتم شاپ">
+    <div className="fn-hero-side fn-countdown-hud" aria-label="شمارش معکوس تا ریست بعدی آیتم شاپ">
       <div className="fn-timer-head">
         <span className="fn-timer-head-title">
           <span className="fn-timer-icon-wrap" aria-hidden="true">
-            ⏱️
+            <Icon name="clock" />
           </span>
-          زمان تا چرخش شاپ
+          <span>زمان تا چرخش شاپ</span>
         </span>
         <span className="fn-timer-utc" dir="ltr">
           <span className="fn-timer-utc-star" aria-hidden="true">
@@ -195,9 +204,9 @@ const ShopCountdownTimer = memo(function ShopCountdownTimer({
       </div>
 
       <div className="fn-stats-bar">
-        <span className="fn-stats-note">⚡ بروزرسانی لحظه‌ای شاپ</span>
+        <span className="fn-stats-note">⚡ بروزرسانی لحظه‌ای و خودکار شاپ</span>
         <span className="fn-live-status-dot">
-          <span className="fn-live-dot" aria-hidden="true" /> فعال و زنده
+          <span className="fn-live-dot" aria-hidden="true" /> فعال و همگام
         </span>
       </div>
     </div>
@@ -213,11 +222,8 @@ const ShopItemCard = memo(function ShopItemCard({
   priority: boolean;
   onInspectBundle: (entry: ShopEntry) => void;
 }) {
-  const [imgSrc, setImgSrc] = useState(entry.image || FALLBACK_ITEM_IMAGE);
-
-  useEffect(() => {
-    setImgSrc(entry.image || FALLBACK_ITEM_IMAGE);
-  }, [entry.image]);
+  const [imageError, setImageError] = useState(false);
+  const imgSrc = imageError || !entry.image ? FALLBACK_ITEM_IMAGE : entry.image;
 
   const showBundleList = entry.isBundle && entry.bundleItems.length > 0;
 
@@ -273,9 +279,7 @@ const ShopItemCard = memo(function ShopItemCard({
           decoding="async"
           className="fn-card-img"
           onError={() => {
-            if (imgSrc !== FALLBACK_ITEM_IMAGE) {
-              setImgSrc(FALLBACK_ITEM_IMAGE);
-            }
+            setImageError(true);
           }}
         />
       </div>
@@ -316,22 +320,22 @@ const ShopItemCard = memo(function ShopItemCard({
             </div>
 
             <div className="fn-card-actions">
+              <Link href="/product/fortnite-vbucks" className="fn-buy-vbucks-btn">
+                <Icon name="cart" />
+                <span>خرید ویباکس</span>
+              </Link>
+
               {showBundleList && (
                 <button
                   type="button"
                   className="fn-bundle-popup-btn"
                   onClick={() => onInspectBundle(entry)}
+                  title="مشاهده آیتم‌های این باندل"
                 >
-                  <span>آیتم‌های باندل</span>
-                  <span className="fn-bundle-popup-arrow" aria-hidden="true">
-                    ←
-                  </span>
+                  <Icon name="gift" />
+                  <span>اقلام باندل</span>
                 </button>
               )}
-
-              <Link href="/product/fortnite-vbucks" className="fn-buy-vbucks-btn">
-                <Icon name="cart" /> خرید ویباکس
-              </Link>
             </div>
           </div>
         </div>
@@ -398,10 +402,10 @@ export default function FortniteShopClient({
     return () => window.removeEventListener('keydown', onKey);
   }, [inspectedBundle]);
 
-  // Reset pagination limit when category changes
-  useEffect(() => {
+  const handleSelectCategory = useCallback((catKey: QuickCategoryKey) => {
+    setSelectedCategory(catKey);
     setDisplayLimit(PAGE_CHUNK);
-  }, [selectedCategory]);
+  }, []);
 
   // Interactive Cursor Light Tracker
   const handleHeroMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -659,11 +663,29 @@ export default function FortniteShopClient({
           <section className="fn-cat-shortcuts" aria-label="دسترسی سریع به دسته‌بندی‌های آیتم شاپ">
             <div className="fn-shortcuts-header">
               <div className="fn-shortcuts-header-text">
-                <h3>دسترسی سریع به دسته‌بندی‌ها</h3>
+                <div className="fn-shortcuts-title-wrap">
+                  <span className="fn-shortcuts-badge">کاتالوگ شاپ</span>
+                  <h3>دسترسی سریع به دسته‌بندی‌ها</h3>
+                </div>
+                <span className="fn-shortcuts-hint">
+                  دسته‌بندی مورد نظر خود را انتخاب کنید تا آیتم‌های آن فوراً فیلتر شوند:
+                </span>
               </div>
-              <span className="fn-shortcuts-hint">
-                برای مشاهده آیتم‌ها، روی دسته‌بندی مورد نظر خود کلیک کنید:
-              </span>
+
+              <div className="fn-shortcuts-header-meta">
+                <span className="fn-shortcuts-total-badge">
+                  نمایش <strong>{faNumber(filteredEntries.length)}</strong> از <strong>{faNumber(categoryCounts.all)}</strong> آیتم
+                </span>
+                {selectedCategory !== 'all' && (
+                  <button
+                    type="button"
+                    className="fn-reset-category-btn"
+                    onClick={() => handleSelectCategory('all')}
+                  >
+                    نمایش همه آیتم‌ها
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="fn-shortcuts-grid">
@@ -675,8 +697,9 @@ export default function FortniteShopClient({
                     key={cat.key}
                     type="button"
                     className={`fn-shortcut-card ${cat.key} ${isActive ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory(cat.key)}
+                    onClick={() => handleSelectCategory(cat.key)}
                     aria-pressed={isActive}
+                    style={{ '--cat-accent': cat.accentColor } as React.CSSProperties}
                   >
                     <div className="fn-shortcut-icon">
                       <Icon name={cat.iconName} />
@@ -685,7 +708,7 @@ export default function FortniteShopClient({
                       <strong className="fn-shortcut-title">{cat.title}</strong>
                       <span className="fn-shortcut-desc">{cat.desc}</span>
                     </div>
-                    <span className="fn-shortcut-count">{faNumber(count)} آیتم</span>
+                    <span className="fn-shortcut-count">{faNumber(count)}</span>
                   </button>
                 );
               })}
@@ -724,6 +747,19 @@ export default function FortniteShopClient({
               {/* Pagination & Load More */}
               {remainingCount > 0 && (
                 <div className="fn-pagination-bar">
+                  <div className="fn-pagination-header">
+                    <div className="fn-pagination-info">
+                      <span className="fn-pagination-label">وضعیت کاتالوگ:</span>
+                      <span className="fn-pagination-text">
+                        نمایش <strong>{faNumber(displayedEntries.length)}</strong> از{' '}
+                        <strong>{faNumber(filteredEntries.length)}</strong> {activeConfig.title}
+                      </span>
+                    </div>
+                    <span className="fn-pagination-percent">
+                      {faNumber(Math.round((displayedEntries.length / filteredEntries.length) * 100))}٪ بارگذاری شده
+                    </span>
+                  </div>
+
                   <div className="fn-progress-track" aria-hidden="true">
                     <div
                       className="fn-progress-fill"
@@ -733,19 +769,19 @@ export default function FortniteShopClient({
                     />
                   </div>
 
-                  <span className="fn-pagination-text">
-                    نمایش <strong>{faNumber(displayedEntries.length)}</strong> از{' '}
-                    <strong>{faNumber(filteredEntries.length)}</strong> {activeConfig.title}
-                  </span>
-
                   <div className="fn-pagination-actions">
                     <button
                       type="button"
                       className="fn-load-more-btn"
                       onClick={() => setDisplayLimit(prev => prev + PAGE_CHUNK)}
                     >
-                      نمایش {faNumber(Math.min(PAGE_CHUNK, remainingCount))} آیتم بیشتر (+
-                      {faNumber(remainingCount)} مورد دیگر)
+                      <Icon name="plus" />
+                      <span>
+                        نمایش {faNumber(Math.min(PAGE_CHUNK, remainingCount))} آیتم بیشتر
+                      </span>
+                      <span className="fn-load-more-sub">
+                        (+{faNumber(remainingCount)} مورد دیگر)
+                      </span>
                     </button>
                     {remainingCount > PAGE_CHUNK && (
                       <button
@@ -753,7 +789,8 @@ export default function FortniteShopClient({
                         className="fn-show-all-btn"
                         onClick={() => setDisplayLimit(filteredEntries.length)}
                       >
-                        نمایش همه ({faNumber(filteredEntries.length)} مورد)
+                        <Icon name="grid" />
+                        <span>نمایش همه ({faNumber(filteredEntries.length)} مورد)</span>
                       </button>
                     )}
                   </div>
