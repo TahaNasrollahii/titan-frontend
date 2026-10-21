@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'مشاهده و مدیریت سبد خرید محصولات و آیتم‌های گیمینگ در تایتان.',
   robots: {
     index: false,
-    follow: false,
+    follow: true,
   },
   alternates: {
     canonical: '/cart',

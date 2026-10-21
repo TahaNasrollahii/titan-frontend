@@ -227,8 +227,8 @@ const STAT_CARDS: {
   },
 ];
 
-function Stats() {
-  const { data, error } = useApi(contentApi.stats);
+function Stats({ initialStats }: { initialStats?: PlatformStats | null }) {
+  const { data, error } = useApi(contentApi.stats, [], initialStats ?? undefined);
   const [mainPrize, ...otherPrizes] = data?.prizesAwarded ?? [];
   useSpotlight(`.${styles.spotStat}`);
 
@@ -618,12 +618,12 @@ function FinalCta() {
   );
 }
 
-export function AboutView() {
+export function AboutView({ initialStats }: { initialStats?: PlatformStats | null }) {
   return (
     <MotionConfig reducedMotion="user">
       <div className={styles.page}>
         <Hero />
-        <Stats />
+        <Stats initialStats={initialStats} />
         <Manifesto />
         <Pillars />
         <Values />

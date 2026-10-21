@@ -6,7 +6,7 @@ import { RequireAuth } from '@/components/RequireAuth';
 import { DeskView } from './DeskView';
 
 export const metadata: Metadata = {
-  title: 'میز پشتیبانی | تایتان',
+  title: 'میز پشتیبانی',
   robots: { index: false, follow: false },
 };
 

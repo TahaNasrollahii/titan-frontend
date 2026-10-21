@@ -74,8 +74,12 @@ function ChannelCard({ channel }: { channel: ContactChannel }) {
   );
 }
 
-export function ContactPanel() {
-  const contact = useApi(contentApi.contact);
+export function ContactPanel({
+  initialData,
+}: {
+  initialData?: { supportOnline: boolean; channels: ContactChannel[] } | null;
+}) {
+  const contact = useApi(contentApi.contact, [], initialData ?? undefined);
 
   const sortOrder: Record<string, number> = {
     discord: 1,

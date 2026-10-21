@@ -7,10 +7,18 @@ export const metadata: Metadata = {
   description: 'ثبت اطلاعات و پرداخت امن سفارش در فروشگاه گیمینگ تایتان.',
   robots: {
     index: false,
-    follow: false,
+    follow: true,
+  },
+  alternates: {
+    canonical: '/checkout',
   },
 };
 
 export default function CheckoutPage() {
-  return <CheckoutClient />;
+  return (
+    <>
+      <h1 className="sr-only">تکمیل سفارش و پرداخت در تایتان</h1>
+      <CheckoutClient />
+    </>
+  );
 }

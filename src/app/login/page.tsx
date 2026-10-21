@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'ورود به حساب کاربری پلتفرم گیمینگ تایتان با شماره موبایل و کد تأیید.',
   robots: {
     index: false,
-    follow: false,
+    follow: true,
   },
   alternates: {
     canonical: '/login',
