@@ -131,6 +131,15 @@ export interface Game extends GameMini {
   productCount: number;
   tournamentCount: number;
   playerCount: number;
+  introText?: string;
+  bottomSeoText?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  noindex?: boolean;
+  ogImage?: string | null;
+  canonicalUrl?: string;
+  imageAlt?: string;
+  updatedAt?: string;
 }
 
 export interface Platform {
@@ -140,6 +149,15 @@ export interface Platform {
 }
 
 export interface ProductCategory {
+  description?: string;
+  introText?: string;
+  bottomSeoText?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  noindex?: boolean;
+  canonicalUrl?: string;
+  imageAlt?: string;
+  updatedAt?: string;
   slug: string;
   name: string;
 }
@@ -179,6 +197,10 @@ export interface ProductSummary {
   platforms: string[];
   isWishlisted: boolean;
   popularity?: number;
+  imageAlt?: string;
+  sku?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ProductFeature {
@@ -198,6 +220,13 @@ export interface Product extends Omit<ProductSummary, 'platforms'> {
   specs: Record<string, string>;
   variants: ProductVariant[];
   gallery: { image: string | null; alt: string }[];
+  gtin?: string;
+  mpn?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  noindex?: boolean;
+  ogImage?: string | null;
+  canonicalUrl?: string;
 }
 
 export interface Review {
@@ -450,6 +479,9 @@ export interface TournamentSummary extends Omit<TournamentMini, 'status'> {
   viewerCount: number;
   isRegistered: boolean;
   featuredMatch: Match | null;
+  imageAlt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Registration {
@@ -489,7 +521,12 @@ export interface Tournament extends TournamentSummary {
   registrationOpensAt: string;
   streamUrl: string;
   myRegistration: MyRegistration | null;
-  specialBracket?: any;
+  specialBracket?: Record<string, unknown> | null;
+  metaTitle?: string;
+  metaDescription?: string;
+  noindex?: boolean;
+  ogImage?: string | null;
+  canonicalUrl?: string;
 }
 
 export interface MyTournament extends Registration {
