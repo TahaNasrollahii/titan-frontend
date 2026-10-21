@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
 import { RankAvatar } from '@/components/RankAvatar';
@@ -11,7 +11,7 @@ import { TournamentCard } from '@/components/TournamentCard';
 import { Empty, Loading } from '@/components/ui/State';
 import { useAuth } from '@/context/AuthContext';
 import { catalogApi, contentApi, meApi, tournamentsApi } from '@/lib/api/endpoints';
-import type { TournamentSummary } from '@/lib/api/types';
+import type { Game, Paginated, Promo, RankTier, TournamentSummary } from '@/lib/api/types';
 import { faNumber, initials, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
@@ -93,8 +93,8 @@ const STEPS = [
   { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: 'پس از بسته شدن ثبت‌نام، براکت مسابقات منتشر می‌شود و حریف خود را در همین صفحه می‌بینید.' },
 ];
 
-function Leaderboards() {
-  const games = useApi(() => catalogApi.games({ is_featured: true }));
+function Leaderboards({ initialGames }: { initialGames?: Game[] | null }) {
+  const games = useApi(() => catalogApi.games({ is_featured: true }), [], initialGames ?? undefined);
   const playable = (games.data ?? []).filter(game => game.kind === 'game');
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [mode, setMode] = useState<'teams' | 'players'>('teams');
@@ -112,32 +112,27 @@ function Leaderboards() {
   const teamsBtnRef = useRef<HTMLButtonElement>(null);
   const playersBtnRef = useRef<HTMLButtonElement>(null);
 
-  const updateGamePill = useCallback(() => {
-    const el = game ? tabRefs.current[game] : null;
-    const indicator = indicatorRef.current;
-    if (!el || !indicator) return;
-    indicator.style.left = `${el.offsetLeft}px`;
-    indicator.style.width = `${el.offsetWidth}px`;
-  }, [game]);
-
-  const updateModePill = useCallback(() => {
-    const activeBtn = mode === 'teams' ? teamsBtnRef.current : playersBtnRef.current;
-    const pill = modePillRef.current;
-    if (!activeBtn || !pill) return;
-    pill.style.left = `${activeBtn.offsetLeft}px`;
-    pill.style.width = `${activeBtn.offsetWidth}px`;
-  }, [mode]);
-
   useEffect(() => {
-    updateGamePill();
-    updateModePill();
-    window.addEventListener('resize', updateGamePill);
-    window.addEventListener('resize', updateModePill);
-    return () => {
-      window.removeEventListener('resize', updateGamePill);
-      window.removeEventListener('resize', updateModePill);
+    const updatePills = () => {
+      const el = game ? tabRefs.current[game] : null;
+      const indicator = indicatorRef.current;
+      if (el && indicator) {
+        indicator.style.left = `${el.offsetLeft}px`;
+        indicator.style.width = `${el.offsetWidth}px`;
+      }
+      const activeBtn = mode === 'teams' ? teamsBtnRef.current : playersBtnRef.current;
+      const pill = modePillRef.current;
+      if (activeBtn && pill) {
+        pill.style.left = `${activeBtn.offsetLeft}px`;
+        pill.style.width = `${activeBtn.offsetWidth}px`;
+      }
     };
-  }, [updateGamePill, updateModePill, games.data]);
+    updatePills();
+    window.addEventListener('resize', updatePills);
+    return () => {
+      window.removeEventListener('resize', updatePills);
+    };
+  }, [game, mode, games.data]);
 
   const loading = mode === 'teams' ? teams.loading : players.loading;
   const rows =
@@ -298,12 +293,21 @@ function Leaderboards() {
   );
 }
 
-export default function TournamentPage() {
+export interface TournamentHubInitialData {
+  promos?: Promo[] | null;
+  ranks?: RankTier[] | null;
+  upcoming?: Paginated<TournamentSummary> | null;
+  games?: Game[] | null;
+}
+
+export default function TournamentPage({ initialData }: { initialData?: TournamentHubInitialData }) {
   const { isAuthenticated } = useAuth();
-  const hero = useApi(() => contentApi.promos('tournament_hero'));
-  const ranks = useApi(tournamentsApi.ranks);
-  const upcoming = useApi(() =>
-    tournamentsApi.list({ status: ['registration_open', 'upcoming', 'live'], ordering: 'starts_at', page_size: 3 }),
+  const hero = useApi(() => contentApi.promos('tournament_hero'), [], initialData?.promos ?? undefined);
+  const ranks = useApi(tournamentsApi.ranks, [], initialData?.ranks ?? undefined);
+  const upcoming = useApi(
+    () => tournamentsApi.list({ status: ['registration_open', 'upcoming', 'live'], ordering: 'starts_at', page_size: 3 }),
+    [],
+    initialData?.upcoming ?? undefined,
   );
   const stats = useApi(isAuthenticated ? meApi.stats : null, [isAuthenticated]);
 
@@ -465,7 +469,7 @@ export default function TournamentPage() {
         ))}
       </div>
 
-      <Leaderboards />
+      <Leaderboards initialGames={initialData?.games} />
     </div>
   );
 }

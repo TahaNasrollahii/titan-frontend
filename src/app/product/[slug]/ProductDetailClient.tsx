@@ -4,14 +4,14 @@ import { Flame, Heart, MessageSquare, Minus, Plus, ShieldCheck, Trophy, Zap } fr
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/lib/api/client';
 import { catalogApi } from '@/lib/api/endpoints';
-import type { Product, ProductVariant } from '@/lib/api/types';
+import type { Paginated, Product, ProductSummary, ProductVariant, Review } from '@/lib/api/types';
 import { faNumber, mediaUrl, productPrice, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
@@ -36,27 +36,38 @@ type Tab = 'description' | 'specs' | 'reviews';
 
 /** Pick the cheapest in-stock option so the page opens on something purchasable. */
 function defaultVariant(product: Product): ProductVariant | null {
-  return product.variants.find(v => v.inStock) ?? product.variants[0] ?? null;
+  return product.variants.find((v) => v.inStock) ?? product.variants[0] ?? null;
 }
 
-export default function ProductPage({ initialData }: { initialData?: Product | null }) {
+interface ProductDetailClientProps {
+  initialData?: Product | null;
+  initialRelated?: ProductSummary[];
+  initialReviews?: Paginated<Review>;
+}
+
+export default function ProductPage({
+  initialData,
+  initialRelated,
+  initialReviews,
+}: ProductDetailClientProps) {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { addToCart, addToast } = useAppContext();
 
   const product = useApi(() => catalogApi.product(slug), [slug], initialData ?? undefined);
-  const related = useApi(() => catalogApi.related(slug), [slug]);
+  const related = useApi(() => catalogApi.related(slug), [slug], initialRelated);
 
   const [variantId, setVariantId] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [tab, setTab] = useState<Tab>('description');
   const [adding, setAdding] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const data = product.data;
   // Until the user picks one, the cheapest in-stock option is selected.
   const variant = useMemo(
-    () => (data ? (data.variants.find(v => v.id === variantId) ?? defaultVariant(data)) : null),
+    () => (data ? data.variants.find((v) => v.id === variantId) ?? defaultVariant(data) : null),
     [data, variantId],
   );
 
@@ -68,15 +79,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
     return '/images/banner-hero.webp';
   }, [data]);
 
-  const [currentImage, setCurrentImage] = useState<string>('');
-
-  useEffect(() => {
-    if (data?.image) {
-      setCurrentImage(mediaUrl(data.image));
-    } else if (fallbackImage) {
-      setCurrentImage(fallbackImage);
-    }
-  }, [data?.image, fallbackImage]);
+  const currentImage = selectedImage || (data?.image ? mediaUrl(data.image) : fallbackImage);
 
   if (product.loading && !data) return <Loading />;
   if (!data) return <ErrorState error={product.error} onRetry={product.reload} />;
@@ -86,7 +89,10 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
   const originalPrice = variant ? variant.originalPrice : data.originalPrice;
   const discount = variant ? variant.discountPercent : data.discountPercent;
   const inStock = variant ? variant.inStock : data.inStock;
-  const lowStock = !data.hasVariants && data.stock !== null && data.stock > 0 && data.stock <= 5 ? data.stock : null;
+  const lowStock =
+    !data.hasVariants && data.stock !== null && data.stock > 0 && data.stock <= 5
+      ? data.stock
+      : null;
 
   const toggleWishlist = async () => {
     if (!isAuthenticated) {
@@ -128,23 +134,33 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
   const specs: [string, string][] = [
     ...(data.vendor ? [['ناشر / فروشگاه', data.vendor] as [string, string]] : []),
     ['دسته‌بندی', data.category.name],
-    ...(data.platforms.length ? [['پلتفرم‌ها', data.platforms.map(p => p.name).join('، ')] as [string, string]] : []),
+    ...(data.platforms.length
+      ? [['پلتفرم‌ها', data.platforms.map((p) => p.name).join('، ')] as [string, string]]
+      : []),
     ...(data.deliveryInfo ? [['نحوه تحویل', data.deliveryInfo] as [string, string]] : []),
-    ...Object.entries(data.specs).map(([key, value]) => [SPEC_LABELS[key] ?? key, String(value)] as [string, string]),
+    ...Object.entries(data.specs).map(
+      ([key, value]) => [SPEC_LABELS[key] ?? key, String(value)] as [string, string],
+    ),
   ];
+
+  const mainAlt = data.imageAlt || data.title;
 
   return (
     <div className={styles.container} dir="rtl">
-      <nav className={styles.breadcrumb}>
+      <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
+        <Link href="/">صفحه اصلی</Link>
+        <span className={styles.separator}>&gt;</span>
         <Link href="/store">فروشگاه</Link>
         {data.game && (
           <>
             <span className={styles.separator}>&gt;</span>
-            <Link href={`/store?game=${data.game.slug}`}>{data.game.title}</Link>
+            <Link href={`/store/${data.game.slug}`}>{data.game.title}</Link>
           </>
         )}
         <span className={styles.separator}>&gt;</span>
-        <span className={styles.current}>{data.title}</span>
+        <span className={styles.current} aria-current="page">
+          {data.title}
+        </span>
       </nav>
 
       <div className={styles.mainSection}>
@@ -159,10 +175,16 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               <span />
             )}
             <div className={styles.actionsTop}>
-              {data.platforms.map(platform => (
+              {data.platforms.map((platform) => (
                 <span key={platform.slug} className={styles.iconBtn} title={platform.name}>
                   {platform.icon ? (
-                    <img src={platform.icon} alt={platform.name} className={styles.boldIcon} width="20" height="20" />
+                    <img
+                      src={platform.icon}
+                      alt={platform.name}
+                      className={styles.boldIcon}
+                      width="20"
+                      height="20"
+                    />
                   ) : (
                     <small>{platform.name}</small>
                   )}
@@ -191,15 +213,17 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
           {data.hasVariants && (
             <div className={styles.optionsBlock}>
               <div className={styles.sectionLabel}>انتخاب گزینه</div>
-              <div className={styles.optionsGrid} role="radiogroup">
-                {data.variants.map(option => (
+              <div className={styles.optionsGrid} role="radiogroup" aria-label="انتخاب گزینه محصول">
+                {data.variants.map((option) => (
                   <button
                     key={option.id}
                     type="button"
                     role="radio"
                     aria-checked={option.id === variant?.id}
                     disabled={!option.inStock}
-                    className={`${styles.optionCard} ${option.id === variant?.id ? styles.optionSelected : ''}`}
+                    className={`${styles.optionCard} ${
+                      option.id === variant?.id ? styles.optionSelected : ''
+                    }`}
                     onClick={() => setVariantId(option.id)}
                   >
                     {option.discountPercent > 0 && (
@@ -207,7 +231,9 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
                     )}
                     <span className={styles.optionLabel}>{option.label}</span>
                     <span className={styles.optionPrice}>{toman(option.price)}</span>
-                    {option.originalPrice && <span className={styles.optionOld}>{faNumber(option.originalPrice)}</span>}
+                    {option.originalPrice && (
+                      <span className={styles.optionOld}>{faNumber(option.originalPrice)}</span>
+                    )}
                     {!option.inStock && <span className={styles.optionOld}>ناموجود</span>}
                   </button>
                 ))}
@@ -258,16 +284,20 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
                 color={data.isWishlisted ? '#ef4444' : 'currentColor'}
               />
             </button>
-            <button className={styles.addToCartBtn} onClick={handleAddToCart} disabled={!inStock || adding}>
+            <button
+              className={styles.addToCartBtn}
+              onClick={handleAddToCart}
+              disabled={!inStock || adding}
+            >
               <Plus size={20} />
               {inStock ? 'افزودن به سبد' : 'ناموجود'}
             </button>
             <div className={styles.quantityControl}>
-              <button onClick={() => setQuantity(q => Math.min(q + 1, 20))} aria-label="افزایش">
+              <button onClick={() => setQuantity((q) => Math.min(q + 1, 20))} aria-label="افزایش">
                 <Plus size={16} />
               </button>
               <span>{faNumber(quantity)}</span>
-              <button onClick={() => setQuantity(q => Math.max(q - 1, 1))} aria-label="کاهش">
+              <button onClick={() => setQuantity((q) => Math.max(q - 1, 1))} aria-label="کاهش">
                 <Minus size={16} />
               </button>
             </div>
@@ -275,7 +305,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
 
           {data.features.length > 0 && (
             <div className={styles.featuresList}>
-              {data.features.map(feature => {
+              {data.features.map((feature) => {
                 const FeatureIcon = FEATURE_ICONS[feature.icon] ?? Zap;
                 return (
                   <div key={feature.title} className={styles.featureItem}>
@@ -295,7 +325,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
             {(currentImage || data.image || fallbackImage) && (
               <Image
                 src={currentImage || mediaUrl(data.image) || fallbackImage}
-                alt={data.title}
+                alt={mainAlt}
                 className={styles.mainImage}
                 width={500}
                 height={500}
@@ -304,7 +334,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
                 unoptimized={process.env.NODE_ENV !== 'production'}
                 onError={() => {
                   if (currentImage !== fallbackImage) {
-                    setCurrentImage(fallbackImage);
+                    setSelectedImage(fallbackImage);
                   }
                 }}
               />
@@ -315,12 +345,14 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               {data.image && (
                 <button
                   type="button"
-                  className={`${styles.thumbBtn} ${currentImage === mediaUrl(data.image) ? styles.thumbActive : ''}`}
-                  onClick={() => setCurrentImage(mediaUrl(data.image))}
+                  className={`${styles.thumbBtn} ${
+                    currentImage === mediaUrl(data.image) ? styles.thumbActive : ''
+                  }`}
+                  onClick={() => setSelectedImage(mediaUrl(data.image))}
                 >
                   <Image
                     src={mediaUrl(data.image)}
-                    alt={data.title}
+                    alt={mainAlt}
                     width={80}
                     height={80}
                     unoptimized={process.env.NODE_ENV !== 'production'}
@@ -331,13 +363,15 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
                 <button
                   key={idx}
                   type="button"
-                  className={`${styles.thumbBtn} ${currentImage === (g.image ? mediaUrl(g.image) : '') ? styles.thumbActive : ''}`}
-                  onClick={() => g.image && setCurrentImage(mediaUrl(g.image))}
+                  className={`${styles.thumbBtn} ${
+                    currentImage === (g.image ? mediaUrl(g.image) : '') ? styles.thumbActive : ''
+                  }`}
+                  onClick={() => g.image && setSelectedImage(mediaUrl(g.image))}
                 >
                   {g.image && (
                     <Image
                       src={mediaUrl(g.image)}
-                      alt={g.alt || data.title}
+                      alt={g.alt || mainAlt}
                       width={80}
                       height={80}
                       unoptimized={process.env.NODE_ENV !== 'production'}
@@ -350,17 +384,26 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
         </div>
       </div>
 
-      <div className={styles.tabsRow}>
+      <div className={styles.tabsRow} role="tablist" aria-label="بخش‌های اطلاعات محصول">
         <button
+          role="tab"
+          aria-selected={tab === 'description'}
           className={`${styles.tabItem} ${tab === 'description' ? styles.tabActive : ''}`}
           onClick={() => setTab('description')}
         >
           توضیحات
         </button>
-        <button className={`${styles.tabItem} ${tab === 'specs' ? styles.tabActive : ''}`} onClick={() => setTab('specs')}>
+        <button
+          role="tab"
+          aria-selected={tab === 'specs'}
+          className={`${styles.tabItem} ${tab === 'specs' ? styles.tabActive : ''}`}
+          onClick={() => setTab('specs')}
+        >
           مشخصات
         </button>
         <button
+          role="tab"
+          aria-selected={tab === 'reviews'}
           className={`${styles.tabItem} ${tab === 'reviews' ? styles.tabActive : ''}`}
           onClick={() => setTab('reviews')}
         >
@@ -368,57 +411,73 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
         </button>
       </div>
 
-      {tab === 'description' && (
-        <div className={styles.aboutSection}>
-          <h2>درباره {data.title}</h2>
-          <p>{data.description || 'توضیحاتی برای این محصول ثبت نشده است.'}</p>
-          {data.tags.length > 0 && (
-            <div className={styles.aboutTags}>
-              {data.tags.map(tag => (
-                <span key={tag} className={styles.aboutTag}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      <div
+        role="tabpanel"
+        hidden={tab !== 'description'}
+        className={styles.aboutSection}
+        style={tab !== 'description' ? { display: 'none' } : undefined}
+      >
+        <h2>درباره {data.title}</h2>
+        <p>{data.description || 'توضیحاتی برای این محصول ثبت نشده است.'}</p>
+        {data.tags.length > 0 && (
+          <div className={styles.aboutTags}>
+            {data.tags.map((tag) => (
+              <span key={tag} className={styles.aboutTag}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
-      {tab === 'specs' && (
-        <div className={styles.aboutSection}>
-          <h2>مشخصات</h2>
-          <table className={styles.specTable}>
-            <tbody>
-              {specs.map(([label, value]) => (
-                <tr key={label}>
-                  <td>{label}</td>
-                  <td>{value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div
+        role="tabpanel"
+        hidden={tab !== 'specs'}
+        className={styles.aboutSection}
+        style={tab !== 'specs' ? { display: 'none' } : undefined}
+      >
+        <h2>مشخصات فنی {data.title}</h2>
+        <table className={styles.specTable}>
+          <tbody>
+            {specs.map(([label, value]) => (
+              <tr key={label}>
+                <td>{label}</td>
+                <td>{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {tab === 'reviews' && <ReviewsSection product={data} onChanged={product.reload} />}
+      <div
+        role="tabpanel"
+        hidden={tab !== 'reviews'}
+        style={tab !== 'reviews' ? { display: 'none' } : undefined}
+      >
+        <ReviewsSection
+          product={data}
+          onChanged={product.reload}
+          initialData={initialReviews}
+        />
+      </div>
 
       {(related.data?.length ?? 0) > 0 && (
-        <div className={styles.recommendedSection}>
+        <section className={styles.recommendedSection} aria-label="محصولات مرتبط">
           <div className={styles.recommendedHeader}>
-            <div className={styles.recommendedTitle}>
+            <h2 className={styles.recommendedTitle}>
               <span className={styles.redBar}></span>
-              شاید بپسندید
-            </div>
+              محصولات مرتبط و پیشنهادی
+            </h2>
           </div>
 
           <div className={styles.recommendedScroll} dir="rtl">
-            {related.data!.map(item => (
+            {related.data!.map((item) => (
               <Link key={item.id} href={`/product/${item.slug}`} className={styles.recCard}>
                 {item.image && (
                   <Image
                     src={mediaUrl(item.image)}
                     className={styles.recImage}
-                    alt={item.title}
+                    alt={item.imageAlt || item.title}
                     width={180}
                     height={180}
                     sizes="160px"
@@ -433,7 +492,7 @@ export default function ProductPage({ initialData }: { initialData?: Product | n
               </Link>
             ))}
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

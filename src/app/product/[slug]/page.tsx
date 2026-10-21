@@ -1,32 +1,23 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
-import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '@/lib/siteConfig';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import { API_URL } from '@/lib/api/client';
-
-interface ProductData {
-  slug: string;
-  title: string;
-  description?: string;
-  image?: string;
-  price?: number;
-  inStock?: boolean;
-  rating?: number;
-  reviewCount?: number;
-  game?: {
-    slug: string;
-    title: string;
-  };
-  category?: {
-    name: string;
-  };
-}
+import type { Paginated, Product, ProductSummary, Review } from '@/lib/api/types';
+import {
+  buildBreadcrumbSchema,
+  buildProductSchema,
+  resolveBackendRedirect,
+  toAbsoluteUrl,
+} from '@/lib/seo/schema';
 
 export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {
-    const res = await fetch(`${API_URL}/products/?page_size=12&ordering=-popularity`, {
+    const res = await fetch(`${API_URL}/products/?page_size=24&ordering=-popularity`, {
       next: { revalidate: 60, tags: ['products'] },
       signal: AbortSignal.timeout(4000),
     });
@@ -39,16 +30,47 @@ export async function generateStaticParams() {
   }
 }
 
-async function getProduct(slug: string): Promise<ProductData | null> {
+async function getProduct(slug: string): Promise<Product | null> {
   try {
     const res = await fetch(`${API_URL}/products/${slug}/`, {
-      next: { revalidate: 60, tags: ['products'] },
+      next: { revalidate: 60, tags: ['products', `product-${slug}`] },
       signal: AbortSignal.timeout(3500),
     });
     if (!res.ok) return null;
     return await res.json();
   } catch {
     return null;
+  }
+}
+
+async function getProductReviews(slug: string): Promise<Paginated<Review> | undefined> {
+  try {
+    const res = await fetch(`${API_URL}/products/${slug}/reviews/`, {
+      next: { revalidate: 120, tags: ['products', `product-${slug}`] },
+      signal: AbortSignal.timeout(2500),
+    });
+    if (!res.ok) return undefined;
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      return { count: data.length, next: null, previous: null, results: data };
+    }
+    return data;
+  } catch {
+    return undefined;
+  }
+}
+
+async function getRelatedProducts(slug: string): Promise<ProductSummary[] | undefined> {
+  try {
+    const res = await fetch(`${API_URL}/products/${slug}/related/`, {
+      next: { revalidate: 300, tags: ['products', `product-${slug}`] },
+      signal: AbortSignal.timeout(2500),
+    });
+    if (!res.ok) return undefined;
+    const data = await res.json();
+    return Array.isArray(data) ? data : data.results || undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -60,35 +82,54 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProduct(slug);
 
-  const title = product ? `${product.title} | خرید از تایتان` : 'مشخصات و خرید محصول';
-  const rawDesc =
-    product?.description?.replace(/[\r\n]+/g, ' ').trim() ||
-    `خرید و تحویل سریع و قانونی ${product?.title || 'محصولات گیمینگ'} با بهترین قیمت و ضمانت در فروشگاه تایتان.`;
-  const description = rawDesc.length > 155 ? `${rawDesc.slice(0, 152)}...` : rawDesc;
+  if (!product) {
+    return {
+      title: 'محصول یافت نشد',
+      robots: { index: false, follow: false },
+    };
+  }
 
-  const imageUrl = product?.image
-    ? product.image.startsWith('http')
-      ? product.image
-      : `${SITE_URL}${product.image.startsWith('/') ? '' : '/'}${product.image}`
-    : DEFAULT_OG_IMAGE.url;
+  // Strip duplicate brand suffix because RootLayout applies `%s | تایتان`
+  const rawTitle = (product.metaTitle || `خرید ${product.title}`).replace(/\s*\|\s*(فروشگاه\s*)?تایتان\s*$/u, '');
+  const rawDesc =
+    (
+      product.metaDescription ||
+      product.description ||
+      product.subtitle ||
+      `خرید و تحویل سریع و قانونی ${product.title} با بهترین قیمت و ضمانت در فروشگاه تایتان.`
+    )
+      .replace(/[\r\n]+/g, ' ')
+      .trim();
+  const description = rawDesc.length > 158 ? `${rawDesc.slice(0, 155)}...` : rawDesc;
+
+  const imageUrl = toAbsoluteUrl(product.ogImage || product.image);
+  const canonicalUrl = product.canonicalUrl || `${SITE_URL}/product/${slug}`;
 
   return {
-    title,
+    title: rawTitle,
     description,
     alternates: {
-      canonical: `/product/${slug}`,
+      canonical: canonicalUrl,
     },
+    ...(product.noindex
+      ? {
+          robots: {
+            index: false,
+            follow: true,
+          },
+        }
+      : {}),
     openGraph: {
-      title,
+      title: `${rawTitle} | ${SITE_NAME}`,
       description,
-      url: `${SITE_URL}/product/${slug}`,
+      url: canonicalUrl,
       siteName: SITE_NAME,
       images: [
         {
           url: imageUrl,
-          width: 800,
-          height: 800,
-          alt: product?.title || 'محصول تایتان',
+          width: 1200,
+          height: 630,
+          alt: product.imageAlt || product.title,
         },
       ],
       locale: 'fa_IR',
@@ -96,7 +137,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: `${rawTitle} | ${SITE_NAME}`,
       description,
       images: [imageUrl],
     },
@@ -109,102 +150,37 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const [product, reviews, related] = await Promise.all([
+    getProduct(slug),
+    getProductReviews(slug),
+    getRelatedProducts(slug),
+  ]);
 
-  // Generate Structured Data (JSON-LD)
-  const productPriceInRials = (product?.price || 0) * 10;
-  const productJsonLd: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product?.title || slug,
-    description: product?.description || 'محصول گیمینگ فروشگاه تایتان',
-    sku: product?.slug || slug,
-    brand: {
-      '@type': 'Brand',
-      name: product?.game?.title || SITE_NAME,
-    },
-    image: product?.image
-      ? [product.image.startsWith('http') ? product.image : `${SITE_URL}/${product.image.replace(/^\//, '')}`]
-      : [`${SITE_URL}/images/banner-hero.webp`],
-    offers: {
-      '@type': 'Offer',
-      price: productPriceInRials,
-      priceCurrency: 'IRR',
-      priceValidUntil: '2026-12-31',
-      availability: product?.inStock !== false ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `${SITE_URL}/product/${slug}`,
-    },
-  };
-
-  if (product?.rating && product.rating > 0 && product.reviewCount && product.reviewCount > 0) {
-    productJsonLd.aggregateRating = {
-      '@type': 'AggregateRating',
-      ratingValue: Number(product.rating.toFixed(1)),
-      reviewCount: product.reviewCount,
-    };
+  if (!product) {
+    await resolveBackendRedirect(`/product/${slug}`);
+    notFound();
   }
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'صفحه اصلی',
-        item: SITE_URL,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'فروشگاه',
-        item: `${SITE_URL}/store`,
-      },
-      ...(product?.game
-        ? [
-            {
-              '@type': 'ListItem',
-              position: 3,
-              name: product.game.title,
-              item: `${SITE_URL}/store/${product.game.slug}`,
-            },
-            {
-              '@type': 'ListItem',
-              position: 4,
-              name: product.title,
-              item: `${SITE_URL}/product/${slug}`,
-            },
-          ]
-        : [
-            {
-              '@type': 'ListItem',
-              position: 3,
-              name: product?.title || slug,
-              item: `${SITE_URL}/product/${slug}`,
-            },
-          ]),
-    ],
-  };
+  const productJsonLd = buildProductSchema(product, reviews?.results ?? []);
+  const breadcrumbItems = [
+    { name: 'صفحه اصلی', path: '/' },
+    { name: 'فروشگاه', path: '/store' },
+    ...(product.game
+      ? [{ name: product.game.title, path: `/store/${product.game.slug}` }]
+      : []),
+    { name: product.title, path: `/product/${product.slug}` },
+  ];
+  const breadcrumbJsonLd = buildBreadcrumbSchema(breadcrumbItems);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      <JsonLd data={productJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
+      <ProductDetailClient
+        initialData={product}
+        initialReviews={reviews}
+        initialRelated={related}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      {product?.image && (
-        <link
-          rel="preload"
-          as="image"
-          href={product.image.startsWith('http') ? product.image : `${SITE_URL}/${product.image.replace(/^\//, '')}`}
-          fetchPriority="high"
-        />
-      )}
-      <ProductDetailClient initialData={product as any} />
     </>
   );
 }

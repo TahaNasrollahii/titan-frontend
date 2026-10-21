@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import TitanHomeClient from './TitanHomeClient';
+import { API_URL } from '@/lib/api/client';
 import type { Home } from '@/lib/api/types';
 import {
   SITE_URL,
@@ -10,11 +11,15 @@ import {
   DEFAULT_OG_IMAGE,
 } from '@/lib/siteConfig';
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
-  title: SITE_DEFAULT_TITLE,
+  title: {
+    absolute: SITE_DEFAULT_TITLE,
+  },
   description: SITE_DEFAULT_DESCRIPTION,
   alternates: {
-    canonical: '/',
+    canonical: `${SITE_URL}/`,
   },
   openGraph: {
     title: SITE_DEFAULT_TITLE,
@@ -35,8 +40,9 @@ export const metadata: Metadata = {
 
 async function getHomeData(): Promise<Home | null> {
   try {
-    const res = await fetch('https://titan-backend-taha.vercel.app/api/v1/home/', {
+    const res = await fetch(`${API_URL}/home/`, {
       next: { revalidate: 60, tags: ['home', 'products', 'games', 'promos'] },
+      signal: AbortSignal.timeout(4000),
     });
     if (res.ok) {
       return (await res.json()) as Home;

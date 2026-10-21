@@ -214,7 +214,7 @@ export default function TournamentsListPage({
   }
 
   return (
-    <main className="tour-wrapper">
+    <div className="tour-wrapper">
       <div className="liquid-bg">
         <div className="l-blob blob-1"></div>
         <div className="l-blob blob-2"></div>
@@ -222,7 +222,7 @@ export default function TournamentsListPage({
       </div>
 
       <div className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as React.CSSProperties}>
-        <h2>لیست مسابقات</h2>
+        <h1>لیست مسابقات و تورنومنت‌های فعال</h1>
       </div>
 
       <div className="filter-bar-wrapper spot reveal" style={{ '--d': 2 } as React.CSSProperties}>
@@ -250,6 +250,6 @@ export default function TournamentsListPage({
           !game && !status && ordering === 'starts_at' && !debouncedSearch ? initialTournaments : null
         }
       />
-    </main>
+    </div>
   );
 }

@@ -3,6 +3,8 @@ import React from 'react';
 import FortniteShopClient from './FortniteShopClient';
 import { getFortniteShop } from '@/lib/fortniteShop';
 import { SITE_NAME, SITE_URL } from '@/lib/siteConfig';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export const revalidate = 900;
 
@@ -94,9 +96,14 @@ export default async function FortniteShopPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <JsonLd data={jsonLd} />
+      <Breadcrumbs
+        includeJsonLd={false}
+        items={[
+          { name: 'صفحه اصلی', path: '/' },
+          { name: 'فروشگاه فورتنایت', path: '/store/fortnite' },
+          { name: 'آیتم شاپ فورتنایت', path: '/fortnite-shop' },
+        ]}
       />
       <FortniteShopClient initialData={shopData} />
     </>

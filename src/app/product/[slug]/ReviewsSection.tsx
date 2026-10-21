@@ -9,7 +9,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { ApiError, errorMessage } from '@/lib/api/client';
 import { catalogApi } from '@/lib/api/endpoints';
-import type { Product, Review } from '@/lib/api/types';
+import type { Paginated, Product, Review } from '@/lib/api/types';
 import { faNumber, timeAgo } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
@@ -257,9 +257,9 @@ function ReviewCard({ review, mine }: { review: Review; mine: boolean }) {
 }
 
 /** Rating summary, the review form (or a login prompt) and the list of reviews. */
-export function ReviewsSection({ product, onChanged }: { product: Product; onChanged: () => void }) {
+export function ReviewsSection({ product, onChanged, initialData }: { product: Product; onChanged: () => void; initialData?: Paginated<Review> }) {
   const { user, isAuthenticated } = useAuth();
-  const reviews = useApi(() => catalogApi.reviews(product.slug), [product.slug]);
+  const reviews = useApi(() => catalogApi.reviews(product.slug), [product.slug], initialData);
   const list = useMemo(() => reviews.data?.results ?? [], [reviews.data]);
   const mine = user ? list.find(review => review.user.id === user.id) : undefined;
 

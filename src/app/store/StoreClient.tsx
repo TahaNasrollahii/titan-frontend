@@ -301,11 +301,8 @@ function ProductCard({
             ? '/images/products/vbucks.webp'
             : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
 
-  const [imgSrc, setImgSrc] = useState(defaultImage);
-
-  useEffect(() => {
-    setImgSrc(defaultImage);
-  }, [defaultImage]);
+  const [imgError, setImgError] = useState(false);
+  const imgSrc = imgError ? SILHOUETTE_PLACEHOLDER : defaultImage;
 
   const discountPercent =
     product.discountPercent > 0
@@ -395,14 +392,14 @@ function ProductCard({
         <Image
           className="pic"
           src={imgSrc}
-          alt={product.title}
+          alt={product.imageAlt || product.title}
           width={260}
           height={285}
           sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 260px"
           priority={index < 2}
           unoptimized={process.env.NODE_ENV !== 'production' || (typeof imgSrc === 'string' && (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:')))}
           onError={() => {
-            setImgSrc(SILHOUETTE_PLACEHOLDER);
+            setImgError(true);
           }}
         />
       </div>
@@ -519,14 +516,12 @@ function ProductResults({
   );
 
   useEffect(() => {
-    const silent = isInitialMatch.current;
-    if (false && isInitialMatch.current) {
+    if (isInitialMatch.current) {
       isInitialMatch.current = false;
       return;
     }
     let active = true;
-    isInitialMatch.current = false;
-    void fetchPage(1, () => active, silent);
+    void fetchPage(1, () => active, false);
     return () => {
       active = false;
     };
@@ -704,8 +699,6 @@ function StorePageContent({
         el.removeEventListener('pointerleave', leave);
       });
   }, [discountPromos.data, bestsellerPromos.data]);
-
-  const selectGame = (slug: string) => router.replace(slug ? `/store?game=${slug}` : '/store', { scroll: false });
 
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
     (games.data ?? []).map(game => {

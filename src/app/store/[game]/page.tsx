@@ -2,11 +2,50 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import StoreClient from '../StoreClient';
-import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
-import { getStoreProducts, getStoreGames, getStorePromos, getGameBySlug, getAllGames } from '../getStoreData';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { PaginationNav } from '@/components/seo/PaginationNav';
+import { SITE_NAME, SITE_URL } from '@/lib/siteConfig';
+import {
+  buildCollectionPageSchema,
+  resolveBackendRedirect,
+  toAbsoluteUrl,
+} from '@/lib/seo/schema';
+import {
+  getAllGames,
+  getGameBySlug,
+  getStoreGames,
+  getStoreProducts,
+  getStorePromos,
+} from '../getStoreData';
 
 export const revalidate = 30;
 export const dynamicParams = true;
+
+interface CategorySearchParams {
+  page?: string;
+  search?: string;
+  q?: string;
+  ordering?: string;
+  sort?: string;
+  price_min?: string;
+  price_max?: string;
+  category?: string;
+  platform?: string;
+}
+
+function hasFacetFilters(params: CategorySearchParams): boolean {
+  return Boolean(
+    params.search ||
+      params.q ||
+      params.ordering ||
+      params.sort ||
+      params.price_min ||
+      params.price_max ||
+      params.category ||
+      params.platform,
+  );
+}
 
 export async function generateStaticParams() {
   const games = await getAllGames();
@@ -18,47 +57,79 @@ export async function generateStaticParams() {
       { game: 'premium' },
     ];
   }
-  return games.map(g => ({ game: g.slug }));
+  return games.map((g) => ({ game: g.slug }));
 }
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ game: string }>;
+  searchParams?: Promise<CategorySearchParams>;
 }): Promise<Metadata> {
   const { game: gameSlug } = await params;
+  const resolvedSearch = searchParams ? await searchParams : {};
+  const pageNum = Math.max(1, parseInt(resolvedSearch.page || '1', 10) || 1);
+  const isFiltered = hasFacetFilters(resolvedSearch);
+
   const game = await getGameBySlug(gameSlug);
   if (!game) {
     return {
       title: 'دسته‌بندی یافت نشد',
+      robots: { index: false, follow: false },
     };
   }
 
-  const title = `خرید محصولات و پول ${game.title} (${game.titleEn}) | فروشگاه تایتان`;
-  const rawDesc =
-    game.description?.trim() ||
-    `خرید سریع و قانونی پول، اسکین‌ها و آیتم‌های بازی ${game.title} (${game.titleEn}) با بهترین قیمت و ضمانت در فروشگاه گیمینگ تایتان.`;
-  const description = rawDesc.length > 155 ? `${rawDesc.slice(0, 152)}...` : rawDesc;
+  const pageSuffix = pageNum > 1 ? ` (صفحه ${pageNum.toLocaleString('fa-IR')})` : '';
+  const baseTitle = (
+    game.metaTitle || `خرید محصولات و پول ${game.title} (${game.titleEn})`
+  ).replace(/\s*\|\s*(فروشگاه\s*)?تایتان\s*$/u, '');
+  const title = `${baseTitle}${pageSuffix}`;
 
-  const imageUrl = game.coverImage || game.backgroundImage || `${SITE_URL}/images/banner-hero.webp`;
+  const rawDesc = (
+    game.metaDescription ||
+    game.introText ||
+    game.description ||
+    `خرید سریع و قانونی پول، اسکین‌ها و آیتم‌های بازی ${game.title} (${game.titleEn}) با بهترین قیمت و ضمانت در فروشگاه گیمینگ تایتان.`
+  )
+    .replace(/[\r\n]+/g, ' ')
+    .trim();
+  const description = rawDesc.length > 158 ? `${rawDesc.slice(0, 155)}...` : rawDesc;
+
+  const imageUrl = toAbsoluteUrl(
+    game.ogImage || game.coverImage || game.backgroundImage || '/images/banner-hero.webp',
+  );
+  const canonicalUrl =
+    game.canonicalUrl ||
+    (!isFiltered && pageNum > 1
+      ? `${SITE_URL}/store/${game.slug}?page=${pageNum}`
+      : `${SITE_URL}/store/${game.slug}`);
 
   return {
     title,
     description,
     alternates: {
-      canonical: `/store/${game.slug}`,
+      canonical: canonicalUrl,
     },
+    ...(game.noindex || isFiltered
+      ? {
+          robots: {
+            index: false,
+            follow: true,
+          },
+        }
+      : {}),
     openGraph: {
-      title,
+      title: `${title} | ${SITE_NAME}`,
       description,
-      url: `${SITE_URL}/store/${game.slug}`,
+      url: canonicalUrl,
       siteName: SITE_NAME,
       images: [
         {
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `محصولات ${game.title}`,
+          alt: game.imageAlt || `محصولات ${game.title}`,
         },
       ],
       locale: 'fa_IR',
@@ -66,7 +137,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: `${title} | ${SITE_NAME}`,
       description,
       images: [imageUrl],
     },
@@ -75,54 +146,66 @@ export async function generateMetadata({
 
 export default async function StoreCategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ game: string }>;
+  searchParams?: Promise<CategorySearchParams>;
 }) {
   const { game: gameSlug } = await params;
+  const resolvedSearch = searchParams ? await searchParams : {};
+  const currentPage = Math.max(1, parseInt(resolvedSearch.page || '1', 10) || 1);
+
   const game = await getGameBySlug(gameSlug);
   if (!game) {
+    await resolveBackendRedirect(`/store/${gameSlug}`);
     notFound();
   }
 
-  const [initialProducts, initialGames, initialDiscountPromos, initialBestsellerPromos] = await Promise.all([
-    getStoreProducts(game.slug),
-    getStoreGames(),
-    getStorePromos('store_discount'),
-    getStorePromos('store_bestseller'),
-  ]);
+  const [initialProducts, initialGames, initialDiscountPromos, initialBestsellerPromos] =
+    await Promise.all([
+      getStoreProducts(game.slug, 12, currentPage),
+      getStoreGames(),
+      getStorePromos('store_discount'),
+      getStorePromos('store_bestseller'),
+    ]);
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'صفحه اصلی',
-        item: `${SITE_URL}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'فروشگاه',
-        item: `${SITE_URL}/store`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: game.title,
-        item: `${SITE_URL}/store/${game.slug}`,
-      },
-    ],
-  };
+  const collectionSchema = buildCollectionPageSchema({
+    name: `خرید محصولات ${game.title} (${game.titleEn})`,
+    description:
+      game.metaDescription ||
+      game.description ||
+      `خرید آنلاین محصولات و آیتم‌های ${game.title} (${game.titleEn}) با تحویل آنی در فروشگاه تایتان.`,
+    path: currentPage > 1 ? `/store/${game.slug}?page=${currentPage}` : `/store/${game.slug}`,
+    products: initialProducts?.results ?? [],
+  });
+
+  const introText = game.introText || game.description;
+  const bottomSeoText =
+    game.bottomSeoText ||
+    `در این بخش می‌توانید انواع محصولات، پول درون‌برنامه‌ای، گیفت کارت و بسته‌های ویژه ${game.title} (${game.titleEn}) را با تحویل آنی، قیمت رقابتی و گارانتی معتبر از فروشگاه تایتان تهیه کنید.`;
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <h1 className="sr-only">فروشگاه آنلاین گیمینگ تایتان — محصولات بازی {game.title}</h1>
+      <JsonLd data={collectionSchema} />
+      <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '12px 24px 0' }}>
+        <Breadcrumbs
+          items={[
+            { name: 'صفحه اصلی', path: '/' },
+            { name: 'فروشگاه گیمینگ', path: '/store' },
+            { name: `${game.title} (${game.titleEn})`, path: `/store/${game.slug}` },
+          ]}
+        />
+        <header style={{ marginBottom: '12px' }}>
+          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: '0 0 6px' }}>
+            خرید محصولات و آیتم‌های {game.title} ({game.titleEn})
+          </h1>
+          {introText && (
+            <p style={{ margin: 0, fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.7 }}>
+              {introText}
+            </p>
+          )}
+        </header>
+      </div>
       <StoreClient
         initialGame={game.slug}
         initialProducts={initialProducts}
@@ -130,6 +213,31 @@ export default async function StoreCategoryPage({
         initialDiscountPromos={initialDiscountPromos}
         initialBestsellerPromos={initialBestsellerPromos}
       />
+      <PaginationNav
+        basePath={`/store/${game.slug}`}
+        currentPage={currentPage}
+        totalCount={initialProducts?.count ?? 0}
+        pageSize={12}
+      />
+      <section
+        aria-label={`توضیحات تکمیلی خرید محصولات ${game.title}`}
+        style={{
+          maxWidth: '1320px',
+          margin: '24px auto 0',
+          padding: '20px 24px',
+          borderRadius: '18px',
+          background: 'rgba(255, 255, 255, 0.025)',
+          border: '1px solid rgba(255, 255, 255, 0.07)',
+          color: 'rgba(255, 255, 255, 0.72)',
+          fontSize: '0.86rem',
+          lineHeight: 1.85,
+        }}
+      >
+        <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff', margin: '0 0 8px' }}>
+          راهنمای خرید {game.title} ({game.titleEn}) از تایتان
+        </h2>
+        <p style={{ margin: 0 }}>{bottomSeoText}</p>
+      </section>
     </>
   );
 }

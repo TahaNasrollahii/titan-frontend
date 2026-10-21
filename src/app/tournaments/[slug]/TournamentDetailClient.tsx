@@ -551,12 +551,17 @@ function Participants({ slug }: { slug: string }) {
 function Bracket({ tournament }: { tournament: Tournament }) {
   // 1. Direct custom special bracket from Django Admin (specialBracket) or local registry
   const specialEvent = getSpecialEvent(tournament.slug, tournament.game?.slug, tournament);
+  const bracket = useApi(
+    () => (specialEvent ? Promise.resolve([]) : tournamentsApi.bracket(tournament.slug)),
+    [tournament.slug, Boolean(specialEvent)],
+    specialEvent ? [] : undefined,
+  );
   if (specialEvent) {
     return <SpecialEventBracket event={specialEvent} />;
   }
 
   // 2. Fetch database matches (from Django Admin "Generate bracket & start")
-  const bracket = useApi(() => tournamentsApi.bracket(tournament.slug), [tournament.slug]);
+  // 2. Database matches fetched above (unconditional hook call)
   if (bracket.loading) return <Loading compact />;
 
   // 3. If database matches exist, automatically convert them into SpecialEventBracket!
@@ -573,11 +578,11 @@ function Bracket({ tournament }: { tournament: Tournament }) {
   );
 }
 
-export default function TournamentDetailsPage() {
+export default function TournamentDetailsPage({ initialData }: { initialData?: Tournament | null }) {
   const { slug } = useParams<{ slug: string }>();
   const isFifa = /fifa/i.test(slug);
   const specialEvent = getSpecialEvent(slug);
-  const tournament = useApi(() => tournamentsApi.get(slug), [slug]);
+  const tournament = useApi(() => tournamentsApi.get(slug), [slug], initialData ?? undefined);
   const [tab, setTab] = useState<Tab>('overview');
 
   useSpotlight('.spot-track', [tab, tournament.data]);
@@ -599,7 +604,7 @@ export default function TournamentDetailsPage() {
   const isOpen = t.status === 'registration_open' && !t.isFull;
 
   return (
-    <main className={styles.wrapper}>
+    <div className={styles.wrapper}>
       <div className="liquid-bg" aria-hidden="true">
         <div className="l-blob blob-1"></div>
         <div className="l-blob blob-2"></div>
@@ -677,52 +682,56 @@ export default function TournamentDetailsPage() {
           </div>
 
           <div className={`${styles.tabContent} reveal spot spot-track`} style={{ '--d': 3 } as React.CSSProperties}>
-            {tab === 'overview' && (
-              <div className={styles.overviewPane}>
-                <h3>درباره تورنومنت</h3>
-                <p>{t.description}</p>
-                <p>
-                  شروع ثبت‌نام: {jalaliDateTime(t.registrationOpensAt)} · پایان ثبت‌نام:{' '}
-                  {jalaliDateTime(t.registrationClosesAt)}
-                  {t.bestOf > 1 && ` · مسابقات Best of ${faNumber(t.bestOf)}`}
-                </p>
+            <div
+              className={styles.overviewPane}
+              hidden={tab !== 'overview'}
+              style={tab !== 'overview' ? { display: 'none' } : undefined}
+            >
+              <h3>درباره تورنومنت</h3>
+              <p>{t.description}</p>
+              <p>
+                شروع ثبت‌نام: {jalaliDateTime(t.registrationOpensAt)} · پایان ثبت‌نام:{' '}
+                {jalaliDateTime(t.registrationClosesAt)}
+                {t.bestOf > 1 && ` · مسابقات Best of ${faNumber(t.bestOf)}`}
+              </p>
 
-                {t.prizes.length > 0 && (
-                  <div className={styles.prizePool}>
-                    <h4>توزیع جوایز</h4>
-                    <div className={styles.prizeList}>
-                      {t.prizes.map(p => (
-                        <div key={p.place} className={styles.prizeRow}>
-                          <span className={styles.prizeRank}>
-                            <Icon name="trophy" style={{ color: PLACE_COLORS[p.place - 1] ?? 'var(--muted)' }} />{' '}
-                            {p.label || `رتبه ${faNumber(p.place)}`}
-                          </span>
-                          <span className={styles.prizeAmount}>
-                            {prize(p.amount, t.prizeCurrency)}
-                            {p.points > 0 && ` + ${faNumber(p.points)} امتیاز`}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {tab === 'rules' && (
-              <div className={styles.overviewPane}>
-                <h3>قوانین و مقررات</h3>
-                {t.rules.length ? (
-                  <ul style={{ paddingRight: 20, lineHeight: 2.2 }}>
-                    {t.rules.map(rule => (
-                      <li key={rule}>{rule}</li>
+              {t.prizes.length > 0 && (
+                <div className={styles.prizePool}>
+                  <h4>توزیع جوایز</h4>
+                  <div className={styles.prizeList}>
+                    {t.prizes.map(p => (
+                      <div key={p.place} className={styles.prizeRow}>
+                        <span className={styles.prizeRank}>
+                          <Icon name="trophy" style={{ color: PLACE_COLORS[p.place - 1] ?? 'var(--muted)' }} />{' '}
+                          {p.label || `رتبه ${faNumber(p.place)}`}
+                        </span>
+                        <span className={styles.prizeAmount}>
+                          {prize(p.amount, t.prizeCurrency)}
+                          {p.points > 0 && ` + ${faNumber(p.points)} امتیاز`}
+                        </span>
+                      </div>
                     ))}
-                  </ul>
-                ) : (
-                  <p>قوانین این تورنمنت به‌زودی منتشر می‌شود.</p>
-                )}
-              </div>
-            )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div
+              className={styles.overviewPane}
+              hidden={tab !== 'rules'}
+              style={tab !== 'rules' ? { display: 'none' } : undefined}
+            >
+              <h3>قوانین و مقررات</h3>
+              {t.rules.length ? (
+                <ul style={{ paddingRight: 20, lineHeight: 2.2 }}>
+                  {t.rules.map(rule => (
+                    <li key={rule}>{rule}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>قوانین این تورنمنت به‌زودی منتشر می‌شود.</p>
+              )}
+            </div>
 
             {tab === 'participants' && <Participants slug={t.slug} />}
             {tab === 'bracket' && (
@@ -754,6 +763,6 @@ export default function TournamentDetailsPage() {
       <section id="tournament-bracket-section" className={`${styles.fullWidthBracketSection} reveal`} style={{ '--d': 4 } as React.CSSProperties}>
         <Bracket tournament={t} />
       </section>
-    </main>
+    </div>
   );
 }

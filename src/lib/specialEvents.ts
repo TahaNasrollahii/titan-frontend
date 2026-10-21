@@ -221,7 +221,7 @@ export function getSpecialEvent(
 ): EventData | null {
   // ۱. اگر ادمین مستقیماً در فیلد Rules ادمین پنل جنگو تنظیمات جدول را وارد کرده باشد
   if (tournament?.specialBracket) {
-    return tournament.specialBracket as EventData;
+    return tournament.specialBracket as unknown as EventData;
   }
 
   // ۲. رجیستری لوکال

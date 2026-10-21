@@ -1,11 +1,18 @@
 import { API_URL } from '@/lib/api/client';
 import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 
-export async function getStoreProducts(game?: string, pageSize = 12): Promise<Paginated<ProductSummary> | null> {
+export async function getStoreProducts(
+  game?: string,
+  pageSize = 12,
+  page = 1,
+): Promise<Paginated<ProductSummary> | null> {
   try {
     const url = new URL(`${API_URL}/products/`);
     url.searchParams.set('page_size', String(pageSize));
     url.searchParams.set('ordering', '-popularity');
+    if (page > 1) {
+      url.searchParams.set('page', String(page));
+    }
     if (game) {
       url.searchParams.set('game', game);
     }

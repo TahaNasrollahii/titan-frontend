@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any */
 // @ts-nocheck
 'use client';
 
@@ -84,7 +85,7 @@ function renderScrollerCards(games: any[]) {
     <div class="gart">${renderCardArt(g, i)}</div>
     <div class="gbody">
       <h4>${esc(g.t)}</h4>
-      <div class="gdesc"><p>${esc(g.d)}</p><button class="gbtn-view" data-view="${i}">${esc(g.p)}</button></div>
+      <div class="gdesc"><p>${esc(g.d)}</p><a href="/store/${esc(g.slug)}" class="gbtn-view" data-view="${i}" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">${esc(g.p)}</a></div>
     </div>
   </article>`).join('');
 }
@@ -126,7 +127,7 @@ function buildSceneData(data: Home) {
         eta: 0,
         art: `/images/hero/characters/${HERO_ART['apex-legends']}.webp`,
         artClass: HERO_ART['apex-legends'],
-        href: '/store?game=apex-legends',
+        href: '/store/apex-legends',
       };
     }
     seenGames.add(t.game.slug);
@@ -421,10 +422,11 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       });
       addEventListener('pointerup', () => { dragging = false; sc.classList.remove('drag'); });
       sc.addEventListener('click', e => {
-        if (dragMoved) { dragMoved = false; return; }
+        if (dragMoved) { e.preventDefault(); dragMoved = false; return; }
         const view = (e.target as HTMLElement).closest('[data-view]') as HTMLElement;
         if (view) {
-           router.push('/store?game=' + encodeURIComponent(GAMES[parseInt(view.dataset.view!)].slug));
+           e.preventDefault();
+           router.push('/store/' + encodeURIComponent(GAMES[parseInt(view.dataset.view!)].slug));
         }
       });
       $('#nextBtn').addEventListener('click', () => {
