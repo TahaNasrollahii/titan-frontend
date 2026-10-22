@@ -7,7 +7,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
-import { Footer } from "@/components/Footer";
 import { ToastContainer } from "@/components/ToastContainer";
 import { Rail } from "@/components/Rail";
 import { MobileNav } from "@/components/MobileNav";
@@ -116,7 +115,6 @@ export default function RootLayout({
               <main className="main">
                 <Topbar />
                 {children}
-                <Footer />
               </main>
               <Rail />
               <ToastContainer />
