@@ -90,21 +90,6 @@ function renderScrollerCards(games: any[]) {
   </article>`).join('');
 }
 
-/** eNamad trust seal — conditional on NEXT_PUBLIC_ENAMAD_CODE / NEXT_PUBLIC_ENAMAD_ID. If unconfigured, hidden until verified. */
-const ENAMAD = {
-  id: process.env.NEXT_PUBLIC_ENAMAD_ID || '',
-  code: process.env.NEXT_PUBLIC_ENAMAD_CODE || '',
-};
-
-function enamadSeal() {
-  if (!ENAMAD.id || !ENAMAD.code) {
-    return '';
-  }
-  const inner = `<span class="th-seal-ring" aria-hidden="true"></span><span class="th-seal-check" aria-hidden="true"><i data-icon="check">${ico('check')}</i></span>`;
-  const q = `id=${encodeURIComponent(ENAMAD.id)}&Code=${encodeURIComponent(ENAMAD.code)}`;
-  return `<a class="th-seal" referrerpolicy="origin" target="_blank" rel="noopener" href="https://trustseal.enamad.ir/?${q}" aria-label="نماد اعتماد الکترونیکی">${inner}<span class="th-seal-face"><img referrerpolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?${q}" alt="نماد اعتماد الکترونیکی" code="${ENAMAD.code}" /></span></a>`;
-}
-
 export default function TitanPage({ initialData }: { initialData?: Home | null }) {
   const { user } = useAuth();
   const home = useApi(contentApi.home, [], initialData ?? undefined);
@@ -754,33 +739,6 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       </section>
 
     </div>
-
-    <section class="trust-hub reveal" style="--d:7" aria-label="اعتماد و ارتباط">
-      <div class="th-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="th-grid" aria-hidden="true"></div>
-
-      <div class="th-badge">
-        ${enamadSeal()}
-        <div class="th-copy">
-          <span class="th-kicker"><i data-icon="check">${ico('check')}</i>فروشگاه تاییدشده</span>
-          <h3>خرید مطمئن با نماد اعتماد</h3>
-          <p>تایتان دارای نماد اعتماد الکترونیکی است؛ با خیال راحت خرید کنید.</p>
-        </div>
-      </div>
-
-      <nav class="th-links" aria-label="بیشتر بدانید">
-        <a class="th-link spot" href="/about" data-nav>
-          <span class="th-link-ic"><i data-icon="info">${ico('info')}</i></span>
-          <span class="th-link-tx"><b>درباره ما</b><small><span>با تیم تایتان آشنا شوید</span></small></span>
-          <span class="th-link-go"><i data-icon="arrow">${ico('arrow')}</i></span>
-        </a>
-        <a class="th-link th-link--hot spot" href="/contact" data-nav>
-          <span class="th-link-ic"><i data-icon="chat">${ico('chat')}</i></span>
-          <span class="th-link-tx"><b>ارتباط با ما</b><small><span class="th-live"></span><span>پاسخ‌گویی سریع</span></small></span>
-          <span class="th-link-go"><i data-icon="arrow">${ico('arrow')}</i></span>
-        </a>
-      </nav>
-    </section>
 
 ` }}
     />
