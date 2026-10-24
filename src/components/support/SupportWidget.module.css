@@ -22,6 +22,11 @@
     /* Clear of the tab bar (bottom 12px + 66px) and its raised active bubble. */
     --orb-bottom: calc(env(safe-area-inset-bottom, 0px) + 118px);
   }
+
+  /* The product page's floating buy bar sits above the tab bar; lift the orb over it too */
+  :global(html[data-buy-bar]) .root {
+    --orb-bottom: calc(env(safe-area-inset-bottom, 0px) + 172px);
+  }
 }
 
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
@@ -50,7 +55,7 @@
     0 18px 40px -8px rgba(0, 0, 0, .75),
     0 0 0 1px rgba(255, 255, 255, .07),
     0 0 44px rgba(226, 69, 63, .38);
-  transition: transform .5s var(--sp), opacity .3s;
+  transition: transform .5s var(--sp), opacity .3s, bottom .35s var(--ez);
   animation: orbIn .9s var(--sp) .6s backwards;
   -webkit-tap-highlight-color: transparent;
 }

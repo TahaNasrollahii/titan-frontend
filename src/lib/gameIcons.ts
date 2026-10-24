@@ -11,6 +11,12 @@ export function gameIconSrc(slug: string, remoteIcon?: string | null): string | 
   return LOCAL_GAME_ICONS[slug] ?? remoteIcon ?? null;
 }
 
+/** 512px version of the same artwork for large decorative use (product page watermark). */
+export function gameWatermarkSrc(slug: string): string | null {
+  const icon = LOCAL_GAME_ICONS[slug];
+  return icon ? icon.replace('/images/categories/', '/images/categories/large/') : null;
+}
+
 /** Local files are already small; only remote uploads should go through the optimizer. */
 export function isLocalAsset(src: string): boolean {
   return src.startsWith('/');
