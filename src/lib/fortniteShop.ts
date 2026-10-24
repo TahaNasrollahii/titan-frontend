@@ -23,6 +23,14 @@ export interface ShopBundleItem {
   image: string | null;
 }
 
+/** Tile colours from the in-game shop layout (fortnite-api `colors`). */
+export interface ShopCardColors {
+  primary: string;
+  secondary: string | null;
+  accent: string | null;
+  plate: string | null;
+}
+
 export interface ShopEntry {
   id: string;
   name: string;
@@ -36,6 +44,7 @@ export interface ShopEntry {
   rarityFa: string;
   rarityColor: string;
   cardBgColor: string | null;
+  cardColors: ShopCardColors | null;
   regularPrice: number;
   finalPrice: number;
   discountAmount: number;
@@ -194,6 +203,17 @@ export function getSmartRevalidateSeconds(nowMs = Date.now()): number {
   );
   const secondsUntilReset = Math.max(60, Math.floor((nextResetMs - nowMs) / 1000));
   return Math.min(1800, secondsUntilReset);
+}
+
+function resolveCardColors(colors: any): ShopCardColors | null {
+  const primary = normalizeHexColor(colors?.color1);
+  if (!primary) return null;
+  return {
+    primary,
+    secondary: normalizeHexColor(colors?.color2),
+    accent: normalizeHexColor(colors?.color3),
+    plate: normalizeHexColor(colors?.textBackgroundColor),
+  };
 }
 
 function normalizeHexColor(raw: string | null | undefined): string | null {
@@ -547,6 +567,7 @@ function parsePrimaryApi(json: any): FortniteShopData {
       rarityFa: rarity.fa,
       rarityColor: rarity.color,
       cardBgColor,
+      cardColors: resolveCardColors(entry.colors),
       regularPrice,
       finalPrice,
       discountAmount,
@@ -713,6 +734,7 @@ function parseFallbackApi(json: any): FortniteShopData {
       rarityFa: rarity.fa,
       rarityColor: rarity.color,
       cardBgColor,
+      cardColors: resolveCardColors(entry.colors),
       regularPrice,
       finalPrice,
       discountAmount,

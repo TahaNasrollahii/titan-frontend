@@ -1,10 +1,12 @@
 'use client';
 
+import { Anton, Lalezar } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, {
   memo,
   useCallback,
+  useDeferredValue,
   useEffect,
   useMemo,
   useRef,
@@ -13,7 +15,7 @@ import React, {
 } from 'react';
 
 import { Icon } from '@/components/Icons';
-import { Empty, ErrorState, Loading } from '@/components/ui/State';
+import { ErrorState, Loading } from '@/components/ui/State';
 import { faNumber } from '@/lib/format';
 import {
   compareShopEntries,
@@ -23,6 +25,22 @@ import {
 } from '@/lib/fortniteShop';
 
 import './fortnite-shop.css';
+
+// Fortnite-style display faces: Lalezar for Persian headings and Anton as a
+// Burbank-like condensed face for Latin labels and item names.
+const fnDisplayFont = Lalezar({
+  weight: '400',
+  subsets: ['arabic', 'latin'],
+  variable: '--fn-font-display',
+  display: 'swap',
+});
+
+const fnLatinFont = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--fn-font-latin',
+  display: 'swap',
+});
 
 export type QuickCategoryKey =
   | 'all'
@@ -43,66 +61,124 @@ interface QuickCategoryConfig {
 }
 
 const QUICK_CATEGORIES: QuickCategoryConfig[] = [
-  // ردیف ۱: ۴ آیتم
-  {
-    key: 'all',
-    title: 'همه آیتم‌ها',
-    desc: 'کاتالوگ کامل شاپ امروز',
-    iconName: 'grid',
-    accentColor: '#e2453f',
-  },
-  {
-    key: 'outfit',
-    title: 'اسکین‌های بازی',
-    desc: 'کاراکترها و اسکین‌ها',
-    iconName: 'user',
-    accentColor: '#38bdf8',
-  },
-  {
-    key: 'bundle',
-    title: 'باندل‌های ویژه',
-    desc: 'پک‌های دارای تخفیف',
-    iconName: 'gift',
-    accentColor: '#fbbf24',
-  },
-  {
-    key: 'emote',
-    title: 'ایموت و دنس‌ها',
-    desc: 'حرکات نمایشی و دنس',
-    iconName: 'sparkles',
-    accentColor: '#c084fc',
-  },
-
-  // ردیف ۲: ۴ آیتم
-  {
-    key: 'pickaxe',
-    title: 'پیککس و کلنگ',
-    desc: 'کلنگ‌ها و ابزار ضربه',
-    iconName: 'pickaxe',
-    accentColor: '#34d399',
-  },
-  {
-    key: 'glider',
-    title: 'گلایدر و چترها',
-    desc: 'گلایدرها و چترهای فرود',
-    iconName: 'parachute',
-    accentColor: '#60a5fa',
-  },
-  {
-    key: 'gear',
-    title: 'تجهیزات و رپ',
-    desc: 'بک‌بلینگ و رپ سلاح',
-    iconName: 'bag',
-    accentColor: '#f43f5e',
-  },
-  {
-    key: 'other',
-    title: 'موزیک و ماشین',
-    desc: 'ترک جم، بدنه و سازها',
-    iconName: 'music',
-    accentColor: '#818cf8',
-  },
+  { key: 'all', title: 'همه آیتم‌ها', desc: 'کاتالوگ کامل شاپ امروز', iconName: 'grid', accentColor: '#ffe14d' },
+  { key: 'outfit', title: 'اسکین‌ها', desc: 'کاراکترها و اسکین‌ها', iconName: 'user', accentColor: '#4cc9ff' },
+  { key: 'bundle', title: 'باندل‌ها', desc: 'پک‌های دارای تخفیف', iconName: 'gift', accentColor: '#ffb020' },
+  { key: 'emote', title: 'ایموت‌ها', desc: 'حرکات نمایشی و دنس', iconName: 'sparkles', accentColor: '#d08bff' },
+  { key: 'pickaxe', title: 'پیکس‌ها', desc: 'کلنگ‌ها و ابزار ضربه', iconName: 'pickaxe', accentColor: '#3ee07a' },
+  { key: 'glider', title: 'گلایدرها', desc: 'گلایدرها و چترهای فرود', iconName: 'parachute', accentColor: '#7ab8ff' },
+  { key: 'gear', title: 'بک‌بلینگ و رپ', desc: 'بک‌بلینگ و رپ سلاح', iconName: 'bag', accentColor: '#ff6b9a' },
+  { key: 'other', title: 'موزیک و ماشین', desc: 'ترک جم، بدنه و سازها', iconName: 'music', accentColor: '#a99bff' },
 ];
+
+type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'discount';
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'featured', label: 'پیشنهاد شاپ' },
+  { key: 'price-asc', label: 'ارزان‌ترین' },
+  { key: 'price-desc', label: 'گران‌ترین' },
+  { key: 'discount', label: 'بیشترین تخفیف' },
+];
+
+const SORTERS: Record<SortKey, (a: ShopEntry, b: ShopEntry) => number> = {
+  featured: compareShopEntries,
+  'price-asc': (a, b) => a.finalPrice - b.finalPrice || compareShopEntries(a, b),
+  'price-desc': (a, b) => b.finalPrice - a.finalPrice || compareShopEntries(a, b),
+  discount: (a, b) => b.discountPercent - a.discountPercent || compareShopEntries(a, b),
+};
+
+// Categories that have their own quick filter; everything else is «other»
+const NAMED_CATEGORIES = new Set<string>([
+  'outfit',
+  'bundle',
+  'emote',
+  'pickaxe',
+  'glider',
+  'backpack',
+  'wrap',
+]);
+
+function matchesQuickCategory(entry: ShopEntry, key: QuickCategoryKey): boolean {
+  switch (key) {
+    case 'all':
+      return true;
+    case 'bundle':
+      return entry.category === 'bundle' || entry.isBundle;
+    case 'gear':
+      return entry.category === 'backpack' || entry.category === 'wrap';
+    case 'other':
+      return !NAMED_CATEGORIES.has(entry.category);
+    default:
+      return entry.category === key;
+  }
+}
+
+const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+
+/**
+ * Folds Arabic/Persian letter variants, digits, ZWNJ and punctuation so
+ * «ایموت ها», «ايموت‌ها» and «ایموتها» all match the same text.
+ */
+function normalizeForSearch(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[يى]/g, 'ی')
+    .replace(/ك/g, 'ک')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/[۰-۹]/g, d => String(PERSIAN_DIGITS.indexOf(d)))
+    .replace(/[ً-ٟـ‌‍‎‏]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
+const PERSIAN_PLURAL_SUFFIX = /(های|ها)$/;
+const SEARCH_STOPWORDS = new Set(['ها', 'های', 'و']);
+
+/**
+ * Each query word becomes a list of accepted spellings: «اسکین‌ها» also
+ * matches the singular «اسکین» that item types are stored with.
+ */
+function toSearchTerms(query: string): string[][] {
+  return normalizeForSearch(query)
+    .split(' ')
+    .filter(term => term && !SEARCH_STOPWORDS.has(term))
+    .map(term => {
+      const stem = term.replace(PERSIAN_PLURAL_SUFFIX, '');
+      return stem !== term && stem.length >= 2 ? [term, stem] : [term];
+    });
+}
+
+// Everyday words for each item type, including the tab labels used above
+const TYPE_SYNONYMS: Record<string, string> = {
+  outfit: 'اسکین کاراکتر skin',
+  bundle: 'باندل پک بسته',
+  emote: 'ایموت رقص دنس',
+  pickaxe: 'پیکس پیکاکس کلنگ',
+  glider: 'گلایدر چتر',
+  backpack: 'بک بلینگ کوله',
+  wrap: 'رپ اسلحه',
+  track: 'موزیک موسیقی آهنگ ترک جم',
+  car: 'ماشین خودرو',
+  instrument: 'ساز موسیقی',
+};
+
+function buildSearchText(entry: ShopEntry): string {
+  return normalizeForSearch(
+    [
+      TYPE_SYNONYMS[entry.category] ?? '',
+      entry.isBundle ? TYPE_SYNONYMS.bundle : '',
+      entry.name,
+      entry.typeFa,
+      entry.typeEn,
+      entry.rarityFa,
+      entry.rarityEn,
+      entry.sectionName ?? '',
+      entry.banner ?? '',
+      ...entry.bundleItems.flatMap(item => [item.name, item.typeFa, item.typeEn]),
+    ].join(' '),
+  );
+}
 
 const FALLBACK_ITEM_IMAGE = '/images/hero/characters/fortnite.webp';
 const PAGE_SIZE = 24;
@@ -166,9 +242,20 @@ function padPersianTwoDigits(val: number): string {
   return faNumber(Math.floor(val / 10)) + faNumber(val % 10);
 }
 
-/**
- * High-End Cybernetic Countdown Timer
- */
+const VBuckIcon = memo(function VBuckIcon({ src, size }: { src: string; size: number }) {
+  return (
+    <Image
+      src={src}
+      alt=""
+      aria-hidden="true"
+      width={size}
+      height={size}
+      unoptimized
+      className="fn-vbuck-icon"
+    />
+  );
+});
+
 const ShopCountdownTimer = memo(function ShopCountdownTimer({
   resetsAt,
   onResetReached,
@@ -203,54 +290,40 @@ const ShopCountdownTimer = memo(function ShopCountdownTimer({
   const secondsLeft = secondsUntilReset % 60;
   const cycleElapsed = Math.min(1, Math.max(0, 1 - secondsUntilReset / SHOP_CYCLE_SECONDS));
 
+  const cells = [
+    { value: hoursLeft, label: 'ساعت' },
+    { value: minutesLeft, label: 'دقیقه' },
+    { value: secondsLeft, label: 'ثانیه' },
+  ];
+
   return (
-    <div className="fn-hero-side fn-countdown-hud" aria-label="شمارش معکوس تا ریست بعدی آیتم شاپ">
+    <div className="fn-timer" aria-label="شمارش معکوس تا ریست بعدی آیتم شاپ">
       <div className="fn-timer-head">
-        <span className="fn-timer-head-title">
-          <span className="fn-timer-icon-wrap" aria-hidden="true">
-            <Icon name="clock" />
-          </span>
-          <span>زمان تا چرخش شاپ</span>
+        <span className="fn-timer-title">
+          <Icon name="clock" />
+          ریست شاپ تا
         </span>
         <span className="fn-timer-utc" dir="ltr">
-          <span className="fn-timer-utc-star" aria-hidden="true">
-            ★
-          </span>
           00:00 UTC
         </span>
       </div>
 
       <div className="fn-timer-grid" role="timer" aria-live="off">
-        <div className="fn-timer-cell fn-cell-hours">
-          <span className="fn-timer-val" suppressHydrationWarning>
-            {padPersianTwoDigits(hoursLeft)}
-          </span>
-          <span className="fn-timer-lbl fn-lbl-hours">ساعت</span>
-        </div>
-
-        <div className="fn-timer-sep-wrap" aria-hidden="true">
-          <span className="fn-timer-dot" />
-          <span className="fn-timer-dot" />
-        </div>
-
-        <div className="fn-timer-cell fn-cell-minutes">
-          <span className="fn-timer-val" suppressHydrationWarning>
-            {padPersianTwoDigits(minutesLeft)}
-          </span>
-          <span className="fn-timer-lbl fn-lbl-minutes">دقیقه</span>
-        </div>
-
-        <div className="fn-timer-sep-wrap" aria-hidden="true">
-          <span className="fn-timer-dot" />
-          <span className="fn-timer-dot" />
-        </div>
-
-        <div className="fn-timer-cell fn-cell-seconds">
-          <span className="fn-timer-val" suppressHydrationWarning>
-            {padPersianTwoDigits(secondsLeft)}
-          </span>
-          <span className="fn-timer-lbl fn-lbl-seconds">ثانیه</span>
-        </div>
+        {cells.map((cell, i) => (
+          <React.Fragment key={cell.label}>
+            {i > 0 && (
+              <span className="fn-timer-sep" aria-hidden="true">
+                :
+              </span>
+            )}
+            <div className="fn-timer-cell">
+              <span className="fn-timer-val" suppressHydrationWarning>
+                {padPersianTwoDigits(cell.value)}
+              </span>
+              <span className="fn-timer-lbl">{cell.label}</span>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
       <div className="fn-cycle">
@@ -268,13 +341,6 @@ const ShopCountdownTimer = memo(function ShopCountdownTimer({
           />
         </div>
       </div>
-
-      <div className="fn-stats-bar">
-        <span className="fn-stats-note">⚡ بروزرسانی لحظه‌ای و خودکار شاپ</span>
-        <span className="fn-live-status-dot">
-          <span className="fn-live-dot" aria-hidden="true" /> فعال و همگام
-        </span>
-      </div>
     </div>
   );
 });
@@ -282,10 +348,12 @@ const ShopCountdownTimer = memo(function ShopCountdownTimer({
 const ShopItemCard = memo(function ShopItemCard({
   entry,
   priority,
+  vbuckIcon,
   onInspectBundle,
 }: {
   entry: ShopEntry;
   priority: boolean;
+  vbuckIcon: string;
   onInspectBundle: (entry: ShopEntry) => void;
 }) {
   const [imageError, setImageError] = useState(false);
@@ -303,17 +371,22 @@ const ShopItemCard = memo(function ShopItemCard({
           ? ' fn-card-stage--wide-3'
           : '';
 
+  // Older cached payloads may not carry the tile palette yet
+  const tile = entry.cardColors ?? null;
+
   return (
     <article
       className="fn-card"
       style={
         {
           '--rarity-color': entry.rarityColor,
+          '--tile-1': tile?.primary ?? entry.rarityColor,
+          '--tile-2': tile?.secondary ?? undefined,
+          '--tile-3': tile?.accent ?? undefined,
+          '--tile-plate': tile?.plate ?? undefined,
         } as React.CSSProperties
       }
     >
-      <div className="fn-card-glow" aria-hidden="true" />
-
       <div className="fn-card-top">
         <span className="fn-rarity-badge" title={`${entry.rarityFa} (${entry.rarityEn})`}>
           <span className="fn-rarity-dot" aria-hidden="true" />
@@ -352,18 +425,14 @@ const ShopItemCard = memo(function ShopItemCard({
         />
       </div>
 
-      {/* Glass Bottom Info Panel with Expandable Hover Reveal */}
       <div className="fn-card-panel">
-        {/* Default visible: Item Name + V-Bucks Price */}
         <div className="fn-card-main-info">
           <h3 className="fn-card-title" title={entry.name} dir="auto">
             {entry.name}
           </h3>
 
           <div className="fn-price-wrap" title={`${faNumber(entry.finalPrice)} ویباکس`}>
-            <span className="fn-vbuck-badge" aria-hidden="true">
-              V
-            </span>
+            <VBuckIcon src={vbuckIcon} size={20} />
             <div className="fn-price-nums">
               <span className="fn-price-current">{faNumber(entry.finalPrice)}</span>
               {entry.regularPrice > entry.finalPrice && (
@@ -373,7 +442,7 @@ const ShopItemCard = memo(function ShopItemCard({
           </div>
         </div>
 
-        {/* Hover Reveal: Extra info and Action buttons */}
+        {/* Hover reveal: extra info and actions */}
         <div className="fn-card-reveal">
           <div className="fn-card-reveal-inner">
             <div className="fn-card-extra-meta">
@@ -503,15 +572,20 @@ export default function FortniteShopClient({
     initialData ? null : 'دریافت اطلاعات آیتم شاپ فورتنایت با خطا مواجه شد.',
   );
 
-  // Active quick category (Default is 'all' - all items)
   const [selectedCategory, setSelectedCategory] = useState<QuickCategoryKey>('all');
-
+  const [query, setQuery] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('featured');
+  const [onlyDiscounted, setOnlyDiscounted] = useState(false);
   const [page, setPage] = useState(1);
   const [inspectedBundle, setInspectedBundle] = useState<ShopEntry | null>(null);
 
   const refreshingRef = useRef(false);
   const resultsTopRef = useRef<HTMLElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const compactPager = useMediaQuery('(max-width: 560px)');
+
+  // Typing stays responsive while the grid re-filters
+  const deferredQuery = useDeferredValue(query);
 
   const refreshShop = useCallback(async (forceFresh = false) => {
     if (refreshingRef.current) return;
@@ -556,6 +630,35 @@ export default function FortniteShopClient({
     setPage(1);
   }, []);
 
+  const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setPage(1);
+  }, []);
+
+  const clearQuery = useCallback(() => {
+    setQuery('');
+    setPage(1);
+    searchInputRef.current?.focus();
+  }, []);
+
+  const handleSortChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortKey(e.target.value as SortKey);
+    setPage(1);
+  }, []);
+
+  const toggleDiscounted = useCallback(() => {
+    setOnlyDiscounted(prev => !prev);
+    setPage(1);
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    setQuery('');
+    setSelectedCategory('all');
+    setOnlyDiscounted(false);
+    setSortKey('featured');
+    setPage(1);
+  }, []);
+
   const handlePageChange = useCallback((nextPage: number) => {
     setPage(nextPage);
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -565,135 +668,66 @@ export default function FortniteShopClient({
     });
   }, []);
 
-  // Interactive Cursor Light Tracker
-  const handleHeroMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const el = e.currentTarget;
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    el.style.setProperty('--cursor-x', `${x}px`);
-    el.style.setProperty('--cursor-y', `${y}px`);
-    el.style.setProperty('--cursor-opacity', '1');
-  }, []);
-
-  const handleHeroMouseLeave = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    e.currentTarget.style.setProperty('--cursor-opacity', '0');
-  }, []);
-
-  // Category counts for quick access cards
-  const categoryCounts = useMemo(() => {
-    const counts: Record<QuickCategoryKey, number> = {
-      all: 0,
-      outfit: 0,
-      bundle: 0,
-      emote: 0,
-      pickaxe: 0,
-      glider: 0,
-      gear: 0,
-      other: 0,
-    };
-    if (!shop) return counts;
-
-    // Same de-duplication as the filtered list, so tile counts match results
-    const seenIds = new Set<string>();
-
-    for (const sec of shop.sections) {
-      for (const e of sec.entries) {
-        if (seenIds.has(e.id)) continue;
-        seenIds.add(e.id);
-        counts.all += 1;
-
-        if (e.category === 'outfit') counts.outfit += 1;
-        else if (e.category === 'bundle' || e.isBundle) counts.bundle += 1;
-        else if (e.category === 'emote') counts.emote += 1;
-        else if (e.category === 'pickaxe') counts.pickaxe += 1;
-        else if (e.category === 'glider') counts.glider += 1;
-        else if (e.category === 'backpack' || e.category === 'wrap') {
-          counts.gear += 1;
-        } else {
-          counts.other += 1;
-        }
-      }
-    }
-    return counts;
-  }, [shop]);
-
-  // Headline numbers for the hero
-  const discountStats = useMemo(() => {
-    let discounted = 0;
-    let maxDiscount = 0;
-    if (!shop) return { discounted, maxDiscount };
-
-    const seenIds = new Set<string>();
-    for (const sec of shop.sections) {
-      for (const e of sec.entries) {
-        if (seenIds.has(e.id)) continue;
-        seenIds.add(e.id);
-        if (e.discountPercent > 0) {
-          discounted += 1;
-          maxDiscount = Math.max(maxDiscount, e.discountPercent);
-        }
-      }
-    }
-    return { discounted, maxDiscount };
-  }, [shop]);
-
-  // Filtered entries according to selected quick category
-  const filteredEntries = useMemo(() => {
+  // Every offer once, in shop order, with its section name attached
+  const allEntries = useMemo(() => {
     if (!shop) return [];
+    const seenIds = new Set<string>();
     const list: ShopEntry[] = [];
-
     for (const sec of shop.sections) {
       for (const entry of sec.entries) {
-        if (selectedCategory !== 'all') {
-          if (selectedCategory === 'outfit') {
-            if (entry.category !== 'outfit') continue;
-          } else if (selectedCategory === 'bundle') {
-            if (entry.category !== 'bundle' && !entry.isBundle) continue;
-          } else if (selectedCategory === 'emote') {
-            if (entry.category !== 'emote') continue;
-          } else if (selectedCategory === 'pickaxe') {
-            if (entry.category !== 'pickaxe') continue;
-          } else if (selectedCategory === 'glider') {
-            if (entry.category !== 'glider') continue;
-          } else if (selectedCategory === 'gear') {
-            if (entry.category !== 'backpack' && entry.category !== 'wrap') {
-              continue;
-            }
-          } else if (selectedCategory === 'other') {
-            if (
-              entry.category === 'outfit' ||
-              entry.category === 'bundle' ||
-              entry.category === 'emote' ||
-              entry.category === 'pickaxe' ||
-              entry.category === 'glider' ||
-              entry.category === 'backpack' ||
-              entry.category === 'wrap'
-            ) {
-              continue;
-            }
-          }
-        }
-
-        list.push({
-          ...entry,
-          sectionName: entry.sectionName || sec.name,
-        });
+        if (seenIds.has(entry.id)) continue;
+        seenIds.add(entry.id);
+        list.push({ ...entry, sectionName: entry.sectionName || sec.name });
       }
     }
+    return list;
+  }, [shop]);
 
-    // Deduplicate offerIds
-    const seen = new Set<string>();
-    const unique: ShopEntry[] = [];
-    for (const it of list) {
-      if (!seen.has(it.id)) {
-        seen.add(it.id);
-        unique.push(it);
+  const searchIndex = useMemo(() => allEntries.map(buildSearchText), [allEntries]);
+
+  const searchTerms = useMemo(() => toSearchTerms(deferredQuery), [deferredQuery]);
+
+  // Search + discount applied; category counts are computed from this set
+  const matchingEntries = useMemo(
+    () =>
+      allEntries.filter(
+        (entry, i) =>
+          (!onlyDiscounted || entry.discountPercent > 0) &&
+          searchTerms.every(spellings => spellings.some(s => searchIndex[i].includes(s))),
+      ),
+    [allEntries, searchIndex, searchTerms, onlyDiscounted],
+  );
+
+  const categoryCounts = useMemo(() => {
+    const counts = {} as Record<QuickCategoryKey, number>;
+    for (const cat of QUICK_CATEGORIES) {
+      counts[cat.key] = matchingEntries.filter(e => matchesQuickCategory(e, cat.key)).length;
+    }
+    return counts;
+  }, [matchingEntries]);
+
+  const filteredEntries = useMemo(
+    () =>
+      matchingEntries
+        .filter(e => matchesQuickCategory(e, selectedCategory))
+        .sort(SORTERS[sortKey]),
+    [matchingEntries, selectedCategory, sortKey],
+  );
+
+  // Shop-wide headline numbers for the hero (not affected by filters)
+  const shopStats = useMemo(() => {
+    let bundles = 0;
+    let discounted = 0;
+    let maxDiscount = 0;
+    for (const e of allEntries) {
+      if (matchesQuickCategory(e, 'bundle')) bundles += 1;
+      if (e.discountPercent > 0) {
+        discounted += 1;
+        maxDiscount = Math.max(maxDiscount, e.discountPercent);
       }
     }
-
-    return unique.sort(compareShopEntries);
-  }, [shop, selectedCategory]);
+    return { total: allEntries.length, bundles, discounted, maxDiscount };
+  }, [allEntries]);
 
   const totalPages = Math.max(1, Math.ceil(filteredEntries.length / PAGE_SIZE));
   // Clamp in case a shop refresh shrinks the list under the current page
@@ -704,101 +738,73 @@ export default function FortniteShopClient({
     return filteredEntries.slice(start, start + PAGE_SIZE);
   }, [filteredEntries, currentPage]);
 
+  const trimmedQuery = query.trim();
+  const hasActiveFilters = trimmedQuery !== '' || selectedCategory !== 'all' || onlyDiscounted;
   const persianDate = shop ? formatPersianShopDate(shop.date) : '';
+  const vbuckIcon = shop?.vbuckIcon || 'https://fortnite-api.com/images/vbuck.png';
 
   const activeConfig =
     QUICK_CATEGORIES.find(c => c.key === selectedCategory) || QUICK_CATEGORIES[0];
 
   return (
-    <div className="fn-shop-page reveal" style={{ '--d': 2 } as React.CSSProperties}>
-      {/* Liquid Background Blobs (Liquid-glass atmosphere matching Titan) */}
-      <div className="fn-liquid-bg" aria-hidden="true">
-        <div className="fn-l-blob fn-blob-1" />
-        <div className="fn-l-blob fn-blob-2" />
-        <div className="fn-l-blob fn-blob-3" />
-      </div>
-
-      {/* Collab Hero Banner: Titan x Fortnite */}
-      <section
-        className="fn-hero"
-        aria-labelledby="fn-shop-heading"
-        onMouseMove={handleHeroMouseMove}
-        onMouseLeave={handleHeroMouseLeave}
-      >
-        {/* Interactive Mouse Cursor Glow Spotlight */}
-        <div className="fn-hero-cursor-light" aria-hidden="true" />
-
-        {/* Dynamic Ambient Aurora Background (Softly flows and breathes) */}
-        <div className="fn-hero-ambient" aria-hidden="true">
-          <div className="fn-ambient-glow fn-glow-cyan" />
-          <div className="fn-ambient-glow fn-glow-indigo" />
-          <div className="fn-ambient-glow fn-glow-ruby" />
-          <div className="fn-ambient-glow fn-glow-teal" />
-        </div>
-
-        {/* Cinematic Game Background Artwork (Inspired by Titan Hero Banners) */}
-        <div className="fn-hero-banner-bg" aria-hidden="true">
+    <div
+      className={`fn-shop-page ${fnDisplayFont.variable} ${fnLatinFont.variable} reveal`}
+      style={{ '--d': 2 } as React.CSSProperties}
+    >
+      {/* ---------- Hero ---------- */}
+      <section className="fn-hero" aria-labelledby="fn-shop-heading">
+        <div className="fn-hero-bg" aria-hidden="true">
           <Image
             src="/images/games/fortnite-background.webp"
             alt=""
             fill
             priority
             sizes="(max-width: 1280px) 100vw, 1280px"
-            className="fn-hero-bg-img"
+            className="fn-hero-map"
           />
-          <div className="fn-hero-bg-overlay" />
+          <div className="fn-hero-rays" />
+          <div className="fn-hero-shade" />
         </div>
 
         <div className="fn-hero-content">
-          {/* Official Collab Badge: Titan x Fortnite */}
           <div className="fn-collab-badge" title="همکاری رسمی تایتان و شاپ زنده فورتنایت">
-            <div className="fn-collab-logos">
-              <div className="fn-collab-img-wrap fn-titan-wrap">
-                <Image
-                  src="/titan-logo.webp"
-                  alt="لوگوی تایتان"
-                  width={38}
-                  height={38}
-                  className="fn-collab-img"
-                  priority
-                />
-              </div>
-              <span className="fn-collab-x" aria-hidden="true">
-                ✕
-              </span>
-              <div className="fn-collab-img-wrap fn-fortnite-wrap">
-                <Image
-                  src="/images/glossy-fortnite-logo.webp"
-                  alt="لوگوی فورتنایت"
-                  width={36}
-                  height={36}
-                  className="fn-collab-img"
-                  priority
-                />
-              </div>
-            </div>
-            <div className="fn-collab-divider" aria-hidden="true" />
-            <div className="fn-collab-text">
-              <div className="fn-collab-title-row">
-                <span className="fn-collab-title-titan">TITAN</span>
-                <span className="fn-collab-cross">✕</span>
-                <span className="fn-collab-title-fn">FORTNITE</span>
-              </div>
-              <span className="fn-collab-sub">آیتم شاپ زنده · بروزرسانی رسمی</span>
-            </div>
+            <Image
+              src="/titan-logo.webp"
+              alt="لوگوی تایتان"
+              width={30}
+              height={30}
+              className="fn-collab-img"
+              priority
+            />
+            <span className="fn-collab-x" aria-hidden="true">
+              ✕
+            </span>
+            <Image
+              src="/images/glossy-fortnite-logo.webp"
+              alt="لوگوی فورتنایت"
+              width={30}
+              height={30}
+              className="fn-collab-img"
+              priority
+            />
+            <span className="fn-collab-text" dir="ltr">
+              TITAN X FORTNITE
+            </span>
           </div>
 
-          <div className="fn-hero-title-row">
-            <h1 id="fn-shop-heading" className="fn-hero-title">
-              آیتم شاپ امروز <span className="fn-hero-title-accent">فورتنایت</span>
-            </h1>
+          <p className="fn-hero-eyebrow" dir="ltr">
+            ITEM SHOP
+          </p>
+
+          <h1 id="fn-shop-heading" className="fn-hero-title">
+            آیتم شاپ امروز <span className="fn-hero-title-hl">فورتنایت</span>
+          </h1>
+
+          <div className="fn-hero-meta">
             <span className="fn-live-pill">
               <span className="fn-live-dot" aria-hidden="true" />
               زنده و خودکار
             </span>
-          </div>
-
-          <div className="fn-date-row">
             {persianDate && (
               <span className="fn-date-chip">
                 <Icon name="clock" /> {persianDate}
@@ -807,24 +813,25 @@ export default function FortniteShopClient({
           </div>
 
           <p className="fn-hero-desc">
-            مشاهده لحظه‌ای کاتالوگ امروز با قیمت دقیق و خرید فوری و قانونی ویباکس از تایتان.
+            کاتالوگ امروز را لحظه‌ای ببینید، آیتم دلخواهتان را پیدا کنید و ویباکس را فوری و قانونی از
+            تایتان بخرید.
           </p>
 
           {shop && (
             <dl className="fn-hero-stats">
               <div className="fn-hero-stat">
-                <dt>آیتم در شاپ امروز</dt>
-                <dd>{faNumber(categoryCounts.all)}</dd>
+                <dt>آیتم امروز</dt>
+                <dd>{faNumber(shopStats.total)}</dd>
               </div>
               <div className="fn-hero-stat">
-                <dt>باندل ویژه</dt>
-                <dd>{faNumber(categoryCounts.bundle)}</dd>
+                <dt>باندل</dt>
+                <dd>{faNumber(shopStats.bundles)}</dd>
               </div>
-              {discountStats.maxDiscount > 0 && (
+              {shopStats.maxDiscount > 0 && (
                 <div className="fn-hero-stat fn-hero-stat--hot">
-                  <dt>{faNumber(discountStats.discounted)} آیتم تخفیف‌دار</dt>
+                  <dt>{faNumber(shopStats.discounted)} آیتم تخفیف‌دار</dt>
                   <dd>
-                    <small>تا</small> {faNumber(discountStats.maxDiscount)}٪
+                    <small>تا</small> {faNumber(shopStats.maxDiscount)}٪
                   </dd>
                 </div>
               )}
@@ -833,7 +840,8 @@ export default function FortniteShopClient({
 
           <div className="fn-hero-actions">
             <Link href="/product/fortnite-vbucks" className="fn-cta-primary">
-              <Icon name="cart" /> خرید فوری ویباکس
+              <VBuckIcon src={vbuckIcon} size={22} />
+              خرید فوری ویباکس
             </Link>
             <Link href="/store/fortnite" className="fn-cta-secondary">
               کروپک و بتل‌پس
@@ -841,11 +849,20 @@ export default function FortniteShopClient({
           </div>
         </div>
 
-        {/* Eye-Catching Countdown Timer */}
-        <ShopCountdownTimer resetsAt={shop?.resetsAt} onResetReached={handleResetReached} />
+        <div className="fn-hero-visual">
+          <Image
+            src="/images/hero/characters/fortnite.webp"
+            alt=""
+            aria-hidden="true"
+            width={426}
+            height={512}
+            priority
+            className="fn-hero-character"
+          />
+          <ShopCountdownTimer resetsAt={shop?.resetsAt} onResetReached={handleResetReached} />
+        </div>
       </section>
 
-      {/* Error State */}
       {!shop && error && !loading && (
         <ErrorState
           message={error}
@@ -855,92 +872,144 @@ export default function FortniteShopClient({
         />
       )}
 
-      {/* Loading State */}
       {loading && !shop && <Loading label="در حال دریافت آیتم شاپ زنده فورتنایت" />}
 
-      {/* Main Content: Quick Access + Filtered Item Grid */}
       {shop && (
         <>
-          {/* Quick Access Categories Deck */}
-          <section className="fn-cat-shortcuts" aria-labelledby="fn-cat-heading">
-            <div className="fn-shortcuts-header">
-              <div className="fn-shortcuts-header-text">
-                <span className="fn-shortcuts-badge">کاتالوگ شاپ</span>
-                <h2 id="fn-cat-heading">دسترسی سریع به دسته‌بندی‌ها</h2>
-                <p className="fn-shortcuts-hint">
-                  یک دسته را انتخاب کنید تا آیتم‌های آن فوراً فیلتر شوند.
-                </p>
-              </div>
-
-              <div className="fn-shortcuts-header-meta">
-                <span className="fn-shortcuts-total-badge">
-                  نمایش <strong>{faNumber(filteredEntries.length)}</strong> از{' '}
-                  <strong>{faNumber(categoryCounts.all)}</strong> آیتم
+          {/* ---------- Search, sort & categories ---------- */}
+          <section className="fn-filters" aria-labelledby="fn-filters-heading">
+            <div className="fn-filters-head">
+              <h2 id="fn-filters-heading">
+                <span className="fn-filters-kicker" dir="ltr">
+                  BROWSE
                 </span>
-                {selectedCategory !== 'all' && (
+                جستجو و دسته‌بندی
+              </h2>
+              {hasActiveFilters && (
+                <button type="button" className="fn-filters-reset" onClick={resetFilters}>
+                  <Icon name="refresh" />
+                  <span>پاک کردن فیلترها</span>
+                </button>
+              )}
+            </div>
+
+            <div className="fn-toolbar">
+              <div className="fn-search" role="search">
+                <Icon name="search" />
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  className="fn-search-input"
+                  value={query}
+                  onChange={handleQueryChange}
+                  onKeyDown={e => {
+                    if (e.key === 'Escape' && query) {
+                      e.preventDefault();
+                      clearQuery();
+                    }
+                  }}
+                  placeholder="جستجوی اسکین، ایموت، باندل یا نام آیتم…"
+                  aria-label="جستجو در آیتم‌های شاپ امروز"
+                  enterKeyHint="search"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                {query && (
                   <button
                     type="button"
-                    className="fn-reset-category-btn"
-                    onClick={() => handleSelectCategory('all')}
+                    className="fn-search-clear"
+                    onClick={clearQuery}
+                    aria-label="پاک کردن جستجو"
                   >
                     <Icon name="x" />
-                    <span>حذف فیلتر</span>
                   </button>
                 )}
               </div>
+
+              <label className="fn-sort">
+                <span className="fn-sort-label">مرتب‌سازی</span>
+                <select value={sortKey} onChange={handleSortChange} className="fn-sort-select">
+                  {SORT_OPTIONS.map(opt => (
+                    <option key={opt.key} value={opt.key}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <Icon name="chev" className="fn-sort-caret" />
+              </label>
+
+              <button
+                type="button"
+                className={`fn-toggle${onlyDiscounted ? ' is-on' : ''}`}
+                onClick={toggleDiscounted}
+                aria-pressed={onlyDiscounted}
+              >
+                <span className="fn-toggle-box" aria-hidden="true">
+                  <Icon name="check" />
+                </span>
+                فقط تخفیف‌دارها
+              </button>
             </div>
 
-            <div className="fn-cat-grid" role="group" aria-label="فیلتر دسته‌بندی آیتم‌ها">
+            <div className="fn-tabs" role="group" aria-label="دسته‌بندی آیتم‌ها">
               {QUICK_CATEGORIES.map(cat => {
                 const count = categoryCounts[cat.key] ?? 0;
                 const isActive = selectedCategory === cat.key;
-                const share = categoryCounts.all > 0 ? count / categoryCounts.all : 0;
                 return (
                   <button
                     key={cat.key}
                     type="button"
-                    className={`fn-cat${isActive ? ' is-active' : ''}`}
+                    className={`fn-tab${isActive ? ' is-active' : ''}`}
                     onClick={() => handleSelectCategory(cat.key)}
                     aria-pressed={isActive}
-                    disabled={count === 0 && cat.key !== 'all'}
-                    style={
-                      {
-                        '--cat-accent': cat.accentColor,
-                        '--cat-share': share,
-                      } as React.CSSProperties
-                    }
+                    disabled={count === 0 && !isActive && cat.key !== 'all'}
+                    title={cat.desc}
+                    style={{ '--cat-accent': cat.accentColor } as React.CSSProperties}
                   >
-                    <span className="fn-cat-icon" aria-hidden="true">
+                    <span className="fn-tab-icon" aria-hidden="true">
                       <Icon name={cat.iconName} />
                     </span>
-                    <span className="fn-cat-body">
-                      <span className="fn-cat-title">{cat.title}</span>
-                      <span className="fn-cat-desc">{cat.desc}</span>
-                    </span>
-                    <span className="fn-cat-count">{faNumber(count)}</span>
-                    <span className="fn-cat-meter" aria-hidden="true" />
+                    <span className="fn-tab-title">{cat.title}</span>
+                    <span className="fn-tab-count">{faNumber(count)}</span>
                   </button>
                 );
               })}
             </div>
           </section>
 
-          {/* Active Category Header */}
+          {/* ---------- Results ---------- */}
           <section className="fn-view-header" ref={resultsTopRef}>
-            <div className="fn-view-header-title">
-              <span className="fn-view-dot" aria-hidden="true" />
-              <h2>{activeConfig.title}</h2>
-              <span className="fn-view-count-badge">
-                {faNumber(filteredEntries.length)} آیتم در شاپ امروز
-              </span>
-            </div>
+            <h2>{trimmedQuery ? 'نتایج جستجو' : activeConfig.title}</h2>
+            <span className="fn-view-count-badge" aria-live="polite">
+              {faNumber(filteredEntries.length)} آیتم
+              {trimmedQuery && (
+                <>
+                  {' '}
+                  برای «<bdi>{trimmedQuery}</bdi>»
+                </>
+              )}
+            </span>
           </section>
 
-          {/* Items Grid */}
           {filteredEntries.length === 0 ? (
-            <Empty icon="search">
-              آیتمی در این دسته‌بندی در شاپ امروز فورتنایت موجود نیست.
-            </Empty>
+            <div className="fn-empty" role="status">
+              <span className="fn-empty-icon" aria-hidden="true">
+                <Icon name="search" />
+              </span>
+              <h3>
+                {trimmedQuery ? (
+                  <>
+                    نتیجه‌ای برای «<bdi>{trimmedQuery}</bdi>» پیدا نشد
+                  </>
+                ) : (
+                  'آیتمی با این فیلترها در شاپ امروز نیست'
+                )}
+              </h3>
+              <p>املای نام آیتم را بررسی کنید یا دسته‌بندی و فیلترها را تغییر دهید.</p>
+              <button type="button" className="fn-empty-btn" onClick={resetFilters}>
+                پاک کردن جستجو و فیلترها
+              </button>
+            </div>
           ) : (
             <div className="fn-grid-container">
               <div className="fn-grid">
@@ -949,6 +1018,7 @@ export default function FortniteShopClient({
                     key={entry.id}
                     entry={entry}
                     priority={idx < 4}
+                    vbuckIcon={vbuckIcon}
                     onInspectBundle={setInspectedBundle}
                   />
                 ))}
@@ -966,7 +1036,6 @@ export default function FortniteShopClient({
             </div>
           )}
 
-          {/* Bottom Conversion Banner */}
           <aside className="fn-bottom-cta" aria-label="خرید فوری ویباکس">
             <div className="fn-bottom-cta-text">
               <h2>ویباکس کافی برای خرید آیتم‌های انتخابی خود ندارید؟</h2>
@@ -977,7 +1046,8 @@ export default function FortniteShopClient({
             </div>
             <div className="fn-hero-actions">
               <Link href="/product/fortnite-vbucks" className="fn-cta-primary">
-                <Icon name="cart" /> خرید فوری ویباکس
+                <VBuckIcon src={vbuckIcon} size={22} />
+                خرید فوری ویباکس
               </Link>
               <Link href="/store/fortnite" className="fn-cta-secondary">
                 تمام محصولات فورتنایت
@@ -987,7 +1057,7 @@ export default function FortniteShopClient({
         </>
       )}
 
-      {/* Bundle Detail Popup Modal */}
+      {/* Bundle detail modal */}
       {inspectedBundle && (
         <div
           className="fn-drawer-backdrop"
@@ -1010,7 +1080,7 @@ export default function FortniteShopClient({
                 onClick={() => setInspectedBundle(null)}
                 aria-label="بستن پنجره"
               >
-                ✕
+                <Icon name="x" />
               </button>
             </div>
 
@@ -1058,9 +1128,7 @@ export default function FortniteShopClient({
 
             <div className="fn-drawer-foot">
               <div className="fn-price-wrap">
-                <span className="fn-vbuck-badge" aria-hidden="true">
-                  V
-                </span>
+                <VBuckIcon src={vbuckIcon} size={22} />
                 <div className="fn-price-nums">
                   <span className="fn-price-current">
                     {faNumber(inspectedBundle.finalPrice)} ویباکس
