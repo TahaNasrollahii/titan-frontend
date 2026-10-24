@@ -1,117 +1,110 @@
-import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
+
+import { Icon } from '@/components/Icons';
+import { SITE_NAME, SOCIAL_DISCORD, SOCIAL_TELEGRAM } from '@/lib/siteConfig';
+
+import styles from './Footer.module.css';
 
 const ENAMAD_ID = process.env.NEXT_PUBLIC_ENAMAD_ID || '';
 const ENAMAD_CODE = process.env.NEXT_PUBLIC_ENAMAD_CODE || '';
 
-const FOOTER_CATEGORY_LINKS = [
-  { href: '/store', label: 'فروشگاه تایتان' },
-  { href: '/store/fortnite', label: 'فورتنایت و ویباکس' },
-  { href: '/fortnite-shop', label: 'آیتم شاپ فورتنایت' },
-  { href: '/store/valorant', label: 'ولورانت پوینت (VP)' },
-  { href: '/store/apex-legends', label: 'اپکس کوین' },
-  { href: '/store/premium', label: 'اکانت پریمیوم و گیفت کارت' },
-  { href: '/tournaments', label: 'لیست تورنومنت‌ها' },
-  { href: '/tournament', label: 'لیدربرد و رتبه‌بندی' },
+interface FooterLink {
+  href: string;
+  label: string;
+}
+
+interface FooterColumn {
+  id: string;
+  title: string;
+  links: FooterLink[];
+}
+
+// Only routes that resolve on the live site: a broken sitewide link is
+// repeated on every page and hurts crawl quality everywhere.
+const FOOTER_COLUMNS: FooterColumn[] = [
+  {
+    id: 'footer-col-currency',
+    title: 'پول بازی‌ها',
+    links: [
+      { href: '/product/fortnite-vbucks', label: 'خرید ویباکس فورتنایت' },
+      { href: '/store/valorant', label: 'ولورانت پوینت (VP)' },
+      { href: '/product/apex-coins', label: 'ایپکس کوین' },
+      { href: '/product/pubg-uc', label: 'یوسی پابجی موبایل' },
+      { href: '/product/cod-points', label: 'سی‌پی کال آف دیوتی' },
+      { href: '/product/ea-fc-points', label: 'اف‌سی پوینت' },
+    ],
+  },
+  {
+    id: 'footer-col-giftcards',
+    title: 'گیفت کارت و اشتراک',
+    links: [
+      { href: '/product/steam-wallet', label: 'شارژ کیف پول استیم' },
+      { href: '/product/psn-gift-card', label: 'گیفت کارت پلی‌استیشن' },
+      { href: '/product/xbox-gift-card', label: 'گیفت کارت ایکس‌باکس' },
+      { href: '/product/google-play-gift-card', label: 'گیفت کارت گوگل پلی' },
+      { href: '/product/spotify-premium', label: 'اسپاتیفای پریمیوم' },
+      { href: '/product/telegram-premium', label: 'تلگرام پریمیوم' },
+    ],
+  },
+  {
+    id: 'footer-col-fortnite',
+    title: 'فورتنایت و تورنومنت',
+    links: [
+      { href: '/fortnite-shop', label: 'آیتم شاپ امروز فورتنایت' },
+      { href: '/product/fortnite-crew', label: 'کروپک فورتنایت' },
+      { href: '/product/fortnite-battle-pass', label: 'بتل پس فورتنایت' },
+      { href: '/tournaments', label: 'تورنومنت‌های آنلاین' },
+      { href: '/tournament', label: 'لیدربرد و رتبه‌بندی' },
+    ],
+  },
+  {
+    id: 'footer-col-titan',
+    title: 'تایتان',
+    links: [
+      { href: '/store', label: 'فروشگاه تایتان' },
+      { href: '/about', label: 'درباره ما' },
+      { href: '/contact', label: 'تماس با ما' },
+      { href: '/faq', label: 'سوالات متداول' },
+    ],
+  },
 ];
 
-const FOOTER_TRUST_LINKS = [
-  { href: '/faq', label: 'سوالات متداول' },
+const LEGAL_LINKS: FooterLink[] = [
   { href: '/terms', label: 'قوانین و شرایط تحویل' },
   { href: '/privacy', label: 'حریم خصوصی' },
 ];
 
-function CheckSvg() {
+const TRUST_POINTS = [
+  { icon: 'clock', title: 'تحویل فوری', desc: 'شارژ سریع پس از پرداخت' },
+  { icon: 'shield', title: 'خرید قانونی و امن', desc: 'دارای نماد اعتماد الکترونیکی' },
+  { icon: 'chat', title: 'پشتیبانی ۲۴ ساعته', desc: 'همراه شما در تمام مراحل خرید' },
+  { icon: 'trophy', title: 'تورنومنت هفتگی', desc: 'رقابت با جوایز نقدی' },
+];
+
+function TelegramSvg() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m5.5 12.5 4 4 9-9.5" />
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M21.5 4.3 18.4 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.6 13 2 11.6c-1-.3-1-1 .2-1.5L20.2 3.2c.8-.3 1.6.2 1.3 1.1z" />
     </svg>
   );
 }
 
-function ShieldSvg() {
+function DiscordSvg() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-
-function InfoSvg() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 11v5.5" />
-      <path d="M12 7.6v.1" />
-    </svg>
-  );
-}
-
-function ChatSvg() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 5.5h16v11H10l-4.5 4v-4H4z" />
-      <path d="M8 10h8M8 13h5" />
-    </svg>
-  );
-}
-
-function ArrowSvg() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 12h15.5M13.5 6l6 6-6 6" />
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M19.3 5.3A16.6 16.6 0 0 0 15.2 4l-.5 1a15.4 15.4 0 0 0-5.4 0l-.5-1a16.6 16.6 0 0 0-4.1 1.3C2.1 9.2 1.4 13 1.7 16.7a16.7 16.7 0 0 0 5 2.6l1.1-1.8c-.6-.2-1.2-.5-1.7-.8l.4-.3a11.9 11.9 0 0 0 11 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.8a16.6 16.6 0 0 0 5-2.6c.4-4.3-.7-8-2.9-11.4zM8.7 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z" />
     </svg>
   );
 }
 
 function EnamadSeal() {
-  const innerRingAndCheck = (
+  const ringAndCheck = (
     <>
-      <span className="footer-seal-ring" aria-hidden="true" />
-      <span className="footer-seal-check" aria-hidden="true">
-        <i data-icon="check">
-          <CheckSvg />
-        </i>
+      <span className={styles.sealRing} aria-hidden="true" />
+      <span className={styles.sealCheck} aria-hidden="true">
+        <Icon name="check" />
       </span>
     </>
   );
@@ -120,22 +113,22 @@ function EnamadSeal() {
     const query = `id=${encodeURIComponent(ENAMAD_ID)}&Code=${encodeURIComponent(ENAMAD_CODE)}`;
     return (
       <a
-        className="footer-seal"
+        className={styles.seal}
         referrerPolicy="origin"
         target="_blank"
         rel="noopener"
         href={`https://trustseal.enamad.ir/?${query}`}
         aria-label="نماد اعتماد الکترونیکی تایتان"
       >
-        {innerRingAndCheck}
-        <span className="footer-seal-face">
+        {ringAndCheck}
+        <span className={styles.sealFace}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             referrerPolicy="origin"
             src={`https://trustseal.enamad.ir/logo.aspx?${query}`}
             alt="نماد اعتماد الکترونیکی تایتان"
-            width={88}
-            height={88}
+            width={72}
+            height={72}
             loading="lazy"
           />
         </span>
@@ -144,13 +137,11 @@ function EnamadSeal() {
   }
 
   return (
-    <div className="footer-seal" role="img" aria-label="نماد اعتماد الکترونیکی">
-      {innerRingAndCheck}
-      <span className="footer-seal-face">
-        <span className="footer-seal-ph">
-          <i data-icon="shield">
-            <ShieldSvg />
-          </i>
+    <div className={styles.seal} role="img" aria-label="نماد اعتماد الکترونیکی">
+      {ringAndCheck}
+      <span className={styles.sealFace}>
+        <span className={styles.sealPlaceholder}>
+          <Icon name="shield" />
           <b>اینماد</b>
         </span>
       </span>
@@ -159,88 +150,132 @@ function EnamadSeal() {
 }
 
 export function Footer() {
-  return (
-    <footer className="site-footer reveal" style={{ '--d': 7 } as React.CSSProperties} aria-label="فوتر سایت تایتان">
-      <div className="footer-aurora" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className="footer-grid" aria-hidden="true" />
+  const year = new Intl.DateTimeFormat('fa-IR', { year: 'numeric' }).format(new Date());
 
-      <div className="footer-main">
-        <div className="footer-badge">
-          <EnamadSeal />
-          <div className="footer-copy">
-            <h3>خرید مطمئن با نماد اعتماد</h3>
-            <p>
-              تایتان دارای نماد اعتماد الکترونیکی است؛ خرید قانونی پول درون‌برنامه‌ای بازی‌ها، آیتم‌ها و ثبت‌نام تورنومنت‌های آنلاین با تحویل فوری و پشتیبانی ۲۴ ساعته.
+  return (
+    <footer className={`${styles.footer} reveal`} style={{ '--d': 7 } as React.CSSProperties}>
+      <div className={styles.glow} aria-hidden="true" />
+      <div className={styles.wordmark} aria-hidden="true">
+        TITAN
+      </div>
+
+      <div className={styles.inner}>
+        <ul className={styles.trust} aria-label="مزایای خرید از تایتان">
+          {TRUST_POINTS.map(point => (
+            <li key={point.title} className={styles.trustItem}>
+              <span className={styles.trustIcon} aria-hidden="true">
+                <Icon name={point.icon} />
+              </span>
+              <span className={styles.trustText}>
+                <strong>{point.title}</strong>
+                <span>{point.desc}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <div className={styles.main}>
+          <section className={styles.brand} aria-labelledby="footer-brand-title">
+            <Link href="/" className={styles.brandHead}>
+              <Image
+                src="/titan-logo.webp"
+                alt=""
+                width={48}
+                height={48}
+                className={styles.brandLogo}
+              />
+              <span className={styles.brandText}>
+                <span id="footer-brand-title" className={styles.brandName}>
+                  {SITE_NAME}
+                </span>
+                <span className={styles.brandTag}>پلتفرم گیمینگ و فروشگاه آیتم بازی</span>
+              </span>
+            </Link>
+
+            <p className={styles.brandDesc}>
+              خرید قانونی و سریع ویباکس فورتنایت، ولورانت پوینت، ایپکس کوین، گیفت کارت و اکانت‌های
+              پریمیوم، همراه با تورنومنت‌های آنلاین هفتگی و جوایز نقدی.
             </p>
-          </div>
+
+            <div className={styles.brandActions}>
+              <Link href="/contact" className={styles.contactBtn}>
+                <Icon name="chat" />
+                ارتباط با پشتیبانی
+              </Link>
+              {SOCIAL_TELEGRAM && (
+                <a
+                  href={SOCIAL_TELEGRAM}
+                  className={styles.social}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  aria-label="تایتان در تلگرام"
+                >
+                  <TelegramSvg />
+                </a>
+              )}
+              {SOCIAL_DISCORD && (
+                <a
+                  href={SOCIAL_DISCORD}
+                  className={styles.social}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  aria-label="تایتان در دیسکورد"
+                >
+                  <DiscordSvg />
+                </a>
+              )}
+            </div>
+
+            <div className={styles.sealRow}>
+              <EnamadSeal />
+              <span className={styles.sealText}>
+                <strong>نماد اعتماد الکترونیکی</strong>
+                <span>خرید امن و قانونی پول درون‌برنامه‌ای بازی‌ها</span>
+              </span>
+            </div>
+          </section>
+
+          {FOOTER_COLUMNS.map(column => (
+            <nav key={column.id} className={styles.col} aria-labelledby={column.id}>
+              <h2 id={column.id} className={styles.colTitle}>
+                {column.title}
+              </h2>
+              <ul className={styles.links}>
+                {column.links.map(link => (
+                  <li key={link.href}>
+                    <Link href={link.href} className={styles.link}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
 
-        <nav className="footer-cards" aria-label="درباره ما و ارتباط با پشتیبانی">
-          <Link className="footer-card spot" href="/about">
-            <span className="footer-card-ic">
-              <i data-icon="info">
-                <InfoSvg />
-              </i>
-            </span>
-            <span className="footer-card-tx">
-              <b>درباره ما</b>
-              <small>
-                <span>با تیم تایتان آشنا شوید</span>
-              </small>
-            </span>
-            <span className="footer-card-go">
-              <i data-icon="arrow">
-                <ArrowSvg />
-              </i>
-            </span>
-          </Link>
+        <div className={styles.bottom}>
+          <p className={styles.copyright}>
+            © {year} {SITE_NAME} — پلتفرم گیمینگ، فروشگاه آیتم بازی و تورنومنت‌های آنلاین. تمامی حقوق
+            محفوظ است.
+          </p>
 
-          <Link className="footer-card footer-card--hot spot" href="/contact">
-            <span className="footer-card-ic">
-              <i data-icon="chat">
-                <ChatSvg />
-              </i>
-            </span>
-            <span className="footer-card-tx">
-              <b>ارتباط با ما</b>
-              <small>
-                <span className="footer-live" />
-                <span>پاسخ‌گویی سریع</span>
-              </small>
-            </span>
-            <span className="footer-card-go">
-              <i data-icon="arrow">
-                <ArrowSvg />
-              </i>
-            </span>
-          </Link>
-        </nav>
-      </div>
-
-      <div className="footer-seo-bar">
-        <nav className="footer-nav-links" aria-label="دسترسی سریع به بخش‌های تایتان">
-          {FOOTER_CATEGORY_LINKS.map((item) => (
-            <Link key={item.href} href={item.href} className="footer-nav-chip">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="footer-meta-row">
-          <nav className="footer-legal-links" aria-label="قوانین و راهنمای کاربران">
-            {FOOTER_TRUST_LINKS.map((item) => (
-              <Link key={item.href} href={item.href} className="footer-legal-link">
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <span className="footer-copyright">
-            © تایتان — پلتفرم گیمینگ، فروشگاه آیتم بازی و تورنومنت‌های آنلاین
-          </span>
+          <div className={styles.bottomEnd}>
+            <nav aria-label="قوانین و حریم خصوصی">
+              <ul className={styles.legal}>
+                {LEGAL_LINKS.map(link => (
+                  <li key={link.href}>
+                    <Link href={link.href} className={styles.legalLink}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <a href="#frame" className={styles.toTop}>
+              <Icon name="arrow-up" />
+              بازگشت به بالا
+            </a>
+          </div>
         </div>
       </div>
     </footer>
