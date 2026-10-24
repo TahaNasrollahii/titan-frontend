@@ -25,45 +25,30 @@ interface FooterColumn {
 // repeated on every page and hurts crawl quality everywhere.
 const FOOTER_COLUMNS: FooterColumn[] = [
   {
-    id: 'footer-col-currency',
-    title: 'پول بازی‌ها',
+    id: 'footer-col-shop',
+    title: 'خرید سریع',
     links: [
-      { href: '/product/fortnite-vbucks', label: 'خرید ویباکس فورتنایت' },
-      { href: '/store/valorant', label: 'ولورانت پوینت (VP)' },
-      { href: '/product/apex-coins', label: 'ایپکس کوین' },
-      { href: '/product/pubg-uc', label: 'یوسی پابجی موبایل' },
-      { href: '/product/cod-points', label: 'سی‌پی کال آف دیوتی' },
-      { href: '/product/ea-fc-points', label: 'اف‌سی پوینت' },
+      { href: '/product/fortnite-vbucks', label: 'ویباکس فورتنایت' },
+      { href: '/store/valorant', label: 'ولورانت پوینت' },
+      { href: '/product/pubg-uc', label: 'یوسی پابجی' },
+      { href: '/product/steam-wallet', label: 'شارژ استیم' },
     ],
   },
   {
-    id: 'footer-col-giftcards',
-    title: 'گیفت کارت و اشتراک',
+    id: 'footer-col-play',
+    title: 'فورتنایت و رقابت',
     links: [
-      { href: '/product/steam-wallet', label: 'شارژ کیف پول استیم' },
-      { href: '/product/psn-gift-card', label: 'گیفت کارت پلی‌استیشن' },
-      { href: '/product/xbox-gift-card', label: 'گیفت کارت ایکس‌باکس' },
-      { href: '/product/google-play-gift-card', label: 'گیفت کارت گوگل پلی' },
-      { href: '/product/spotify-premium', label: 'اسپاتیفای پریمیوم' },
-      { href: '/product/telegram-premium', label: 'تلگرام پریمیوم' },
-    ],
-  },
-  {
-    id: 'footer-col-fortnite',
-    title: 'فورتنایت و تورنومنت',
-    links: [
-      { href: '/fortnite-shop', label: 'آیتم شاپ امروز فورتنایت' },
+      { href: '/fortnite-shop', label: 'آیتم شاپ امروز' },
       { href: '/product/fortnite-crew', label: 'کروپک فورتنایت' },
-      { href: '/product/fortnite-battle-pass', label: 'بتل پس فورتنایت' },
-      { href: '/tournaments', label: 'تورنومنت‌های آنلاین' },
-      { href: '/tournament', label: 'لیدربرد و رتبه‌بندی' },
+      { href: '/tournaments', label: 'تورنومنت‌ها' },
+      { href: '/tournament', label: 'لیدربرد' },
     ],
   },
   {
     id: 'footer-col-titan',
     title: 'تایتان',
     links: [
-      { href: '/store', label: 'فروشگاه تایتان' },
+      { href: '/store', label: 'فروشگاه' },
       { href: '/about', label: 'درباره ما' },
       { href: '/contact', label: 'تماس با ما' },
       { href: '/faq', label: 'سوالات متداول' },
@@ -193,8 +178,8 @@ export function Footer() {
             </Link>
 
             <p className={styles.brandDesc}>
-              خرید قانونی و سریع ویباکس فورتنایت، ولورانت پوینت، ایپکس کوین، گیفت کارت و اکانت‌های
-              پریمیوم، همراه با تورنومنت‌های آنلاین هفتگی و جوایز نقدی.
+              خرید قانونی و سریع پول بازی‌ها، گیفت کارت و اکانت‌های پریمیوم، همراه با تورنومنت‌های
+              آنلاین هفتگی.
             </p>
 
             <div className={styles.brandActions}>
@@ -224,14 +209,7 @@ export function Footer() {
                   <DiscordSvg />
                 </a>
               )}
-            </div>
-
-            <div className={styles.sealRow}>
               <EnamadSeal />
-              <span className={styles.sealText}>
-                <strong>نماد اعتماد الکترونیکی</strong>
-                <span>خرید امن و قانونی پول درون‌برنامه‌ای بازی‌ها</span>
-              </span>
             </div>
           </section>
 

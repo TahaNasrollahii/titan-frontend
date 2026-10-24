@@ -126,7 +126,7 @@
 /* ---------- Brand + link columns ---------- */
 .main {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
   gap: clamp(20px, 2.6vw, 36px);
   padding-top: clamp(22px, 2.4vw, 28px);
   border-top: 1px solid rgba(255, 255, 255, 0.07);
@@ -182,7 +182,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .contactBtn {
@@ -300,37 +300,12 @@
 }
 
 /* ---------- eNamad seal ---------- */
-.sealRow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 4px;
-}
-
-.sealText {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.sealText strong {
-  font-size: 13px;
-  font-weight: 800;
-  color: #fff;
-}
-
-.sealText span {
-  font-size: 11.5px;
-  line-height: 1.6;
-  color: var(--muted);
-}
-
 .seal {
   position: relative;
   flex: none;
-  width: 76px;
-  height: 82px;
-  border-radius: 20px;
+  width: 58px;
+  height: 62px;
+  border-radius: 16px;
   transition: transform 0.5s var(--spring);
 }
 
@@ -338,10 +313,10 @@
 .seal::before {
   content: '';
   position: absolute;
-  inset: 8px;
+  inset: 6px;
   border-radius: inherit;
   background: conic-gradient(#e2453f, #fff0b3, #bdb1ff, #f0645a, #e2453f);
-  filter: blur(16px);
+  filter: blur(12px);
   opacity: 0.5;
   animation: sealSpin 6s linear infinite;
   transition: opacity 0.4s;
@@ -372,7 +347,7 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 17px;
+  border-radius: 13px;
   background: linear-gradient(160deg, #fffaf2, #f4e6e1);
   box-shadow: inset 0 1px 0 #fff, inset 0 -10px 20px rgba(120, 40, 50, 0.12);
 }
@@ -404,27 +379,27 @@
 .sealPlaceholder {
   display: grid;
   justify-items: center;
-  gap: 3px;
-  font-size: 26px;
+  gap: 2px;
+  font-size: 19px;
   color: #a3222c;
 }
 
 .sealPlaceholder b {
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 800;
 }
 
 .sealCheck {
   position: absolute;
   z-index: 2;
-  left: -5px;
-  bottom: -5px;
+  left: -4px;
+  bottom: -4px;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  font-size: 13px;
+  font-size: 11px;
   color: #0b2a17;
   background: var(--green);
   box-shadow: 0 0 0 3px #3d1018, 0 6px 16px rgba(61, 220, 132, 0.5);
@@ -522,20 +497,26 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1180px) {
-  .main {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Titles alone are enough once the tiles get narrow */
+  .trustText span {
+    display: none;
   }
 
+  .main {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Brand spans the row: text on one side, actions on the other */
   .brand {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      'head seal'
-      'desc seal'
-      'actions seal';
+      'head actions'
+      'desc actions';
     align-items: center;
     column-gap: 24px;
+    row-gap: 10px;
   }
 
   .brandHead {
@@ -550,11 +531,6 @@
   .brandActions {
     grid-area: actions;
   }
-
-  .sealRow {
-    grid-area: seal;
-    margin-top: 0;
-  }
 }
 
 @media (max-width: 900px) {
@@ -562,18 +538,9 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .main {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 26px;
-  }
-
   .brand {
     display: flex;
     align-items: flex-start;
-  }
-
-  .sealRow {
-    margin-top: 4px;
   }
 }
 
@@ -610,15 +577,35 @@
   }
 
   .main {
-    column-gap: 16px;
+    column-gap: 12px;
+    row-gap: 22px;
+  }
+
+  .col {
+    gap: 10px;
+  }
+
+  .colTitle {
+    font-size: 12.5px;
+    padding-inline-start: 9px;
+  }
+
+  .colTitle::before {
+    width: 3px;
+    height: 12px;
   }
 
   .links {
-    gap: 8px;
+    gap: 7px;
   }
 
   .link {
-    font-size: 12.5px;
+    font-size: 12px;
+  }
+
+  .link:hover::before {
+    width: 0;
+    margin-inline-end: 0;
   }
 
   .bottom {
