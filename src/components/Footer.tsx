@@ -172,12 +172,6 @@ export function Footer() {
         <div className="footer-badge">
           <EnamadSeal />
           <div className="footer-copy">
-            <span className="footer-kicker">
-              <i data-icon="check">
-                <CheckSvg />
-              </i>
-              فروشگاه تاییدشده
-            </span>
             <h3>خرید مطمئن با نماد اعتماد</h3>
             <p>
               تایتان دارای نماد اعتماد الکترونیکی است؛ خرید قانونی پول درون‌برنامه‌ای بازی‌ها، آیتم‌ها و ثبت‌نام تورنومنت‌های آنلاین با تحویل فوری و پشتیبانی ۲۴ ساعته.
@@ -252,4 +246,3 @@ export function Footer() {
     </footer>
   );
 }
-

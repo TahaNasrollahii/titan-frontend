@@ -2755,24 +2755,6 @@ html[dir="rtl"] .hero-live {
   min-width: 0;
 }
 
-.footer-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 11px 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--cream);
-  background: rgba(255, 240, 179, .08);
-  border: 1px solid rgba(255, 240, 179, .2);
-}
-
-.footer-kicker i {
-  font-size: 13px;
-  color: var(--green);
-}
-
 .footer-copy h3 {
   font-size: clamp(16px, 1.5vw, 20px);
   font-weight: 800;
