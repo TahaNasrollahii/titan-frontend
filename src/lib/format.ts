@@ -1,8 +1,12 @@
 import type { ProductSummary } from '@/lib/api/types';
 
 const numberFormat = new Intl.NumberFormat('fa-IR');
-const dateFormat = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+// Pinned to Tehran time (the backend's TIME_ZONE): the server renders in UTC, so without
+// it SSR and the browser format the same instant differently and hydration fails.
+const TIME_ZONE = 'Asia/Tehran';
+const dateFormat = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: TIME_ZONE });
 const dateTimeFormat = new Intl.DateTimeFormat('fa-IR', {
+  timeZone: TIME_ZONE,
   weekday: 'long',
   day: 'numeric',
   month: 'long',

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -100,7 +101,7 @@ export default function OrderDetailsPage() {
                 <ItemWrapper key={item.id} {...wrapperProps} style={{ background: 'rgba(0,0,0,0.2)' }}>
                   <div className={styles.orderItemInfo}>
                     <div className={styles.orderItemImage}>
-                      {item.image ? <img src={item.image} alt={item.title} /> : <Icon name="cart" />}
+                      {item.image ? <Image src={item.image} alt={item.title} width={96} height={96} sizes="96px" /> : <Icon name="cart" />}
                     </div>
                     <div className={styles.orderItemMeta}>
                       <h4>{item.title}</h4>

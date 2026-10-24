@@ -131,11 +131,12 @@ i[data-icon] svg {
   background: radial-gradient(640px 300px at 55% 0%, rgba(255, 120, 110, .13), transparent 70%);
 }
 
+/* Entrance motion is a slide only. A fade (opacity 0) hides content from LCP, and a
+   scale paints it smaller, so a full-size carousel slide later counts as a "larger"
+   LCP element; both pushed LCP back by seconds. */
 @keyframes frameIn {
   from {
-    opacity: 0;
-    translate: 0 24px;
-    scale: .975
+    translate: 0 24px
   }
 }
 
@@ -146,9 +147,7 @@ i[data-icon] svg {
 
 @keyframes rise {
   from {
-    opacity: 0;
-    translate: 0 26px;
-    scale: .98
+    translate: 0 26px
   }
 }
 

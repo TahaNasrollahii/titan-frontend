@@ -34,25 +34,29 @@ const FALLBACK_GAMES = [
   'dota-2',
 ];
 
+// Used only when the API is unreachable; every slug here must exist on the live site
 const FALLBACK_PRODUCTS = [
   'fortnite-vbucks',
-  'fortnite-crew-pack',
-  'valorant-points',
+  'fortnite-crew',
+  'fortnite-battle-pass',
+  'valorant-points-1700',
   'apex-coins',
+  'pubg-uc',
+  'cod-points',
+  'ea-fc-points',
+  'steam-wallet',
   'psn-gift-card',
-  'steam-gift-card',
-  'xbox-game-pass',
+  'xbox-gift-card',
+  'google-play-gift-card',
   'spotify-premium',
   'telegram-premium',
-  'elden-crown-deluxe',
-  'titan-gift-card-50',
 ];
 
 const FALLBACK_TOURNAMENTS = [
   'fifa',
   'titan-apex-solo',
-  'titan-valorant-champions',
-  'titan-fortnite-duo',
+  'titan-valorant-championship',
+  'titan-fortnite-squads',
   'cod-search-destroy',
   'fortnite-ranked-arena',
   'apex-arena-showdown',

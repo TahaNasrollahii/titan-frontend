@@ -2179,6 +2179,11 @@
   .fn-pager-arrow-label {
     display: none;
   }
+
+  /* Only first, current and last page fit here */
+  .fn-pager-list .is-neighbour {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -406,6 +406,10 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
   );
 }
 
+// Day-anchored (UTC) instead of Date.now(): server and browser evaluate this module at
+// different moments, and differing times broke hydration.
+const MOCK_ANCHOR = Math.floor(Date.now() / 86_400_000) * 86_400_000;
+
 const FIFA_DETAIL_MOCK: Tournament = {
   id: 9999,
   slug: 'fifa',
@@ -434,10 +438,10 @@ const FIFA_DETAIL_MOCK: Tournament = {
   isFull: true,
   prizePool: 150000000,
   prizeCurrency: 'IRT',
-  registrationOpensAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-  registrationClosesAt: new Date(Date.now() - 86400000).toISOString(),
-  startsAt: new Date(Date.now() - 12 * 3600000).toISOString(),
-  endsAt: new Date(Date.now() + 4 * 86400000).toISOString(),
+  registrationOpensAt: new Date(MOCK_ANCHOR - 7 * 86400000).toISOString(),
+  registrationClosesAt: new Date(MOCK_ANCHOR - 86400000).toISOString(),
+  startsAt: new Date(MOCK_ANCHOR - 12 * 3600000).toISOString(),
+  endsAt: new Date(MOCK_ANCHOR + 4 * 86400000).toISOString(),
   isFeatured: true,
   viewerCount: 12408,
   isRegistered: false,
@@ -457,8 +461,8 @@ const FIFA_DETAIL_MOCK: Tournament = {
   season: {
     number: 1,
     name: 'فصل اول تایتان',
-    startsAt: new Date(Date.now() - 30 * 86400000).toISOString(),
-    endsAt: new Date(Date.now() + 60 * 86400000).toISOString(),
+    startsAt: new Date(MOCK_ANCHOR - 30 * 86400000).toISOString(),
+    endsAt: new Date(MOCK_ANCHOR + 60 * 86400000).toISOString(),
     isCurrent: true,
   },
   streamUrl: '',

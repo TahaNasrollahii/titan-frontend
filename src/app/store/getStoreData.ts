@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/api/client';
+import { fetchEntity } from '@/lib/api/server';
 import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 
 export async function getStoreProducts(
@@ -54,17 +55,11 @@ export async function getAllGames(): Promise<Game[] | null> {
   }
 }
 
-export async function getGameBySlug(slug: string): Promise<Game | null> {
-  try {
-    const res = await fetch(`${API_URL}/games/${slug}/`, {
-      next: { revalidate: 60, tags: ['games', `game-${slug}`] },
-      signal: AbortSignal.timeout(4000),
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
+export function getGameBySlug(slug: string): Promise<Game | null> {
+  return fetchEntity<Game>(`/games/${slug}/`, {
+    revalidate: 60,
+    tags: ['games', `game-${slug}`],
+  });
 }
 
 export async function getStorePromos(placement: 'store_discount' | 'store_bestseller'): Promise<Promo[] | null> {

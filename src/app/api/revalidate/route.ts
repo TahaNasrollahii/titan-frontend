@@ -1,11 +1,30 @@
+import { timingSafeEqual } from 'node:crypto';
+
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
-const DEFAULT_SECRET = 'titan-revalidate-default-secret';
+// Matches the backend's local default. It is visible in the source, so it may only
+// ever be accepted outside production.
+const DEV_FALLBACK_SECRET = 'titan-revalidate-default-secret';
 const DEFAULT_TAGS = ['products', 'games', 'promos', 'home'];
 
+function configuredSecret(): string | null {
+  if (process.env.REVALIDATE_SECRET) return process.env.REVALIDATE_SECRET;
+  return process.env.NODE_ENV === 'production' ? null : DEV_FALLBACK_SECRET;
+}
+
+function secretsMatch(provided: string, expected: string): boolean {
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
 export async function POST(request: NextRequest) {
-  const configuredSecret = process.env.REVALIDATE_SECRET || DEFAULT_SECRET;
+  const expectedSecret = configuredSecret();
+  if (!expectedSecret) {
+    console.error('[revalidate] REVALIDATE_SECRET is not set; on-demand revalidation is disabled.');
+    return NextResponse.json({ revalidated: false, detail: 'Revalidation is not configured' }, { status: 503 });
+  }
   const headerSecret = request.headers.get('x-revalidate-secret');
 
   let body: { secret?: string; tags?: string[]; paths?: string[] } = {};
@@ -16,7 +35,7 @@ export async function POST(request: NextRequest) {
   }
 
   const providedSecret = headerSecret || body.secret;
-  if (providedSecret !== configuredSecret) {
+  if (typeof providedSecret !== 'string' || !secretsMatch(providedSecret, expectedSecret)) {
     return NextResponse.json({ revalidated: false, detail: 'Invalid secret' }, { status: 401 });
   }
 

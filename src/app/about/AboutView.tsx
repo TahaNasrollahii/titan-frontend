@@ -400,7 +400,7 @@ function Manifesto() {
                 <Icon name={p.icon} />
               </span>
               <div>
-                <h4>{p.title}</h4>
+                <h3>{p.title}</h3>
                 <p>{p.text}</p>
               </div>
             </div>

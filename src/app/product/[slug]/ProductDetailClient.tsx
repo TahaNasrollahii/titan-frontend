@@ -178,12 +178,14 @@ export default function ProductPage({
               {data.platforms.map((platform) => (
                 <span key={platform.slug} className={styles.iconBtn} title={platform.name}>
                   {platform.icon ? (
-                    <img
+                    // Optimized: the uploaded platform icons are PNGs of up to ~900 KB
+                    <Image
                       src={platform.icon}
                       alt={platform.name}
                       className={styles.boldIcon}
-                      width="20"
-                      height="20"
+                      width={20}
+                      height={20}
+                      sizes="20px"
                     />
                   ) : (
                     <small>{platform.name}</small>

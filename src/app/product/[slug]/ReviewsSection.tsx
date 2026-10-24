@@ -37,7 +37,7 @@ function StarIcon() {
 export function Stars({ value, className }: { value: number; className?: string }) {
   const full = Math.round(value);
   return (
-    <span className={`${styles.stars} ${className ?? ''}`} aria-label={`${faNumber(value)} از ۵`}>
+    <span className={`${styles.stars} ${className ?? ''}`} role="img" aria-label={`${faNumber(value)} از ۵`}>
       {[1, 2, 3, 4, 5].map(star => (
         <span key={star} className={star <= full ? styles.starOn : styles.starOff}>
           <StarIcon />

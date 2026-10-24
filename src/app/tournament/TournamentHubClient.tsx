@@ -5,6 +5,7 @@ import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
+import { gameIconSrc, isLocalAsset } from '@/lib/gameIcons';
 import { RankAvatar } from '@/components/RankAvatar';
 import { ScoreWidget } from '@/components/ScoreWidget';
 import { TournamentCard } from '@/components/TournamentCard';
@@ -18,6 +19,11 @@ import { useSpotlight } from '@/lib/hooks/useSpotlight';
 import { CREST_PALETTES, getOrnamentSVGWrapper, getRingSVG, rankFromApi } from '@/utils/ranks';
 
 import './tournament.css';
+
+// Built-in showcase dates hang off the start of the (UTC) day, not Date.now(): the server
+// and the browser evaluate this module at different moments, and differing times broke hydration.
+const DAY_MS = 86_400_000;
+const MOCK_ANCHOR = Math.floor(Date.now() / DAY_MS) * DAY_MS;
 
 export const FIFA_SUMMARY_MOCK: TournamentSummary = {
   id: 9999,
@@ -39,9 +45,9 @@ export const FIFA_SUMMARY_MOCK: TournamentSummary = {
   isFull: true,
   prizePool: 150000000,
   prizeCurrency: 'IRT',
-  registrationClosesAt: new Date(Date.now() - 86400000).toISOString(),
-  startsAt: new Date(Date.now() - 12 * 3600000).toISOString(),
-  endsAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+  registrationClosesAt: new Date(MOCK_ANCHOR - 86400000).toISOString(),
+  startsAt: new Date(MOCK_ANCHOR - 12 * 3600000).toISOString(),
+  endsAt: new Date(MOCK_ANCHOR + 3 * 86400000).toISOString(),
   isFeatured: true,
   viewerCount: 12408,
   isRegistered: false,
@@ -50,7 +56,7 @@ export const FIFA_SUMMARY_MOCK: TournamentSummary = {
     round: 3,
     position: 0,
     status: 'scheduled',
-    scheduledAt: new Date(Date.now() + 86400000).toISOString(),
+    scheduledAt: new Date(MOCK_ANCHOR + 86400000).toISOString(),
     bestOf: 1,
     scoreA: null,
     scoreB: null,
@@ -191,7 +197,9 @@ function Leaderboards({ initialGames }: { initialGames?: Game[] | null }) {
         <div className="lb-head-right">
           <div className="lb-games-tabs">
             <span className="lb-game-tab-ind" ref={indicatorRef}></span>
-            {playable.map(item => (
+            {playable.map(item => {
+              const icon = gameIconSrc(item.slug, item.iconImage);
+              return (
               <button
                 key={item.slug}
                 ref={el => {
@@ -200,10 +208,13 @@ function Leaderboards({ initialGames }: { initialGames?: Game[] | null }) {
                 className={`lb-game-tab ${game === item.slug ? 'active' : ''}`}
                 onClick={() => setActiveGame(item.slug)}
               >
-                {item.iconImage && <img src={item.iconImage} alt="" aria-hidden="true" />}
+                {icon && (
+                  <Image src={icon} alt="" aria-hidden="true" width={22} height={22} sizes="22px" unoptimized={isLocalAsset(icon)} />
+                )}
                 <span>{item.title}</span>
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

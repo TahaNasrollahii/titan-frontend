@@ -20,7 +20,7 @@ function Side({ participant, alt }: { participant: Participant | null; alt?: boo
       <div className={`mc-crest ${alt ? 'crest-alt' : ''}`}>
         {participant ? initials(participant.name) : '?'}
       </div>
-      <h4>{participant?.name ?? 'TBA'}</h4>
+      <strong>{participant?.name ?? 'TBA'}</strong>
       <span>{participant?.seed ? `سید ${participant.seed.toLocaleString('fa-IR')}` : 'آزاد'}</span>
     </div>
   );

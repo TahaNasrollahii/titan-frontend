@@ -780,8 +780,20 @@ function parseFallbackApi(json: any): FortniteShopData {
 
 let memoryCache: { data: FortniteShopData; expiresAt: number } | null = null;
 
+// `?fresh=1` is public, so a cache bypass is allowed at most once a minute;
+// otherwise a loop of requests would hammer (and get us rate-limited by) the upstream API.
+const FORCE_FRESH_MIN_INTERVAL_MS = 60_000;
+let lastForcedFetchAt = 0;
+
 export async function getFortniteShop(forceFresh = false): Promise<FortniteShopData | null> {
   const now = Date.now();
+  if (forceFresh) {
+    if (now - lastForcedFetchAt < FORCE_FRESH_MIN_INTERVAL_MS) {
+      forceFresh = false;
+    } else {
+      lastForcedFetchAt = now;
+    }
+  }
   if (!forceFresh && memoryCache && memoryCache.expiresAt > now) {
     return memoryCache.data;
   }

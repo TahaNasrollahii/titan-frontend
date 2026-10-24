@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -27,7 +28,7 @@ function OrderDetails({ order }: { order: Order }) {
             <ItemWrapper key={item.id} {...wrapperProps}>
               <div className={styles.orderItemInfo}>
                 <div className={styles.orderItemImage}>
-                  {item.image ? <img src={item.image} alt={item.title} /> : <Icon name="cart" />}
+                  {item.image ? <Image src={item.image} alt={item.title} width={96} height={96} sizes="96px" /> : <Icon name="cart" />}
                 </div>
                 <div className={styles.orderItemMeta}>
                   <h4>{item.title}</h4>
@@ -121,7 +122,7 @@ export function OrdersTab() {
           >
             <div className={styles.listItemInfo}>
               <div className={styles.itemThumb}>
-                {order.items[0]?.image ? <img src={order.items[0].image} alt="" /> : <Icon name="cart" />}
+                {order.items[0]?.image ? <Image src={order.items[0].image} alt="" width={96} height={96} sizes="96px" /> : <Icon name="cart" />}
               </div>
               <div className={styles.itemDetails}>
                 <h4>

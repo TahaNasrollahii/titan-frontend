@@ -11,7 +11,6 @@ import React, {
   useMemo,
   useRef,
   useState,
-  useSyncExternalStore,
 } from 'react';
 
 import { Icon } from '@/components/Icons';
@@ -206,22 +205,6 @@ function getPageItems(current: number, total: number, siblings: number): PageIte
   if (!showLeftGap) return [...range(1, edgeCount), 'gap', total];
   if (!showRightGap) return [1, 'gap', ...range(total - edgeCount + 1, total)];
   return [1, 'gap', ...range(left, right), 'gap', total];
-}
-
-function useMediaQuery(query: string): boolean {
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      const mql = window.matchMedia(query);
-      mql.addEventListener('change', onChange);
-      return () => mql.removeEventListener('change', onChange);
-    },
-    [query],
-  );
-  return useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(query).matches,
-    () => false,
-  );
 }
 
 function formatPersianShopDate(iso: string): string {
@@ -485,16 +468,16 @@ const ShopPagination = memo(function ShopPagination({
   page,
   totalPages,
   totalItems,
-  compact,
   onChange,
 }: {
   page: number;
   totalPages: number;
   totalItems: number;
-  compact: boolean;
   onChange: (page: number) => void;
 }) {
-  const items = getPageItems(page, totalPages, compact ? 0 : 1);
+  // Same items on server and client; narrow screens hide the neighbours in CSS
+  // (deciding in JS after hydration changed the bar's height and shifted the page).
+  const items = getPageItems(page, totalPages, 1);
   const from = (page - 1) * PAGE_SIZE + 1;
   const to = Math.min(page * PAGE_SIZE, totalItems);
 
@@ -527,7 +510,10 @@ const ShopPagination = memo(function ShopPagination({
                 …
               </li>
             ) : (
-              <li key={item}>
+              <li
+                key={item}
+                className={item !== page && item !== 1 && item !== totalPages ? 'is-neighbour' : undefined}
+              >
                 <button
                   type="button"
                   className={`fn-pager-num${item === page ? ' is-active' : ''}`}
@@ -582,7 +568,6 @@ export default function FortniteShopClient({
   const refreshingRef = useRef(false);
   const resultsTopRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const compactPager = useMediaQuery('(max-width: 560px)');
 
   // Typing stays responsive while the grid re-filters
   const deferredQuery = useDeferredValue(query);
@@ -928,7 +913,12 @@ export default function FortniteShopClient({
 
               <label className="fn-sort">
                 <span className="fn-sort-label">مرتب‌سازی</span>
-                <select value={sortKey} onChange={handleSortChange} className="fn-sort-select">
+                <select
+                  value={sortKey}
+                  onChange={handleSortChange}
+                  className="fn-sort-select"
+                  aria-label="مرتب‌سازی آیتم‌ها"
+                >
                   {SORT_OPTIONS.map(opt => (
                     <option key={opt.key} value={opt.key}>
                       {opt.label}
@@ -1029,7 +1019,6 @@ export default function FortniteShopClient({
                   page={currentPage}
                   totalPages={totalPages}
                   totalItems={filteredEntries.length}
-                  compact={compactPager}
                   onChange={handlePageChange}
                 />
               )}

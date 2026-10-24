@@ -4,6 +4,7 @@ import React from 'react';
 import StoreClient from '../StoreClient';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { composeMetaDescription } from '@/lib/seo/meta';
 import { PaginationNav } from '@/components/seo/PaginationNav';
 import { SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 import {
@@ -86,15 +87,10 @@ export async function generateMetadata({
   ).replace(/\s*\|\s*(فروشگاه\s*)?تایتان\s*$/u, '');
   const title = `${baseTitle}${pageSuffix}`;
 
-  const rawDesc = (
-    game.metaDescription ||
-    game.introText ||
-    game.description ||
-    `خرید سریع و قانونی پول، اسکین‌ها و آیتم‌های بازی ${game.title} (${game.titleEn}) با بهترین قیمت و ضمانت در فروشگاه گیمینگ تایتان.`
-  )
-    .replace(/[\r\n]+/g, ' ')
-    .trim();
-  const description = rawDesc.length > 158 ? `${rawDesc.slice(0, 155)}...` : rawDesc;
+  const description = composeMetaDescription(
+    game.metaDescription || game.introText || game.description,
+    `خرید سریع و قانونی پول، اسکین‌ها و آیتم‌های ${game.title} (${game.titleEn}) با بهترین قیمت در فروشگاه تایتان.`,
+  );
 
   const imageUrl = toAbsoluteUrl(
     game.ogImage || game.coverImage || game.backgroundImage || '/images/banner-hero.webp',

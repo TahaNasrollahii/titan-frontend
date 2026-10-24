@@ -4,8 +4,10 @@ import React from 'react';
 import TournamentDetailClient from './TournamentDetailClient';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { composeMetaDescription } from '@/lib/seo/meta';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import { API_URL } from '@/lib/api/client';
+import { fetchEntity } from '@/lib/api/server';
 import type { Tournament } from '@/lib/api/types';
 import {
   buildSportsEventSchema,
@@ -36,14 +38,14 @@ export async function generateStaticParams() {
 
 async function getTournament(slug: string): Promise<Tournament | null> {
   try {
-    const res = await fetch(`${API_URL}/tournaments/${slug}/`, {
-      next: { revalidate: 60, tags: ['tournaments', `tournament-${slug}`] },
-      signal: AbortSignal.timeout(3500),
+    return await fetchEntity<Tournament>(`/tournaments/${slug}/`, {
+      revalidate: 60,
+      tags: ['tournaments', `tournament-${slug}`],
     });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
+  } catch (error) {
+    // Built-in special events render without API data, so they survive an outage
+    if (isBuiltInSpecialSlug(slug)) return null;
+    throw error;
   }
 }
 
@@ -71,18 +73,14 @@ export async function generateMetadata({
     (tournament ? `${tournament.title} — تورنومنت گیمینگ` : 'مسابقات فیفا ۲۴ — جام ویژه')
   ).replace(/\s*\|\s*(پلتفرم\s*)?تایتان\s*$/u, '');
 
-  const rawDesc = (
-    tournament?.metaDescription ||
-    tournament?.description ||
-    (tournament
-      ? `مسابقه و تورنومنت ${tournament.title} با جایزه نقدی${
+  const description = composeMetaDescription(
+    tournament?.metaDescription || tournament?.description,
+    tournament
+      ? `تورنومنت ${tournament.title}${
           tournament.game ? ` در بازی ${tournament.game.title}` : ''
-        }. مشاهده براکت زنده، قوانین و ثبت‌نام در پلتفرم تایتان.`
-      : 'مشاهده قوانین، براکت زنده، شرکت‌کنندگان و ثبت‌نام در تورنومنت‌های آنلاین تایتان.')
-  )
-    .replace(/[\r\n]+/g, ' ')
-    .trim();
-  const description = rawDesc.length > 158 ? `${rawDesc.slice(0, 155)}...` : rawDesc;
+        } با جایزه نقدی؛ براکت زنده، قوانین و ثبت‌نام در پلتفرم تایتان.`
+      : 'مشاهده قوانین، براکت زنده، شرکت‌کنندگان و ثبت‌نام در تورنومنت‌های آنلاین تایتان.',
+  );
 
   const imageUrl = toAbsoluteUrl(
     tournament?.ogImage || tournament?.coverImage || '/images/tournoment-banner.webp',

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -49,7 +50,7 @@ export function FavoritesTab() {
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <div className={styles.itemThumb}>
-              {product.image ? <img src={product.image} alt="" /> : <Icon name="gift" />}
+              {product.image ? <Image src={product.image} alt="" width={96} height={96} sizes="96px" /> : <Icon name="gift" />}
             </div>
             <div className={styles.itemDetails}>
               <h4>{product.title}</h4>

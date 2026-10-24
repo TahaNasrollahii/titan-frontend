@@ -8,14 +8,26 @@ const API_ORIGIN = new URL(rawApiUrl).origin.replace("localhost", "127.0.0.1");
 
 const isProd = process.env.NODE_ENV === "production";
 
-// Content Security Policy directive string for static/fallback routes
+// Content Security Policy: the single source for every route (the proxy no longer sets its own).
+// The configured API is allowed even if it moves off the default host; plain-http APIs only in dev.
+const API_SOURCES = Array.from(
+  new Set(["https://titan-backend-taha.vercel.app", ...(API_ORIGIN.startsWith("https://") ? [API_ORIGIN] : [])]),
+);
+const DEV_API_SOURCES = isProd ? [] : ["http://localhost:8000", "http://127.0.0.1:8000"];
+
 const cspDirectives = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com ${isProd ? '' : "'unsafe-eval'"}`,
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isProd ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  `img-src 'self' data: blob: https://titan-backend-taha.vercel.app https://*.public.blob.vercel-storage.com https://cdn.zarinpal.com https://fortnite-api.com https://*.fortnite-api.com https://cdn2.unrealengine.com https://*.fn-api.cc${isProd ? '' : ' http://localhost:8000 http://127.0.0.1:8000'}`,
+  [
+    "img-src 'self' data: blob:",
+    ...API_SOURCES,
+    "https://*.public.blob.vercel-storage.com https://cdn.zarinpal.com https://trustseal.enamad.ir",
+    "https://fortnite-api.com https://*.fortnite-api.com https://cdn2.unrealengine.com https://*.fn-api.cc",
+    ...DEV_API_SOURCES,
+  ].join(" "),
   "font-src 'self' data: https://fonts.gstatic.com",
-  `connect-src 'self' https://titan-backend-taha.vercel.app https://payment.zarinpal.com https://challenges.cloudflare.com${isProd ? '' : ' http://localhost:8000 http://127.0.0.1:8000'}`,
+  ["connect-src 'self'", ...API_SOURCES, "https://payment.zarinpal.com https://challenges.cloudflare.com", ...DEV_API_SOURCES].join(" "),
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

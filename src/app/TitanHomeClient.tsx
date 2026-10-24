@@ -37,6 +37,14 @@ const I: Record<string, [string, boolean?]> = {
   info: ['<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/>']
 };
 
+/**
+ * This page builds raw HTML, so next/image can't be used; point <img> at the same
+ * optimizer it uses. `width` must be one of next/image's configured sizes.
+ */
+function optimizedImg(src: string, width: number) {
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+}
+
 function esc(s: any) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c));
 }
@@ -49,9 +57,9 @@ function ico(name: string) {
 function renderCardArt(g: any, idx: number) {
   if (g.bg || g.char) {
     return `
-      ${g.bg ? `<img src="${esc(g.bg)}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
+      ${g.bg ? `<img src="${esc(optimizedImg(g.bg, 384))}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
       <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-      ${g.char ? `<img src="${esc(g.char)}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
+      ${g.char ? `<img src="${esc(optimizedImg(g.char, 384))}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
     `;
   }
   const t = THEME[g.theme] || THEME.noir, id = 'c' + idx;
@@ -339,9 +347,9 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       function cardArt(g, idx) {
         if (g.bg || g.char) {
           return `
-            ${g.bg ? `<img src="${esc(g.bg)}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
+            ${g.bg ? `<img src="${esc(optimizedImg(g.bg, 384))}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-            ${g.char ? `<img src="${esc(g.char)}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
+            ${g.char ? `<img src="${esc(optimizedImg(g.char, 384))}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
           `;
         }
         const t = THEME[g.theme], id = 'c' + idx;
@@ -717,9 +725,9 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
             <span class="tb-badge"><i data-icon="trophy">${ico('trophy')}</i> تورنمنت‌های تایتان</span>
             <h3>رقابت با بهترین‌ها</h3>
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
-            <a href="/tournament" class="tb-btn">اطلاعات بیشتر</a>
+            <a href="/tournament" class="tb-btn">مشاهده تورنومنت‌ها</a>
           </div>
-          <img src="/images/tournoment-banner.webp" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" width="320" height="180" loading="lazy" decoding="async" />
+          <img src="${optimizedImg('/images/tournoment-banner.webp', 640)}" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" width="320" height="180" loading="lazy" decoding="async" />
           <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none">
             <circle cx="160" cy="40" r="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="30" />
             <circle cx="160" cy="40" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="20" />

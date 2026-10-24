@@ -13,6 +13,7 @@ import { errorMessage } from '@/lib/api/client';
 import { catalogApi, contentApi } from '@/lib/api/endpoints';
 import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 import { countdown, faNumber, mediaUrl, toman, toEnglishDigits } from '@/lib/format';
+import { gameIconSrc, isLocalAsset } from '@/lib/gameIcons';
 import { useApi } from '@/lib/hooks/useApi';
 
 import './store.css';
@@ -20,13 +21,6 @@ import './store.css';
 const PRICE_LIMIT = 10_000_000;
 const PAGE_SIZE = 12;
 const PREMIUM_SLUG = 'premium';
-
-const LOCAL_ICONS: Record<string, string> = {
-  'apex-legends': 'apex',
-  fortnite: 'fortnite',
-  valorant: 'valorant',
-  premium: 'premium'
-};
 
 const SORTS: { label: string; ordering: string }[] = [
   { label: 'محبوبیت', ordering: '-popularity' },
@@ -73,6 +67,12 @@ function getOptimizedAssetUrl(url: string | null | undefined, fallback: string):
   if (url.includes('games-fortnite-character')) return '/images/games/fortnite-character.webp';
   if (url.includes('games-valorant-character')) return '/images/games/valorant-character.webp';
   return mediaUrl(url);
+}
+
+/** CSS backgrounds skip next/image, so send remote uploads through the optimizer by hand. */
+function backgroundImageUrl(url: string | null | undefined, fallback: string): string {
+  const src = getOptimizedAssetUrl(url, fallback);
+  return /^https?:\/\//.test(src) ? `/_next/image?url=${encodeURIComponent(src)}&w=1200&q=75` : src;
 }
 
 function DiscountPromos({ promos }: { promos: Promo[] }) {
@@ -176,7 +176,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
           <div
             className="sp-bg side-bg"
             style={{
-              backgroundImage: [promo.backgroundGradient, `url(${getOptimizedAssetUrl(promo.backgroundImage, '/images/banner-hero.webp')})`]
+              backgroundImage: [promo.backgroundGradient, `url(${backgroundImageUrl(promo.backgroundImage, '/images/banner-hero.webp')})`]
                 .filter(Boolean)
                 .join(', '),
               backgroundSize: 'cover',
@@ -702,8 +702,7 @@ function StorePageContent({
 
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
     (games.data ?? []).map(game => {
-      const localIcon = LOCAL_ICONS[game.slug] ? `/images/categories/${LOCAL_ICONS[game.slug]}.webp` : null;
-      return { slug: game.slug, title: game.title, icon: game.iconImage ?? localIcon };
+      return { slug: game.slug, title: game.title, icon: gameIconSrc(game.slug, game.iconImage) };
     }),
   );
 
@@ -773,11 +772,13 @@ function StorePageContent({
               }}
             >
               {tab.icon && (
-                <img
+                <Image
                   src={tab.icon}
                   alt=""
                   width={tab.slug === PREMIUM_SLUG ? 34 : 32}
                   height={tab.slug === PREMIUM_SLUG ? 34 : 32}
+                  sizes="34px"
+                  unoptimized={isLocalAsset(tab.icon)}
                   style={{
                     width: tab.slug === PREMIUM_SLUG ? '34px' : '32px',
                     height: tab.slug === PREMIUM_SLUG ? '34px' : '32px',
