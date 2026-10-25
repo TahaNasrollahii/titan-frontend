@@ -173,9 +173,9 @@ async function toApiError(response: Response): Promise<ApiError> {
 function replaceApexText(value: string): string {
   if (!value) return value;
   if (value.includes('apexlegends-background')) return '/images/games/callof-background.webp';
-  if (value.includes('apexlegends-character')) return '/images/games/callof-character.webp';
+  if (value.includes('apexlegends-character') || value.includes('callof-character.webp')) return '/images/games/callof-character-v2.webp';
   if (value.includes('categories/apex')) return '/images/categories/callof.webp';
-  if (value.includes('hero/characters/apexlegends')) return '/images/hero/characters/callof.webp';
+  if (value.includes('hero/characters/apexlegends') || value.includes('hero/characters/callof.webp')) return '/images/hero/characters/callof-v2.webp';
   return value
     .replace(/Apex\s+Predators/gi, 'Task Force 141')
     .replace(/Apex_Predator/gi, 'Ghost_Operator')
@@ -217,7 +217,7 @@ const DEFAULT_COD_GAME = {
   coverImage: '/images/games/callof-background.webp',
   logoImage: null,
   backgroundImage: '/images/games/callof-background.webp',
-  characterImage: '/images/games/callof-character.webp',
+  characterImage: '/images/games/callof-character-v2.webp',
   isFeatured: true,
   productCount: 1,
   tournamentCount: 2,
@@ -346,7 +346,7 @@ export function sanitizeApiPayload<T>(input: T): T {
         iconImage: '/images/categories/callof.webp',
         accentColor: obj.accentColor || '#f59e0b',
         backgroundImage: '/images/games/callof-background.webp',
-        characterImage: '/images/games/callof-character.webp',
+        characterImage: '/images/games/callof-character-v2.webp',
         coverImage: obj.coverImage || '/images/games/callof-background.webp',
       } as unknown as T;
     }
@@ -369,7 +369,7 @@ export function sanitizeApiPayload<T>(input: T): T {
         ...obj,
         title: 'باندل ویژه Call of Duty',
         subtitle: 'شامل اسکین اپراتور و ۱,۱۰۰ سی‌پی',
-        image: '/images/games/callof-character.webp',
+        image: '/images/games/callof-character-v2.webp',
         backgroundImage: '/images/games/callof-background.webp',
         product: 'cod-points',
       } as unknown as T;
@@ -382,7 +382,7 @@ export function sanitizeApiPayload<T>(input: T): T {
         slug: 'cod-points',
         title: 'سی‌پی کال آو دیوتی (COD Points)',
         description: 'خرید قانونی و فوری سی‌پی کال آو دیوتی (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه.',
-        image: '/images/games/callof-character.webp',
+        image: '/images/games/callof-character-v2.webp',
         game: obj.game
           ? {
               ...obj.game,

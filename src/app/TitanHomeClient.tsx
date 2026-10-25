@@ -125,7 +125,7 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
           titleEn: 'Call of Duty',
           description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی.',
           backgroundImage: '/images/games/callof-background.webp',
-          characterImage: '/images/games/callof-character.webp',
+          characterImage: '/images/games/callof-character-v2.webp',
           coverImage: '/images/games/callof-background.webp',
         });
       }
@@ -142,7 +142,7 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
       titleEn: 'Call of Duty',
       description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی.',
       backgroundImage: '/images/games/callof-background.webp',
-      characterImage: '/images/games/callof-character.webp',
+      characterImage: '/images/games/callof-character-v2.webp',
       coverImage: '/images/games/callof-background.webp',
     };
     const premIdx = mapped.findIndex(c => c.slug === 'premium');
@@ -186,7 +186,7 @@ function buildSceneData(data: Home) {
         descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
         watch: 0,
         eta: 0,
-        art: `/images/hero/characters/${HERO_ART['call-of-duty']}.webp`,
+        art: '/images/hero/characters/callof-v2.webp',
         artClass: HERO_ART['call-of-duty'],
         href: '/store/call-of-duty',
       };
@@ -241,7 +241,7 @@ function buildSceneData(data: Home) {
         crest: i % 2 === 0,
         slug: g.slug,
         bg: g.slug === 'premium' ? '/images/games/premium.webp' : (art ? `/images/games/${art}-background.webp` : (g.backgroundImage ?? g.coverImage)),
-        char: g.slug === 'premium' ? null : (art ? `/images/games/${art}-character.webp` : g.characterImage),
+        char: g.slug === 'premium' ? null : (g.slug === 'call-of-duty' ? '/images/games/callof-character-v2.webp' : (art ? `/images/games/${art}-character.webp` : g.characterImage)),
       };
     }),
     stats: data.myStats,

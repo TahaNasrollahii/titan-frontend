@@ -17,7 +17,7 @@ export const FALLBACK_FEATURED_GAMES: Record<string, Game> = {
     coverImage: '/images/games/callof-background.webp',
     logoImage: null,
     backgroundImage: '/images/games/callof-background.webp',
-    characterImage: '/images/games/callof-character.webp',
+    characterImage: '/images/games/callof-character-v2.webp',
     isFeatured: true,
     productCount: 1,
     tournamentCount: 2,
@@ -64,7 +64,7 @@ export function normalizeFeaturedGames(rawGames: Game[] | null | undefined): Gam
         ...g,
         isFeatured: true,
         backgroundImage: '/images/games/callof-background.webp',
-        characterImage: '/images/games/callof-character.webp',
+        characterImage: '/images/games/callof-character-v2.webp',
         coverImage: g.coverImage || '/images/games/callof-background.webp',
       });
       continue;

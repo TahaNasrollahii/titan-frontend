@@ -89,7 +89,7 @@ function SectionHead({
 
 // ------------------------------------------------------------------ hero (DO NOT TOUCH)
 const CHARACTERS = [
-  { src: '/images/hero/characters/callof.webp', alt: 'Call of Duty', className: styles.charLeft, delay: 0.35 },
+  { src: '/images/hero/characters/callof-v2.webp', alt: 'Call of Duty', className: styles.charLeft, delay: 0.35 },
   { src: '/images/hero/characters/fortnite.webp', alt: 'Fortnite', className: styles.charRight, delay: 0.5 },
   { src: '/images/hero/characters/valorant.webp', alt: 'Valorant', className: styles.charCenter, delay: 0.2 },
 ];

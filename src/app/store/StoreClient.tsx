@@ -65,7 +65,7 @@ function getOptimizedAssetUrl(url: string | null | undefined, fallback: string):
   if (url.includes('games-clash-background')) return '/images/games/clash-background.webp';
   if (url.includes('games-fortnite-background')) return '/images/games/fortnite-background.webp';
   if (url.includes('games-valorant-background')) return '/images/games/valorant-background.webp';
-  if (url.includes('games-apexlegends-character') || url.includes('games-callof-character')) return '/images/games/callof-character.webp';
+  if (url.includes('games-apexlegends-character') || url.includes('games-callof-character')) return '/images/games/callof-character-v2.webp';
   if (url.includes('games-clash-character')) return '/images/games/clash-character.webp';
   if (url.includes('games-fortnite-character')) return '/images/games/fortnite-character.webp';
   if (url.includes('games-valorant-character')) return '/images/games/valorant-character.webp';
@@ -269,7 +269,7 @@ const GAME_ACCENTS: Record<string, string> = {
 const LOCAL_CHARACTERS = [
   TEMPLATE_CHARACTER,
   '/images/hero/characters/fortnite.webp',
-  '/images/games/callof-character.webp',
+  '/images/games/callof-character-v2.webp',
   '/images/games/clash-character.webp',
   '/images/hero/characters/valorant.webp',
   '/images/products/vbucks.webp',
@@ -299,7 +299,7 @@ function ProductCard({
     (gameSlug === 'fortnite'
       ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
       : gameSlug === 'call-of-duty'
-        ? '/images/games/callof-character.webp'
+        ? '/images/games/callof-character-v2.webp'
         : gameSlug === 'clash-of-clans'
           ? '/images/games/clash-character.webp'
           : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
