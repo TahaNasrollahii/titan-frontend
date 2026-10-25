@@ -275,22 +275,6 @@ export default function ProductPage({ initialData, initialRelated, initialReview
 
   return (
     <div className={styles.page} dir="rtl" style={{ '--accent': accent } as React.CSSProperties}>
-      <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
-        <Link href="/">صفحه اصلی</Link>
-        <span aria-hidden="true">/</span>
-        <Link href="/store">فروشگاه</Link>
-        {data.game && (
-          <>
-            <span aria-hidden="true">/</span>
-            <Link href={`/store/${data.game.slug}`}>{data.game.title}</Link>
-          </>
-        )}
-        <span aria-hidden="true">/</span>
-        <span className={styles.breadcrumbCurrent} aria-current="page">
-          {data.title}
-        </span>
-      </nav>
-
       {/* ---------- Hero: product stage + purchase panel ---------- */}
       <section className={styles.hero}>
         <div className={styles.stageColumn}>

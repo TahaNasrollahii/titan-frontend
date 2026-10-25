@@ -65,13 +65,9 @@ export default function TeamDetailsPage() {
 
   return (
     <div className={styles.teamContainer}>
-      {/* Top Bar / Breadcrumb & Actions */}
+      {/* Top Bar / Actions */}
       <div className={styles.topBar}>
         <div className={styles.breadcrumb}>
-          <Link href="/dashboard" className={styles.breadLink}>پیشخوان</Link>
-          <span className={styles.breadDivider}>/</span>
-          <Link href="/dashboard?tab=teams" className={styles.breadLink}>تیم‌ها</Link>
-          <span className={styles.breadDivider}>/</span>
           <span className={styles.breadCurrent}>{data.name}</span>
           <span className={styles.teamTag}>#TEAM-{data.id}</span>
         </div>

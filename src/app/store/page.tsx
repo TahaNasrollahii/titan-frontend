@@ -118,14 +118,12 @@ export default async function StorePage({
     <>
       <link rel="preload" as="image" href="/images/discount.webp" fetchPriority="high" />
       <JsonLd data={collectionSchema} />
-      <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '12px 24px 0' }}>
-        <Breadcrumbs
-          items={[
-            { name: 'صفحه اصلی', path: '/' },
-            { name: 'فروشگاه گیمینگ', path: '/store' },
-          ]}
-        />
-      </div>
+      <Breadcrumbs
+        items={[
+          { name: 'صفحه اصلی', path: '/' },
+          { name: 'فروشگاه گیمینگ', path: '/store' },
+        ]}
+      />
       <h1 className="sr-only">فروشگاه آنلاین گیمینگ تایتان — خرید پول و آیتم بازی‌ها</h1>
       <StoreClient
         initialProducts={initialProducts}

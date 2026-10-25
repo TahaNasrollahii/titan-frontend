@@ -156,9 +156,7 @@ export default async function TournamentDetailPage({
   return (
     <>
       <JsonLd data={sportsEventJsonLd} />
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '12px 24px 0' }}>
-        <Breadcrumbs items={breadcrumbItems} />
-      </div>
+      <Breadcrumbs items={breadcrumbItems} />
       <TournamentDetailClient initialData={tournament} />
     </>
   );

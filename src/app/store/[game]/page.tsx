@@ -176,7 +176,6 @@ export default async function StoreCategoryPage({
     products: initialProducts?.results ?? [],
   });
 
-  const introText = game.introText || game.description;
   const bottomSeoText =
     game.bottomSeoText ||
     `در این بخش می‌توانید انواع محصولات، پول درون‌برنامه‌ای، گیفت کارت و بسته‌های ویژه ${game.title} (${game.titleEn}) را با تحویل آنی، قیمت رقابتی و گارانتی معتبر از فروشگاه تایتان تهیه کنید.`;
@@ -184,25 +183,13 @@ export default async function StoreCategoryPage({
   return (
     <>
       <JsonLd data={collectionSchema} />
-      <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '12px 24px 0' }}>
-        <Breadcrumbs
-          items={[
-            { name: 'صفحه اصلی', path: '/' },
-            { name: 'فروشگاه گیمینگ', path: '/store' },
-            { name: `${game.title} (${game.titleEn})`, path: `/store/${game.slug}` },
-          ]}
-        />
-        <header style={{ marginBottom: '12px' }}>
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: '0 0 6px' }}>
-            خرید محصولات و آیتم‌های {game.title} ({game.titleEn})
-          </h1>
-          {introText && (
-            <p style={{ margin: 0, fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.7 }}>
-              {introText}
-            </p>
-          )}
-        </header>
-      </div>
+      <Breadcrumbs
+        items={[
+          { name: 'صفحه اصلی', path: '/' },
+          { name: 'فروشگاه گیمینگ', path: '/store' },
+          { name: `${game.title} (${game.titleEn})`, path: `/store/${game.slug}` },
+        ]}
+      />
       <StoreClient
         initialGame={game.slug}
         initialProducts={initialProducts}
