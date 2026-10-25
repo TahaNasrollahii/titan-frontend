@@ -3,6 +3,7 @@
 import {
   BadgePercent,
   Check,
+  ChevronLeft,
   CreditCard,
   Flame,
   Gamepad2,
@@ -17,6 +18,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   Sparkles,
+  Star,
   Trophy,
   UserRound,
   Zap,
@@ -111,6 +113,48 @@ function defaultVariant(product: Product): ProductVariant | null {
 function scrollToSection(id: string) {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+}
+
+function PlatformGlyph({ slug, icon }: { slug: string; icon?: string | null }) {
+  switch (slug) {
+    case 'pc':
+      return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 5.45 10.9 4.3v7.15H3V5.45Zm0 13.1 7.9 1.15v-7.15H3v6Zm8.8 1.28L21 21.2v-8.65h-9.2v7.28Zm0-15.66v7.28H21V2.8l-9.2 1.37Z" />
+        </svg>
+      );
+    case 'playstation':
+      return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M9.5 4.2v14.9l3.3 1.1V8.3c0-.7.3-1.1.8-1 .6.2.7.7.7 1.4v5.2c2.1.7 3.8-.1 3.8-2.9 0-2.7-1-3.9-3.9-4.9-1.3-.5-3.1-1.2-4.7-1.9ZM8.3 13.4l-4.2 1.5c-1.6.6-2.5 1.4-2.1 2.4.4 1 1.9 1.3 3.7.7l2.6-.9v-1.8l-2.1.7c-.7.2-1.4.1-1.5-.3-.1-.3.3-.7 1-.9l2.6-.9v-.5Zm12.9 1.4c-1.3-.5-3-.6-4.7-.1l-2.8.9v1.9l2.4-.8c.8-.3 1.7-.2 1.9.2.2.4-.2.8-1 1.1l-3.3 1.2v1.9l4.9-1.8c1.6-.6 2.4-1.4 2.1-2.4-.2-.9-.7-1.6-1.5-2.1Z" />
+        </svg>
+      );
+    case 'xbox':
+      return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-4.9 3.05c1.4-.3 3.3.35 4.9 1.75 1.6-1.4 3.5-2.05 4.9-1.75.45.1.85.3 1.2.55-1.45.75-3.15 2.15-4.65 3.9 1.95 2.45 3.65 5.65 3.75 8.45-.85.9-1.9 1.6-3.1 2.05-.35-2.55-2.15-5.55-5.1-8.2-2.95 2.65-4.75 5.65-5.1 8.2-1.2-.45-2.25-1.15-3.1-2.05.1-2.8 1.8-6 3.75-8.45-1.5-1.75-3.2-3.15-4.65-3.9.35-.25.75-.45 1.2-.55Z" />
+        </svg>
+      );
+    case 'nintendo':
+      return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M10.4 3H7.2A4.2 4.2 0 0 0 3 7.2v9.6A4.2 4.2 0 0 0 7.2 21h3.2V3Zm-1.6 1.8v14.4H7.2a2.4 2.4 0 0 1-2.4-2.4V7.2a2.4 2.4 0 0 1 2.4-2.4h1.6ZM6.8 7.6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM16.8 3h-3.2v18h3.2a4.2 4.2 0 0 0 4.2-4.2V7.2A4.2 4.2 0 0 0 16.8 3Zm.4 12.2a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2Z" />
+        </svg>
+      );
+    case 'mobile':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="6" y="2.5" width="12" height="19" rx="3" />
+          <path d="M10 18.2h4" />
+        </svg>
+      );
+    default:
+      return icon ? (
+        <Image src={mediaUrl(icon)} alt="" width={18} height={18} sizes="18px" />
+      ) : (
+        <Gamepad2 size={16} aria-hidden="true" />
+      );
+  }
 }
 
 interface ProductDetailClientProps {
@@ -374,28 +418,75 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                 scrollToSection('pd-tabs');
               }}
             >
+              <span className={styles.ratingGlow} aria-hidden="true" />
               {data.reviewCount > 0 ? (
                 <>
-                  <span className={styles.ratingScore}>{faNumber(Number(data.rating.toFixed(1)))}</span>
-                  <Stars value={data.rating} />
-                  <span className={styles.ratingCount}>({faNumber(data.reviewCount)} نظر)</span>
+                  <span className={styles.ratingBadge}>
+                    <Star size={14} fill="currentColor" aria-hidden="true" />
+                    <span className={styles.ratingScore}>{faNumber(Number(data.rating.toFixed(1)))}</span>
+                    <span className={styles.ratingOut}>/ ۵</span>
+                  </span>
+                  <span className={styles.ratingBody}>
+                    <Stars value={data.rating} />
+                    <span className={styles.ratingCount}>{faNumber(data.reviewCount)} دیدگاه خریداران</span>
+                  </span>
+                  <span className={styles.ratingAction}>
+                    <span>نظرات</span>
+                    <ChevronLeft size={14} aria-hidden="true" />
+                  </span>
                 </>
               ) : (
-                // A zero score would read as a bad rating
-                <span className={styles.ratingCount}>هنوز نظری ثبت نشده؛ اولین نفر باشید</span>
+                <>
+                  <span className={styles.ratingBadge}>
+                    <Star size={14} fill="currentColor" aria-hidden="true" />
+                    <span className={styles.ratingScore}>۵.۰</span>
+                  </span>
+                  <span className={styles.ratingBody}>
+                    <span className={styles.ratingCount}>هنوز نظری ثبت نشده؛ اولین نفر باشید</span>
+                  </span>
+                  <span className={styles.ratingAction}>
+                    <span>ثبت نظر</span>
+                    <ChevronLeft size={14} aria-hidden="true" />
+                  </span>
+                </>
               )}
             </a>
+
             {data.platforms.length > 0 && (
-              <ul className={styles.platforms} aria-label="پلتفرم‌های پشتیبانی‌شده">
-                {data.platforms.map(platform => (
-                  <li key={platform.slug} className={styles.platform} title={platform.name}>
-                    {platform.icon && (
-                      <Image src={platform.icon} alt="" width={16} height={16} sizes="16px" />
-                    )}
-                    <span>{platform.name}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className={styles.platformsDock}>
+                <div className={styles.platformsHead}>
+                  <span className={styles.platformsTitle}>
+                    <Gamepad2 size={14} aria-hidden="true" />
+                    پلتفرم‌های قابل اجرا
+                  </span>
+                  <span className={styles.platformsCount}>
+                    {data.platforms.length > 1
+                      ? `${faNumber(data.platforms.length)} پلتفرم رسمی`
+                      : 'پلتفرم رسمی'}
+                  </span>
+                </div>
+                <ul
+                  className={styles.platforms}
+                  data-count={data.platforms.length}
+                  dir="ltr"
+                  aria-label="پلتفرم‌های پشتیبانی‌شده"
+                >
+                  {data.platforms.map(platform => (
+                    <li
+                      key={platform.slug}
+                      className={styles.platform}
+                      data-platform={platform.slug}
+                      title={platform.name}
+                    >
+                      <span className={styles.platformIcon} aria-hidden="true">
+                        <PlatformGlyph slug={platform.slug} icon={platform.icon} />
+                      </span>
+                      <span className={styles.platformName}>{platform.name}</span>
+                      <span className={styles.platformDot} aria-hidden="true" />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
 
@@ -516,13 +607,23 @@ export default function ProductPage({ initialData, initialRelated, initialReview
             </div>
           </div>
 
-          <ul className={styles.perks}>
-            {perks.map(perk => {
+          <ul className={styles.perks} aria-label="تضمین‌ها و مزایای خرید">
+            {perks.map((perk, idx) => {
               const PerkIcon = FEATURE_ICONS[perk.icon] ?? Zap;
               return (
-                <li key={perk.title} className={styles.perk}>
-                  <span className={styles.perkIcon} aria-hidden="true">
-                    <PerkIcon size={18} />
+                <li
+                  key={perk.title}
+                  className={styles.perk}
+                  data-perk={perk.icon || `perk-${idx}`}
+                >
+                  <span className={styles.perkGlow} aria-hidden="true" />
+                  <span className={styles.perkIconWrap} aria-hidden="true">
+                    <span className={styles.perkIcon}>
+                      <PerkIcon size={20} strokeWidth={2.2} />
+                    </span>
+                    <span className={styles.perkVerify}>
+                      <Check size={9} strokeWidth={3.5} />
+                    </span>
                   </span>
                   <span className={styles.perkText}>
                     <strong>{perk.title}</strong>
