@@ -471,16 +471,29 @@
   color: #fff;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.25s var(--spring);
 }
 
 .toTop:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.toTop:active {
+  transform: translateY(0) scale(0.97);
 }
 
 .toTop [data-icon] {
   font-size: 14px;
+  transition: transform 0.25s var(--spring);
+}
+
+.toTop:hover [data-icon] {
+  transform: translateY(-2px);
 }
 
 /* Pill-shaped controls keep their shape when focused */

@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -134,6 +136,58 @@ function EnamadSeal() {
   );
 }
 
+let activeScrollCleanup: (() => void) | null = null;
+
+function scrollToTop(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault();
+
+  activeScrollCleanup?.();
+
+  const startY = window.scrollY || document.documentElement.scrollTop;
+  if (startY <= 0) return;
+
+  const duration = Math.min(900, Math.max(550, Math.sqrt(startY) * 16));
+  const startTime = performance.now();
+  let rafId = 0;
+
+  const easeInOutCubic = (t: number) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  const stop = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    window.removeEventListener('wheel', stop);
+    window.removeEventListener('touchstart', stop);
+    window.removeEventListener('keydown', stop);
+    if (activeScrollCleanup === stop) {
+      activeScrollCleanup = null;
+    }
+  };
+
+  activeScrollCleanup = stop;
+  window.addEventListener('wheel', stop, { passive: true });
+  window.addEventListener('touchstart', stop, { passive: true });
+  window.addEventListener('keydown', stop, { passive: true });
+
+  const step = (now: number) => {
+    const elapsed = now - startTime;
+    const progress = Math.min(1, elapsed / duration);
+    const eased = easeInOutCubic(progress);
+
+    window.scrollTo(0, Math.round(startY * (1 - eased)));
+
+    if (progress < 1) {
+      rafId = requestAnimationFrame(step);
+    } else {
+      stop();
+    }
+  };
+
+  rafId = requestAnimationFrame(step);
+}
+
 export function Footer() {
   const year = new Intl.DateTimeFormat('fa-IR', { year: 'numeric' }).format(new Date());
 
@@ -249,7 +303,7 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
-            <a href="#frame" className={styles.toTop}>
+            <a href="#frame" className={styles.toTop} onClick={scrollToTop}>
               <Icon name="arrow-up" />
               بازگشت به بالا
             </a>
