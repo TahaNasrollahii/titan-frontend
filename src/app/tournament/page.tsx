@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import TournamentHubClient from './TournamentHubClient';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
-import { API_URL } from '@/lib/api/client';
+import { API_URL, sanitizeApiPayload } from '@/lib/api/client';
 import type { Game, Paginated, Promo, RankTier, TournamentSummary } from '@/lib/api/types';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 
@@ -47,7 +47,7 @@ async function fetchJson<T>(url: string, revalidateSec = 300, tags: string[] = [
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
-    return (await res.json()) as T;
+    return sanitizeApiPayload((await res.json()) as T);
   } catch {
     return null;
   }

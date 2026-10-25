@@ -157,12 +157,12 @@
 }
 
 /* Individual logo positions */
-.logoApex {
+.logoCod {
   width: 90px;
   height: 90px;
   top: 10%;
   left: -60px;
-  animation: floatApex 7s ease-in-out infinite, spinSlow 20s linear infinite;
+  animation: floatCod 7s ease-in-out infinite, spinSlow 20s linear infinite;
 }
 
 .logoValorant {
@@ -190,7 +190,7 @@
 }
 
 /* Float keyframes — each has its own unique orbit */
-@keyframes floatApex {
+@keyframes floatCod {
 
   0%,
   100% {
@@ -457,7 +457,7 @@
     padding: 24px 16px;
   }
 
-  .logoApex {
+  .logoCod {
     width: 60px;
     height: 60px;
     left: -20px;

@@ -1,4 +1,4 @@
-import { API_URL } from './client';
+import { API_URL, sanitizeApiPayload } from './client';
 
 interface EntityFetchOptions {
   revalidate: number;
@@ -23,5 +23,6 @@ export async function fetchEntity<T>(path: string, options: EntityFetchOptions):
   if (!res.ok) {
     throw new Error(`API ${path} responded with ${res.status}`);
   }
-  return (await res.json()) as T;
+  const json = (await res.json()) as T;
+  return sanitizeApiPayload(json);
 }

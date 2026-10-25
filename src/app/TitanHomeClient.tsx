@@ -13,7 +13,12 @@ import { prize } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 /** Hero character art bundled with the frontend, keyed by game slug (value = CSS modifier class). */
-const HERO_ART: Record<string, string> = { fortnite: 'fortnite', valorant: 'valorant', 'apex-legends': 'apexlegends' };
+const HERO_ART: Record<string, string> = {
+  fortnite: 'fortnite',
+  valorant: 'valorant',
+  'call-of-duty': 'callof',
+  'clash-of-clans': 'clash',
+};
 
 const THEME: Record<string, { a: string; b: string; glow: string; fig: string }> = {
   noir: { a: '#120c14', b: '#3a2a30', glow: '#c98d92', fig: '#08050a' },
@@ -89,7 +94,7 @@ function renderCardArt(g: any, idx: number) {
 
 function renderScrollerCards(games: any[]) {
   return games.map((g, i) => `
-  <article class="gcard spot${i === 3 ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
+  <article class="gcard spot${g.slug === 'premium' ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
     <div class="gart">${renderCardArt(g, i)}</div>
     <div class="gbody">
       <h4>${esc(g.t)}</h4>
@@ -106,34 +111,97 @@ export default function TitanPage({ initialData }: { initialData?: Home | null }
   return <HomeScene data={home.data} user={user} />;
 }
 
+function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['categories'] {
+  const hasCod = rawCategories.some(c => c.slug === 'call-of-duty');
+  const mapped: Home['categories'] = [];
+
+  for (const cat of rawCategories) {
+    if (cat.slug === 'apex-legends') {
+      if (!hasCod) {
+        mapped.push({
+          ...cat,
+          slug: 'call-of-duty',
+          title: 'کال آو دیوتی',
+          titleEn: 'Call of Duty',
+          description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی.',
+          backgroundImage: '/images/games/callof-background.webp',
+          characterImage: '/images/games/callof-character.webp',
+          coverImage: '/images/games/callof-background.webp',
+        });
+      }
+      continue;
+    }
+    mapped.push(cat);
+  }
+
+  if (!mapped.some(c => c.slug === 'call-of-duty')) {
+    const codEntry: any = {
+      id: 901,
+      slug: 'call-of-duty',
+      title: 'کال آو دیوتی',
+      titleEn: 'Call of Duty',
+      description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی.',
+      backgroundImage: '/images/games/callof-background.webp',
+      characterImage: '/images/games/callof-character.webp',
+      coverImage: '/images/games/callof-background.webp',
+    };
+    const premIdx = mapped.findIndex(c => c.slug === 'premium');
+    if (premIdx >= 0) mapped.splice(premIdx, 0, codEntry);
+    else mapped.push(codEntry);
+  }
+
+  if (!mapped.some(c => c.slug === 'clash-of-clans')) {
+    const clashEntry: any = {
+      id: 902,
+      slug: 'clash-of-clans',
+      title: 'کلش آف کلنز',
+      titleEn: 'Clash of Clans',
+      description: 'خرید قانونی و فوری جم و گلدپس کلش آف کلنز با تحویل آنی.',
+      backgroundImage: '/images/games/clash-background.webp',
+      characterImage: '/images/games/clash-character.webp',
+      coverImage: '/images/games/clash-background.webp',
+    };
+    const premIdx = mapped.findIndex(c => c.slug === 'premium');
+    if (premIdx >= 0) mapped.splice(premIdx, 0, clashEntry);
+    else mapped.push(clashEntry);
+  }
+
+  return mapped;
+}
+
 function buildSceneData(data: Home) {
   const seenGames = new Set<string>();
   const slides = data.heroTournaments.map(t => {
-    // One slide per game: a second Valorant tournament is shown as the Apex Legends slide instead
-    if (t.game.slug === 'valorant' && seenGames.has('valorant') && !seenGames.has('apex-legends')) {
-      seenGames.add('apex-legends');
+    const effectiveSlug = t.game.slug === 'apex-legends' ? 'call-of-duty' : t.game.slug;
+
+    // One slide per game: a second Valorant tournament (or legacy Apex tournament) is shown as Call of Duty instead
+    if (
+      (effectiveSlug === 'valorant' && seenGames.has('valorant') && !seenGames.has('call-of-duty')) ||
+      effectiveSlug === 'call-of-duty'
+    ) {
+      seenGames.add('call-of-duty');
       return {
-        title: 'اپکس کوین',
-        desc: 'شارژ قانونی انواع بسته‌های اپکس کوین برای خرید اسکین، لجند و بتل‌پس!',
-        descMobile: 'شارژ قانونی انواع بسته‌های اپکس کوین',
+        title: 'سی‌پی کال آو دیوتی',
+        desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی برای خرید بتل‌پس و گردونه!',
+        descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
         watch: 0,
         eta: 0,
-        art: `/images/hero/characters/${HERO_ART['apex-legends']}.webp`,
-        artClass: HERO_ART['apex-legends'],
-        href: '/store/apex-legends',
+        art: `/images/hero/characters/${HERO_ART['call-of-duty']}.webp`,
+        artClass: HERO_ART['call-of-duty'],
+        href: '/store/call-of-duty',
       };
     }
-    seenGames.add(t.game.slug);
+    seenGames.add(effectiveSlug);
 
     let title = t.game.title;
     let desc = `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`;
     let descMobile = desc;
 
-    if (t.game.slug === 'fortnite') {
+    if (effectiveSlug === 'fortnite') {
       title = 'کروپک فورتنایت';
       desc = 'شامل ۱۰۰۰ ویباکس، اسکین انحصاری ماهانه، بتل پس فصل جاری و مزایای ویژه دیگر!';
       descMobile = '۱۰۰۰ ویباکس + اسکین انحصاری!';
-    } else if (t.game.slug === 'valorant') {
+    } else if (effectiveSlug === 'valorant') {
       title = 'ولورانت پوینت';
       desc = 'فعال‌سازی قانونی انواع بسته‌های ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!';
       descMobile = 'فعال‌سازی قانونی انواع بسته‌های VP';
@@ -145,24 +213,26 @@ function buildSceneData(data: Home) {
       descMobile,
       watch: t.viewerCount,
       eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
-      art: t.game.slug === 'fortnite'
+      art: effectiveSlug === 'fortnite'
         ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-        : (HERO_ART[t.game.slug] ? `/images/hero/characters/${HERO_ART[t.game.slug]}.webp` : t.coverImage),
-      artClass: HERO_ART[t.game.slug] ?? '',
+        : (HERO_ART[effectiveSlug] ? `/images/hero/characters/${HERO_ART[effectiveSlug]}.webp` : t.coverImage),
+      artClass: HERO_ART[effectiveSlug] ?? '',
       href: `/tournaments/${t.slug}`,
     };
   });
+  const categories = normalizeHomeCategories(data.categories);
   return {
     slides: slides.length
       ? slides
       : [{ title: 'تایتان', desc: 'تورنمنت‌های جدید به‌زودی منتشر می‌شوند.', watch: 0, eta: 0, art: null, artClass: '', href: '/tournaments' }],
-    games: data.categories.map((g, i) => {
+    games: categories.map((g, i) => {
       const art = HERO_ART[g.slug];
       return {
         t: g.title,
         d: g.slug === 'fortnite' ? 'فعال سازی تمامی آیتم های بازی فورتنایت ویباکس و کروپک و ...' :
            g.slug === 'valorant' ? 'فعال سازی تمامی آیتم های بازی ولورانت پوینت و ...' :
-           g.slug === 'apex-legends' ? 'فعال سازی تمامی آیتم های بازی اپکس کوین و ...' :
+           g.slug === 'call-of-duty' ? 'فعال سازی تمامی آیتم های بازی کال آو دیوتی سی پی و بتل پس و ...' :
+           g.slug === 'clash-of-clans' ? 'فعال سازی تمامی آیتم های بازی کلش آف کلنز جم و گلد پس و ...' :
            g.slug === 'premium' ? g.description :
            `فعال سازی تمامی آیتم های بازی ${g.title} و ...`,
         p: 'مشاهده',
@@ -379,7 +449,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
 
       const sc = $('#scroller');
       sc.innerHTML = GAMES.map((g, i) => `
-  <article class="gcard spot${i === 3 ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
+  <article class="gcard spot${g.slug === 'premium' ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
     <div class="gart">${cardArt(g, i)}</div>
     <div class="gbody">
       <h4>${esc(g.t)}</h4>
@@ -423,8 +493,15 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
         }
       });
       $('#nextBtn').addEventListener('click', () => {
-        const end = sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 8;
-        sc.scrollTo({ left: end ? 0 : sc.scrollLeft + sc.clientWidth * .55, behavior: 'smooth' });
+        const isRtl = getComputedStyle(sc).direction === 'rtl';
+        const maxScroll = Math.max(0, sc.scrollWidth - sc.clientWidth);
+        const current = Math.abs(sc.scrollLeft);
+        const end = current >= maxScroll - 8;
+        const step = sc.clientWidth * .55;
+        sc.scrollTo({
+          left: end ? 0 : (isRtl ? -(current + step) : current + step),
+          behavior: 'smooth',
+        });
       });
 
       /* in-app links inside the injected markup: route client-side, keep modifier-clicks native */

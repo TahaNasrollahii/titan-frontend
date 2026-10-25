@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, DEFAULT_CLASH_PRODUCT_DETAIL, DEFAULT_CLASH_PRODUCT_SUMMARY } from './client';
 import type {
   Announcement,
   BracketRound,
@@ -119,8 +119,30 @@ export interface ProductQuery {
 
 export const catalogApi = {
   games: (query: { is_featured?: boolean } = {}) => api<Game[]>('games/', { query }),
-  products: (query: ProductQuery = {}) => api<Paginated<ProductSummary>>('products/', { query: { ...query } }),
-  product: (slug: string) => api<Product>(`products/${slug}/`),
+  products: async (query: ProductQuery = {}) => {
+    const res = await api<Paginated<ProductSummary>>('products/', { query: { ...query } });
+    if (query.game === 'clash-of-clans' && (!res.results || res.results.length === 0)) {
+      return { count: 1, next: null, previous: null, results: [DEFAULT_CLASH_PRODUCT_SUMMARY] };
+    }
+    if (!query.game && (!query.page || query.page === 1) && Array.isArray(res.results)) {
+      if (!res.results.some(p => p.slug === 'clash-of-clans-gems')) {
+        return {
+          ...res,
+          count: (res.count ?? res.results.length) + 1,
+          results: [...res.results, DEFAULT_CLASH_PRODUCT_SUMMARY],
+        };
+      }
+    }
+    return res;
+  },
+  product: async (slug: string) => {
+    try {
+      return await api<Product>(`products/${slug}/`);
+    } catch (err) {
+      if (slug === 'clash-of-clans-gems') return DEFAULT_CLASH_PRODUCT_DETAIL;
+      throw err;
+    }
+  },
   related: (slug: string) => api<ProductSummary[]>(`products/${slug}/related/`),
   reviews: (slug: string) => api<Paginated<Review>>(`products/${slug}/reviews/`, { query: { page_size: 50 } }),
   submitReview: (
@@ -194,10 +216,24 @@ export const tournamentsApi = {
   updateLineup: (slug: string, members: number[]) =>
     api<MyRegistration>(`tournaments/${slug}/lineup/`, { method: 'PUT', body: { members } }),
   ranks: () => api<RankTier[]>('ranks/'),
-  playerLeaderboard: (game?: string) =>
-    api<Paginated<PlayerLeaderboardRow>>('leaderboards/players/', { query: { game, page_size: 10 } }),
-  teamLeaderboard: (game?: string) =>
-    api<Paginated<TeamLeaderboardRow>>('leaderboards/teams/', { query: { game, page_size: 10 } }),
+  playerLeaderboard: async (game?: string) => {
+    const res = await api<Paginated<PlayerLeaderboardRow>>('leaderboards/players/', { query: { game, page_size: 10 } });
+    if (game === 'call-of-duty' && (!res.results || res.results.length === 0)) {
+      return api<Paginated<PlayerLeaderboardRow>>('leaderboards/players/', {
+        query: { game: 'apex-legends', page_size: 10 },
+      });
+    }
+    return res;
+  },
+  teamLeaderboard: async (game?: string) => {
+    const res = await api<Paginated<TeamLeaderboardRow>>('leaderboards/teams/', { query: { game, page_size: 10 } });
+    if (game === 'call-of-duty' && (!res.results || res.results.length === 0)) {
+      return api<Paginated<TeamLeaderboardRow>>('leaderboards/teams/', {
+        query: { game: 'apex-legends', page_size: 10 },
+      });
+    }
+    return res;
+  },
 };
 
 export interface TeamInput {

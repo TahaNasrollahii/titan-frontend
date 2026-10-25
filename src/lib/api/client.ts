@@ -1,4 +1,4 @@
-import type { AuthTokens } from './types';
+import type { AuthTokens, Product, ProductSummary } from './types';
 
 export const API_URL = (() => {
   if (process.env.NEXT_PUBLIC_API_URL) {
@@ -170,6 +170,258 @@ async function toApiError(response: Response): Promise<ApiError> {
   }
 }
 
+function replaceApexText(value: string): string {
+  if (!value) return value;
+  if (value.includes('apexlegends-background')) return '/images/games/callof-background.webp';
+  if (value.includes('apexlegends-character')) return '/images/games/callof-character.webp';
+  if (value.includes('categories/apex')) return '/images/categories/callof.webp';
+  if (value.includes('hero/characters/apexlegends')) return '/images/hero/characters/callof.webp';
+  return value
+    .replace(/Apex\s+Predators/gi, 'Task Force 141')
+    .replace(/Apex_Predator/gi, 'Ghost_Operator')
+    .replace(/WraithMain/gi, 'SoapMacTavish')
+    .replace(/OctaneRush/gi, 'PriceCaptain')
+    .replace(/Apex\s+Legends/gi, 'Call of Duty')
+    .replace(/Apex\s+Coins/gi, 'COD Points')
+    .replace(/باندل ویژه\s+Apex/gi, 'باندل ویژه Call of Duty')
+    .replace(/شامل اسکین اپیک و ۱۰۰۰ کوین/g, 'شامل اسکین اپراتور و ۱,۱۰۰ سی‌پی')
+    .replace(/ایپکس\s*لجندز|اپکس\s*لجندز/g, 'کال آو دیوتی')
+    .replace(/ایپکس\s*کوین|اپکس\s*کوین/g, 'سی‌پی کال آو دیوتی')
+    .replace(/ایپکس|اپکس/g, 'کال آو دیوتی')
+    .replace(/\bApex\b/g, 'Call of Duty');
+}
+
+function isGameArray(arr: unknown[]): boolean {
+  return (
+    arr.length > 0 &&
+    typeof arr[0] === 'object' &&
+    arr[0] !== null &&
+    'slug' in arr[0] &&
+    'titleEn' in arr[0] &&
+    !('prizePool' in arr[0]) &&
+    !('price' in arr[0])
+  );
+}
+
+const DEFAULT_COD_GAME = {
+  slug: 'call-of-duty',
+  title: 'کال آو دیوتی',
+  titleEn: 'Call of Duty',
+  iconImage: '/images/categories/callof.webp',
+  accentColor: '#f59e0b',
+  accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
+  description:
+    'خرید قانونی و فوری سی‌پی کال آو دیوتی (CP) و بتل‌پس برای Call of Duty Mobile و Warzone با تحویل آنی.',
+  genre: 'شوتر اول‌شخص',
+  kind: 'game',
+  coverImage: '/images/games/callof-background.webp',
+  logoImage: null,
+  backgroundImage: '/images/games/callof-background.webp',
+  characterImage: '/images/games/callof-character.webp',
+  isFeatured: true,
+  productCount: 1,
+  tournamentCount: 2,
+  playerCount: 120,
+};
+
+const DEFAULT_CLASH_GAME = {
+  slug: 'clash-of-clans',
+  title: 'کلش آف کلنز',
+  titleEn: 'Clash of Clans',
+  iconImage: '/images/categories/clash.webp',
+  accentColor: '#38bdf8',
+  accentGradient: 'linear-gradient(135deg,#0c4a6e,#38bdf8)',
+  description:
+    'خرید قانونی و فوری جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) با بهترین قیمت و تحویل آنی در تایتان.',
+  genre: 'استراتژی آنلاین',
+  kind: 'game',
+  coverImage: '/images/games/clash-background.webp',
+  logoImage: null,
+  backgroundImage: '/images/games/clash-background.webp',
+  characterImage: '/images/games/clash-character.webp',
+  isFeatured: true,
+  productCount: 1,
+  tournamentCount: 0,
+  playerCount: 95,
+};
+
+export const DEFAULT_CLASH_PRODUCT_SUMMARY: ProductSummary = {
+  id: 9902,
+  slug: 'clash-of-clans-gems',
+  title: 'جم کلش آف کلنز (Gems)',
+  subtitle: 'شارژ فوری و قانونی اکانت Supercell ID',
+  image: '/images/games/clash-character.webp',
+  price: 95000,
+  originalPrice: 110000,
+  discountPercent: 14,
+  hasVariants: true,
+  priceMax: 1850000,
+  rating: 4.9,
+  reviewCount: 18,
+  badges: ['bestseller', 'discount'] as ('bestseller' | 'discount' | 'new')[],
+  inStock: true,
+  vendor: 'Supercell',
+  deliveryType: 'account' as const,
+  game: {
+    slug: 'clash-of-clans',
+    title: 'کلش آف کلنز',
+    titleEn: 'Clash of Clans',
+    iconImage: '/images/categories/clash.webp',
+    accentColor: '#38bdf8',
+  },
+  category: { slug: 'game-currency', name: 'ارز بازی' },
+  platforms: ['Mobile'],
+  isWishlisted: false,
+  popularity: 88,
+};
+
+export const DEFAULT_CLASH_PRODUCT_DETAIL: Product = {
+  ...DEFAULT_CLASH_PRODUCT_SUMMARY,
+  platforms: [{ slug: 'mobile', name: 'Mobile', icon: null }],
+  description:
+    'خرید قانونی و فوری جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) با تحویل آنی روی اکانت Supercell ID شما.',
+  deliveryInfo: 'تحویل آنی — شارژ مستقیم اکانت',
+  requiresGameAccount: true,
+  stock: null,
+  features: [
+    { title: 'تحویل آنی', description: 'در کمتر از ۱۵ دقیقه', icon: 'flame' },
+    { title: '۱۰۰٪ قانونی', description: 'بدون خطر بن اکانت', icon: 'shield' },
+    { title: 'پشتیبانی ۲۴/۷', description: 'پاسخگویی سریع در چت', icon: 'chat' },
+  ],
+  tags: ['تحویل آنی', '۱۰۰٪ قانونی و اورجینال', 'پشتیبانی ۲۴ ساعته'],
+  specs: { region: 'Global', delivery: 'زیر ۱۵ دقیقه', activation: 'شارژ مستقیم اکانت' },
+  variants: [
+    { id: 99021, label: '۸۰ جم', price: 95000, originalPrice: 110000, discountPercent: 14, inStock: true },
+    { id: 99022, label: '۵۰۰ جم', price: 390000, originalPrice: 440000, discountPercent: 11, inStock: true },
+    { id: 99023, label: '۱,۲۰۰ جم', price: 790000, originalPrice: 890000, discountPercent: 11, inStock: true },
+    { id: 99024, label: '۲,۵۰۰ جم', price: 1850000, originalPrice: 2050000, discountPercent: 10, inStock: true },
+  ],
+  gallery: [],
+};
+
+export function sanitizeApiPayload<T>(input: T): T {
+  if (input === null || input === undefined) return input;
+  if (typeof input === 'string') {
+    return replaceApexText(input) as unknown as T;
+  }
+  if (Array.isArray(input)) {
+    const mapped = input.map(item => sanitizeApiPayload(item));
+    if (isGameArray(mapped)) {
+      const seen = new Set<string>();
+      const deduped: any[] = [];
+      for (const g of mapped as any[]) {
+        if (!g || typeof g.slug !== 'string' || seen.has(g.slug)) continue;
+        seen.add(g.slug);
+        deduped.push(g);
+      }
+      if (!seen.has('call-of-duty')) {
+        const premIdx = deduped.findIndex(g => g.slug === 'premium');
+        if (premIdx >= 0) deduped.splice(premIdx, 0, { ...DEFAULT_COD_GAME });
+        else deduped.push({ ...DEFAULT_COD_GAME });
+      }
+      if (!seen.has('clash-of-clans')) {
+        const premIdx = deduped.findIndex(g => g.slug === 'premium');
+        if (premIdx >= 0) deduped.splice(premIdx, 0, { ...DEFAULT_CLASH_GAME });
+        else deduped.push({ ...DEFAULT_CLASH_GAME });
+      }
+      return deduped as unknown as T;
+    }
+    return mapped as unknown as T;
+  }
+  if (typeof input === 'object') {
+    const obj = input as Record<string, any>;
+
+    // Game or GameMini or GameRef object with apex-legends
+    if (obj.slug === 'apex-legends' && ('titleEn' in obj || 'genre' in obj)) {
+      return {
+        ...obj,
+        ...DEFAULT_COD_GAME,
+      } as unknown as T;
+    }
+    if (obj.slug === 'call-of-duty' && ('titleEn' in obj || 'genre' in obj)) {
+      return {
+        ...obj,
+        title: 'کال آو دیوتی',
+        titleEn: 'Call of Duty',
+        iconImage: '/images/categories/callof.webp',
+        accentColor: obj.accentColor || '#f59e0b',
+        backgroundImage: '/images/games/callof-background.webp',
+        characterImage: '/images/games/callof-character.webp',
+        coverImage: obj.coverImage || '/images/games/callof-background.webp',
+      } as unknown as T;
+    }
+    if (obj.slug === 'clash-of-clans' && ('titleEn' in obj || 'genre' in obj)) {
+      return {
+        ...obj,
+        title: 'کلش آف کلنز',
+        titleEn: 'Clash of Clans',
+        iconImage: '/images/categories/clash.webp',
+        accentColor: obj.accentColor || '#38bdf8',
+        backgroundImage: '/images/games/clash-background.webp',
+        characterImage: '/images/games/clash-character.webp',
+        coverImage: obj.coverImage || '/images/games/clash-background.webp',
+      } as unknown as T;
+    }
+
+    // Promo with apex-coins
+    if ('placement' in obj && (obj.product === 'apex-coins' || /apex|ایپکس|اپکس/i.test(String(obj.title ?? '')))) {
+      return {
+        ...obj,
+        title: 'باندل ویژه Call of Duty',
+        subtitle: 'شامل اسکین اپراتور و ۱,۱۰۰ سی‌پی',
+        image: '/images/games/callof-character.webp',
+        backgroundImage: '/images/games/callof-background.webp',
+        product: 'cod-points',
+      } as unknown as T;
+    }
+
+    // Product with slug === 'apex-coins'
+    if (obj.slug === 'apex-coins' && 'price' in obj) {
+      return {
+        ...obj,
+        slug: 'cod-points',
+        title: 'سی‌پی کال آو دیوتی (COD Points)',
+        description: 'خرید قانونی و فوری سی‌پی کال آو دیوتی (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه.',
+        image: '/images/games/callof-character.webp',
+        game: obj.game
+          ? {
+              ...obj.game,
+              slug: 'call-of-duty',
+              title: 'کال آو دیوتی',
+              titleEn: 'Call of Duty',
+              iconImage: '/images/categories/callof.webp',
+              accentColor: '#f59e0b',
+            }
+          : obj.game,
+      } as unknown as T;
+    }
+
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k === 'favoriteGame' && v === 'apex-legends') {
+        out[k] = 'call-of-duty';
+      } else {
+        out[k] = sanitizeApiPayload(v);
+      }
+    }
+
+    // Deduplicate paginated product results if apex-coins was converted to cod-points alongside existing cod-points
+    if (Array.isArray(out.results)) {
+      const seenSlugs = new Set<string>();
+      out.results = out.results.filter((item: any) => {
+        if (item && typeof item === 'object' && typeof item.slug === 'string') {
+          if (seenSlugs.has(item.slug)) return false;
+          seenSlugs.add(item.slug);
+        }
+        return true;
+      });
+    }
+
+    return out as T;
+  }
+  return input;
+}
+
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
   let response: Response;
   try {
@@ -186,5 +438,6 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   }
   if (!response.ok) throw await toApiError(response);
   if (response.status === 204) return undefined as T;
-  return (await response.json()) as T;
+  const json = (await response.json()) as T;
+  return sanitizeApiPayload(json);
 }

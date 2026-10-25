@@ -29,7 +29,7 @@ export const SAMPLE_CUSTOM_EVENT: EventData = {
     T9: ['Neon Phantoms', '#8aa0ff', '#2a3a8a'],
     T10: ['Storm Breakers', '#e06fb0', '#7a2358'],
     T11: ['Ghost Warriors', '#9aa0ac', '#3a3e48'],
-    T12: ['Apex Predators', '#5fd07a', '#1a6b3a'],
+    T12: ['Task Force 141', '#5fd07a', '#1a6b3a'],
     T13: ['Blaze Legion', '#ff6b48', '#c23a1d'],
     T14: ['Frost Giants', '#7b7fe0', '#2a2c6e'],
     T15: ['Dragon Claws', '#c07bff', '#4a1f7a'],

@@ -5,7 +5,7 @@ import ProductDetailClient from './ProductDetailClient';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { composeMetaDescription } from '@/lib/seo/meta';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
-import { API_URL } from '@/lib/api/client';
+import { API_URL, DEFAULT_CLASH_PRODUCT_DETAIL } from '@/lib/api/client';
 import { fetchEntity } from '@/lib/api/server';
 import type { Paginated, Product, ProductSummary, Review } from '@/lib/api/types';
 import {
@@ -32,11 +32,16 @@ export async function generateStaticParams() {
   }
 }
 
-function getProduct(slug: string): Promise<Product | null> {
-  return fetchEntity<Product>(`/products/${slug}/`, {
+async function getProduct(slug: string): Promise<Product | null> {
+  if (slug === 'apex-coins') return null;
+  const prod = await fetchEntity<Product>(`/products/${slug}/`, {
     revalidate: 60,
     tags: ['products', `product-${slug}`],
   });
+  if (!prod && slug === 'clash-of-clans-gems') {
+    return DEFAULT_CLASH_PRODUCT_DETAIL;
+  }
+  return prod;
 }
 
 async function getProductReviews(slug: string): Promise<Paginated<Review> | undefined> {

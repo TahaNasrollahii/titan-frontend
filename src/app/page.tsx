@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import TitanHomeClient from './TitanHomeClient';
-import { API_URL } from '@/lib/api/client';
+import { API_URL, sanitizeApiPayload } from '@/lib/api/client';
 import type { Home } from '@/lib/api/types';
 import {
   SITE_URL,
@@ -45,7 +45,7 @@ async function getHomeData(): Promise<Home | null> {
       signal: AbortSignal.timeout(4000),
     });
     if (res.ok) {
-      return (await res.json()) as Home;
+      return sanitizeApiPayload((await res.json()) as Home);
     }
   } catch {
     // Graceful fallback on network error

@@ -54,7 +54,8 @@ export async function generateStaticParams() {
     return [
       { game: 'fortnite' },
       { game: 'valorant' },
-      { game: 'apex-legends' },
+      { game: 'call-of-duty' },
+      { game: 'clash-of-clans' },
       { game: 'premium' },
     ];
   }

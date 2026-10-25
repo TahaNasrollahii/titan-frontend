@@ -89,14 +89,14 @@ function SectionHead({
 
 // ------------------------------------------------------------------ hero (DO NOT TOUCH)
 const CHARACTERS = [
-  { src: '/images/hero/characters/apexlegends.webp', alt: 'Apex Legends', className: styles.charLeft, delay: 0.35 },
+  { src: '/images/hero/characters/callof.webp', alt: 'Call of Duty', className: styles.charLeft, delay: 0.35 },
   { src: '/images/hero/characters/fortnite.webp', alt: 'Fortnite', className: styles.charRight, delay: 0.5 },
   { src: '/images/hero/characters/valorant.webp', alt: 'Valorant', className: styles.charCenter, delay: 0.2 },
 ];
 
 const ORBIT_LOGOS = [
   { src: '/images/glossy-valorant-logo.webp', className: styles.orbitA },
-  { src: '/images/glossy-apex-logo.webp', className: styles.orbitB },
+  { src: '/images/glossy-cod-logo.webp', className: styles.orbitB },
   { src: '/images/glossy-fortnite-logo.webp', className: styles.orbitC },
   { src: '/images/login-premium.webp', className: styles.orbitD },
 ];

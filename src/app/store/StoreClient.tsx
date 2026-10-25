@@ -53,6 +53,7 @@ function useRotation(length: number, intervalMs: number) {
 }
 
 function promoHref(promo: Promo) {
+  if (promo.product === 'apex-coins') return '/store/call-of-duty';
   if (promo.product) return `/product/${promo.product}`;
   if (promo.tournament) return `/tournaments/${promo.tournament}`;
   return promo.link || '/store';
@@ -60,10 +61,12 @@ function promoHref(promo: Promo) {
 
 function getOptimizedAssetUrl(url: string | null | undefined, fallback: string): string {
   if (!url) return fallback;
-  if (url.includes('games-apexlegends-background')) return '/images/games/apexlegends-background.webp';
+  if (url.includes('games-apexlegends-background') || url.includes('games-callof-background')) return '/images/games/callof-background.webp';
+  if (url.includes('games-clash-background')) return '/images/games/clash-background.webp';
   if (url.includes('games-fortnite-background')) return '/images/games/fortnite-background.webp';
   if (url.includes('games-valorant-background')) return '/images/games/valorant-background.webp';
-  if (url.includes('games-apexlegends-character')) return '/images/games/apexlegends-character.webp';
+  if (url.includes('games-apexlegends-character') || url.includes('games-callof-character')) return '/images/games/callof-character.webp';
+  if (url.includes('games-clash-character')) return '/images/games/clash-character.webp';
   if (url.includes('games-fortnite-character')) return '/images/games/fortnite-character.webp';
   if (url.includes('games-valorant-character')) return '/images/games/valorant-character.webp';
   return mediaUrl(url);
@@ -256,7 +259,8 @@ const ACCENT_COLORS = ['#ff7a2f', '#4a8bff', '#35c6ff', '#ef2f5a', '#35d07f', '#
 
 const GAME_ACCENTS: Record<string, string> = {
   fortnite: '#35c6ff',
-  'apex-legends': '#ff7a2f',
+  'call-of-duty': '#f59e0b',
+  'clash-of-clans': '#38bdf8',
   valorant: '#ef2f5a',
   steam: '#4a8bff',
   premium: '#ef2f5a',
@@ -265,7 +269,8 @@ const GAME_ACCENTS: Record<string, string> = {
 const LOCAL_CHARACTERS = [
   TEMPLATE_CHARACTER,
   '/images/hero/characters/fortnite.webp',
-  '/images/hero/characters/apexlegends.webp',
+  '/images/games/callof-character.webp',
+  '/images/games/clash-character.webp',
   '/images/hero/characters/valorant.webp',
   '/images/products/vbucks.webp',
   '/images/character-behind-login-form.webp',
@@ -293,13 +298,15 @@ function ProductCard({
     (product.image && !product.image.endsWith('.jpg') ? mediaUrl(product.image) : null) ||
     (gameSlug === 'fortnite'
       ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-      : gameSlug === 'apex-legends'
-        ? '/images/hero/characters/apexlegends.webp'
-        : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
-          ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'
-          : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
-            ? '/images/products/vbucks.webp'
-            : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
+      : gameSlug === 'call-of-duty'
+        ? '/images/games/callof-character.webp'
+        : gameSlug === 'clash-of-clans'
+          ? '/images/games/clash-character.webp'
+          : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
+            ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'
+            : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
+              ? '/images/products/vbucks.webp'
+              : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
 
   const [imgError, setImgError] = useState(false);
   const imgSrc = imgError ? SILHOUETTE_PLACEHOLDER : defaultImage;
@@ -555,6 +562,7 @@ function ProductResults({
     .flatMap(page => page?.results ?? [])
     .filter(product => {
       if (!product || seenIds.has(product.id)) return false;
+      if (product.slug === 'apex-coins' || product.game?.slug === 'apex-legends') return false;
       seenIds.add(product.id);
       return true;
     });
@@ -700,8 +708,34 @@ function StorePageContent({
       });
   }, [discountPromos.data, bestsellerPromos.data]);
 
+  const normalizedGames = useMemo(() => {
+    const raw = games.data ?? [];
+    const hasCod = raw.some(g => g.slug === 'call-of-duty');
+    const list: Array<{ slug: string; title: string; iconImage: string | null }> = [];
+    for (const g of raw) {
+      if (g.slug === 'apex-legends') {
+        if (!hasCod) {
+          list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی', iconImage: null });
+        }
+        continue;
+      }
+      list.push(g);
+    }
+    if (!list.some(g => g.slug === 'call-of-duty')) {
+      const premIdx = list.findIndex(g => g.slug === 'premium');
+      if (premIdx >= 0) list.splice(premIdx, 0, { slug: 'call-of-duty', title: 'کال آو دیوتی', iconImage: null });
+      else list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی', iconImage: null });
+    }
+    if (!list.some(g => g.slug === 'clash-of-clans')) {
+      const premIdx = list.findIndex(g => g.slug === 'premium');
+      if (premIdx >= 0) list.splice(premIdx, 0, { slug: 'clash-of-clans', title: 'کلش آف کلنز', iconImage: null });
+      else list.push({ slug: 'clash-of-clans', title: 'کلش آف کلنز', iconImage: null });
+    }
+    return list;
+  }, [games.data]);
+
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
-    (games.data ?? []).map(game => {
+    normalizedGames.map(game => {
       return { slug: game.slug, title: game.title, icon: gameIconSrc(game.slug, game.iconImage) };
     }),
   );

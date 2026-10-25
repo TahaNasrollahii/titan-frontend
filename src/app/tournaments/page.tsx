@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import TournamentsClient from './TournamentsClient';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
-import { API_URL } from '@/lib/api/client';
+import { API_URL, sanitizeApiPayload } from '@/lib/api/client';
 import type { Game, Paginated, TournamentSummary } from '@/lib/api/types';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { PaginationNav } from '@/components/seo/PaginationNav';
@@ -31,7 +31,7 @@ export async function generateMetadata({
   const baseTitle = 'لیست مسابقات و تورنومنت‌های فعال';
   const title = page > 1 ? `${baseTitle} — صفحه ${page}` : baseTitle;
   const description =
-    'لیست کامل تورنومنت‌های فعال و رویدادهای آینده فورتنایت، ولورانت، اپکس لجندز در تایتان؛ مشاهده زمان برگزاری، ظرفیت، استخر جوایز نقدی و ثبت‌نام مسابقات.';
+    'لیست کامل تورنومنت‌های فعال و رویدادهای آینده فورتنایت، ولورانت و کال آو دیوتی در تایتان؛ مشاهده زمان برگزاری، ظرفیت، استخر جوایز نقدی و ثبت‌نام مسابقات.';
 
   return {
     title,
@@ -75,7 +75,7 @@ async function getInitialTournaments(page = 1): Promise<Paginated<TournamentSumm
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
-    return await res.json();
+    return sanitizeApiPayload(await res.json());
   } catch {
     return null;
   }
@@ -88,7 +88,7 @@ async function getGames(): Promise<Game[] | null> {
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
-    return await res.json();
+    return sanitizeApiPayload(await res.json());
   } catch {
     return null;
   }

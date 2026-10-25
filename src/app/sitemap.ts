@@ -24,9 +24,9 @@ const STATIC_LASTMOD = new Date('2026-10-15T12:00:00.000Z');
 const FALLBACK_GAMES = [
   'fortnite',
   'valorant',
-  'apex-legends',
-  'premium',
   'call-of-duty',
+  'clash-of-clans',
+  'premium',
   'ea-fc',
   'pubg',
   'minecraft',
@@ -40,9 +40,9 @@ const FALLBACK_PRODUCTS = [
   'fortnite-crew',
   'fortnite-battle-pass',
   'valorant-points-1700',
-  'apex-coins',
-  'pubg-uc',
   'cod-points',
+  'clash-of-clans-gems',
+  'pubg-uc',
   'ea-fc-points',
   'steam-wallet',
   'psn-gift-card',
@@ -54,12 +54,10 @@ const FALLBACK_PRODUCTS = [
 
 const FALLBACK_TOURNAMENTS = [
   'fifa',
-  'titan-apex-solo',
   'titan-valorant-championship',
   'titan-fortnite-squads',
   'cod-search-destroy',
   'fortnite-ranked-arena',
-  'apex-arena-showdown',
 ];
 
 function parseDate(item: SitemapEntryItem): Date {

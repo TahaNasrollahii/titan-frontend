@@ -26,9 +26,9 @@ function safeNext(next: string | null) {
 /** Floating logo data */
 const floatingLogos = [
   {
-    src: '/images/glossy-apex-logo.webp',
-    alt: 'Apex Legends',
-    className: 'logoApex',
+    src: '/images/glossy-cod-logo.webp',
+    alt: 'Call of Duty',
+    className: 'logoCod',
     delay: 0,
   },
   {
