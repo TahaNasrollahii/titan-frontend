@@ -527,7 +527,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                   className={`${styles.optionTrigger} ${optionsOpen ? styles.optionTriggerOpen : ''}`}
                   onClick={() => setOptionsOpen(open => !open)}
                   aria-expanded={optionsOpen}
-                  aria-haspopup="radiogroup"
+                  aria-haspopup="listbox"
                 >
                   <span className={styles.optionTriggerGlow} aria-hidden="true" />
                   <span className={styles.optionTriggerIcon} aria-hidden="true">
