@@ -801,6 +801,10 @@ html[dir="rtl"] .hero-bg {
   inset: 0 0 0 auto;
 }
 
+.hero[data-slide="callof"] .hero-bg {
+  width: min(78%, calc(100% - 165px));
+}
+
 .hero-char {
   width: 100%;
   height: 100%;
@@ -819,6 +823,10 @@ html[dir="rtl"] .hero-char {
 
 .hero-char.valorant {
   transform: scale(1.15) translateY(24px);
+}
+
+.hero-char.callof {
+  transform: scale(1.24) translate(-12px, 34px);
 }
 
 .hero-bg .l {
@@ -3241,7 +3249,8 @@ html[dir="rtl"] .hero-live {
     height: 300px;
   }
 
-  .hero-bg {
+  .hero-bg,
+  .hero[data-slide="callof"] .hero-bg {
     width: 100%;
   }
 
@@ -3409,7 +3418,8 @@ html[dir="rtl"] .hero-live {
 /* The Fortnite art has the head at the very top of the image, so the desktop pop-out scale
    pushes it out of the shorter tablet/phone banner; keep it inside */
 @media (max-width: 1024px) {
-  .hero-char.fortnite {
+  .hero-char.fortnite,
+  .hero-char.callof {
     transform: scale(0.88);
   }
 }
@@ -3536,7 +3546,8 @@ html[dir="rtl"] .hero-live {
   .hero-char,
   html[dir="rtl"] .hero-char,
   .hero-char.valorant,
-  .hero-char.fortnite {
+  .hero-char.fortnite,
+  .hero-char.callof {
     opacity: 0.95;
     object-position: right bottom;
     transform: none;

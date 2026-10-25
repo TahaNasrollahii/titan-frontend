@@ -395,6 +395,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       }
       function goTo(i, first) {
         cur = i; elapsed = 0;
+        if (hero && SLIDES[i]) hero.dataset.slide = SLIDES[i].artClass || '';
         arts.forEach((a, k) => a.classList.toggle('on', k === i));
         bgLayers.forEach((a, k) => a.classList.toggle('on', k === i));
         dashes.forEach((d, k) => d.classList.toggle('on', k === i));
@@ -714,7 +715,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       <!-- ---- Column A ---- -->
       <section class="col col-a">
 
-        <article class="hero spot reveal" id="hero" style="--d:2">
+        <article class="hero spot reveal" id="hero" data-slide="${esc(firstSlide.artClass || '')}" style="--d:2">
           <div class="hero-bg" aria-hidden="true">
             <i class="l l0 on"></i><i class="l l1"></i><i class="l l2"></i>
             <span class="ring r1"></span><span class="ring r2"></span>
