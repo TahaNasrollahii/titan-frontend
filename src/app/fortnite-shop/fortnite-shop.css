@@ -140,9 +140,9 @@
   isolation: isolate;
   overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
-  min-height: 470px;
-  border-radius: 28px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(270px, 0.85fr);
+  min-height: 330px;
+  border-radius: 24px;
   background: var(--fn-blue-500);
   border: 2px solid rgba(255, 255, 255, 0.24);
   box-shadow:
@@ -199,17 +199,17 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 14px;
+  gap: 10px;
   min-width: 0;
-  padding: clamp(24px, 3.4vw, 44px);
+  padding: clamp(18px, 2.2vw, 28px) clamp(20px, 2.6vw, 34px);
 }
 
 .fn-collab-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 14px 0 6px;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px 0 5px;
   border-radius: 999px;
   background: rgba(4, 17, 58, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -218,29 +218,29 @@
 }
 
 .fn-collab-img {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
 }
 
 .fn-collab-x {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   color: var(--fn-yellow);
 }
 
 .fn-collab-text {
-  margin-inline-start: 6px;
+  margin-inline-start: 4px;
   font-family: var(--fn-latin);
-  font-size: 13px;
+  font-size: 11.5px;
   letter-spacing: 0.12em;
   color: #fff;
 }
 
 .fn-hero-eyebrow {
-  margin-bottom: -10px;
+  margin-bottom: -8px;
   font-family: var(--fn-latin);
-  font-size: clamp(16px, 1.5vw, 20px);
+  font-size: clamp(13px, 1.2vw, 16px);
   letter-spacing: 0.2em;
   color: var(--fn-yellow);
   transform: skewX(-10deg);
@@ -249,10 +249,10 @@
 
 .fn-hero-title {
   font-family: var(--fn-display);
-  font-size: clamp(40px, 5.2vw, 72px);
+  font-size: clamp(30px, 3.6vw, 48px);
   font-weight: 400;
   font-synthesis: none;
-  line-height: 1.22;
+  line-height: 1.15;
   color: #fff;
   text-shadow:
     0 4px 0 var(--fn-blue-800),
@@ -270,18 +270,18 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .fn-live-pill,
 .fn-date-chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 30px;
-  padding: 0 12px;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
   background: rgba(4, 17, 58, 0.55);
@@ -299,12 +299,12 @@
 }
 
 .fn-date-chip [data-icon] {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .fn-live-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #3ee07a;
   box-shadow: 0 0 0 0 rgba(62, 224, 122, 0.7);
@@ -317,9 +317,9 @@
 }
 
 .fn-hero-desc {
-  max-width: 46ch;
-  font-size: 15px;
-  line-height: 1.75;
+  max-width: 48ch;
+  font-size: 13.5px;
+  line-height: 1.65;
   color: #eaf2ff;
   text-shadow: 0 1px 2px rgba(2, 10, 40, 0.6);
 }
@@ -327,17 +327,17 @@
 .fn-hero-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .fn-hero-stat {
   display: flex;
   flex-direction: column-reverse;
   justify-content: flex-end;
-  gap: 2px;
-  min-width: 112px;
-  padding: 9px 16px 10px;
-  border-radius: 14px;
+  gap: 1px;
+  min-width: 96px;
+  padding: 6px 12px 7px;
+  border-radius: 12px;
   background: rgba(4, 17, 58, 0.55);
   border: 2px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(10px);
@@ -345,7 +345,7 @@
 }
 
 .fn-hero-stat dt {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--fn-text-3);
   white-space: nowrap;
@@ -355,7 +355,7 @@
 
 .fn-hero-stat dd {
   font-family: var(--fn-display);
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 400;
   line-height: 1.15;
   color: #fff;
@@ -363,7 +363,7 @@
 }
 
 .fn-hero-stat dd small {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--fn-text-2);
 }
 
@@ -379,9 +379,17 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  margin-top: 6px;
-  padding-bottom: 5px;
+  gap: 10px;
+  margin-top: 2px;
+  padding-bottom: 3px;
+}
+
+.fn-hero .fn-cta-primary,
+.fn-hero .fn-cta-secondary {
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 16.5px;
 }
 
 /* Character + countdown column */
@@ -393,7 +401,7 @@
   justify-content: flex-end;
   align-items: center;
   min-width: 0;
-  padding: 24px;
+  padding: 18px 20px;
 }
 
 .fn-hero-character {
@@ -418,12 +426,12 @@
 .fn-timer {
   position: relative;
   z-index: 2;
-  width: min(100%, 360px);
+  width: min(100%, 310px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 14px 16px 16px;
-  border-radius: 18px;
+  gap: 8px;
+  padding: 11px 14px 12px;
+  border-radius: 16px;
   background: linear-gradient(180deg, rgba(7, 27, 85, 0.9) 0%, rgba(4, 17, 58, 0.94) 100%);
   border: 2px solid rgba(255, 255, 255, 0.24);
   box-shadow: 0 18px 36px -12px rgba(2, 10, 40, 0.8);
@@ -441,23 +449,23 @@
 .fn-timer-title {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   font-family: var(--fn-display);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 400;
   color: #fff;
 }
 
 .fn-timer-title [data-icon] {
-  font-size: 17px;
+  font-size: 15px;
   color: var(--fn-yellow);
 }
 
 .fn-timer-utc {
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 6px;
   font-family: var(--fn-latin);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--fn-blue-300);
   background: rgba(255, 255, 255, 0.08);
@@ -466,7 +474,7 @@
 .fn-timer-grid {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 5px;
   direction: ltr;
 }
 
@@ -475,16 +483,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 8px 4px 7px;
-  border-radius: 12px;
+  gap: 1px;
+  padding: 6px 4px 5px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .fn-timer-val {
   font-family: var(--fn-display);
-  font-size: clamp(30px, 3vw, 40px);
+  font-size: clamp(24px, 2.4vw, 30px);
   font-weight: 400;
   line-height: 1.1;
   color: #fff;
@@ -492,15 +500,15 @@
 }
 
 .fn-timer-lbl {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   color: var(--fn-text-3);
 }
 
 .fn-timer-sep {
-  padding-top: 10px;
+  padding-top: 6px;
   font-family: var(--fn-display);
-  font-size: 28px;
+  font-size: 22px;
   line-height: 1;
   color: var(--fn-yellow);
   animation: fnBlink 1s steps(2, start) infinite;
@@ -513,14 +521,14 @@
 .fn-cycle {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .fn-cycle-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--fn-text-3);
 }
@@ -531,7 +539,7 @@
 }
 
 .fn-cycle-track {
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
@@ -549,6 +557,8 @@
 
 /* ---------- Search, sort & categories ---------- */
 .fn-filters {
+  position: relative;
+  z-index: 10;
   container-type: inline-size;
   display: flex;
   flex-direction: column;
@@ -619,6 +629,8 @@
 }
 
 .fn-toolbar {
+  position: relative;
+  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
@@ -702,7 +714,13 @@
   stroke-width: 2.4;
 }
 
-.fn-sort,
+.fn-sort {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+}
+
+.fn-sort-trigger,
 .fn-toggle {
   position: relative;
   flex: 0 0 auto;
@@ -714,22 +732,30 @@
   border: 2px solid rgba(255, 255, 255, 0.18);
   color: #fff;
   box-shadow: 0 4px 0 rgba(4, 17, 58, 0.6);
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.fn-sort {
-  gap: 8px;
-  padding: 0 14px 0 34px;
+.fn-sort-trigger {
+  width: 100%;
+  gap: 10px;
+  padding: 0 14px 0 36px;
   cursor: pointer;
 }
 
-.fn-sort:hover,
+.fn-sort-trigger:hover,
 .fn-toggle:hover {
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-.fn-sort:focus-within {
+.fn-sort.is-open .fn-sort-trigger {
   border-color: var(--fn-yellow);
+  background: rgba(7, 27, 85, 0.85);
+  box-shadow:
+    0 4px 0 rgba(4, 17, 58, 0.6),
+    0 0 0 4px rgba(255, 225, 77, 0.25);
 }
 
 .fn-sort-label {
@@ -739,27 +765,11 @@
   white-space: nowrap;
 }
 
-.fn-sort-select {
-  appearance: none;
-  -webkit-appearance: none;
-  height: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #fff;
-  font: inherit;
+.fn-sort-value {
   font-size: 14px;
   font-weight: 800;
-  cursor: pointer;
-}
-
-.fn-sort-select:focus-visible {
-  outline: none;
-}
-
-.fn-sort-select option {
-  color: var(--fn-ink);
-  background: #fff;
+  color: #fff;
+  white-space: nowrap;
 }
 
 .fn-sort-caret {
@@ -769,6 +779,86 @@
   color: var(--fn-yellow);
   rotate: -90deg;
   pointer-events: none;
+  transition: rotate 0.22s var(--fn-ease);
+}
+
+.fn-sort.is-open .fn-sort-caret {
+  rotate: 90deg;
+}
+
+.fn-sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: 0;
+  min-width: 210px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  margin: 0;
+  list-style: none;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(11, 42, 125, 0.98) 0%, rgba(4, 17, 58, 0.98) 100%);
+  border: 2px solid rgba(124, 198, 255, 0.34);
+  box-shadow:
+    0 6px 0 rgba(2, 8, 30, 0.85),
+    0 22px 44px -10px rgba(0, 6, 32, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fnSortMenuIn 0.18s var(--fn-ease);
+}
+
+@keyframes fnSortMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.fn-sort-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fn-text-2);
+  text-align: right;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.15s var(--fn-ease);
+}
+
+.fn-sort-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.fn-sort-option.is-selected {
+  background: linear-gradient(180deg, #fff27a 0%, var(--fn-yellow-deep) 100%);
+  color: var(--fn-ink);
+  font-weight: 800;
+  box-shadow: 0 3px 0 var(--fn-yellow-edge);
+}
+
+.fn-sort-check {
+  display: inline-grid;
+  place-items: center;
+  font-size: 15px;
+  color: var(--fn-ink);
+}
+
+.fn-sort-check svg {
+  stroke-width: 2.8;
 }
 
 .fn-toggle {
@@ -933,10 +1023,14 @@
     flex: 1 1 0;
     justify-content: center;
   }
+
+  .fn-sort-trigger {
+    justify-content: center;
+  }
 }
 
 @container (max-width: 480px) {
-  .fn-sort {
+  .fn-sort-trigger {
     padding-inline-start: 12px;
   }
 
@@ -1887,6 +1981,8 @@
   .fn-cta-primary,
   .fn-cta-secondary,
   .fn-filters-reset,
+  .fn-sort-trigger,
+  .fn-sort-option,
   .fn-toggle,
   .fn-search-clear,
   .fn-empty-btn,
@@ -1916,8 +2012,8 @@
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 16px;
-    padding: 0 clamp(24px, 3.4vw, 44px) 24px;
+    gap: 14px;
+    padding: 0 clamp(20px, 2.6vw, 34px) 18px;
   }
 
   .fn-hero-character {
@@ -1925,9 +2021,9 @@
     left: auto;
     bottom: auto;
     order: 2;
-    height: 300px;
+    height: 220px;
     translate: none;
-    margin-bottom: -24px;
+    margin-bottom: -18px;
   }
 
   .fn-hero-rays {
@@ -1944,12 +2040,12 @@
   }
 
   .fn-hero {
-    border-radius: 22px;
+    border-radius: 20px;
   }
 
   .fn-hero-content {
-    padding: 22px 16px 18px;
-    gap: 12px;
+    padding: 16px 14px 14px;
+    gap: 9px;
   }
 
   .fn-hero-shade {
@@ -1962,11 +2058,11 @@
   }
 
   .fn-hero-title {
-    font-size: 40px;
+    font-size: 30px;
   }
 
   .fn-hero-desc {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .fn-hero-stats {
@@ -1978,15 +2074,15 @@
   .fn-hero-stat {
     flex: 1 1 0;
     min-width: 0;
-    padding: 8px 10px 9px;
+    padding: 6px 8px 7px;
   }
 
   .fn-hero-stat dt {
-    font-size: 10.5px;
+    font-size: 10px;
   }
 
   .fn-hero-stat dd {
-    font-size: 23px;
+    font-size: 20px;
   }
 
   .fn-hero-actions {
@@ -1998,11 +2094,17 @@
   .fn-cta-primary,
   .fn-cta-secondary {
     width: 100%;
-    height: 50px;
+    height: 46px;
+  }
+
+  .fn-hero .fn-cta-primary,
+  .fn-hero .fn-cta-secondary {
+    height: 44px;
+    font-size: 15.5px;
   }
 
   .fn-hero-visual {
-    padding: 0 16px 16px;
+    padding: 0 14px 14px;
   }
 
   .fn-hero-character {
@@ -2014,7 +2116,7 @@
   }
 
   .fn-timer-val {
-    font-size: 30px;
+    font-size: 24px;
   }
 
   .fn-filters {

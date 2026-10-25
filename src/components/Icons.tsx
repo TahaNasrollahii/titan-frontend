@@ -55,6 +55,7 @@ export const ICONS: Record<string, [string, boolean?]> = {
   pickaxe: ['<path d="m14 4 6 6"/><path d="m17 7-10 10"/><path d="M21.5 8a13 13 0 0 0-11-5l2 2a9 9 0 0 1 7 7z"/>'],
   parachute: ['<path d="M12 3c-5.5 0-9.5 4-9.5 8.5h19C21.5 7 17.5 3 12 3z"/><path d="M12 3v8.5"/><path d="M4.5 11.5 12 21l7.5-9.5"/>'],
   music: ['<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'],
+  eye: ['<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>'],
 };
 
 export function Icon({ name, className = '', style }: { name: string, className?: string, style?: React.CSSProperties }) {

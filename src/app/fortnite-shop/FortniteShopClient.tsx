@@ -453,7 +453,7 @@ const ShopItemCard = memo(function ShopItemCard({
                   title="مشاهده آیتم‌های این باندل"
                   aria-label={`مشاهده ${faNumber(entry.bundleItems.length)} آیتم باندل ${entry.name}`}
                 >
-                  <Icon name="gift" />
+                  <Icon name="eye" />
                 </button>
               )}
             </div>
@@ -561,6 +561,7 @@ export default function FortniteShopClient({
   const [selectedCategory, setSelectedCategory] = useState<QuickCategoryKey>('all');
   const [query, setQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('featured');
+  const [sortOpen, setSortOpen] = useState(false);
   const [onlyDiscounted, setOnlyDiscounted] = useState(false);
   const [page, setPage] = useState(1);
   const [inspectedBundle, setInspectedBundle] = useState<ShopEntry | null>(null);
@@ -568,6 +569,7 @@ export default function FortniteShopClient({
   const refreshingRef = useRef(false);
   const resultsTopRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   // Typing stays responsive while the grid re-filters
   const deferredQuery = useDeferredValue(query);
@@ -610,6 +612,27 @@ export default function FortniteShopClient({
     return () => window.removeEventListener('keydown', onKey);
   }, [inspectedBundle]);
 
+  // Close sort menu on outside click or Escape
+  useEffect(() => {
+    if (!sortOpen) return;
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSortOpen(false);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [sortOpen]);
+
   const handleSelectCategory = useCallback((catKey: QuickCategoryKey) => {
     setSelectedCategory(catKey);
     setPage(1);
@@ -626,9 +649,10 @@ export default function FortniteShopClient({
     searchInputRef.current?.focus();
   }, []);
 
-  const handleSortChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortKey(e.target.value as SortKey);
+  const handleSelectSort = useCallback((nextSort: SortKey) => {
+    setSortKey(nextSort);
     setPage(1);
+    setSortOpen(false);
   }, []);
 
   const toggleDiscounted = useCallback(() => {
@@ -911,22 +935,46 @@ export default function FortniteShopClient({
                 )}
               </div>
 
-              <label className="fn-sort">
-                <span className="fn-sort-label">مرتب‌سازی</span>
-                <select
-                  value={sortKey}
-                  onChange={handleSortChange}
-                  className="fn-sort-select"
+              <div ref={sortRef} className={`fn-sort${sortOpen ? ' is-open' : ''}`}>
+                <button
+                  type="button"
+                  className="fn-sort-trigger"
+                  onClick={() => setSortOpen(open => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={sortOpen}
                   aria-label="مرتب‌سازی آیتم‌ها"
                 >
-                  {SORT_OPTIONS.map(opt => (
-                    <option key={opt.key} value={opt.key}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <Icon name="chev" className="fn-sort-caret" />
-              </label>
+                  <span className="fn-sort-label">مرتب‌سازی</span>
+                  <span className="fn-sort-value">
+                    {SORT_OPTIONS.find(opt => opt.key === sortKey)?.label ?? SORT_OPTIONS[0].label}
+                  </span>
+                  <Icon name="chev" className="fn-sort-caret" />
+                </button>
+
+                {sortOpen && (
+                  <ul className="fn-sort-menu" role="listbox" aria-label="گزینه‌های مرتب‌سازی">
+                    {SORT_OPTIONS.map(opt => {
+                      const isSelected = opt.key === sortKey;
+                      return (
+                        <li key={opt.key} role="option" aria-selected={isSelected}>
+                          <button
+                            type="button"
+                            className={`fn-sort-option${isSelected ? ' is-selected' : ''}`}
+                            onClick={() => handleSelectSort(opt.key)}
+                          >
+                            <span>{opt.label}</span>
+                            {isSelected && (
+                              <span className="fn-sort-check" aria-hidden="true">
+                                <Icon name="check" />
+                              </span>
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
 
               <button
                 type="button"
