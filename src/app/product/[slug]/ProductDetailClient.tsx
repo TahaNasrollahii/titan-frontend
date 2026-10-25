@@ -3,7 +3,6 @@
 import {
   BadgePercent,
   Check,
-  Clock,
   CreditCard,
   Flame,
   Gamepad2,
@@ -197,8 +196,6 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const discount = variant ? variant.discountPercent : data.discountPercent;
   const inStock = variant ? variant.inStock : data.inStock;
   const savings = price != null && originalPrice != null && originalPrice > price ? originalPrice - price : 0;
-  const lowStock =
-    !data.hasVariants && data.stock !== null && data.stock > 0 && data.stock <= 5 ? data.stock : null;
 
   const accent = data.game?.accentColor || TITAN_RED;
   const gameIcon = data.game ? gameIconSrc(data.game.slug, data.game.iconImage) : null;
@@ -486,17 +483,6 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                 جمع {faNumber(quantity)} عدد: <strong>{toman(price * quantity)}</strong>
               </p>
             )}
-
-            <div className={styles.statusRow}>
-              <span className={`${styles.status} ${inStock ? styles.statusOk : styles.statusOut}`}>
-                <span className={styles.statusDot} aria-hidden="true" />
-                {!inStock ? 'ناموجود' : lowStock ? `فقط ${faNumber(lowStock)} عدد باقی مانده` : 'موجود و آماده تحویل'}
-              </span>
-              <span className={styles.status}>
-                <Clock size={14} aria-hidden="true" />
-                {deliveryLabel}
-              </span>
-            </div>
 
             {data.requiresGameAccount && (
               <p className={styles.note}>
