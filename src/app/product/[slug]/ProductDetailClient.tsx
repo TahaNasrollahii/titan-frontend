@@ -3,6 +3,7 @@
 import {
   BadgePercent,
   Check,
+  ChevronDown,
   ChevronLeft,
   CreditCard,
   Flame,
@@ -173,12 +174,14 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const related = useApi(() => catalogApi.related(slug), [slug], initialRelated);
 
   const [variantId, setVariantId] = useState<number | null>(null);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<SectionId>('pd-about');
   const [showBuyBar, setShowBuyBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
 
   const data = product.data;
   const hasData = Boolean(data);
@@ -205,6 +208,25 @@ export default function ProductPage({ initialData, initialRelated, initialReview
       setActiveSection(hash as SectionId);
     }
   }, []);
+
+  // Close the option picker when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!optionsOpen) return;
+    const onPointerDown = (e: MouseEvent) => {
+      if (optionsRef.current && !optionsRef.current.contains(e.target as Node)) {
+        setOptionsOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOptionsOpen(false);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [optionsOpen]);
 
   // Compact buy bar once the main button has scrolled away; hidden over the footer
   useEffect(() => {
@@ -492,50 +514,111 @@ export default function ProductPage({ initialData, initialRelated, initialReview
 
           <div className={styles.purchase}>
             {data.hasVariants && (
-              <fieldset className={styles.options}>
-                <legend className={styles.optionsLegend}>انتخاب گزینه</legend>
-                <div
-                  className={styles.optionsGrid}
-                  role="radiogroup"
-                  aria-label="انتخاب گزینه محصول"
-                  onKeyDown={handleOptionKeys}
-                >
-                  {data.variants.map(option => {
-                    const selected = option.id === variant?.id;
-                    return (
-                      <button
-                        key={option.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        // Roving tab stop: Tab enters the group once, arrows move within it
-                        tabIndex={selected ? 0 : -1}
-                        data-variant-id={option.id}
-                        disabled={!option.inStock}
-                        className={`${styles.option} ${selected ? styles.optionSelected : ''}`}
-                        onClick={() => setVariantId(option.id)}
-                      >
-                        <span className={styles.optionCheck} aria-hidden="true">
-                          <Check size={12} strokeWidth={3.5} />
-                        </span>
-                        <span className={styles.optionLabel}>{option.label}</span>
-                        <span className={styles.optionPrice}>{toman(option.price)}</span>
-                        {option.inStock ? (
-                          option.originalPrice != null &&
-                          option.originalPrice > option.price && (
-                            <span className={styles.optionOld}>{faNumber(option.originalPrice)}</span>
-                          )
-                        ) : (
-                          <span className={styles.optionOut}>ناموجود</span>
-                        )}
-                        {option.discountPercent > 0 && option.inStock && (
-                          <span className={styles.optionDiscount}>٪{faNumber(option.discountPercent)}</span>
-                        )}
-                      </button>
-                    );
-                  })}
+              <div className={styles.options} ref={optionsRef}>
+                <div className={styles.optionsHead}>
+                  <span className={styles.optionsLegend}>انتخاب گزینه</span>
+                  <span className={styles.optionsCountBadge}>
+                    {faNumber(data.variants.length)} گزینه موجود
+                  </span>
                 </div>
-              </fieldset>
+
+                <button
+                  type="button"
+                  className={`${styles.optionTrigger} ${optionsOpen ? styles.optionTriggerOpen : ''}`}
+                  onClick={() => setOptionsOpen(open => !open)}
+                  aria-expanded={optionsOpen}
+                  aria-haspopup="radiogroup"
+                >
+                  <span className={styles.optionTriggerGlow} aria-hidden="true" />
+                  <span className={styles.optionTriggerIcon} aria-hidden="true">
+                    <Check size={14} strokeWidth={3.5} />
+                  </span>
+                  <span className={styles.optionTriggerMain}>
+                    <span className={styles.optionTriggerTop}>
+                      <span className={styles.optionTriggerLabel}>
+                        {variant ? variant.label : 'یک گزینه انتخاب کنید'}
+                      </span>
+                      {variant && variant.discountPercent > 0 && variant.inStock && (
+                        <span className={styles.optionDiscount}>٪{faNumber(variant.discountPercent)}</span>
+                      )}
+                    </span>
+                    {variant && (
+                      <span className={styles.optionTriggerMeta}>
+                        <span className={styles.optionTriggerPrice}>{toman(variant.price)}</span>
+                        {variant.inStock &&
+                          variant.originalPrice != null &&
+                          variant.originalPrice > variant.price && (
+                            <span className={styles.optionOld}>{faNumber(variant.originalPrice)}</span>
+                          )}
+                      </span>
+                    )}
+                  </span>
+                  <span className={styles.optionTriggerAction}>
+                    <span>{optionsOpen ? 'بستن' : 'تغییر گزینه'}</span>
+                    <span className={styles.optionTriggerChevron} aria-hidden="true">
+                      <ChevronDown size={15} />
+                    </span>
+                  </span>
+                </button>
+
+                <div
+                  className={`${styles.optionsCollapse} ${optionsOpen ? styles.optionsCollapseOpen : ''}`}
+                  aria-hidden={!optionsOpen}
+                >
+                  <div className={styles.optionsCollapseInner}>
+                    <div
+                      className={styles.optionsGrid}
+                      role="radiogroup"
+                      aria-label="انتخاب گزینه محصول"
+                      onKeyDown={handleOptionKeys}
+                    >
+                      {data.variants.map(option => {
+                        const selected = option.id === variant?.id;
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            // Roving tab stop: Tab enters the group once, arrows move within it
+                            tabIndex={optionsOpen ? (selected ? 0 : -1) : -1}
+                            data-variant-id={option.id}
+                            disabled={!option.inStock}
+                            className={`${styles.option} ${selected ? styles.optionSelected : ''}`}
+                            onClick={() => {
+                              setVariantId(option.id);
+                              setOptionsOpen(false);
+                            }}
+                          >
+                            <span className={styles.optionCheck} aria-hidden="true">
+                              <Check size={12} strokeWidth={3.5} />
+                            </span>
+                            <span className={styles.optionMain}>
+                              <span className={styles.optionLabel}>{option.label}</span>
+                              {option.discountPercent > 0 && option.inStock && (
+                                <span className={styles.optionDiscount}>٪{faNumber(option.discountPercent)}</span>
+                              )}
+                            </span>
+                            <span className={styles.optionPriceGroup}>
+                              {option.inStock ? (
+                                <>
+                                  {option.originalPrice != null &&
+                                    option.originalPrice > option.price && (
+                                      <span className={styles.optionOld}>{faNumber(option.originalPrice)}</span>
+                                    )}
+                                  <span className={styles.optionPrice}>{toman(option.price)}</span>
+                                </>
+                              ) : (
+                                <span className={styles.optionOut}>ناموجود</span>
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             <div className={styles.priceBlock}>
@@ -627,7 +710,6 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                   </span>
                   <span className={styles.perkText}>
                     <strong>{perk.title}</strong>
-                    {perk.description && <small>{perk.description}</small>}
                   </span>
                 </li>
               );
