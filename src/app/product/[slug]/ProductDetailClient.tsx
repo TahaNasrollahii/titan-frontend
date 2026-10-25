@@ -155,22 +155,13 @@ export default function ProductPage({ initialData, initialRelated, initialReview
 
   const currentImage = selectedImage || (data?.image ? mediaUrl(data.image) : fallbackImage);
 
-  // Highlight the section-nav item for the section in view
+  // Activate matching tab if the URL contains a section hash on mount
   useEffect(() => {
-    if (!hasData) return;
-    const elements = SECTIONS.map(s => document.getElementById(s.id)).filter((el): el is HTMLElement => !!el);
-    const observer = new IntersectionObserver(
-      entries => {
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActiveSection(visible[0].target.id as SectionId);
-      },
-      { rootMargin: '-25% 0px -65% 0px' },
-    );
-    elements.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [hasData]);
+    const hash = window.location.hash.replace(/^#/, '');
+    if (SECTIONS.some(s => s.id === hash)) {
+      setActiveSection(hash as SectionId);
+    }
+  }, []);
 
   // Compact buy bar once the main button has scrolled away; hidden over the footer
   useEffect(() => {
@@ -398,7 +389,8 @@ export default function ProductPage({ initialData, initialRelated, initialReview
               className={styles.ratingLink}
               onClick={e => {
                 e.preventDefault();
-                scrollToSection('pd-reviews');
+                setActiveSection('pd-reviews');
+                scrollToSection('pd-tabs');
               }}
             >
               {data.reviewCount > 0 ? (
@@ -573,97 +565,112 @@ export default function ProductPage({ initialData, initialRelated, initialReview
         </div>
       </section>
 
-      {/* ---------- Details: every section stays in the page, the nav just jumps ---------- */}
-      <nav className={styles.sectionNav} aria-label="بخش‌های صفحه محصول">
-        {SECTIONS.map(section => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            className={`${styles.sectionLink} ${activeSection === section.id ? styles.sectionLinkActive : ''}`}
-            aria-current={activeSection === section.id ? 'location' : undefined}
-            onClick={e => {
-              e.preventDefault();
-              setActiveSection(section.id);
-              scrollToSection(section.id);
-            }}
-          >
-            {section.label}
-            {section.id === 'pd-reviews' && <span className={styles.sectionCount}>{faNumber(data.reviewCount)}</span>}
-          </a>
-        ))}
-      </nav>
+      {/* ---------- Details: tab switcher + active tab panel ---------- */}
+      <div id="pd-tabs" className={styles.sectionNav} role="tablist" aria-label="بخش‌های صفحه محصول">
+        {SECTIONS.map(section => {
+          const isActive = activeSection === section.id;
+          return (
+            <button
+              key={section.id}
+              type="button"
+              role="tab"
+              id={`tab-${section.id}`}
+              aria-selected={isActive}
+              aria-controls={section.id}
+              className={`${styles.sectionLink} ${isActive ? styles.sectionLinkActive : ''}`}
+              onClick={() => setActiveSection(section.id)}
+            >
+              {section.label}
+              {section.id === 'pd-reviews' && <span className={styles.sectionCount}>{faNumber(data.reviewCount)}</span>}
+            </button>
+          );
+        })}
+      </div>
 
       <div className={styles.details}>
-        <section id="pd-about" className={styles.block} aria-labelledby="pd-about-title">
-          <h2 id="pd-about-title" className={styles.blockTitle}>
-            درباره {data.title}
-          </h2>
-          {paragraphs.length > 0 ? (
-            <div className={styles.prose}>
-              {paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-          ) : (
-            <p className={styles.prose}>
-              {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
-              پشتیبانی ۲۴ ساعته همراه شماست.
-            </p>
-          )}
-          {data.tags.length > 0 && (
-            <ul className={styles.tags} aria-label="ویژگی‌ها">
-              {data.tags.map(tag => (
-                <li key={tag} className={styles.tag}>
-                  <Check size={14} strokeWidth={3} aria-hidden="true" />
-                  {tag}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section id="pd-specs" className={styles.block} aria-labelledby="pd-specs-title">
-          <h2 id="pd-specs-title" className={styles.blockTitle}>
-            مشخصات
-          </h2>
-          <dl className={styles.specs}>
-            {specs.map(([label, value]) => (
-              <div key={label} className={styles.spec}>
-                <dt>{label}</dt>
-                <dd>{value}</dd>
+        {activeSection === 'pd-about' && (
+          <section id="pd-about" role="tabpanel" aria-labelledby="tab-pd-about" className={styles.block}>
+            <h2 id="pd-about-title" className={styles.blockTitle}>
+              درباره {data.title}
+            </h2>
+            {paragraphs.length > 0 ? (
+              <div className={styles.prose}>
+                {paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
-            ))}
-          </dl>
-        </section>
+            ) : (
+              <p className={styles.prose}>
+                {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
+                پشتیبانی ۲۴ ساعته همراه شماست.
+              </p>
+            )}
+            {data.tags.length > 0 && (
+              <ul className={styles.tags} aria-label="ویژگی‌ها">
+                {data.tags.map(tag => (
+                  <li key={tag} className={styles.tag}>
+                    <Check size={14} strokeWidth={3} aria-hidden="true" />
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
-        <section id="pd-delivery" className={styles.block} aria-labelledby="pd-delivery-title">
-          <h2 id="pd-delivery-title" className={styles.blockTitle}>
-            نحوه دریافت
-          </h2>
-          <ol className={styles.steps}>
-            {DELIVERY_STEPS[data.deliveryType].map((step, i) => {
-              const StepIcon = step.icon;
-              return (
-                <li key={step.title} className={styles.step}>
-                  <span className={styles.stepIcon} aria-hidden="true">
-                    <StepIcon size={20} />
-                    <span className={styles.stepNumber}>{faNumber(i + 1)}</span>
-                  </span>
-                  <strong>{step.title}</strong>
-                  <p>{step.text}</p>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
+        {activeSection === 'pd-specs' && (
+          <section id="pd-specs" role="tabpanel" aria-labelledby="tab-pd-specs" className={styles.block}>
+            <h2 id="pd-specs-title" className={styles.blockTitle}>
+              مشخصات
+            </h2>
+            <dl className={styles.specs}>
+              {specs.map(([label, value]) => (
+                <div key={label} className={styles.spec}>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+
+        {activeSection === 'pd-delivery' && (
+          <section id="pd-delivery" role="tabpanel" aria-labelledby="tab-pd-delivery" className={styles.block}>
+            <h2 id="pd-delivery-title" className={styles.blockTitle}>
+              نحوه دریافت
+            </h2>
+            <ol className={styles.steps}>
+              {DELIVERY_STEPS[data.deliveryType].map((step, i) => {
+                const StepIcon = step.icon;
+                return (
+                  <li key={step.title} className={styles.step}>
+                    <span className={styles.stepIcon} aria-hidden="true">
+                      <StepIcon size={20} />
+                      <span className={styles.stepNumber}>{faNumber(i + 1)}</span>
+                    </span>
+                    <strong>{step.title}</strong>
+                    <p>{step.text}</p>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        )}
 
         {/* Plain: the reviews UI brings its own cards */}
-        <section id="pd-reviews" className={`${styles.block} ${styles.blockPlain}`} aria-labelledby="pd-reviews-title">
-          <h2 id="pd-reviews-title" className={styles.blockTitle}>
-            نظرات کاربران
-          </h2>
-          <ReviewsSection product={data} onChanged={product.reload} initialData={initialReviews} />
-        </section>
+        {activeSection === 'pd-reviews' && (
+          <section
+            id="pd-reviews"
+            role="tabpanel"
+            aria-labelledby="tab-pd-reviews"
+            className={`${styles.block} ${styles.blockPlain}`}
+          >
+            <h2 id="pd-reviews-title" className={styles.blockTitle}>
+              نظرات کاربران
+            </h2>
+            <ReviewsSection product={data} onChanged={product.reload} initialData={initialReviews} />
+          </section>
+        )}
       </div>
 
       {(related.data?.length ?? 0) > 0 && (
