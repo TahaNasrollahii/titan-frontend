@@ -5,6 +5,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 import { Icon } from '@/components/Icons';
+import { OrderStatusTracker } from '@/components/orders/OrderStatusTracker';
 import { Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
 import { errorMessage } from '@/lib/api/client';
@@ -19,6 +20,7 @@ import { orderBadgeClass } from './shared';
 function OrderDetails({ order }: { order: Order }) {
   return (
     <div className={styles.orderDetailsWrapper}>
+      <OrderStatusTracker order={order} compact />
       <div className={styles.orderItemsList}>
         {order.items.map(item => {
           const ItemWrapper: React.ElementType = item.product ? Link : 'div';

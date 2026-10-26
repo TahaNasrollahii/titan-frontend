@@ -74,10 +74,10 @@ export const TOURNAMENT_STATUS_LABELS: Record<string, string> = {
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   pending_payment: 'در انتظار پرداخت',
-  paid: 'پرداخت شده',
-  processing: 'در حال ارسال',
-  completed: 'تکمیل شده',
-  cancelled: 'لغو شده',
+  paid: 'تایید شده',
+  processing: 'در حال انجام',
+  completed: 'انجام شده',
+  cancelled: 'کنسل شده',
   failed: 'پرداخت ناموفق',
   refunded: 'بازگشت وجه',
 };

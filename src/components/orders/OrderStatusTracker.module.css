@@ -1,0 +1,355 @@
+/* =============================================
+   ORDER STATUS TRACKER - 3-STEP PROGRESSION
+   ============================================= */
+
+.trackerCard {
+  background: linear-gradient(160deg, rgba(30, 10, 16, 0.7) 0%, rgba(18, 6, 10, 0.85) 100%);
+  border: 1px solid rgba(226, 69, 63, 0.15);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  border-radius: 22px;
+  padding: 24px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+.trackerCardCompact {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 16px;
+}
+
+.glowAmbient {
+  position: absolute;
+  top: -50px;
+  right: 15%;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(226, 69, 63, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(30px);
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.headerRowCompact {
+  margin-bottom: 16px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerTitleCompact {
+  font-size: 14px;
+}
+
+.statusDesc {
+  font-size: 13px;
+  color: var(--muted, #94a3b8);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Stepper Container */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 8px 12px;
+}
+
+.stepNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+  min-width: 90px;
+}
+
+.iconCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  background: #140a0e;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted, #64748b);
+}
+
+.iconCircleCompact {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+/* Completed Step */
+.stepCompleted .iconCircle {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #34d399;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Active Step */
+.stepActive .iconCircle {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #fbbf24;
+  color: #fff;
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.45);
+  animation: pulseRing 2s infinite ease-in-out;
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6), 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0), 0 0 28px rgba(245, 158, 11, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+}
+
+/* Pending Step */
+.stepPending .iconCircle {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--muted, #64748b);
+}
+
+/* Step Labels */
+.stepMeta {
+  margin-top: 10px;
+}
+
+.stepTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.stepTitleCompact {
+  font-size: 12px;
+}
+
+.stepSubtitle {
+  font-size: 11px;
+  color: var(--muted, #94a3b8);
+  margin: 0;
+  max-width: 140px;
+  line-height: 1.4;
+}
+
+.stepSubtitleCompact {
+  font-size: 10px;
+  max-width: 110px;
+}
+
+.stepPending .stepTitle {
+  color: var(--muted, #64748b);
+}
+
+.stepActive .stepTitle {
+  color: #fbbf24;
+}
+
+.stepCompleted .stepTitle {
+  color: #34d399;
+}
+
+/* Connecting Bar */
+.trackBar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  top: -18px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 6px;
+}
+
+.trackBarCompact {
+  top: -14px;
+  height: 3px;
+}
+
+.barFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 0 10px #10b981;
+}
+
+.barFillActive {
+  background: linear-gradient(90deg, #10b981 0%, #f59e0b 100%);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.barFillActive::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.8s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Cancelled Alert Box */
+.cancelledCard {
+  background: linear-gradient(135deg, rgba(226, 69, 63, 0.15) 0%, rgba(139, 0, 0, 0.2) 100%);
+  border: 1px solid rgba(226, 69, 63, 0.35);
+  border-radius: 18px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 10px 25px -5px rgba(226, 69, 63, 0.2);
+}
+
+.cancelledCardCompact {
+  padding: 14px 16px;
+}
+
+.cancelledInfo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cancelledIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(226, 69, 63, 0.2);
+  border: 1px solid rgba(226, 69, 63, 0.4);
+  color: #ff6b6b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.cancelledText h4 {
+  margin: 0 0 4px;
+  color: #ff8585;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cancelledText p {
+  margin: 0;
+  color: #e2e8f0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.cancelledAmount {
+  display: inline-block;
+  background: rgba(226, 69, 63, 0.25);
+  border: 1px solid rgba(226, 69, 63, 0.4);
+  color: #ffc9c9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.walletBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(226, 69, 63, 0.8) 0%, rgba(180, 40, 40, 0.9) 100%);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.walletBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(226, 69, 63, 0.4);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .trackerCard {
+    padding: 16px 12px;
+  }
+  .stepper {
+    padding: 4px 0;
+  }
+  .stepNode {
+    min-width: 68px;
+  }
+  .iconCircle {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+  .stepTitle {
+    font-size: 12px;
+  }
+  .stepSubtitle {
+    display: none;
+  }
+  .trackBar {
+    top: -14px;
+    margin: 0 2px;
+  }
+}

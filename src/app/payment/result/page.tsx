@@ -21,6 +21,9 @@ function nextStep(purpose: string | null, reference: string | null) {
     return { href: `/tournaments/${reference}`, label: 'مشاهده تورنمنت' };
   }
   if (purpose === 'wallet_topup') return { href: '/dashboard', label: 'رفتن به پیشخوان' };
+  if (reference && (reference.startsWith('TTN-') || purpose === 'order')) {
+    return { href: `/dashboard/orders/${reference}`, label: 'پیگیری وضعیت سفارش' };
+  }
   return { href: '/dashboard?tab=orders', label: 'مشاهده سفارش‌ها' };
 }
 

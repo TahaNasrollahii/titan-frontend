@@ -28,7 +28,7 @@ const KIND_ICONS: Record<Notification['kind'], string> = {
 function targetOf(notification: Notification): string | null {
   const { data } = notification;
   if (data.tournamentSlug) return `/tournaments/${data.tournamentSlug}`;
-  if (data.orderNumber) return '/dashboard?tab=orders';
+  if (data.orderNumber) return `/dashboard/orders/${data.orderNumber}`;
   if (data.teamId && notification.kind !== 'team_invite') return `/teams/${data.teamId}`;
   return null;
 }

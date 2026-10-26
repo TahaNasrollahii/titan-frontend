@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 import { Icon } from '@/components/Icons';
+import { OrderStatusTracker } from '@/components/orders/OrderStatusTracker';
 import { Loading } from '@/components/ui/State';
 import { ordersApi } from '@/lib/api/endpoints';
 import { faNumber, jalaliDateTime, ORDER_STATUS_LABELS, toman } from '@/lib/format';
@@ -70,6 +71,8 @@ export default function OrderDetailsPage() {
               {ORDER_STATUS_LABELS[order.status]}
             </span>
           </div>
+
+          <OrderStatusTracker order={order} />
 
           <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', marginBottom: '16px' }}>
             <div className={styles.statCard} style={{ cursor: 'auto', transform: 'none' }}>
