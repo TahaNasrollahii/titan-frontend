@@ -5,6 +5,7 @@ import {
   Check,
   ChevronDown,
   ChevronLeft,
+  ChevronRight,
   CreditCard,
   Flame,
   Gamepad2,
@@ -182,6 +183,68 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const [showBuyBar, setShowBuyBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
+
+  const relatedScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(true);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const isDraggingRelated = useRef(false);
+  const dragStartX = useRef(0);
+  const dragScrollLeft = useRef(0);
+  const dragMoved = useRef(false);
+
+  const checkRelatedScroll = () => {
+    const el = relatedScrollRef.current;
+    if (!el) return;
+    const scrollPos = Math.abs(el.scrollLeft);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    setCanScrollRight(scrollPos > 10);
+    setCanScrollLeft(scrollPos < maxScroll - 10);
+  };
+
+  useEffect(() => {
+    const el = relatedScrollRef.current;
+    if (!el) return;
+    checkRelatedScroll();
+    el.addEventListener('scroll', checkRelatedScroll, { passive: true });
+    window.addEventListener('resize', checkRelatedScroll);
+    return () => {
+      el.removeEventListener('scroll', checkRelatedScroll);
+      window.removeEventListener('resize', checkRelatedScroll);
+    };
+  }, [related.data]);
+
+  const scrollRelated = (direction: 'left' | 'right') => {
+    const el = relatedScrollRef.current;
+    if (!el) return;
+    const step = 460;
+    const delta = direction === 'left' ? -step : step;
+    el.scrollBy({ left: delta, behavior: 'smooth' });
+  };
+
+  const handleRelatedMouseDown = (e: React.MouseEvent) => {
+    const el = relatedScrollRef.current;
+    if (!el) return;
+    isDraggingRelated.current = true;
+    dragMoved.current = false;
+    dragStartX.current = e.pageX;
+    dragScrollLeft.current = el.scrollLeft;
+  };
+
+  const handleRelatedMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingRelated.current) return;
+    const el = relatedScrollRef.current;
+    if (!el) return;
+    const deltaX = e.pageX - dragStartX.current;
+    if (Math.abs(deltaX) > 4) {
+      dragMoved.current = true;
+      e.preventDefault();
+      el.scrollLeft = dragScrollLeft.current - deltaX;
+    }
+  };
+
+  const handleRelatedMouseUp = () => {
+    isDraggingRelated.current = false;
+  };
 
   const data = product.data;
   const hasData = Boolean(data);
@@ -836,51 +899,84 @@ export default function ProductPage({ initialData, initialRelated, initialReview
               مشاهده همه
             </Link>
           </div>
-          <div className={styles.relatedList}>
-            {related.data!.map(item => {
-              // No product image uploaded: show the game's mark (or Titan's) on its colour
-              const fallbackArt = (item.game && gameIconSrc(item.game.slug, item.game.iconImage)) || '/titan-logo.webp';
-              return (
-              <Link
-                key={item.id}
-                href={`/product/${item.slug}`}
-                className={styles.relatedCard}
-                style={{ '--card-accent': item.game?.accentColor || TITAN_RED } as React.CSSProperties}
-              >
-                <span className={styles.relatedArt}>
-                  {item.image ? (
-                    <Image
-                      src={mediaUrl(item.image)}
-                      alt={item.imageAlt || item.title}
-                      width={220}
-                      height={220}
-                      sizes="(max-width: 640px) 45vw, 220px"
-                      draggable={false}
-                      unoptimized={process.env.NODE_ENV !== 'production'}
-                    />
-                  ) : (
-                    <Image
-                      src={fallbackArt}
-                      alt=""
-                      width={96}
-                      height={96}
-                      sizes="96px"
-                      className={styles.relatedFallback}
-                      unoptimized={isLocalAsset(fallbackArt)}
-                    />
-                  )}
-                  {item.discountPercent > 0 && (
-                    <span className={styles.relatedDiscount}>٪{faNumber(item.discountPercent)}</span>
-                  )}
-                </span>
-                <span className={styles.relatedBody}>
-                  {item.game && <span className={styles.relatedGame}>{item.game.title}</span>}
-                  <span className={styles.relatedTitle}>{item.title}</span>
-                  <span className={styles.relatedPrice}>{productPrice(item)}</span>
-                </span>
-              </Link>
-              );
-            })}
+
+          <div className={styles.relatedWrapper}>
+            <button
+              type="button"
+              className={`${styles.relatedFloatBtn} ${styles.relatedFloatBtnRight} ${!canScrollRight ? styles.relatedFloatBtnHidden : ''}`}
+              onClick={() => scrollRelated('right')}
+              aria-label="محصولات قبلی"
+            >
+              <ChevronRight size={22} aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.relatedFloatBtn} ${styles.relatedFloatBtnLeft} ${!canScrollLeft ? styles.relatedFloatBtnHidden : ''}`}
+              onClick={() => scrollRelated('left')}
+              aria-label="محصولات بعدی"
+            >
+              <ChevronLeft size={22} aria-hidden="true" />
+            </button>
+
+            <div
+              ref={relatedScrollRef}
+              className={styles.relatedList}
+              onMouseDown={handleRelatedMouseDown}
+              onMouseMove={handleRelatedMouseMove}
+              onMouseUp={handleRelatedMouseUp}
+              onMouseLeave={handleRelatedMouseUp}
+            >
+              {related.data!.map(item => {
+                // No product image uploaded: show the game's mark (or Titan's) on its colour
+                const fallbackArt = (item.game && gameIconSrc(item.game.slug, item.game.iconImage)) || '/titan-logo.webp';
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/product/${item.slug}`}
+                    className={styles.relatedCard}
+                    onClick={(e) => {
+                      if (dragMoved.current) {
+                        e.preventDefault();
+                      }
+                    }}
+                    style={{ '--card-accent': item.game?.accentColor || TITAN_RED } as React.CSSProperties}
+                  >
+                    <span className={styles.relatedArt}>
+                      {item.image ? (
+                        <Image
+                          src={mediaUrl(item.image)}
+                          alt={item.imageAlt || item.title}
+                          width={220}
+                          height={220}
+                          sizes="220px"
+                          draggable={false}
+                          unoptimized={process.env.NODE_ENV !== 'production'}
+                        />
+                      ) : (
+                        <Image
+                          src={fallbackArt}
+                          alt=""
+                          width={96}
+                          height={96}
+                          sizes="96px"
+                          className={styles.relatedFallback}
+                          unoptimized={isLocalAsset(fallbackArt)}
+                        />
+                      )}
+                      {item.discountPercent > 0 && (
+                        <span className={styles.relatedDiscount}>٪{faNumber(item.discountPercent)}</span>
+                      )}
+                    </span>
+                    <span className={styles.relatedBody}>
+                      {item.game && <span className={styles.relatedGame}>{item.game.title}</span>}
+                      <span className={styles.relatedTitle}>{item.title}</span>
+                      <span className={styles.relatedPrice}>{productPrice(item)}</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
