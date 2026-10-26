@@ -1,7 +1,7 @@
 // Local copies of the API's game icons. The uploaded originals are ~1 MB, 1536px PNGs;
 // these are the same artwork at 192px (1-2 KB) and need no image-optimizer round trip.
 const LOCAL_GAME_ICONS: Record<string, string> = {
-  'call-of-duty': '/images/categories/callof.webp',
+  'call-of-duty': '/images/categories/callof-v2.webp',
   'clash-of-clans': '/images/categories/clash.webp',
   fortnite: '/images/categories/fortnite.webp',
   valorant: '/images/categories/valorant.webp',

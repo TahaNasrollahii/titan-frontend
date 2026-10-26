@@ -174,7 +174,7 @@ function replaceApexText(value: string): string {
   if (!value) return value;
   if (value.includes('apexlegends-background')) return '/images/games/callof-background.webp';
   if (value.includes('apexlegends-character') || value.includes('callof-character.webp')) return '/images/games/callof-character-v2.webp';
-  if (value.includes('categories/apex')) return '/images/categories/callof.webp';
+  if (value.includes('categories/apex') || value.includes('categories/callof.webp')) return '/images/categories/callof-v2.webp';
   if (value.includes('hero/characters/apexlegends') || value.includes('hero/characters/callof.webp')) return '/images/hero/characters/callof-v2.webp';
   return value
     .replace(/Apex\s+Predators/gi, 'Task Force 141')
@@ -207,7 +207,7 @@ const DEFAULT_COD_GAME = {
   slug: 'call-of-duty',
   title: 'کال آو دیوتی',
   titleEn: 'Call of Duty',
-  iconImage: '/images/categories/callof.webp',
+  iconImage: '/images/categories/callof-v2.webp',
   accentColor: '#f59e0b',
   accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
   description:
@@ -343,7 +343,7 @@ export function sanitizeApiPayload<T>(input: T): T {
         ...obj,
         title: 'کال آو دیوتی',
         titleEn: 'Call of Duty',
-        iconImage: '/images/categories/callof.webp',
+        iconImage: '/images/categories/callof-v2.webp',
         accentColor: obj.accentColor || '#f59e0b',
         backgroundImage: '/images/games/callof-background.webp',
         characterImage: '/images/games/callof-character-v2.webp',
@@ -389,7 +389,7 @@ export function sanitizeApiPayload<T>(input: T): T {
               slug: 'call-of-duty',
               title: 'کال آو دیوتی',
               titleEn: 'Call of Duty',
-              iconImage: '/images/categories/callof.webp',
+              iconImage: '/images/categories/callof-v2.webp',
               accentColor: '#f59e0b',
             }
           : obj.game,
