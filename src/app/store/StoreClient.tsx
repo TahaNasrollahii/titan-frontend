@@ -22,6 +22,26 @@ const PRICE_LIMIT = 10_000_000;
 const PAGE_SIZE = 12;
 const PREMIUM_SLUG = 'premium';
 
+const PRICE_PRESETS: { label: string; value: number }[] = [
+  { label: 'تا ۳۰۰ هزار', value: 300_000 },
+  { label: 'تا ۷۰۰ هزار', value: 700_000 },
+  { label: 'تا ۲ میلیون', value: 2_000_000 },
+  { label: 'نامحدود', value: PRICE_LIMIT },
+];
+
+function formatCompactPrice(value: number): string {
+  if (value >= PRICE_LIMIT) return 'نامحدود';
+  if (value <= 0) return '۰ تومان';
+  if (value >= 1_000_000) {
+    const m = Number((value / 1_000_000).toFixed(1));
+    return `${faNumber(m)} میلیون`;
+  }
+  if (value >= 1_000) {
+    return `${faNumber(Math.round(value / 1_000))} هزار`;
+  }
+  return toman(value);
+}
+
 const SORTS: { label: string; ordering: string }[] = [
   { label: 'محبوبیت', ordering: '-popularity' },
   { label: 'قیمت: کم به زیاد', ordering: 'price' },
@@ -679,6 +699,20 @@ function StorePageContent({
   const [priceOpen, setPriceOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(SORTS[0]);
+  const controlsRef = useRef<HTMLDivElement>(null);
+
+  // Close filter/sort popovers when clicking or tapping outside.
+  useEffect(() => {
+    if (!priceOpen && !sortOpen) return;
+    const handleOutside = (e: PointerEvent) => {
+      if (controlsRef.current && !controlsRef.current.contains(e.target as Node)) {
+        setPriceOpen(false);
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handleOutside);
+    return () => document.removeEventListener('pointerdown', handleOutside);
+  }, [priceOpen, sortOpen]);
 
   // Debounce the price slider so dragging doesn't fire a request per pixel.
   useEffect(() => {
@@ -857,78 +891,157 @@ function StorePageContent({
             </Link>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <div className="store-sort">
+        <div className="store-controls" ref={controlsRef}>
+          <div className="store-sort store-price-filter">
             <button
-              className="store-sort-btn"
+              type="button"
+              className={`store-sort-btn ${priceOpen || priceMax < PRICE_LIMIT ? 'active' : ''}`}
               onClick={() => {
                 setPriceOpen(!priceOpen);
                 setSortOpen(false);
               }}
             >
-              <Icon name="sliders" /> قیمت تا: {priceMax >= PRICE_LIMIT ? 'نامحدود' : toman(priceMax)}{' '}
-              <Icon name="chev" className="sort-chev" />
+              <span className="store-sort-btn-main">
+                <Icon name="sliders" />
+                <span className="store-sort-btn-txt">
+                  قیمت تا: <strong>{formatCompactPrice(priceMax)}</strong>
+                </span>
+              </span>
+              <Icon name="chev" className={`sort-chev ${priceOpen ? 'open' : ''}`} />
             </button>
             {priceOpen && (
-              <div className="store-sort-drop" style={{ minWidth: '260px', padding: '24px 16px', zIndex: 101 }}>
-                <div className="sf-range-wrap" dir="ltr">
-                  <input
-                    type="range"
-                    min="0"
-                    max={PRICE_LIMIT}
-                    step="100000"
-                    value={priceMax}
-                    onChange={e => setPriceMax(Number(e.target.value))}
-                    className="sf-range"
-                  />
-                  <div className="sf-range-track" style={{ width: `${(priceMax / PRICE_LIMIT) * 100}%` }}></div>
-                  <div
-                    className="sf-range-pill"
-                    style={{
-                      left: `${(priceMax / PRICE_LIMIT) * 100}%`,
-                      transform: `translate(-${(priceMax / PRICE_LIMIT) * 100}%, -50%)`,
-                    }}
-                    dir="rtl"
-                  >
+              <div className="store-sort-drop store-price-drop" dir="rtl">
+                <div className="sf-head">
+                  <span className="sf-title">
+                    <Icon name="sliders" /> سقف بودجه
+                  </span>
+                  {priceMax < PRICE_LIMIT ? (
+                    <button
+                      type="button"
+                      className="sf-reset-btn"
+                      onClick={() => {
+                        setPriceMax(PRICE_LIMIT);
+                        setAppliedPriceMax(PRICE_LIMIT);
+                      }}
+                    >
+                      حذف فیلتر
+                    </button>
+                  ) : (
+                    <span className="sf-unlimited-badge">همه قیمت‌ها</span>
+                  )}
+                </div>
+
+                <div className="sf-input-box">
+                  <span className="sf-input-label">حداکثر قیمت</span>
+                  <div className="sf-input-field-wrap">
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={faNumber(priceMax)}
                       onChange={e => {
-                        const value = Number(toEnglishDigits(e.target.value).replace(/\D/g, ''));
+                        const raw = toEnglishDigits(e.target.value).replace(/\D/g, '');
+                        const value = raw ? Number(raw) : 0;
                         setPriceMax(Math.min(value, PRICE_LIMIT));
                       }}
                       className="sf-pill-input"
                       dir="ltr"
+                      aria-label="حداکثر قیمت به تومان"
                     />
-                    <span>تومان</span>
+                    <span className="sf-unit">تومان</span>
                   </div>
                 </div>
+
+                <div className="sf-range-section">
+                  <div className="sf-range-wrap" dir="ltr">
+                    <input
+                      type="range"
+                      min="0"
+                      max={PRICE_LIMIT}
+                      step="100000"
+                      value={priceMax}
+                      onChange={e => setPriceMax(Number(e.target.value))}
+                      className="sf-range"
+                      aria-label="اسلایدر سقف قیمت"
+                    />
+                    <div className="sf-range-track" style={{ width: `${(priceMax / PRICE_LIMIT) * 100}%` }} />
+                    <div
+                      className="sf-range-thumb"
+                      style={{ left: `${(priceMax / PRICE_LIMIT) * 100}%` }}
+                    />
+                  </div>
+                  <div className="sf-scale" dir="ltr">
+                    <span>۰ تومان</span>
+                    <span>۱۰ میلیون تومان</span>
+                  </div>
+                </div>
+
+                <div className="sf-presets">
+                  {PRICE_PRESETS.map(preset => {
+                    const isPresetActive =
+                      preset.value === PRICE_LIMIT
+                        ? priceMax >= PRICE_LIMIT
+                        : priceMax === preset.value;
+                    return (
+                      <button
+                        key={preset.value}
+                        type="button"
+                        className={`sf-preset-chip ${isPresetActive ? 'active' : ''}`}
+                        onClick={() => {
+                          setPriceMax(preset.value);
+                          setAppliedPriceMax(preset.value);
+                        }}
+                      >
+                        {preset.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className="sf-apply-btn"
+                  onClick={() => {
+                    setAppliedPriceMax(priceMax);
+                    setPriceOpen(false);
+                  }}
+                >
+                  اعمال فیلتر قیمت
+                </button>
               </div>
             )}
           </div>
 
           <div className="store-sort">
             <button
-              className="store-sort-btn"
+              type="button"
+              className={`store-sort-btn ${sortOpen ? 'active' : ''}`}
               onClick={() => {
                 setSortOpen(!sortOpen);
                 setPriceOpen(false);
               }}
             >
-              <Icon name="arrow" className="sort-icon-rev" /> مرتب‌سازی: {sort.label}{' '}
-              <Icon name="chev" className="sort-chev" />
+              <span className="store-sort-btn-main">
+                <Icon name="arrow" className="sort-icon-rev" />
+                <span className="store-sort-btn-txt">
+                  مرتب‌سازی: <strong>{sort.label}</strong>
+                </span>
+              </span>
+              <Icon name="chev" className={`sort-chev ${sortOpen ? 'open' : ''}`} />
             </button>
             {sortOpen && (
-              <div className="store-sort-drop">
+              <div className="store-sort-drop store-sort-menu" dir="rtl">
                 {SORTS.map(option => (
                   <button
                     key={option.ordering}
+                    type="button"
+                    className={sort.ordering === option.ordering ? 'active' : ''}
                     onClick={() => {
                       setSort(option);
                       setSortOpen(false);
                     }}
                   >
-                    {option.label}
+                    <span>{option.label}</span>
+                    {sort.ordering === option.ordering && <span className="sort-active-dot" />}
                   </button>
                 ))}
               </div>
