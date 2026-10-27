@@ -5,13 +5,13 @@ import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 export const FALLBACK_FEATURED_GAMES: Record<string, Game> = {
   'call-of-duty': {
     slug: 'call-of-duty',
-    title: 'کال آو دیوتی',
-    titleEn: 'Call of Duty',
+    title: 'کال آو دیوتی موبایل',
+    titleEn: 'Call of Duty Mobile',
     iconImage: null,
     accentColor: '#f59e0b',
     accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
     description:
-      'خرید قانونی و فوری سی‌پی کال آو دیوتی (CP) و بتل‌پس برای Call of Duty Mobile و Warzone با تحویل آنی.',
+      'خرید قانونی و فوری سی‌پی کال آو دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
     genre: 'شوتر اول‌شخص',
     kind: 'game',
     coverImage: '/images/games/callof-background.webp',
@@ -62,6 +62,8 @@ export function normalizeFeaturedGames(rawGames: Game[] | null | undefined): Gam
     if (g.slug === 'call-of-duty') {
       result.push({
         ...g,
+        title: 'کال آو دیوتی موبایل',
+        titleEn: 'Call of Duty Mobile',
         isFeatured: true,
         backgroundImage: '/images/games/callof-background.webp',
         characterImage: '/images/games/callof-character-v2.webp',
@@ -182,6 +184,8 @@ export async function getGameBySlug(slug: string): Promise<Game | null> {
       const fb = FALLBACK_FEATURED_GAMES[slug];
       return {
         ...game,
+        title: fb.title,
+        titleEn: fb.titleEn,
         backgroundImage: fb.backgroundImage,
         characterImage: fb.characterImage,
         coverImage: game.coverImage || fb.coverImage,

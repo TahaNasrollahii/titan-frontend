@@ -744,16 +744,20 @@ function StorePageContent({
     for (const g of raw) {
       if (g.slug === 'apex-legends') {
         if (!hasCod) {
-          list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی', iconImage: null });
+          list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی موبایل', iconImage: null });
         }
+        continue;
+      }
+      if (g.slug === 'call-of-duty') {
+        list.push({ ...g, title: 'کال آو دیوتی موبایل' });
         continue;
       }
       list.push(g);
     }
     if (!list.some(g => g.slug === 'call-of-duty')) {
       const premIdx = list.findIndex(g => g.slug === 'premium');
-      if (premIdx >= 0) list.splice(premIdx, 0, { slug: 'call-of-duty', title: 'کال آو دیوتی', iconImage: null });
-      else list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی', iconImage: null });
+      if (premIdx >= 0) list.splice(premIdx, 0, { slug: 'call-of-duty', title: 'کال آو دیوتی موبایل', iconImage: null });
+      else list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی موبایل', iconImage: null });
     }
     if (!list.some(g => g.slug === 'clash-of-clans')) {
       const premIdx = list.findIndex(g => g.slug === 'premium');

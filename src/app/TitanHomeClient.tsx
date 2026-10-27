@@ -121,14 +121,23 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
         mapped.push({
           ...cat,
           slug: 'call-of-duty',
-          title: 'کال آو دیوتی',
-          titleEn: 'Call of Duty',
-          description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی.',
+          title: 'کال آو دیوتی موبایل',
+          titleEn: 'Call of Duty Mobile',
+          description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی موبایل.',
           backgroundImage: '/images/games/callof-background.webp',
           characterImage: '/images/games/callof-character-v2.webp',
           coverImage: '/images/games/callof-background.webp',
         });
       }
+      continue;
+    }
+    if (cat.slug === 'call-of-duty') {
+      mapped.push({
+        ...cat,
+        title: 'کال آو دیوتی موبایل',
+        titleEn: 'Call of Duty Mobile',
+        description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی موبایل.',
+      });
       continue;
     }
     mapped.push(cat);
@@ -138,9 +147,9 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
     const codEntry: any = {
       id: 901,
       slug: 'call-of-duty',
-      title: 'کال آو دیوتی',
-      titleEn: 'Call of Duty',
-      description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی.',
+      title: 'کال آو دیوتی موبایل',
+      titleEn: 'Call of Duty Mobile',
+      description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی موبایل.',
       backgroundImage: '/images/games/callof-background.webp',
       characterImage: '/images/games/callof-character-v2.webp',
       coverImage: '/images/games/callof-background.webp',
@@ -181,8 +190,8 @@ function buildSceneData(data: Home) {
     ) {
       seenGames.add('call-of-duty');
       return {
-        title: 'سی‌پی کال آو دیوتی',
-        desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی برای خرید بتل‌پس و گردونه!',
+        title: 'سی‌پی کال آو دیوتی موبایل',
+        desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی موبایل برای خرید بتل‌پس و گردونه!',
         descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
         watch: 0,
         eta: 0,
@@ -239,7 +248,7 @@ function buildSceneData(data: Home) {
         t: g.title,
         d: g.slug === 'fortnite' ? 'فعال سازی تمامی آیتم های بازی فورتنایت ویباکس و کروپک و ...' :
            g.slug === 'valorant' ? 'فعال سازی تمامی آیتم های بازی ولورانت پوینت و ...' :
-           g.slug === 'call-of-duty' ? 'فعال سازی تمامی آیتم های بازی کال آو دیوتی سی پی و بتل پس و ...' :
+           g.slug === 'call-of-duty' ? 'فعال سازی تمامی آیتم های بازی کال آو دیوتی موبایل سی پی و بتل پس و ...' :
            g.slug === 'clash-of-clans' ? 'فعال سازی تمامی آیتم های بازی کلش آف کلنز جم و گلد پس و ...' :
            g.slug === 'premium' ? g.description :
            `فعال سازی تمامی آیتم های بازی ${g.title} و ...`,
