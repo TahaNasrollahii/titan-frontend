@@ -53,7 +53,23 @@ function useRotation(length: number, intervalMs: number) {
 }
 
 function promoHref(promo: Promo) {
-  if (promo.product === 'apex-coins') return '/store/call-of-duty';
+  if (
+    promo.product === 'apex-coins' ||
+    promo.product === 'cod-points' ||
+    /call of duty|کال آو دیوتی|سی‌پی|\bcp\b/i.test(promo.title)
+  ) {
+    return '/product/cod-points';
+  }
+  if (
+    promo.product === 'fortnite-crew' ||
+    promo.product === 'fortnite-crew-pack' ||
+    /کروپک|crew/i.test(promo.title)
+  ) {
+    return '/product/fortnite-crew';
+  }
+  if (promo.product === 'valorant-points') {
+    return '/product/valorant-points-375';
+  }
   if (promo.product) return `/product/${promo.product}`;
   if (promo.tournament) return `/tournaments/${promo.tournament}`;
   return promo.link || '/store';

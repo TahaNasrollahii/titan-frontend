@@ -188,7 +188,8 @@ function buildSceneData(data: Home) {
         eta: 0,
         art: '/images/hero/characters/callof-v2.webp',
         artClass: HERO_ART['call-of-duty'],
-        href: '/store/call-of-duty',
+        href: '/product/cod-points',
+        price: '۹۵,۰۰۰ تومان',
       };
     }
     seenGames.add(effectiveSlug);
@@ -196,15 +197,21 @@ function buildSceneData(data: Home) {
     let title = t.game.title;
     let desc = `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`;
     let descMobile = desc;
+    let href = `/tournaments/${t.slug}`;
+    let price = '۲۹۵,۰۰۰ تومان';
 
     if (effectiveSlug === 'fortnite') {
       title = 'کروپک فورتنایت';
       desc = 'شامل ۱۰۰۰ ویباکس، اسکین انحصاری ماهانه، بتل پس فصل جاری و مزایای ویژه دیگر!';
       descMobile = '۱۰۰۰ ویباکس + اسکین انحصاری!';
+      href = '/product/fortnite-crew';
+      price = '۵۹۹,۰۰۰ تومان';
     } else if (effectiveSlug === 'valorant') {
       title = 'ولورانت پوینت';
       desc = 'فعال‌سازی قانونی انواع بسته‌های ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!';
       descMobile = 'فعال‌سازی قانونی انواع بسته‌های VP';
+      href = '/product/valorant-points-375';
+      price = '۱۸۰,۰۰۰ تومان';
     }
 
     return {
@@ -217,7 +224,8 @@ function buildSceneData(data: Home) {
         ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
         : (HERO_ART[effectiveSlug] ? `/images/hero/characters/${HERO_ART[effectiveSlug]}.webp` : t.coverImage),
       artClass: HERO_ART[effectiveSlug] ?? '',
-      href: `/tournaments/${t.slug}`,
+      href,
+      price,
     };
   });
   const categories = normalizeHomeCategories(data.categories);
@@ -392,6 +400,8 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
         $('#heroTitle').textContent = s.title;
         $('#heroDesc').innerHTML = `<span class="desc-pc">${s.desc}</span><span class="desc-mobile">${s.descMobile || s.desc}</span>`;
         $('#heroLink').setAttribute('href', s.href);
+        const priceEl = $('#heroPrice');
+        if (priceEl && s.price) priceEl.textContent = s.price;
       }
       function goTo(i, first) {
         cur = i; elapsed = 0;
@@ -729,9 +739,9 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
             <h2 id="heroTitle">${esc(firstSlide.title)}</h2>
             <p id="heroDesc"><span class="desc-pc">${firstSlide.desc}</span><span class="desc-mobile">${firstSlide.descMobile || firstSlide.desc}</span></p>
             <div class="hero-foot">
-              <a href="${esc(firstSlide.href)}" id="heroLink" class="pill-white"><span>مشاهده محصول</span></a>
+              <a href="${esc(firstSlide.href)}" id="heroLink" data-nav class="pill-white"><span>مشاهده محصول</span></a>
               <div class="hero-price">
-                <span class="new-price">۲۹۵,۰۰۰ تومان</span>
+                <span class="new-price" id="heroPrice">${esc((firstSlide as any).price || '۵۹۹,۰۰۰ تومان')}</span>
               </div>
             </div>
           </div>
