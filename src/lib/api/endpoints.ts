@@ -98,9 +98,9 @@ export const meApi = {
 
 export const gameAccountsApi = {
   list: () => api<GameAccount[]>('me/game-accounts/'),
-  create: (data: { title: string; username: string; password: string; game?: string | null }) =>
+  create: (data: { title: string; username: string; password?: string; game?: string | null; credentialType?: string }) =>
     api<GameAccount>('me/game-accounts/', { method: 'POST', body: data }),
-  update: (id: number, data: { title?: string; username?: string; password?: string }) =>
+  update: (id: number, data: { title?: string; username?: string; password?: string; game?: string | null; credentialType?: string }) =>
     api<GameAccount>(`me/game-accounts/${id}/`, { method: 'PATCH', body: data }),
   remove: (id: number) => api<void>(`me/game-accounts/${id}/`, { method: 'DELETE' }),
 };

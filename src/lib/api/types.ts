@@ -116,6 +116,7 @@ export interface GameMini {
   titleEn: string;
   iconImage: string | null;
   accentColor: string;
+  credentialType?: CredentialType;
 }
 
 export interface Game extends GameMini {
@@ -164,6 +165,7 @@ export interface ProductCategory {
 
 export type ProductBadge = 'bestseller' | 'discount' | 'new';
 export type DeliveryType = 'code' | 'account' | 'manual';
+export type CredentialType = 'email_password' | 'supercell_id' | 'player_id';
 
 export interface ProductVariant {
   id: number;
@@ -192,6 +194,7 @@ export interface ProductSummary {
   inStock: boolean;
   vendor: string;
   deliveryType: DeliveryType;
+  credentialType?: CredentialType;
   game: GameMini | null;
   category: ProductCategory;
   platforms: string[];
@@ -255,6 +258,7 @@ export interface CartItem {
     image: string | null;
     deliveryType: DeliveryType;
     requiresGameAccount: boolean;
+    credentialType?: CredentialType;
     inStock: boolean;
   };
   variant: { id: number; label: string } | null;
@@ -271,6 +275,7 @@ export interface Cart {
   discount: number;
   total: number;
   requiresGameAccount: boolean;
+  credentialTypes?: CredentialType[];
 }
 
 export type PaymentMethod = 'wallet' | 'gateway';

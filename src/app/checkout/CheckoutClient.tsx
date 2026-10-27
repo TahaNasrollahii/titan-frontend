@@ -25,45 +25,148 @@ function Checkout() {
 
   const [chosenAccountId, setSelectedAccountId] = useState<number | null>(null);
   const [addingRequested, setIsAddingNew] = useState(false);
-  const [newAccount, setNewAccount] = useState({ title: '', username: '', password: '' });
+  const [newAccount, setNewAccount] = useState({ title: '', username: '', password: '', supercellId: '' });
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gateway');
   const [submitting, setSubmitting] = useState(false);
 
-  // Preselect the first saved account; show the form straight away when there is none.
-  const selectedAccountId = chosenAccountId ?? accounts.data?.[0]?.id ?? null;
-  const isAddingNew = addingRequested || accounts.data?.length === 0;
+  const credentialTypes = cart.credentialTypes ?? [];
+  const hasSupercell =
+    credentialTypes.includes('supercell_id') ||
+    cart.lines.some(l => l.requiresGameAccount && l.productSlug.startsWith('clash-of-clans'));
+  const hasPlayerId = credentialTypes.includes('player_id');
+  const hasEmailPassword =
+    credentialTypes.includes('email_password') ||
+    cart.lines.some(
+      l =>
+        l.requiresGameAccount &&
+        l.credentialType !== 'supercell_id' &&
+        l.credentialType !== 'player_id' &&
+        !l.productSlug.startsWith('clash-of-clans'),
+    );
+
+  const isSupercellOnly = cart.requiresGameAccount && hasSupercell && !hasEmailPassword;
+  const isPlayerIdOnly = cart.requiresGameAccount && hasPlayerId && !hasEmailPassword && !hasSupercell;
+  const isIdOnly = isSupercellOnly || isPlayerIdOnly;
+
+  // Filter saved accounts to match what this checkout requires.
+  const matchingAccounts = (accounts.data ?? []).filter(acc => {
+    if (isSupercellOnly) {
+      return !acc.hasPassword || acc.game === 'clash-of-clans' || acc.title.includes('سوپرسل');
+    }
+    if (isPlayerIdOnly) {
+      return !acc.hasPassword;
+    }
+    return acc.hasPassword;
+  });
+
+  // Preselect the first matching saved account; show the form straight away when there is none.
+  const selectedAccountId =
+    chosenAccountId && matchingAccounts.some(a => a.id === chosenAccountId)
+      ? chosenAccountId
+      : (matchingAccounts[0]?.id ?? null);
+  const isAddingNew = addingRequested || matchingAccounts.length === 0;
 
   const balance = wallet.data?.balance ?? 0;
   const walletCovers = balance >= cart.total;
 
-  const saveAccount = async () => {
-    const { title, username, password } = newAccount;
-    if (!title.trim() || !username.trim() || !password.trim()) {
-      addToast({ title: 'خطا', text: 'لطفاً تمام فیلدهای اکانت را پر کنید', icon: 'accounts', tone: 'warning' });
-      return;
-    }
-    try {
-      const created = await gameAccountsApi.create({ title, username, password });
+  const createAccountFromForm = async (): Promise<number | null> => {
+    if (isSupercellOnly) {
+      const supercellId = newAccount.username.trim();
+      if (!supercellId) {
+        addToast({ title: 'خطا', text: 'لطفاً آی‌دی سوپرسل خود را وارد کنید', icon: 'accounts', tone: 'warning' });
+        return null;
+      }
+      const created = await gameAccountsApi.create({
+        title: 'آی‌دی سوپرسل',
+        username: supercellId,
+        password: '',
+        game: 'clash-of-clans',
+        credentialType: 'supercell_id',
+      });
       accounts.setData(current => [...(current ?? []), created]);
       setSelectedAccountId(created.id);
       setIsAddingNew(false);
-      setNewAccount({ title: '', username: '', password: '' });
-      addToast({ title: 'موفق', text: 'اکانت با موفقیت ذخیره شد', icon: 'accounts', tone: 'success' });
+      setNewAccount({ title: '', username: '', password: '', supercellId: '' });
+      return created.id;
+    }
+
+    if (isPlayerIdOnly) {
+      const playerId = newAccount.username.trim();
+      if (!playerId) {
+        addToast({ title: 'خطا', text: 'لطفاً آی‌دی بازی خود را وارد کنید', icon: 'accounts', tone: 'warning' });
+        return null;
+      }
+      const created = await gameAccountsApi.create({
+        title: 'آی‌دی بازیکن',
+        username: playerId,
+        password: '',
+        credentialType: 'player_id',
+      });
+      accounts.setData(current => [...(current ?? []), created]);
+      setSelectedAccountId(created.id);
+      setIsAddingNew(false);
+      setNewAccount({ title: '', username: '', password: '', supercellId: '' });
+      return created.id;
+    }
+
+    const email = newAccount.username.trim();
+    const password = newAccount.password.trim();
+    const extraSupercell = newAccount.supercellId.trim();
+    if (!email || !password) {
+      addToast({ title: 'خطا', text: 'لطفاً ایمیل و رمز عبور اکانت خود را وارد کنید', icon: 'accounts', tone: 'warning' });
+      return null;
+    }
+    if (hasSupercell && !extraSupercell) {
+      addToast({ title: 'خطا', text: 'لطفاً آی‌دی سوپرسل را نیز برای محصول کلش آو کلنز وارد کنید', icon: 'accounts', tone: 'warning' });
+      return null;
+    }
+    const finalUsername = hasSupercell && extraSupercell ? `${email} | Supercell ID: ${extraSupercell}` : email;
+    const finalTitle = newAccount.title.trim() || (hasSupercell ? 'اکانت بازی + آی‌دی سوپرسل' : 'اکانت بازی');
+    const created = await gameAccountsApi.create({
+      title: finalTitle,
+      username: finalUsername,
+      password,
+      credentialType: 'email_password',
+    });
+    accounts.setData(current => [...(current ?? []), created]);
+    setSelectedAccountId(created.id);
+    setIsAddingNew(false);
+    setNewAccount({ title: '', username: '', password: '', supercellId: '' });
+    return created.id;
+  };
+
+  const saveAccount = async () => {
+    try {
+      const createdId = await createAccountFromForm();
+      if (createdId) {
+        addToast({ title: 'موفق', text: 'اطلاعات اکانت با موفقیت ثبت شد', icon: 'accounts', tone: 'success' });
+      }
     } catch (error) {
       addToast({ title: 'خطا', text: errorMessage(error), icon: 'accounts', tone: 'error' });
     }
   };
 
   const pay = async () => {
-    if (cart.requiresGameAccount && !selectedAccountId) {
-      addToast({ title: 'خطا', text: 'لطفاً یک اکانت بازی برای دریافت سفارش انتخاب کنید', icon: 'accounts', tone: 'warning' });
+    let targetAccountId = selectedAccountId;
+    if (cart.requiresGameAccount && (isAddingNew || !targetAccountId)) {
+      try {
+        const createdId = await createAccountFromForm();
+        if (!createdId) return;
+        targetAccountId = createdId;
+      } catch (error) {
+        addToast({ title: 'خطا', text: errorMessage(error), icon: 'accounts', tone: 'error' });
+        return;
+      }
+    }
+    if (cart.requiresGameAccount && !targetAccountId) {
+      addToast({ title: 'خطا', text: 'لطفاً اطلاعات اکانت را برای دریافت سفارش وارد کنید', icon: 'accounts', tone: 'warning' });
       return;
     }
     setSubmitting(true);
     try {
       const { order, paymentUrl } = await ordersApi.checkout(
         paymentMethod,
-        cart.requiresGameAccount ? selectedAccountId : null,
+        cart.requiresGameAccount ? targetAccountId : null,
       );
       if (paymentUrl) {
         if (paymentUrl.includes('Authority=FAKE-') || paymentUrl.includes('status=paid')) {
@@ -123,18 +226,19 @@ function Checkout() {
                 <div className="chk-sec-icon">
                   <Icon name="user" />
                 </div>
-                <h2>اطلاعات اکانت بازی</h2>
+                <h2>{isSupercellOnly ? 'آی‌دی سوپرسل (کلش آو کلنز)' : 'اطلاعات اکانت بازی'}</h2>
               </div>
               <p className="chk-sec-desc">
-                محصولات خریداری شده مستقیماً روی اکانت شما فعال می‌شوند. لطفاً اکانت مورد نظر را انتخاب کرده یا اکانت
-                جدیدی اضافه کنید. رمز عبور به‌صورت رمزنگاری‌شده نگهداری می‌شود.
+                {isSupercellOnly
+                  ? 'برای فعال‌سازی محصولات کلش آو کلنز، فقط وارد کردن «آی‌دی سوپرسل (Supercell ID)» کافی است و نیازی به ایمیل و رمز عبور نیست.'
+                  : 'محصولات خریداری شده مستقیماً روی اکانت شما فعال می‌شوند. لطفاً ایمیل و رمز عبور اکانت خود را وارد کنید. رمز عبور به‌صورت رمزنگاری‌شده نگهداری می‌شود.'}
               </p>
 
               {accounts.loading ? (
                 <Loading compact />
               ) : !isAddingNew ? (
                 <div className="accounts-list">
-                  {(accounts.data ?? []).map(account => (
+                  {matchingAccounts.map(account => (
                     <div
                       key={account.id}
                       className={`account-card ${selectedAccountId === account.id ? 'selected' : ''}`}
@@ -145,30 +249,44 @@ function Checkout() {
                       </div>
                       <div className="acc-info">
                         <h4>{account.title}</h4>
-                        <span>Username: {account.username}</span>
+                        <span>{isIdOnly || !account.hasPassword ? `آی‌دی سوپرسل: ${account.username}` : `Email: ${account.username}`}</span>
                       </div>
                     </div>
                   ))}
                   <button className="add-acc-btn" onClick={() => setIsAddingNew(true)}>
-                    <Icon name="plus" /> افزودن اکانت جدید
+                    <Icon name="plus" /> {isSupercellOnly ? 'وارد کردن آی‌دی سوپرسل جدید' : 'افزودن اکانت جدید'}
                   </button>
+                </div>
+              ) : isSupercellOnly || isPlayerIdOnly ? (
+                <div className="new-account-form">
+                  <div className="form-group">
+                    <label>{isSupercellOnly ? 'آی‌دی سوپرسل (Supercell ID)' : 'آی‌دی بازیکن (Player ID)'}</label>
+                    <input
+                      type="text"
+                      value={newAccount.username}
+                      onChange={e => setNewAccount({ ...newAccount, username: e.target.value })}
+                      placeholder={isSupercellOnly ? 'مثال: #2PP یا آی‌دی سوپرسل خود را وارد کنید' : 'آی‌دی بازیکن خود را وارد کنید'}
+                      dir="ltr"
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button className="chk-btn primary" onClick={saveAccount}>
+                      ثبت و انتخاب
+                    </button>
+                    {matchingAccounts.length > 0 && (
+                      <button className="chk-btn secondary" onClick={() => setIsAddingNew(false)}>
+                        انصراف
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="new-account-form">
-                  <div className="form-group">
-                    <label>عنوان اکانت (مثلاً اکانت اصلی)</label>
-                    <input
-                      type="text"
-                      value={newAccount.title}
-                      onChange={e => setNewAccount({ ...newAccount, title: e.target.value })}
-                      placeholder="اکانت استیم / اپیک گیمز..."
-                    />
-                  </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label>نام کاربری (Username / Email)</label>
+                      <label>ایمیل اکانت (Email)</label>
                       <input
-                        type="text"
+                        type="email"
                         value={newAccount.username}
                         onChange={e => setNewAccount({ ...newAccount, username: e.target.value })}
                         placeholder="username@email.com"
@@ -186,11 +304,23 @@ function Checkout() {
                       />
                     </div>
                   </div>
+                  {hasSupercell && (
+                    <div className="form-group">
+                      <label>آی‌دی سوپرسل (برای محصول کلش آو کلنز موجود در سبد خرید)</label>
+                      <input
+                        type="text"
+                        value={newAccount.supercellId}
+                        onChange={e => setNewAccount({ ...newAccount, supercellId: e.target.value })}
+                        placeholder="مثال: #2PP یا آی‌دی سوپرسل"
+                        dir="ltr"
+                      />
+                    </div>
+                  )}
                   <div className="form-actions">
                     <button className="chk-btn primary" onClick={saveAccount}>
                       ذخیره و انتخاب
                     </button>
-                    {(accounts.data?.length ?? 0) > 0 && (
+                    {matchingAccounts.length > 0 && (
                       <button className="chk-btn secondary" onClick={() => setIsAddingNew(false)}>
                         انصراف
                       </button>

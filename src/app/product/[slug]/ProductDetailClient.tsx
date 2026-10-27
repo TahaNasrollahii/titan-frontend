@@ -392,6 +392,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
         price: data.price,
         originalPrice: data.originalPrice,
         requiresGameAccount: data.requiresGameAccount,
+        credentialType: data.credentialType,
       },
       variant,
       quantity,
@@ -721,7 +722,9 @@ export default function ProductPage({ initialData, initialRelated, initialReview
             {data.requiresGameAccount && (
               <p className={styles.note}>
                 <Info size={16} aria-hidden="true" />
-                این محصول روی اکانت بازی شما شارژ می‌شود؛ اکانت را هنگام تسویه حساب انتخاب می‌کنید.
+                {data.credentialType === 'supercell_id' || data.game?.slug === 'clash-of-clans'
+                  ? 'برای فعال‌سازی این محصول فقط به «آی‌دی سوپرسل (Supercell ID)» شما نیاز است که در مرحله تسویه حساب از شما دریافت می‌شود.'
+                  : 'برای فعال‌سازی این محصول روی اکانت شما، «ایمیل و رمز عبور» اکانت در مرحله تسویه حساب از شما دریافت می‌شود.'}
               </p>
             )}
 

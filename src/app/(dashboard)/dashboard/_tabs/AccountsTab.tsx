@@ -126,7 +126,9 @@ export function AccountsTab() {
             <div className={styles.itemDetails}>
               <h4>{account.title}</h4>
               <p>
-                نام کاربری: {account.username} • رمز عبور: {account.hasPassword ? '••••••••' : 'ثبت نشده'}
+                {account.hasPassword
+                  ? `ایمیل / نام کاربری: ${account.username} • رمز عبور: ••••••••`
+                  : `آی‌دی سوپرسل / شناسه: ${account.username}`}
               </p>
             </div>
           </div>

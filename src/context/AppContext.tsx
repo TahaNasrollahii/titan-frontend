@@ -4,7 +4,7 @@ import React, { createContext, ReactNode, useCallback, useContext, useEffect, us
 
 import { errorMessage } from '@/lib/api/client';
 import { cartApi, notificationsApi } from '@/lib/api/endpoints';
-import type { Cart } from '@/lib/api/types';
+import type { Cart, CredentialType } from '@/lib/api/types';
 
 import { useAuth } from './AuthContext';
 
@@ -52,6 +52,7 @@ export interface CartLine {
   quantity: number;
   lineTotal: number;
   requiresGameAccount: boolean;
+  credentialType: CredentialType;
 }
 
 export interface CartView {
@@ -61,6 +62,7 @@ export interface CartView {
   discount: number;
   total: number;
   requiresGameAccount: boolean;
+  credentialTypes: CredentialType[];
 }
 
 /** What the UI passes to ``addToCart``; the price fields are only used to display a guest cart. */
@@ -72,44 +74,68 @@ export interface AddToCartInput {
     price: number | null;
     originalPrice: number | null;
     requiresGameAccount?: boolean;
+    credentialType?: CredentialType;
   };
   variant?: { id: number; label: string; price: number; originalPrice: number | null } | null;
   quantity?: number;
 }
 
-type GuestLine = Omit<CartLine, 'key' | 'itemId' | 'lineTotal'>;
+type GuestLine = Omit<CartLine, 'key' | 'itemId' | 'lineTotal' | 'credentialType'> & {
+  credentialType?: CredentialType;
+};
 
 const lineKey = (slug: string, variantId: number | null) => `${slug}:${variantId ?? '-'}`;
 
+function resolveLineCredentialType(slug: string, explicit?: CredentialType): CredentialType {
+  if (explicit) return explicit;
+  if (slug.startsWith('clash-of-clans')) return 'supercell_id';
+  return 'email_password';
+}
+
+function collectCredentialTypes(lines: CartLine[], serverTypes?: CredentialType[]): CredentialType[] {
+  if (serverTypes && serverTypes.length > 0) return serverTypes;
+  const types: CredentialType[] = [];
+  for (const line of lines) {
+    if (line.requiresGameAccount && !types.includes(line.credentialType)) {
+      types.push(line.credentialType);
+    }
+  }
+  return types;
+}
+
 function viewFromServer(cart: Cart): CartView {
+  const lines: CartLine[] = cart.items.map(item => ({
+    key: lineKey(item.product.slug, item.variant?.id ?? null),
+    itemId: item.id,
+    productSlug: item.product.slug,
+    variantId: item.variant?.id ?? null,
+    title: item.product.title,
+    variantLabel: item.variant?.label ?? null,
+    image: item.product.image,
+    unitPrice: item.unitPrice,
+    unitOriginalPrice: item.unitOriginalPrice,
+    quantity: item.quantity,
+    lineTotal: item.lineTotal,
+    requiresGameAccount: item.product.requiresGameAccount,
+    credentialType: resolveLineCredentialType(item.product.slug, item.product.credentialType),
+  }));
   return {
-    lines: cart.items.map(item => ({
-      key: lineKey(item.product.slug, item.variant?.id ?? null),
-      itemId: item.id,
-      productSlug: item.product.slug,
-      variantId: item.variant?.id ?? null,
-      title: item.product.title,
-      variantLabel: item.variant?.label ?? null,
-      image: item.product.image,
-      unitPrice: item.unitPrice,
-      unitOriginalPrice: item.unitOriginalPrice,
-      quantity: item.quantity,
-      lineTotal: item.lineTotal,
-      requiresGameAccount: item.product.requiresGameAccount,
-    })),
+    lines,
     count: cart.count,
     subtotal: cart.subtotal,
     discount: cart.discount,
     total: cart.total,
     requiresGameAccount: cart.requiresGameAccount,
+    credentialTypes: collectCredentialTypes(lines, cart.credentialTypes),
   };
 }
 
 function viewFromGuest(lines: GuestLine[]): CartView {
-  const view = lines.map(line => ({
+  const view: CartLine[] = lines.map(line => ({
     ...line,
     key: lineKey(line.productSlug, line.variantId),
     lineTotal: line.unitPrice * line.quantity,
+    credentialType: resolveLineCredentialType(line.productSlug, line.credentialType),
   }));
   const total = view.reduce((sum, line) => sum + line.lineTotal, 0);
   const subtotal = view.reduce((sum, line) => sum + line.unitOriginalPrice * line.quantity, 0);
@@ -120,6 +146,7 @@ function viewFromGuest(lines: GuestLine[]): CartView {
     discount: subtotal - total,
     total,
     requiresGameAccount: view.some(line => line.requiresGameAccount),
+    credentialTypes: collectCredentialTypes(view),
   };
 }
 
@@ -284,6 +311,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
               unitOriginalPrice: (variant ? variant.originalPrice : product.originalPrice) ?? unitPrice,
               quantity,
               requiresGameAccount: Boolean(product.requiresGameAccount),
+              credentialType: resolveLineCredentialType(product.slug, product.credentialType),
             });
           }
           writeGuestCart(lines);
