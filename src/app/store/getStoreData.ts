@@ -199,7 +199,10 @@ export async function getStorePromos(placement: 'store_discount' | 'store_bestse
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
-    return sanitizeApiPayload(await res.json());
+    const list = sanitizeApiPayload(await res.json()) as Promo[];
+    return Array.isArray(list)
+      ? list.filter(p => !/elden\s*crown/i.test(p.title ?? '') && p.product !== 'elden-crown-deluxe')
+      : null;
   } catch {
     return null;
   }

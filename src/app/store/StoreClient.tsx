@@ -647,7 +647,15 @@ function StorePageContent({
 
   const activeGame = initialGame !== undefined ? initialGame : (searchParams.get('game') ?? '');
   const games = useApi(() => catalogApi.games({ is_featured: true }), [], initialGames ?? undefined);
-  const discountPromos = useApi(() => contentApi.promos('store_discount'), [], initialDiscountPromos ?? undefined);
+  const discountPromos = useApi(
+    () =>
+      contentApi
+        .promos('store_discount')
+        .then(list => list.filter(p => !/elden\s*crown/i.test(p.title ?? '') && p.product !== 'elden-crown-deluxe')),
+    [],
+    initialDiscountPromos?.filter(p => !/elden\s*crown/i.test(p.title ?? '') && p.product !== 'elden-crown-deluxe') ??
+      undefined,
+  );
   const bestsellerPromos = useApi(() => contentApi.promos('store_bestseller'), [], initialBestsellerPromos ?? undefined);
 
   const [priceMax, setPriceMax] = useState(PRICE_LIMIT);
