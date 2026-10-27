@@ -253,7 +253,7 @@ function buildSceneData(data: Home) {
       };
     }),
     stats: data.myStats,
-    announcements: data.announcements,
+    announcements: [],
   };
 }
 
@@ -377,13 +377,6 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
         { n: 'Leyla', seed: 47, unread: true }
       ];
       const GAMES_LIVE = ['Valorant', 'Rocket League', 'Counter-Strike 2', 'Dota 2'];
-
-      /* =====================================================
-         Toasts & Layout (Handled by React Context & Layout)
-         ===================================================== */
-      const toast = (window as any).titanToast || (() => { });
-      const liveToast = toast;
-
 
       /* =====================================================
          Hero
@@ -642,17 +635,6 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
          Right rail (friends + presence)
          ===================================================== */
       const tip = f => `${f.n} · ${f.s === 'game' ? 'در بازی — ' + f.g : f.s === 'online' ? 'آنلاین' : 'آفلاین'}`;
-
-      (function announcements() {
-        const list = window.__TITAN_DATA.announcements;
-        if (!list.length) return;
-        let n = 0;
-        setTimeout(function again() {
-          // Skip while the tab is in the background: a stale announcement is no use later.
-          if (!document.hidden) liveToast(list[n++ % list.length]);
-          setTimeout(again, rand(24000, 36000));
-        }, 6500);
-      })();
 
       /* =====================================================
          Cursor spotlight, parallax and the main animation loop

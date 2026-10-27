@@ -570,23 +570,9 @@ function setStatus(i, s) {
   setTimeout(() => {
     const i = Math.floor(Math.random() * FRIENDS.length);
     const next = pickOne(['online', 'away', 'game'].filter(s => s !== FRIENDS[i].s));
-    const f = setStatus(i, next);
-    if (next === 'game' && Math.random() < .7) liveToast({ title: f.n, text: `started playing ${f.g}`, icon: 'game' });
-    else if (next === 'online' && Math.random() < .5) liveToast({ title: f.n, text: 'is online', icon: 'users' });
+    setStatus(i, next);
     presenceLoop();
   }, rand(7000, 11000));
-})();
-(function announcements() {
-  const list = [
-    { title: 'Valorant Titan Cup', text: 'Registration closes in 10 minutes', icon: 'trophy' },
-    { title: 'Flash sale', text: 'Titan Pro Headset — 20% off for the next hour', icon: 'bag' },
-    { title: 'Rocket Series', text: 'Round 2 bracket is live', icon: 'trophy' }
-  ];
-  let n = 0;
-  setTimeout(function again() {
-    liveToast(list[n++ % list.length]);
-    setTimeout(again, rand(24000, 36000));
-  }, 6500);
 })();
 
 /* =====================================================

@@ -353,11 +353,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [isAuthenticated]);
 
-  // Legacy hook used by the home-page prototype script.
-  useEffect(() => {
-    (window as unknown as { titanToast?: typeof addToast }).titanToast = addToast;
-  }, [addToast]);
-
   const value = useMemo<AppContextType>(
     () => ({
       cart,
