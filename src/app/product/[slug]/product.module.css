@@ -193,6 +193,8 @@
   position: absolute;
   inset: 12% 11% 13%;
   display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
 }
 
@@ -1716,6 +1718,7 @@
   --card-accent: var(--red);
   flex: 0 0 215px;
   width: 215px;
+  height: 326px;
   scroll-snap-align: start;
   scroll-snap-stop: normal;
   display: flex;
@@ -1737,9 +1740,15 @@
 
 .relatedArt {
   position: relative;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1 / 1;
+  flex: 0 0 215px;
+  width: 100%;
+  height: 215px;
+  min-height: 215px;
+  max-height: 215px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--muted);
   background:
     radial-gradient(80% 70% at 50% 35%, color-mix(in srgb, var(--card-accent) 40%, transparent) 0%, transparent 75%),
@@ -1747,9 +1756,15 @@
 }
 
 .relatedArt img {
-  width: 86%;
-  height: 86%;
+  position: absolute;
+  inset: 0;
+  width: 86% !important;
+  height: 86% !important;
+  max-width: 86%;
+  max-height: 86%;
+  margin: auto;
   object-fit: contain;
+  object-position: center bottom;
   transition: transform 0.35s var(--ease-out);
 }
 
@@ -1758,8 +1773,11 @@
 }
 
 .relatedArt .relatedFallback {
-  width: 42%;
-  height: auto;
+  width: 42% !important;
+  height: 42% !important;
+  max-width: 42%;
+  max-height: 42%;
+  object-position: center;
   opacity: 0.55;
 }
 
@@ -1767,6 +1785,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 2;
   padding: 3px 9px;
   border-radius: 999px;
   font-size: 11px;
@@ -1776,6 +1795,8 @@
 }
 
 .relatedBody {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1783,14 +1804,22 @@
 }
 
 .relatedGame {
+  height: 1.4em;
+  min-height: 1.4em;
+  line-height: 1.4;
   font-size: 11px;
   font-weight: 700;
   color: color-mix(in srgb, var(--card-accent) 60%, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .relatedTitle {
   display: -webkit-box;
+  height: 2.9em;
   min-height: 2.9em;
+  max-height: 2.9em;
   overflow: hidden;
   font-size: 13.5px;
   font-weight: 800;
@@ -1801,8 +1830,11 @@
 }
 
 .relatedPrice {
+  margin-top: auto;
   font-size: 13px;
   font-weight: 800;
+  line-height: 1.4;
+  white-space: nowrap;
   color: #ffd166;
 }
 
@@ -2193,6 +2225,14 @@
   .relatedCard {
     flex: 0 0 165px;
     width: 165px;
+    height: 276px;
+  }
+
+  .relatedArt {
+    flex: 0 0 165px;
+    height: 165px;
+    min-height: 165px;
+    max-height: 165px;
   }
 
   .block {

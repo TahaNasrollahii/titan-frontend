@@ -985,7 +985,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                       )}
                     </span>
                     <span className={styles.relatedBody}>
-                      {item.game && <span className={styles.relatedGame}>{item.game.title}</span>}
+                      <span className={styles.relatedGame}>{item.game?.title || item.category?.name || '\u00A0'}</span>
                       <span className={styles.relatedTitle}>{item.title}</span>
                       <span className={styles.relatedPrice}>{productPrice(item)}</span>
                     </span>
