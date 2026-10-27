@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Icon } from '@/components/Icons';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { API_URL, errorMessage } from '@/lib/api/client';
 import { meApi, walletApi } from '@/lib/api/endpoints';
 import { faNumber, ORDER_STATUS_LABELS, timeAgo, toEnglishDigits, TOURNAMENT_STATUS_LABELS } from '@/lib/format';
@@ -17,10 +18,12 @@ import { orderBadgeClass } from './shared';
 
 const TOPUP_PRESETS = [100_000, 500_000, 1_000_000];
 
-function TopupForm({ onClose }: { onClose: () => void }) {
+function TopupForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => Promise<void> }) {
   const { addToast } = useAppContext();
   const [amount, setAmount] = useState('');
   const [busy, setBusy] = useState(false);
+
+  const formattedAmount = amount ? Number(amount).toLocaleString('en-US') : '';
 
   const submit = async (value: number) => {
     setBusy(true);
@@ -38,9 +41,9 @@ function TopupForm({ onClose }: { onClose: () => void }) {
         } catch {
           // ignore
         }
+        await onSuccess();
         addToast({ title: 'کیف پول با موفقیت شارژ شد', icon: 'dashboard', tone: 'success' });
         onClose();
-        window.location.reload();
         return;
       }
       await redirectToGateway(paymentUrl, addToast);
@@ -65,9 +68,9 @@ function TopupForm({ onClose }: { onClose: () => void }) {
         <input
           className={styles.input}
           inputMode="numeric"
-          value={amount}
+          value={formattedAmount}
           onChange={e => setAmount(toEnglishDigits(e.target.value).replace(/\D/g, ''))}
-          placeholder="مثلاً 250000"
+          placeholder="مثلاً 250,000"
           dir="ltr"
         />
       </div>
@@ -84,6 +87,7 @@ function TopupForm({ onClose }: { onClose: () => void }) {
 }
 
 export function OverviewTab() {
+  const { refreshUser } = useAuth();
   const dashboard = useApi(meApi.dashboard);
   const [toppingUp, setToppingUp] = useState(false);
 
@@ -128,7 +132,14 @@ export function OverviewTab() {
         </div>
       </section>
 
-      {toppingUp && <TopupForm onClose={() => setToppingUp(false)} />}
+      {toppingUp && (
+        <TopupForm
+          onClose={() => setToppingUp(false)}
+          onSuccess={async () => {
+            await Promise.all([dashboard.reload(), refreshUser()]);
+          }}
+        />
+      )}
 
       <div className={styles.grid2Col}>
         <div className={styles.panel}>

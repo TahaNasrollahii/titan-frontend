@@ -15,24 +15,21 @@ const TOKENS_KEY = 'titan.tokens';
 const AUTH_EVENT = 'titan:auth-changed';
 
 // ------------------------------------------------------------------ token storage
-// In-memory access token storage prevents XSS script access to tokens
-let memoryAccessToken: string | null = null;
+let memoryTokens: AuthTokens | null = null;
 
 export function getTokens(): AuthTokens | null {
-  if (memoryAccessToken) {
-    return { access: memoryAccessToken, refresh: '' };
+  if (memoryTokens?.access) {
+    return memoryTokens;
   }
   if (typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(TOKENS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as AuthTokens;
-      memoryAccessToken = parsed.access || null;
-      // Immediately purge refresh token from localStorage if present (migrating to HttpOnly cookie)
-      if (parsed.refresh) {
-        window.localStorage.removeItem(TOKENS_KEY);
+      if (parsed && parsed.access) {
+        memoryTokens = { access: parsed.access, refresh: parsed.refresh ?? '' };
+        return memoryTokens;
       }
-      return memoryAccessToken ? { access: memoryAccessToken, refresh: '' } : null;
     }
   } catch {
     return null;
@@ -41,10 +38,25 @@ export function getTokens(): AuthTokens | null {
 }
 
 export function setTokens(tokens: AuthTokens | null): void {
-  memoryAccessToken = tokens?.access ?? null;
+  if (tokens?.access) {
+    const prevRefresh = memoryTokens?.refresh || '';
+    memoryTokens = {
+      access: tokens.access,
+      refresh: tokens.refresh || prevRefresh,
+    };
+  } else {
+    memoryTokens = null;
+  }
   if (typeof window !== 'undefined') {
-    // Only keep access token in memory. Clear refresh token from localStorage.
-    window.localStorage.removeItem(TOKENS_KEY);
+    try {
+      if (memoryTokens) {
+        window.localStorage.setItem(TOKENS_KEY, JSON.stringify(memoryTokens));
+      } else {
+        window.localStorage.removeItem(TOKENS_KEY);
+      }
+    } catch {
+      // ignore storage quota errors
+    }
     window.dispatchEvent(new Event(AUTH_EVENT));
   }
 }
@@ -107,10 +119,11 @@ function buildUrl(path: string, query?: Query): string {
 
 let refreshInFlight: Promise<boolean> | null = null;
 
-/** Exchange the HttpOnly cookie (or fallback body refresh) for a new access token. Concurrent callers share one request. */
+/** Exchange the stored refresh token (or HttpOnly cookie) for a new access token. Concurrent callers share one request. */
 export function refreshTokens(): Promise<boolean> {
   refreshInFlight ??= (async () => {
     try {
+      const currentRefresh = getTokens()?.refresh || '';
       const response = await fetch(buildUrl('auth/token/refresh/'), {
         method: 'POST',
         headers: {
@@ -118,14 +131,17 @@ export function refreshTokens(): Promise<boolean> {
           'X-Requested-With': 'XMLHttpRequest',
         },
         credentials: 'include',
-        body: JSON.stringify({}),
+        body: JSON.stringify(currentRefresh ? { refresh: currentRefresh } : {}),
       });
       if (!response.ok) {
         setTokens(null);
         return false;
       }
       const data = (await response.json()) as AuthTokens;
-      setTokens(data);
+      setTokens({
+        access: data.access,
+        refresh: data.refresh || currentRefresh,
+      });
       return true;
     } catch {
       return false;
