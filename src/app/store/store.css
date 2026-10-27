@@ -953,6 +953,10 @@
   -webkit-backdrop-filter: blur(20px) saturate(1.25);
   border: 1px solid rgba(255, 255, 255, .1);
   box-shadow: 0 12px 28px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .1);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
   direction: rtl;
   text-align: right;
 }
@@ -1048,6 +1052,9 @@
 }
 
 .card .title {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   font-size: 15.5px;
   font-weight: 800;
   line-height: 1.35;
@@ -1061,7 +1068,18 @@
   direction: rtl;
 }
 
+.card .title a {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .card .priceRow {
+  width: 100%;
+  min-width: 0;
   margin: 0;
   display: flex;
   align-items: baseline;
@@ -1104,6 +1122,7 @@
 
 /* دکمه‌ها: پنل موقع هاور باز می‌شود و دکمه‌ها در جای خودشان ظاهر می‌شوند */
 .card .reveal {
+  width: 100%;
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows .4s cubic-bezier(.2, .8, .2, 1);
