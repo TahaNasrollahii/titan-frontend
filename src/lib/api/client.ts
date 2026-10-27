@@ -183,8 +183,8 @@ function replaceApexText(value: string): string {
     .replace(/OctaneRush/gi, 'PriceCaptain')
     .replace(/Apex\s+Legends/gi, 'Call of Duty')
     .replace(/Apex\s+Coins/gi, 'COD Points')
-    .replace(/باندل ویژه\s+Apex/gi, 'باندل ویژه Call of Duty')
-    .replace(/شامل اسکین اپیک و ۱۰۰۰ کوین/g, 'شامل اسکین اپراتور و ۱,۱۰۰ سی‌پی')
+    .replace(/باندل ویژه\s+(?:Apex|Call of Duty)/gi, 'CP کال آو دیوتی')
+    .replace(/شامل اسکین (?:اپیک و ۱۰۰۰ کوین|اپراتور و ۱,۱۰۰ سی‌پی)/g, 'شارژ فوری و قانونی سی‌پی روی اکانت اکتیویژن')
     .replace(/ایپکس\s*لجندز|اپکس\s*لجندز/g, 'کال آو دیوتی')
     .replace(/ایپکس\s*کوین|اپکس\s*کوین/g, 'سی‌پی کال آو دیوتی')
     .replace(/ایپکس|اپکس/g, 'کال آو دیوتی')
@@ -369,13 +369,19 @@ export function sanitizeApiPayload<T>(input: T): T {
       } as unknown as T;
     }
 
-    // Promo with apex-coins
-    if ('placement' in obj && (obj.product === 'apex-coins' || /apex|ایپکس|اپکس/i.test(String(obj.title ?? '')))) {
+    // Promo with apex-coins or cod-points bestseller banner
+    if (
+      'placement' in obj &&
+      (obj.product === 'apex-coins' ||
+        obj.product === 'cod-points' ||
+        /apex|ایپکس|اپکس|باندل ویژه Call of Duty/i.test(String(obj.title ?? '')))
+    ) {
       return {
         ...obj,
-        title: 'باندل ویژه Call of Duty',
-        subtitle: 'شامل اسکین اپراتور و ۱,۱۰۰ سی‌پی',
-        image: '/images/games/callof-character-v2.webp',
+        title: 'CP کال آو دیوتی',
+        subtitle: 'شارژ فوری و قانونی سی‌پی روی اکانت اکتیویژن',
+        price: 95000,
+        image: '/images/products/Molten-Gold-Lightning-King.webp',
         backgroundImage: '/images/games/callof-background.webp',
         product: 'cod-points',
       } as unknown as T;
