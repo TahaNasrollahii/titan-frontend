@@ -256,6 +256,11 @@ export default function ProductPage({ initialData, initialRelated, initialReview
 
   const fallbackImage = useMemo(() => {
     if (!data) return '/images/banner-hero.webp';
+    if (data.slug === 'cod-points') return '/images/products/Molten-Gold-Lightning-King.webp';
+    if (data.slug === 'clash-of-clans-gems') return '/images/products/goblin_transparent.webp';
+    if (data.slug === 'clash-of-clans-gold-pass') return '/images/products/Barbarian-Pig-Rider-Reward-Rush.webp';
+    if (data.slug === 'fortnite-starter-pack') return '/images/products/Starter-Pack-Fortnite.webp';
+    if (data.slug === 'fortnite-final-reckoning-pack') return '/images/products/fortnite-final-reckoning-pack.webp';
     if (data.slug?.includes('valorant') || data.game?.slug === 'valorant') {
       return '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp';
     }
@@ -264,12 +269,20 @@ export default function ProductPage({ initialData, initialRelated, initialReview
 
   const currentImage = selectedImage || (data?.image ? mediaUrl(data.image) : fallbackImage);
 
-  // Activate matching tab if the URL contains a section hash on mount
+  // Activate matching tab if the URL contains a section hash on mount or hash change
   useEffect(() => {
-    const hash = window.location.hash.replace(/^#/, '');
-    if (SECTIONS.some(s => s.id === hash)) {
-      setActiveSection(hash as SectionId);
-    }
+    const syncFromHash = () => {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (SECTIONS.some(s => s.id === hash)) {
+        setActiveSection(hash as SectionId);
+      }
+    };
+    const frameId = window.requestAnimationFrame(syncFromHash);
+    window.addEventListener('hashchange', syncFromHash);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('hashchange', syncFromHash);
+    };
   }, []);
 
   // Close the option picker when clicking outside or pressing Escape

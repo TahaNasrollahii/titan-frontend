@@ -37,11 +37,14 @@ const FALLBACK_GAMES = [
 // Used only when the API is unreachable; every slug here must exist on the live site
 const FALLBACK_PRODUCTS = [
   'fortnite-vbucks',
+  'fortnite-starter-pack',
+  'fortnite-final-reckoning-pack',
   'fortnite-crew',
   'fortnite-battle-pass',
   'valorant-points-1700',
   'cod-points',
   'clash-of-clans-gems',
+  'clash-of-clans-gold-pass',
   'pubg-uc',
   'ea-fc-points',
   'steam-wallet',

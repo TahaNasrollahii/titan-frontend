@@ -296,12 +296,17 @@ function ProductCard({
   const defaultImage =
     (product.slug.includes('elden') ? TEMPLATE_CHARACTER : null) ||
     (product.image && !product.image.endsWith('.jpg') ? mediaUrl(product.image) : null) ||
+    (product.slug === 'cod-points' ? '/images/products/Molten-Gold-Lightning-King.webp' : null) ||
+    (product.slug === 'clash-of-clans-gems' ? '/images/products/goblin_transparent.webp' : null) ||
+    (product.slug === 'clash-of-clans-gold-pass' ? '/images/products/Barbarian-Pig-Rider-Reward-Rush.webp' : null) ||
+    (product.slug === 'fortnite-starter-pack' ? '/images/products/Starter-Pack-Fortnite.webp' : null) ||
+    (product.slug === 'fortnite-final-reckoning-pack' ? '/images/products/fortnite-final-reckoning-pack.webp' : null) ||
     (gameSlug === 'fortnite'
       ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
       : gameSlug === 'call-of-duty'
-        ? '/images/games/callof-character-v2.webp'
+        ? '/images/products/Molten-Gold-Lightning-King.webp'
         : gameSlug === 'clash-of-clans'
-          ? '/images/games/clash-character.webp'
+          ? '/images/products/goblin_transparent.webp'
           : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
             ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'
             : product.slug.includes('v-bucks') || product.slug.includes('vbucks')

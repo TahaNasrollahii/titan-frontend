@@ -250,7 +250,9 @@ export const DEFAULT_CLASH_PRODUCT_SUMMARY: ProductSummary = {
   slug: 'clash-of-clans-gems',
   title: 'جم کلش آف کلنز (Gems)',
   subtitle: 'شارژ فوری و قانونی اکانت Supercell ID',
-  image: '/images/games/clash-character.webp',
+  image: '/images/products/goblin_transparent.webp',
+  imageAlt: 'خرید جم کلش آف کلنز (Clash of Clans Gems) با تحویل آنی',
+  sku: 'TITAN-COC-GEMS',
   price: 95000,
   originalPrice: 110000,
   discountPercent: 14,
@@ -277,9 +279,13 @@ export const DEFAULT_CLASH_PRODUCT_SUMMARY: ProductSummary = {
 
 export const DEFAULT_CLASH_PRODUCT_DETAIL: Product = {
   ...DEFAULT_CLASH_PRODUCT_SUMMARY,
+  mpn: 'COC-GEMS',
+  metaTitle: 'خرید جم کلش آف کلنز (Clash of Clans Gems) | شارژ فوری و ارزان',
+  metaDescription:
+    'خرید قانونی و ارزان جم کلش آف کلنز (Clash of Clans Gems) در بسته‌های ۸۰ تا ۲۵۰۰ تایی با شارژ فوری روی اکانت Supercell ID، بدون خطر بن و پشتیبانی ۲۴ ساعته.',
   platforms: [{ slug: 'mobile', name: 'Mobile', icon: null }],
   description:
-    'خرید قانونی و فوری جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) با تحویل آنی روی اکانت Supercell ID شما.',
+    'جم کلش آف کلنز (Clash of Clans Gems) اصلی‌ترین ارز درون‌برنامه‌ای بازی استراتژیک سوپرسل است که برای استخدام کارگران بیشتر (Builder\'s Hut)، خرید تجهیزات اپیک هیروها (Hero Equipment)، اسکین‌های قهرمانان، کتاب‌های جادویی تاجر (Trader) و تکمیل سریع ارتقای ساختمان‌ها و نیروها استفاده می‌شود. تمامی بسته‌های جم در فروشگاه تایتان به صورت کاملاً قانونی و از طریق درگاه رسمی Supercell روی اکانت شما شارژ می‌شوند.',
   deliveryInfo: 'تحویل آنی — شارژ مستقیم اکانت',
   requiresGameAccount: true,
   stock: null,
@@ -308,8 +314,8 @@ export function sanitizeApiPayload<T>(input: T): T {
     const mapped = input.map(item => sanitizeApiPayload(item));
     if (isGameArray(mapped)) {
       const seen = new Set<string>();
-      const deduped: any[] = [];
-      for (const g of mapped as any[]) {
+      const deduped: Record<string, unknown>[] = [];
+      for (const g of mapped as Record<string, unknown>[]) {
         if (!g || typeof g.slug !== 'string' || seen.has(g.slug)) continue;
         seen.add(g.slug);
         deduped.push(g);
@@ -329,7 +335,7 @@ export function sanitizeApiPayload<T>(input: T): T {
     return mapped as unknown as T;
   }
   if (typeof input === 'object') {
-    const obj = input as Record<string, any>;
+    const obj = input as Record<string, unknown>;
 
     // Game or GameMini or GameRef object with apex-legends
     if (obj.slug === 'apex-legends' && ('titleEn' in obj || 'genre' in obj)) {
@@ -377,15 +383,16 @@ export function sanitizeApiPayload<T>(input: T): T {
 
     // Product with slug === 'apex-coins'
     if (obj.slug === 'apex-coins' && 'price' in obj) {
+      const gameObj = obj.game && typeof obj.game === 'object' ? (obj.game as Record<string, unknown>) : null;
       return {
         ...obj,
         slug: 'cod-points',
         title: 'سی‌پی کال آو دیوتی (COD Points)',
         description: 'خرید قانونی و فوری سی‌پی کال آو دیوتی (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه.',
-        image: '/images/games/callof-character-v2.webp',
-        game: obj.game
+        image: '/images/products/Molten-Gold-Lightning-King.webp',
+        game: gameObj
           ? {
-              ...obj.game,
+              ...gameObj,
               slug: 'call-of-duty',
               title: 'کال آو دیوتی',
               titleEn: 'Call of Duty',
@@ -396,7 +403,14 @@ export function sanitizeApiPayload<T>(input: T): T {
       } as unknown as T;
     }
 
-    const out: Record<string, any> = {};
+    if (obj.slug === 'cod-points' && 'price' in obj && (!obj.image || String(obj.image).includes('callof-character'))) {
+      obj.image = 'https://35tmectztpibboo6.public.blob.vercel-storage.com/products/Molten-Gold-Lightning-King.webp';
+    }
+    if (obj.slug === 'clash-of-clans-gems' && 'price' in obj && (!obj.image || String(obj.image).includes('clash-character'))) {
+      obj.image = 'https://35tmectztpibboo6.public.blob.vercel-storage.com/products/goblin_transparent.webp';
+    }
+
+    const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(obj)) {
       if (k === 'favoriteGame' && v === 'apex-legends') {
         out[k] = 'call-of-duty';
@@ -408,10 +422,13 @@ export function sanitizeApiPayload<T>(input: T): T {
     // Deduplicate paginated product results if apex-coins was converted to cod-points alongside existing cod-points
     if (Array.isArray(out.results)) {
       const seenSlugs = new Set<string>();
-      out.results = out.results.filter((item: any) => {
-        if (item && typeof item === 'object' && typeof item.slug === 'string') {
-          if (seenSlugs.has(item.slug)) return false;
-          seenSlugs.add(item.slug);
+      out.results = out.results.filter((item: unknown) => {
+        if (item && typeof item === 'object' && 'slug' in item) {
+          const slugVal = (item as Record<string, unknown>).slug;
+          if (typeof slugVal === 'string') {
+            if (seenSlugs.has(slugVal)) return false;
+            seenSlugs.add(slugVal);
+          }
         }
         return true;
       });
