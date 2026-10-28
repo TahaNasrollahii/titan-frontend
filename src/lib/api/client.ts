@@ -6,7 +6,13 @@ export const API_URL = (() => {
   }
   if (typeof window !== 'undefined') {
     const host = window.location.hostname || 'localhost';
+    if (host.includes('vercel.app')) {
+      return 'https://titan-backend-taha.vercel.app/api/v1';
+    }
     return `http://${host}:8000/api/v1`;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://titan-backend-taha.vercel.app/api/v1';
   }
   return 'http://127.0.0.1:8000/api/v1';
 })();

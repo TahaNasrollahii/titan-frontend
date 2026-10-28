@@ -61,7 +61,7 @@ export default async function TitanPage() {
       <link
         rel="preload"
         as="image"
-        href="/images/hero/characters/valorant.webp"
+        href="/images/hero/characters/fortnite-crewpack-october2026.webp"
         fetchPriority="high"
       />
       <h1 className="sr-only">تایتان — پلتفرم گیمینگ، خرید پول بازی‌ها و مسابقات آنلاین</h1>

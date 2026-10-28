@@ -45,8 +45,11 @@ const I: Record<string, [string, boolean?]> = {
 /**
  * This page builds raw HTML, so next/image can't be used; point <img> at the same
  * optimizer it uses. `width` must be one of next/image's configured sizes.
+ * For local static assets starting with "/", use direct path to avoid Vercel image optimization failures/limits.
  */
 function optimizedImg(src: string, width: number) {
+  if (!src) return '';
+  if (src.startsWith('/')) return src;
   return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
 }
 
@@ -178,10 +181,51 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
   return mapped;
 }
 
+const DEFAULT_HERO_SLIDES = [
+  {
+    title: 'کروپک فورتنایت',
+    desc: 'شامل ۱۰۰۰ ویباکس، اسکین انحصاری ماهانه، بتل پس فصل جاری و مزایای ویژه دیگر!',
+    descMobile: '۱۰۰۰ ویباکس + اسکین انحصاری!',
+    watch: 0,
+    eta: 0,
+    art: '/images/hero/characters/fortnite-crewpack-october2026.webp',
+    artClass: 'fortnite',
+    href: '/product/fortnite-crew',
+    price: '۵۹۹,۰۰۰ تومان',
+  },
+  {
+    title: 'ولورانت پوینت',
+    desc: 'فعال‌سازی قانونی انواع بسته‌های ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!',
+    descMobile: 'فعال‌سازی قانونی انواع بسته‌های VP',
+    watch: 0,
+    eta: 0,
+    art: '/images/hero/characters/valorant.webp',
+    artClass: 'valorant',
+    href: '/product/valorant-points-375',
+    price: '۱۸۰,۰۰۰ تومان',
+  },
+  {
+    title: 'سی‌پی کال آو دیوتی موبایل',
+    desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی موبایل برای خرید بتل‌پس و گردونه!',
+    descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
+    watch: 0,
+    eta: 0,
+    art: '/images/hero/characters/callof-v2.webp',
+    artClass: 'callof',
+    href: '/product/cod-points',
+    price: '۹۵,۰۰۰ تومان',
+  },
+];
+
 function buildSceneData(data: Home) {
   const seenGames = new Set<string>();
-  const slides = data.heroTournaments.map(t => {
-    const effectiveSlug = t.game.slug === 'apex-legends' ? 'call-of-duty' : t.game.slug;
+  const rawTournaments = Array.isArray(data?.heroTournaments) ? data.heroTournaments : [];
+
+  const slides: any[] = [];
+
+  for (const t of rawTournaments) {
+    if (!t || !t.game) continue;
+    const effectiveSlug = t.game.slug === 'apex-legends' ? 'call-of-duty' : (t.game.slug || '');
 
     // One slide per game: a second Valorant tournament (or legacy Apex tournament) is shown as Call of Duty instead
     if (
@@ -189,7 +233,7 @@ function buildSceneData(data: Home) {
       effectiveSlug === 'call-of-duty'
     ) {
       seenGames.add('call-of-duty');
-      return {
+      slides.push({
         title: 'سی‌پی کال آو دیوتی موبایل',
         desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی موبایل برای خرید بتل‌پس و گردونه!',
         descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
@@ -199,11 +243,12 @@ function buildSceneData(data: Home) {
         artClass: HERO_ART['call-of-duty'],
         href: '/product/cod-points',
         price: '۹۵,۰۰۰ تومان',
-      };
+      });
+      continue;
     }
     seenGames.add(effectiveSlug);
 
-    let title = t.game.title;
+    let title = t.game.title || t.title;
     let desc = `${t.title} — جایزه ${prize(t.prizePool, t.prizeCurrency)}`;
     let descMobile = desc;
     let href = `/tournaments/${t.slug}`;
@@ -223,25 +268,36 @@ function buildSceneData(data: Home) {
       price = '۱۸۰,۰۰۰ تومان';
     }
 
-    return {
-      title,
-      desc,
-      descMobile,
-      watch: t.viewerCount,
-      eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
-      art: effectiveSlug === 'fortnite'
-        ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
-        : (HERO_ART[effectiveSlug] ? `/images/hero/characters/${HERO_ART[effectiveSlug]}.webp` : t.coverImage),
-      artClass: HERO_ART[effectiveSlug] ?? '',
-      href,
-      price,
-    };
-  });
-  const categories = normalizeHomeCategories(data.categories);
+    const art = effectiveSlug === 'fortnite'
+      ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+      : (HERO_ART[effectiveSlug] ? `/images/hero/characters/${HERO_ART[effectiveSlug]}.webp` : (t.coverImage || null));
+
+    if (art) {
+      slides.push({
+        title,
+        desc,
+        descMobile,
+        watch: t.viewerCount || 0,
+        eta: Math.max(0, (new Date(t.startsAt).getTime() - Date.now()) / 1000),
+        art,
+        artClass: HERO_ART[effectiveSlug] ?? 'valorant',
+        href,
+        price,
+      });
+    }
+  }
+
+  // Ensure all 3 featured game banners (Fortnite, Valorant, Call of Duty) are ALWAYS present
+  for (const def of DEFAULT_HERO_SLIDES) {
+    if (!slides.some(s => s.artClass === def.artClass)) {
+      slides.push(def);
+    }
+  }
+
+  const finalSlides = slides.length >= 3 ? slides.slice(0, 3) : DEFAULT_HERO_SLIDES;
+  const categories = normalizeHomeCategories(data?.categories);
   return {
-    slides: slides.length
-      ? slides
-      : [{ title: 'تایتان', desc: 'تورنمنت‌های جدید به‌زودی منتشر می‌شوند.', watch: 0, eta: 0, art: null, artClass: '', href: '/tournaments' }],
+    slides: finalSlides,
     games: categories.map((g, i) => {
       const art = HERO_ART[g.slug];
       return {
