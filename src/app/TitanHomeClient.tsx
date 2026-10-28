@@ -124,9 +124,9 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
         mapped.push({
           ...cat,
           slug: 'call-of-duty',
-          title: 'کال آو دیوتی موبایل',
+          title: 'کالاف دیوتی موبایل',
           titleEn: 'Call of Duty Mobile',
-          description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی موبایل.',
+          description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
           backgroundImage: '/images/games/callof-background.webp',
           characterImage: '/images/games/callof-character-v2.webp',
           coverImage: '/images/games/callof-background.webp',
@@ -137,9 +137,9 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
     if (cat.slug === 'call-of-duty') {
       mapped.push({
         ...cat,
-        title: 'کال آو دیوتی موبایل',
+        title: 'کالاف دیوتی موبایل',
         titleEn: 'Call of Duty Mobile',
-        description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی موبایل.',
+        description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
       });
       continue;
     }
@@ -150,16 +150,14 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
     const codEntry: any = {
       id: 901,
       slug: 'call-of-duty',
-      title: 'کال آو دیوتی موبایل',
+      title: 'کالاف دیوتی موبایل',
       titleEn: 'Call of Duty Mobile',
-      description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کال آو دیوتی موبایل.',
+      description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
       backgroundImage: '/images/games/callof-background.webp',
       characterImage: '/images/games/callof-character-v2.webp',
       coverImage: '/images/games/callof-background.webp',
     };
-    const premIdx = mapped.findIndex(c => c.slug === 'premium');
-    if (premIdx >= 0) mapped.splice(premIdx, 0, codEntry);
-    else mapped.push(codEntry);
+    mapped.push(codEntry);
   }
 
   if (!mapped.some(c => c.slug === 'clash-of-clans')) {
@@ -173,12 +171,20 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
       characterImage: '/images/games/clash-character.webp',
       coverImage: '/images/games/clash-background.webp',
     };
-    const premIdx = mapped.findIndex(c => c.slug === 'premium');
-    if (premIdx >= 0) mapped.splice(premIdx, 0, clashEntry);
-    else mapped.push(clashEntry);
+    mapped.push(clashEntry);
   }
 
-  return mapped;
+  // Ensure 'premium' is placed at the very end
+  const nonPrem: Home['categories'] = [];
+  const prem: Home['categories'] = [];
+  for (const c of mapped) {
+    if (c.slug === 'premium' || c.slug?.includes('premium') || /پرمیوم|پریمیوم/i.test(c.title || '')) {
+      prem.push(c);
+    } else {
+      nonPrem.push(c);
+    }
+  }
+  return nonPrem.concat(prem);
 }
 
 const DEFAULT_HERO_SLIDES = [
@@ -205,8 +211,8 @@ const DEFAULT_HERO_SLIDES = [
     price: '۱۸۰,۰۰۰ تومان',
   },
   {
-    title: 'سی‌پی کال آو دیوتی موبایل',
-    desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی موبایل برای خرید بتل‌پس و گردونه!',
+    title: 'سی‌پی کالاف دیوتی موبایل',
+    desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کالاف دیوتی موبایل برای خرید بتل‌پس و گردونه!',
     descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
     watch: 0,
     eta: 0,
@@ -234,8 +240,8 @@ function buildSceneData(data: Home) {
     ) {
       seenGames.add('call-of-duty');
       slides.push({
-        title: 'سی‌پی کال آو دیوتی موبایل',
-        desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کال آو دیوتی موبایل برای خرید بتل‌پس و گردونه!',
+        title: 'سی‌پی کالاف دیوتی موبایل',
+        desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کالاف دیوتی موبایل برای خرید بتل‌پس و گردونه!',
         descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
         watch: 0,
         eta: 0,
@@ -304,7 +310,7 @@ function buildSceneData(data: Home) {
         t: g.title,
         d: g.slug === 'fortnite' ? 'فعال سازی تمامی آیتم های بازی فورتنایت ویباکس و کروپک و ...' :
            g.slug === 'valorant' ? 'فعال سازی تمامی آیتم های بازی ولورانت پوینت و ...' :
-           g.slug === 'call-of-duty' ? 'فعال سازی تمامی آیتم های بازی کال آو دیوتی موبایل سی پی و بتل پس و ...' :
+           g.slug === 'call-of-duty' ? 'فعال سازی تمامی آیتم های بازی کالاف دیوتی موبایل سی پی و بتل پس و ...' :
            g.slug === 'clash-of-clans' ? 'فعال سازی تمامی آیتم های بازی کلش آف کلنز جم و گلد پس و ...' :
            g.slug === 'premium' ? g.description :
            `فعال سازی تمامی آیتم های بازی ${g.title} و ...`,

@@ -5,13 +5,13 @@ import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 export const FALLBACK_FEATURED_GAMES: Record<string, Game> = {
   'call-of-duty': {
     slug: 'call-of-duty',
-    title: 'کال آو دیوتی موبایل',
+    title: 'کالاف دیوتی موبایل',
     titleEn: 'Call of Duty Mobile',
     iconImage: null,
     accentColor: '#f59e0b',
     accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
     description:
-      'خرید قانونی و فوری سی‌پی کال آو دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
+      'خرید قانونی و فوری سی‌پی کالاف دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
     genre: 'شوتر اول‌شخص',
     kind: 'game',
     coverImage: '/images/games/callof-background.webp',
@@ -62,7 +62,7 @@ export function normalizeFeaturedGames(rawGames: Game[] | null | undefined): Gam
     if (g.slug === 'call-of-duty') {
       result.push({
         ...g,
-        title: 'کال آو دیوتی موبایل',
+        title: 'کالاف دیوتی موبایل',
         titleEn: 'Call of Duty Mobile',
         isFeatured: true,
         backgroundImage: '/images/games/callof-background.webp',
@@ -85,18 +85,24 @@ export function normalizeFeaturedGames(rawGames: Game[] | null | undefined): Gam
   }
 
   if (!result.some(g => g.slug === 'call-of-duty')) {
-    const premIdx = result.findIndex(g => g.slug === 'premium');
-    if (premIdx >= 0) result.splice(premIdx, 0, FALLBACK_FEATURED_GAMES['call-of-duty']);
-    else result.push(FALLBACK_FEATURED_GAMES['call-of-duty']);
+    result.push(FALLBACK_FEATURED_GAMES['call-of-duty']);
   }
 
   if (!result.some(g => g.slug === 'clash-of-clans')) {
-    const premIdx = result.findIndex(g => g.slug === 'premium');
-    if (premIdx >= 0) result.splice(premIdx, 0, FALLBACK_FEATURED_GAMES['clash-of-clans']);
-    else result.push(FALLBACK_FEATURED_GAMES['clash-of-clans']);
+    result.push(FALLBACK_FEATURED_GAMES['clash-of-clans']);
   }
 
-  return result;
+  // Move 'premium' to the end of result
+  const nonPrem: Game[] = [];
+  const prem: Game[] = [];
+  for (const g of result) {
+    if (g.slug === 'premium' || g.slug?.includes('premium') || /پرمیوم|پریمیوم/i.test(g.title || '')) {
+      prem.push(g);
+    } else {
+      nonPrem.push(g);
+    }
+  }
+  return nonPrem.concat(prem);
 }
 
 export async function getStoreProducts(

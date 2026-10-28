@@ -205,14 +205,15 @@ function replaceApexText(value: string): string {
     .replace(/OctaneRush/gi, 'PriceCaptain')
     .replace(/Apex\s+Legends/gi, 'Call of Duty Mobile')
     .replace(/Apex\s+Coins/gi, 'COD Points')
-    .replace(/باندل ویژه\s+(?:Apex|Call of Duty)/gi, 'CP کال آو دیوتی موبایل')
+    .replace(/باندل ویژه\s+(?:Apex|Call of Duty)/gi, 'CP کالاف دیوتی موبایل')
     .replace(/شامل اسکین (?:اپیک و ۱۰۰۰ کوین|اپراتور و ۱,۱۰۰ سی‌پی)/g, 'شارژ فوری و قانونی سی‌پی روی اکانت اکتیویژن')
-    .replace(/ایپکس\s*لجندز|اپکس\s*لجندز/g, 'کال آو دیوتی موبایل')
-    .replace(/ایپکس\s*کوین|اپکس\s*کوین/g, 'سی‌پی کال آو دیوتی موبایل')
-    .replace(/ایپکس|اپکس/g, 'کال آو دیوتی موبایل')
+    .replace(/ایپکس\s*لجندز|اپکس\s*لجندز/g, 'کالاف دیوتی موبایل')
+    .replace(/ایپکس\s*کوین|اپکس\s*کوین/g, 'سی‌پی کالاف دیوتی موبایل')
+    .replace(/ایپکس|اپکس/g, 'کالاف دیوتی موبایل')
     .replace(/\bApex\b/g, 'Call of Duty Mobile')
-    .replace(/کال\s*آو\s*دیوتی(?!\s*موبایل)/g, 'کال آو دیوتی موبایل')
-    .replace(/کالاف\s*دیوتی(?!\s*موبایل)/g, 'کال آو دیوتی موبایل');
+    .replace(/کال\s*آو\s*دیوتی(?!\s*موبایل)/g, 'کالاف دیوتی موبایل')
+    .replace(/کال\s*آو\s*دیوتی\s*موبایل/g, 'کالاف دیوتی موبایل')
+    .replace(/کالاف\s*دیوتی(?!\s*موبایل)/g, 'کالاف دیوتی موبایل');
 }
 
 function isGameArray(arr: unknown[]): boolean {
@@ -229,13 +230,13 @@ function isGameArray(arr: unknown[]): boolean {
 
 const DEFAULT_COD_GAME = {
   slug: 'call-of-duty',
-  title: 'کال آو دیوتی موبایل',
+  title: 'کالاف دیوتی موبایل',
   titleEn: 'Call of Duty Mobile',
   iconImage: '/images/categories/callof-v2.webp',
   accentColor: '#f59e0b',
   accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
   description:
-    'خرید قانونی و فوری سی‌پی کال آو دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
+    'خرید قانونی و فوری سی‌پی کالاف دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
   genre: 'شوتر اول‌شخص',
   kind: 'game',
   coverImage: '/images/games/callof-background.webp',
@@ -345,16 +346,24 @@ export function sanitizeApiPayload<T>(input: T): T {
         deduped.push(g);
       }
       if (!seen.has('call-of-duty')) {
-        const premIdx = deduped.findIndex(g => g.slug === 'premium');
-        if (premIdx >= 0) deduped.splice(premIdx, 0, { ...DEFAULT_COD_GAME });
-        else deduped.push({ ...DEFAULT_COD_GAME });
+        deduped.push({ ...DEFAULT_COD_GAME });
       }
       if (!seen.has('clash-of-clans')) {
-        const premIdx = deduped.findIndex(g => g.slug === 'premium');
-        if (premIdx >= 0) deduped.splice(premIdx, 0, { ...DEFAULT_CLASH_GAME });
-        else deduped.push({ ...DEFAULT_CLASH_GAME });
+        deduped.push({ ...DEFAULT_CLASH_GAME });
       }
-      return deduped as unknown as T;
+      // Move 'premium' to the very end of game list
+      const nonPrem: Record<string, unknown>[] = [];
+      const prem: Record<string, unknown>[] = [];
+      for (const g of deduped) {
+        const slug = String(g.slug || '');
+        const title = String(g.title || '');
+        if (slug === 'premium' || slug.includes('premium') || /پرمیوم|پریمیوم/i.test(title)) {
+          prem.push(g);
+        } else {
+          nonPrem.push(g);
+        }
+      }
+      return nonPrem.concat(prem) as unknown as T;
     }
     return mapped as unknown as T;
   }
@@ -371,7 +380,7 @@ export function sanitizeApiPayload<T>(input: T): T {
     if (obj.slug === 'call-of-duty' && ('titleEn' in obj || 'genre' in obj)) {
       return {
         ...obj,
-        title: 'کال آو دیوتی موبایل',
+        title: 'کالاف دیوتی موبایل',
         titleEn: 'Call of Duty Mobile',
         iconImage: '/images/categories/callof-v2.webp',
         accentColor: obj.accentColor || '#f59e0b',
@@ -402,7 +411,7 @@ export function sanitizeApiPayload<T>(input: T): T {
     ) {
       return {
         ...obj,
-        title: 'CP کال آو دیوتی موبایل',
+        title: 'CP کالاف دیوتی موبایل',
         subtitle: 'شارژ فوری و قانونی سی‌پی روی اکانت اکتیویژن',
         price: 95000,
         image: '/images/products/Molten-Gold-Lightning-King.webp',
@@ -417,14 +426,14 @@ export function sanitizeApiPayload<T>(input: T): T {
       return {
         ...obj,
         slug: 'cod-points',
-        title: 'سی‌پی کال آو دیوتی موبایل (COD Points)',
-        description: 'خرید قانونی و فوری سی‌پی کال آو دیوتی موبایل (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه.',
+        title: 'سی‌پی کالاف دیوتی موبایل (COD Points)',
+        description: 'خرید قانونی و فوری سی‌پی کالاف دیوتی موبایل (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه.',
         image: '/images/products/Molten-Gold-Lightning-King.webp',
         game: gameObj
           ? {
               ...gameObj,
               slug: 'call-of-duty',
-              title: 'کال آو دیوتی موبایل',
+              title: 'کالاف دیوتی موبایل',
               titleEn: 'Call of Duty Mobile',
               iconImage: '/images/categories/callof-v2.webp',
               accentColor: '#f59e0b',

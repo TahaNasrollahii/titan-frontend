@@ -76,7 +76,7 @@ function promoHref(promo: Promo) {
   if (
     promo.product === 'apex-coins' ||
     promo.product === 'cod-points' ||
-    /call of duty|کال آو دیوتی|سی‌پی|\bcp\b/i.test(promo.title)
+    /call of duty|کال آو دیوتی|کالاف دیوتی|سی‌پی|\bcp\b/i.test(promo.title)
   ) {
     return '/product/cod-points';
   }
@@ -778,27 +778,34 @@ function StorePageContent({
     for (const g of raw) {
       if (g.slug === 'apex-legends') {
         if (!hasCod) {
-          list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی موبایل', iconImage: null });
+          list.push({ slug: 'call-of-duty', title: 'کالاف دیوتی موبایل', iconImage: null });
         }
         continue;
       }
       if (g.slug === 'call-of-duty') {
-        list.push({ ...g, title: 'کال آو دیوتی موبایل' });
+        list.push({ ...g, title: 'کالاف دیوتی موبایل' });
         continue;
       }
       list.push(g);
     }
     if (!list.some(g => g.slug === 'call-of-duty')) {
-      const premIdx = list.findIndex(g => g.slug === 'premium');
-      if (premIdx >= 0) list.splice(premIdx, 0, { slug: 'call-of-duty', title: 'کال آو دیوتی موبایل', iconImage: null });
-      else list.push({ slug: 'call-of-duty', title: 'کال آو دیوتی موبایل', iconImage: null });
+      list.push({ slug: 'call-of-duty', title: 'کالاف دیوتی موبایل', iconImage: null });
     }
     if (!list.some(g => g.slug === 'clash-of-clans')) {
-      const premIdx = list.findIndex(g => g.slug === 'premium');
-      if (premIdx >= 0) list.splice(premIdx, 0, { slug: 'clash-of-clans', title: 'کلش آف کلنز', iconImage: null });
-      else list.push({ slug: 'clash-of-clans', title: 'کلش آف کلنز', iconImage: null });
+      list.push({ slug: 'clash-of-clans', title: 'کلش آف کلنز', iconImage: null });
     }
-    return list;
+
+    // Move 'premium' to the very end of filter list
+    const nonPrem: typeof list = [];
+    const prem: typeof list = [];
+    for (const g of list) {
+      if (g.slug === 'premium' || g.slug?.includes('premium') || /پرمیوم|پریمیوم/i.test(g.title || '')) {
+        prem.push(g);
+      } else {
+        nonPrem.push(g);
+      }
+    }
+    return nonPrem.concat(prem);
   }, [games.data]);
 
   const tabs = [{ slug: '', title: 'همه', icon: null as string | null }].concat(
