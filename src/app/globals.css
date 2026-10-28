@@ -782,12 +782,20 @@ i[data-icon] svg {
 }
 
 /* ---------- Hero ---------- */
+.hero,
+.hero *,
+.hero-body,
+.hero-art,
+.hero-bg {
+  touch-action: pan-y;
+  -webkit-touch-callout: none;
+}
+
 .hero {
   position: relative;
   z-index: 2;
   height: clamp(224px, 22vw, 262px);
   border-radius: 34px;
-  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
   --touch-dx: 0px;
@@ -3466,6 +3474,15 @@ html[dir="rtl"] .hero-live {
 @media (max-width: 768px) {
 
   /* Hero: grows with its copy; the live pill sits in the flow under the button */
+  .hero,
+  .hero *,
+  .hero-body,
+  .hero-art,
+  .hero-bg {
+    touch-action: pan-y;
+    -webkit-touch-callout: none;
+  }
+
   .hero {
     height: auto;
     min-height: 230px;

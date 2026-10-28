@@ -3,7 +3,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 
 import { ErrorState, Loading } from '@/components/ui/State';
 import { contentApi } from '@/lib/api/endpoints';
@@ -421,7 +421,7 @@ function buildSceneData(data: Home) {
   };
 }
 
-function HomeScene({ data, user }: { data: Home; user?: any }) {
+const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: any }) {
   const router = useRouter();
   const initialized = useRef(false);
 
@@ -554,104 +554,156 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
 
       function applySlide() {
         const s = SLIDES[cur];
-        $('#heroTitle').textContent = s.title;
-        $('#heroDesc').innerHTML = `<span class="desc-pc">${s.desc}</span><span class="desc-mobile">${s.descMobile || s.desc}</span>`;
-        $('#heroLink').setAttribute('href', s.href);
+        if (!s) return;
+        const titleEl = $('#heroTitle');
+        if (titleEl) titleEl.textContent = s.title;
+        const descEl = $('#heroDesc');
+        if (descEl) descEl.innerHTML = `<span class="desc-pc">${s.desc}</span><span class="desc-mobile">${s.descMobile || s.desc}</span>`;
+        const linkEl = $('#heroLink');
+        if (linkEl) linkEl.setAttribute('href', s.href);
         const priceEl = $('#heroPrice');
         if (priceEl && s.price) priceEl.textContent = s.price;
       }
+      let swapTimer: any = null;
       function goTo(i, first, direction = 'left') {
+        if (swapTimer) {
+          clearTimeout(swapTimer);
+          swapTimer = null;
+        }
         cur = i; elapsed = 0;
-        if (hero && SLIDES[i]) hero.dataset.slide = SLIDES[i].artClass || '';
+        const heroEl = $('#hero');
+        if (heroEl && SLIDES[i]) heroEl.dataset.slide = SLIDES[i].artClass || '';
 
         const isLeft = direction === 'left' || direction === 'next';
-        hero.classList.remove('slide-left', 'slide-right');
-        hero.classList.add(isLeft ? 'slide-left' : 'slide-right');
+        if (heroEl) {
+          heroEl.classList.remove('slide-left', 'slide-right');
+          heroEl.classList.add(isLeft ? 'slide-left' : 'slide-right');
+        }
 
-        arts.forEach((a, k) => a.classList.toggle('on', k === i));
-        bgLayers.forEach((a, k) => a.classList.toggle('on', k === i));
-        dashes.forEach((d, k) => d.classList.toggle('on', k === i));
-        dashFills.forEach(f => f.style.transform = 'scaleX(0)');
+        const currentArts = $$('.art', $('#heroArt') || document);
+        const currentBgLayers = $$('.hero-bg .l', heroEl || document);
+        const currentDashes = $$('.dash', $('#dashes') || document);
+        const currentDashFills = $$('.dash i', $('#dashes') || document);
+
+        currentArts.forEach((a, k) => a.classList.toggle('on', k === i));
+        currentBgLayers.forEach((a, k) => a.classList.toggle('on', k === i));
+        currentDashes.forEach((d, k) => d.classList.toggle('on', k === i));
+        currentDashFills.forEach(f => f.style.transform = 'scaleX(0)');
         if (first || reduce) { applySlide(); return; }
 
-        heroBody.classList.remove('swap-left', 'swap-right');
-        heroBody.classList.add(isLeft ? 'swap-left' : 'swap-right');
-        heroBody.classList.add('swap');
-        setTimeout(() => {
+        const heroBodyEl = $('#heroBody');
+        if (heroBodyEl) {
+          heroBodyEl.classList.remove('swap-left', 'swap-right');
+          heroBodyEl.classList.add(isLeft ? 'swap-left' : 'swap-right');
+          heroBodyEl.classList.add('swap');
+          swapTimer = setTimeout(() => {
+            applySlide();
+            heroBodyEl.classList.remove('swap', 'swap-left', 'swap-right');
+            swapTimer = null;
+          }, 290);
+        } else {
           applySlide();
-          heroBody.classList.remove('swap', 'swap-left', 'swap-right');
-        }, 290);
+        }
       }
-      dashes.forEach((d, k) => d.addEventListener('click', () => {
-        if (k !== cur) goTo(k, false, k > cur ? 'left' : 'right');
-      }));
+
+      const bindDashes = () => {
+        const dashes = $$('.dash', $('#dashes') || document);
+        dashes.forEach((d, k) => {
+          d.onclick = (e) => {
+            e.stopPropagation();
+            if (k !== cur) goTo(k, false, k > cur ? 'left' : 'right');
+          };
+        });
+      };
+      bindDashes();
+
       ['pointerenter', 'focusin'].forEach(ev => hero.addEventListener(ev, () => paused = true));
       ['pointerleave', 'focusout'].forEach(ev => hero.addEventListener(ev, () => paused = false));
 
       /* --- Touch & Swipe Gesture Support on Mobile --- */
       let touchStartX = 0;
       let touchStartY = 0;
-      let touchDiffX = 0;
+      let touchCurrentX = 0;
+      let touchCurrentY = 0;
+      let touchStartTime = 0;
+      let isTrackingTouch = false;
       let isHorizontalSwipe = false;
-      let isTouchActive = false;
       let didSwipe = false;
 
-      const resetHeroDrag = () => {
-        hero.classList.remove('touching');
-        hero.style.setProperty('--touch-dx', '0px');
-        touchDiffX = 0;
-        isTouchActive = false;
+      const resetHeroTouch = () => {
+        const heroEl = $('#hero');
+        if (heroEl) {
+          heroEl.classList.remove('touching');
+          heroEl.style.setProperty('--touch-dx', '0px');
+        }
+        isTrackingTouch = false;
         isHorizontalSwipe = false;
       };
 
-      hero.addEventListener('touchstart', (e: TouchEvent) => {
+      const onHeroTouchStart = (e: TouchEvent) => {
         if (!e.touches || e.touches.length !== 1) return;
         const t = e.touches[0];
         touchStartX = t.clientX;
         touchStartY = t.clientY;
-        touchDiffX = 0;
+        touchCurrentX = touchStartX;
+        touchCurrentY = touchStartY;
+        touchStartTime = Date.now();
+        isTrackingTouch = true;
         isHorizontalSwipe = false;
-        isTouchActive = true;
         didSwipe = false;
         paused = true;
-      }, { passive: true });
+      };
 
-      hero.addEventListener('touchmove', (e: TouchEvent) => {
-        if (!isTouchActive || !e.touches || e.touches.length !== 1) return;
+      const onHeroTouchMove = (e: TouchEvent) => {
+        if (!isTrackingTouch || !e.touches || e.touches.length !== 1) return;
         const t = e.touches[0];
-        const dx = t.clientX - touchStartX;
-        const dy = t.clientY - touchStartY;
+        touchCurrentX = t.clientX;
+        touchCurrentY = t.clientY;
+        const dx = touchCurrentX - touchStartX;
+        const dy = touchCurrentY - touchStartY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
 
         if (!isHorizontalSwipe) {
-          if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+          if (absX > 6 && absX >= absY) {
             isHorizontalSwipe = true;
-            hero.classList.add('touching');
-          } else if (Math.abs(dy) > 8) {
-            isTouchActive = false;
-            resetHeroDrag();
-            paused = false;
-            return;
+            const heroEl = $('#hero');
+            if (heroEl) heroEl.classList.add('touching');
           }
         }
 
         if (isHorizontalSwipe) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
           didSwipe = true;
-          touchDiffX = dx;
-          const offset = Math.max(-55, Math.min(55, dx * 0.45));
-          hero.style.setProperty('--touch-dx', `${offset}px`);
+          const heroEl = $('#hero');
+          if (heroEl) {
+            const damp = Math.max(-75, Math.min(75, dx * 0.45));
+            heroEl.style.setProperty('--touch-dx', `${damp}px`);
+          }
         }
-      }, { passive: true });
+      };
 
-      const handleTouchEnd = () => {
-        if (!isTouchActive && !isHorizontalSwipe) return;
-        const dx = touchDiffX;
-        const threshold = 35;
+      const onHeroTouchEnd = (e: TouchEvent) => {
+        if (!isTrackingTouch) return;
+        const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : touchCurrentX;
+        const endY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : touchCurrentY;
+        const dx = endX - touchStartX;
+        const dy = endY - touchStartY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const duration = Date.now() - touchStartTime;
 
-        resetHeroDrag();
+        resetHeroTouch();
         paused = false;
         elapsed = 0;
 
-        if (isHorizontalSwipe && Math.abs(dx) >= threshold) {
+        const isQuickFlick = duration < 400 && absX > 20;
+        const isStandardSwipe = absX > 30;
+
+        if (absX > absY && (isQuickFlick || isStandardSwipe)) {
+          didSwipe = true;
           if (dx < 0) {
             // Swiped left (کشیدن انگشت به سمت چپ) -> رفتن به بنر بعدی
             goTo((cur + 1) % SLIDES.length, false, 'left');
@@ -663,65 +715,73 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
 
         setTimeout(() => {
           didSwipe = false;
-        }, 120);
+        }, 180);
       };
 
-      hero.addEventListener('touchend', handleTouchEnd, { passive: true });
-      hero.addEventListener('touchcancel', () => {
-        resetHeroDrag();
-        paused = false;
-        setTimeout(() => { didSwipe = false; }, 120);
-      }, { passive: true });
+      hero.addEventListener('touchstart', onHeroTouchStart, { passive: true });
+      hero.addEventListener('touchmove', onHeroTouchMove, { passive: false });
+      hero.addEventListener('touchend', onHeroTouchEnd, { passive: true });
+      hero.addEventListener('touchcancel', onHeroTouchEnd, { passive: true });
+      cleanupFuncs.push(() => {
+        hero.removeEventListener('touchstart', onHeroTouchStart);
+        hero.removeEventListener('touchmove', onHeroTouchMove);
+        hero.removeEventListener('touchend', onHeroTouchEnd);
+        hero.removeEventListener('touchcancel', onHeroTouchEnd);
+      });
 
       // Support mouse drag on desktop
       let mouseStartX = 0;
       let mouseStartY = 0;
-      let mouseDiffX = 0;
-      let isMouseActive = false;
+      let mouseCurrentX = 0;
+      let isMouseTracking = false;
       let isMouseHorizontal = false;
 
       hero.addEventListener('mousedown', (e: MouseEvent) => {
         if (e.button !== 0) return;
         mouseStartX = e.clientX;
         mouseStartY = e.clientY;
-        mouseDiffX = 0;
-        isMouseActive = true;
+        mouseCurrentX = mouseStartX;
+        isMouseTracking = true;
         isMouseHorizontal = false;
         didSwipe = false;
         paused = true;
       });
 
       const onHeroMouseMove = (e: MouseEvent) => {
-        if (!isMouseActive) return;
-        const dx = e.clientX - mouseStartX;
+        if (!isMouseTracking) return;
+        mouseCurrentX = e.clientX;
+        const dx = mouseCurrentX - mouseStartX;
         const dy = e.clientY - mouseStartY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
 
-        if (!isMouseHorizontal) {
-          if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
-            isMouseHorizontal = true;
-            hero.classList.add('touching');
-          }
+        if (!isMouseHorizontal && absX > 6 && absX >= absY) {
+          isMouseHorizontal = true;
+          const heroEl = $('#hero');
+          if (heroEl) heroEl.classList.add('touching');
         }
 
         if (isMouseHorizontal) {
           didSwipe = true;
-          mouseDiffX = dx;
-          const offset = Math.max(-55, Math.min(55, dx * 0.45));
-          hero.style.setProperty('--touch-dx', `${offset}px`);
+          const heroEl = $('#hero');
+          if (heroEl) {
+            const damp = Math.max(-75, Math.min(75, dx * 0.45));
+            heroEl.style.setProperty('--touch-dx', `${damp}px`);
+          }
         }
       };
 
       const onHeroMouseUp = () => {
-        if (!isMouseActive) return;
-        const dx = mouseDiffX;
-        const threshold = 35;
-
-        resetHeroDrag();
-        isMouseActive = false;
+        if (!isMouseTracking) return;
+        const dx = mouseCurrentX - mouseStartX;
+        const absX = Math.abs(dx);
+        resetHeroTouch();
+        isMouseTracking = false;
         paused = false;
         elapsed = 0;
 
-        if (isMouseHorizontal && Math.abs(dx) >= threshold) {
+        if (isMouseHorizontal && absX > 30) {
+          didSwipe = true;
           if (dx < 0) {
             goTo((cur + 1) % SLIDES.length, false, 'left');
           } else {
@@ -732,7 +792,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
         setTimeout(() => {
           didSwipe = false;
           isMouseHorizontal = false;
-        }, 120);
+        }, 180);
       };
 
       window.addEventListener('mousemove', onHeroMouseMove);
@@ -743,14 +803,18 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
       });
 
       // Prevent link clicks if user was dragging/swiping
-      hero.addEventListener('click', (e: MouseEvent) => {
+      const onHeroClick = (e: MouseEvent) => {
         if (didSwipe) {
           e.preventDefault();
           e.stopPropagation();
           didSwipe = false;
           return false;
         }
-      }, true);
+      };
+      hero.addEventListener('click', onHeroClick, true);
+      cleanupFuncs.push(() => {
+        hero.removeEventListener('click', onHeroClick, true);
+      });
 
       // Countdown removed as requested by user
 
@@ -1162,4 +1226,4 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
 ` }}
     />
   );
-}
+}, () => true);
