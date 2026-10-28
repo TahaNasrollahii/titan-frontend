@@ -106,12 +106,105 @@ function renderScrollerCards(games: any[]) {
   </article>`).join('');
 }
 
+export const DEFAULT_FALLBACK_HOME: Home = {
+  heroTournaments: [],
+  heroPromos: [],
+  categories: [
+    {
+      id: 1,
+      slug: 'fortnite',
+      title: 'فورتنایت',
+      titleEn: 'Fortnite',
+      genre: 'بتل رویال',
+      coverImage: '/images/games/fortnite-background.webp',
+      characterImage: '/images/hero/characters/fortnite-crewpack-october2026.webp',
+      backgroundImage: '/images/games/fortnite-background.webp',
+      accentColor: '#8b5cf6',
+      accentGradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+      isFeatured: true,
+      description: 'فعال سازی تمامی آیتم های بازی فورتنایت ویباکس و کروپک و ...',
+      productCount: 8,
+      tournamentCount: 2,
+      playerCount: 1420,
+    } as any,
+    {
+      id: 2,
+      slug: 'valorant',
+      title: 'ولورانت',
+      titleEn: 'Valorant',
+      genre: 'شوتر تاکتیکی',
+      coverImage: '/images/games/valorant-background.webp',
+      characterImage: '/images/hero/characters/valorant.webp',
+      backgroundImage: '/images/games/valorant-background.webp',
+      accentColor: '#fa4454',
+      accentGradient: 'linear-gradient(135deg, #fa4454, #ff7582)',
+      isFeatured: true,
+      description: 'فعال سازی تمامی آیتم های بازی ولورانت پوینت و ...',
+      productCount: 6,
+      tournamentCount: 3,
+      playerCount: 980,
+    } as any,
+    {
+      id: 3,
+      slug: 'call-of-duty',
+      title: 'کالاف دیوتی موبایل',
+      titleEn: 'Call of Duty Mobile',
+      genre: 'شوتر',
+      coverImage: '/images/games/callof-background.webp',
+      characterImage: '/images/hero/characters/callof-character-v2.webp',
+      backgroundImage: '/images/games/callof-background.webp',
+      accentColor: '#ef4444',
+      accentGradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
+      isFeatured: true,
+      description: 'فعال سازی تمامی آیتم های بازی کالاف دیوتی موبایل سی پی و بتل پس و ...',
+      productCount: 4,
+      tournamentCount: 2,
+      playerCount: 1120,
+    } as any,
+    {
+      id: 4,
+      slug: 'clash-of-clans',
+      title: 'کلش آف کلنز',
+      titleEn: 'Clash of Clans',
+      genre: 'استراتژیک',
+      coverImage: '/images/games/clash-background.webp',
+      characterImage: '/images/games/clash-character.webp',
+      backgroundImage: '/images/games/clash-background.webp',
+      accentColor: '#f59e0b',
+      accentGradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+      isFeatured: true,
+      description: 'فعال سازی تمامی آیتم های بازی کلش آف کلنز جم و گلد پس و ...',
+      productCount: 5,
+      tournamentCount: 1,
+      playerCount: 650,
+    } as any,
+    {
+      id: 5,
+      slug: 'premium',
+      title: 'اکانت‌های پریمیوم',
+      titleEn: 'Premium',
+      genre: 'سرویس‌ها',
+      coverImage: '/images/games/premium.webp',
+      backgroundImage: '/images/games/premium.webp',
+      accentColor: '#1db954',
+      accentGradient: 'linear-gradient(135deg, #1db954, #0088cc)',
+      isFeatured: true,
+      description: 'خرید اکانت‌های اسپاتیفای، تلگرام و...',
+      productCount: 3,
+      tournamentCount: 0,
+      playerCount: 420,
+    } as any,
+  ],
+  announcements: [],
+  myStats: null,
+};
+
 export default function TitanPage({ initialData }: { initialData?: Home | null }) {
   const { user } = useAuth();
   const home = useApi(contentApi.home, [], initialData ?? undefined);
-  if (home.loading && !home.data) return <Loading />;
-  if (!home.data) return <ErrorState error={home.error} onRetry={home.reload} />;
-  return <HomeScene data={home.data} user={user} />;
+  if (home.loading && !home.data && !initialData) return <Loading />;
+  const activeData = home.data || initialData || DEFAULT_FALLBACK_HOME;
+  return <HomeScene data={activeData} user={user} />;
 }
 
 function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['categories'] {
@@ -467,20 +560,197 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
         const priceEl = $('#heroPrice');
         if (priceEl && s.price) priceEl.textContent = s.price;
       }
-      function goTo(i, first) {
+      function goTo(i, first, direction = 'left') {
         cur = i; elapsed = 0;
         if (hero && SLIDES[i]) hero.dataset.slide = SLIDES[i].artClass || '';
+
+        const isLeft = direction === 'left' || direction === 'next';
+        hero.classList.remove('slide-left', 'slide-right');
+        hero.classList.add(isLeft ? 'slide-left' : 'slide-right');
+
         arts.forEach((a, k) => a.classList.toggle('on', k === i));
         bgLayers.forEach((a, k) => a.classList.toggle('on', k === i));
         dashes.forEach((d, k) => d.classList.toggle('on', k === i));
         dashFills.forEach(f => f.style.transform = 'scaleX(0)');
         if (first || reduce) { applySlide(); return; }
+
+        heroBody.classList.remove('swap-left', 'swap-right');
+        heroBody.classList.add(isLeft ? 'swap-left' : 'swap-right');
         heroBody.classList.add('swap');
-        setTimeout(() => { applySlide(); heroBody.classList.remove('swap'); }, 290);
+        setTimeout(() => {
+          applySlide();
+          heroBody.classList.remove('swap', 'swap-left', 'swap-right');
+        }, 290);
       }
-      dashes.forEach((d, k) => d.addEventListener('click', () => { if (k !== cur) goTo(k); }));
+      dashes.forEach((d, k) => d.addEventListener('click', () => {
+        if (k !== cur) goTo(k, false, k > cur ? 'left' : 'right');
+      }));
       ['pointerenter', 'focusin'].forEach(ev => hero.addEventListener(ev, () => paused = true));
       ['pointerleave', 'focusout'].forEach(ev => hero.addEventListener(ev, () => paused = false));
+
+      /* --- Touch & Swipe Gesture Support on Mobile --- */
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchDiffX = 0;
+      let isHorizontalSwipe = false;
+      let isTouchActive = false;
+      let didSwipe = false;
+
+      const resetHeroDrag = () => {
+        hero.classList.remove('touching');
+        hero.style.setProperty('--touch-dx', '0px');
+        touchDiffX = 0;
+        isTouchActive = false;
+        isHorizontalSwipe = false;
+      };
+
+      hero.addEventListener('touchstart', (e: TouchEvent) => {
+        if (!e.touches || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchDiffX = 0;
+        isHorizontalSwipe = false;
+        isTouchActive = true;
+        didSwipe = false;
+        paused = true;
+      }, { passive: true });
+
+      hero.addEventListener('touchmove', (e: TouchEvent) => {
+        if (!isTouchActive || !e.touches || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+
+        if (!isHorizontalSwipe) {
+          if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+            isHorizontalSwipe = true;
+            hero.classList.add('touching');
+          } else if (Math.abs(dy) > 8) {
+            isTouchActive = false;
+            resetHeroDrag();
+            paused = false;
+            return;
+          }
+        }
+
+        if (isHorizontalSwipe) {
+          didSwipe = true;
+          touchDiffX = dx;
+          const offset = Math.max(-55, Math.min(55, dx * 0.45));
+          hero.style.setProperty('--touch-dx', `${offset}px`);
+        }
+      }, { passive: true });
+
+      const handleTouchEnd = () => {
+        if (!isTouchActive && !isHorizontalSwipe) return;
+        const dx = touchDiffX;
+        const threshold = 35;
+
+        resetHeroDrag();
+        paused = false;
+        elapsed = 0;
+
+        if (isHorizontalSwipe && Math.abs(dx) >= threshold) {
+          if (dx < 0) {
+            // Swiped left (کشیدن انگشت به سمت چپ) -> رفتن به بنر بعدی
+            goTo((cur + 1) % SLIDES.length, false, 'left');
+          } else {
+            // Swiped right (کشیدن انگشت به سمت راست) -> رفتن به بنر قبلی
+            goTo((cur - 1 + SLIDES.length) % SLIDES.length, false, 'right');
+          }
+        }
+
+        setTimeout(() => {
+          didSwipe = false;
+        }, 120);
+      };
+
+      hero.addEventListener('touchend', handleTouchEnd, { passive: true });
+      hero.addEventListener('touchcancel', () => {
+        resetHeroDrag();
+        paused = false;
+        setTimeout(() => { didSwipe = false; }, 120);
+      }, { passive: true });
+
+      // Support mouse drag on desktop
+      let mouseStartX = 0;
+      let mouseStartY = 0;
+      let mouseDiffX = 0;
+      let isMouseActive = false;
+      let isMouseHorizontal = false;
+
+      hero.addEventListener('mousedown', (e: MouseEvent) => {
+        if (e.button !== 0) return;
+        mouseStartX = e.clientX;
+        mouseStartY = e.clientY;
+        mouseDiffX = 0;
+        isMouseActive = true;
+        isMouseHorizontal = false;
+        didSwipe = false;
+        paused = true;
+      });
+
+      const onHeroMouseMove = (e: MouseEvent) => {
+        if (!isMouseActive) return;
+        const dx = e.clientX - mouseStartX;
+        const dy = e.clientY - mouseStartY;
+
+        if (!isMouseHorizontal) {
+          if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+            isMouseHorizontal = true;
+            hero.classList.add('touching');
+          }
+        }
+
+        if (isMouseHorizontal) {
+          didSwipe = true;
+          mouseDiffX = dx;
+          const offset = Math.max(-55, Math.min(55, dx * 0.45));
+          hero.style.setProperty('--touch-dx', `${offset}px`);
+        }
+      };
+
+      const onHeroMouseUp = () => {
+        if (!isMouseActive) return;
+        const dx = mouseDiffX;
+        const threshold = 35;
+
+        resetHeroDrag();
+        isMouseActive = false;
+        paused = false;
+        elapsed = 0;
+
+        if (isMouseHorizontal && Math.abs(dx) >= threshold) {
+          if (dx < 0) {
+            goTo((cur + 1) % SLIDES.length, false, 'left');
+          } else {
+            goTo((cur - 1 + SLIDES.length) % SLIDES.length, false, 'right');
+          }
+        }
+
+        setTimeout(() => {
+          didSwipe = false;
+          isMouseHorizontal = false;
+        }, 120);
+      };
+
+      window.addEventListener('mousemove', onHeroMouseMove);
+      window.addEventListener('mouseup', onHeroMouseUp);
+      cleanupFuncs.push(() => {
+        window.removeEventListener('mousemove', onHeroMouseMove);
+        window.removeEventListener('mouseup', onHeroMouseUp);
+      });
+
+      // Prevent link clicks if user was dragging/swiping
+      hero.addEventListener('click', (e: MouseEvent) => {
+        if (didSwipe) {
+          e.preventDefault();
+          e.stopPropagation();
+          didSwipe = false;
+          return false;
+        }
+      }, true);
 
       // Countdown removed as requested by user
 
@@ -734,7 +1004,7 @@ function HomeScene({ data, user }: { data: Home; user?: any }) {
           frame.style.setProperty('--py', cy.toFixed(3));
           if (!paused && !document.hidden) {
             elapsed += dt;
-            if (elapsed >= CONFIG.slideMs) goTo((cur + 1) % SLIDES.length);
+            if (elapsed >= CONFIG.slideMs) goTo((cur + 1) % SLIDES.length, false, 'left');
           }
           dashFills[cur].style.transform = `scaleX(${Math.min(1, elapsed / CONFIG.slideMs).toFixed(4)})`;
         }

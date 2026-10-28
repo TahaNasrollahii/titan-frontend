@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import TitanHomeClient from './TitanHomeClient';
+import TitanHomeClient, { DEFAULT_FALLBACK_HOME } from './TitanHomeClient';
 import { API_URL, sanitizeApiPayload } from '@/lib/api/client';
 import type { Home } from '@/lib/api/types';
 import {
@@ -50,7 +50,7 @@ async function getHomeData(): Promise<Home | null> {
   } catch {
     // Graceful fallback on network error
   }
-  return null;
+  return DEFAULT_FALLBACK_HOME;
 }
 
 export default async function TitanPage() {

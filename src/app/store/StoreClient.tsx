@@ -60,16 +60,45 @@ function useSecondsUntil(iso: string | null | undefined) {
   return iso ? Math.max(0, (new Date(iso).getTime() - now) / 1000) : 0;
 }
 
-/** Auto-rotating index that pauses while hovered. */
+/** Auto-rotating index that pauses while hovered or touched, supports swipe gestures. */
 function useRotation(length: number, intervalMs: number) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setPaused(true);
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const dx = touchEndX - touchStartX.current;
+    const dy = touchEndY - touchStartY.current;
+    touchStartX.current = null;
+    touchStartY.current = null;
+    setPaused(false);
+
+    if (Math.abs(dx) >= 35 && Math.abs(dx) > Math.abs(dy) && length > 1) {
+      if (dx < 0) {
+        setIndex(i => (i + 1) % length);
+      } else {
+        setIndex(i => (i - 1 + length) % length);
+      }
+    }
+  };
+
   useEffect(() => {
     if (paused || length < 2) return;
     const timer = window.setInterval(() => setIndex(i => (i + 1) % length), intervalMs);
     return () => window.clearInterval(timer);
   }, [paused, length, intervalMs]);
-  return { index: length ? index % length : 0, setIndex, setPaused };
+  return { index: length ? index % length : 0, setIndex, setPaused, touchHandlers: { onTouchStart, onTouchEnd } };
 }
 
 function promoHref(promo: Promo) {
@@ -115,13 +144,14 @@ function backgroundImageUrl(url: string | null | undefined, fallback: string): s
 }
 
 function DiscountPromos({ promos }: { promos: Promo[] }) {
-  const { index, setIndex, setPaused } = useRotation(promos.length, 6000);
+  const { index, setIndex, setPaused, touchHandlers } = useRotation(promos.length, 6000);
   const secondsLeft = useSecondsUntil(promos[index]?.endsAt);
   if (!promos.length) return null;
 
   return (
     <article
       className="store-promo main-promo spot"
+      {...touchHandlers}
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
     >
@@ -201,12 +231,13 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
 }
 
 function BestsellerPromos({ promos }: { promos: Promo[] }) {
-  const { index, setIndex, setPaused } = useRotation(promos.length, 5000);
+  const { index, setIndex, setPaused, touchHandlers } = useRotation(promos.length, 5000);
   if (!promos.length) return null;
 
   return (
     <article
       className="store-promo side-promo spot"
+      {...touchHandlers}
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
     >

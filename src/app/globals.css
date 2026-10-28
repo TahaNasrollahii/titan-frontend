@@ -786,7 +786,22 @@ i[data-icon] svg {
   position: relative;
   z-index: 2;
   height: clamp(224px, 22vw, 262px);
-  border-radius: 34px
+  border-radius: 34px;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  --touch-dx: 0px;
+}
+
+.hero.touching .hero-body,
+.hero.touching .hero-art {
+  transform: translateX(var(--touch-dx, 0px));
+  transition: none !important;
+}
+
+.hero:not(.touching) .hero-body,
+.hero:not(.touching) .hero-art {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-bg {
@@ -944,7 +959,17 @@ html[dir="rtl"] .hero-char {
 
 .hero-body.swap>* {
   opacity: 0;
-  transform: translateY(12px)
+  transform: translateY(12px);
+}
+
+.hero-body.swap.swap-left>* {
+  opacity: 0;
+  transform: translateX(-24px) translateY(4px);
+}
+
+.hero-body.swap.swap-right>* {
+  opacity: 0;
+  transform: translateX(24px) translateY(4px);
 }
 
 .hero-tags {
@@ -1117,6 +1142,16 @@ html[dir="rtl"] .hero-char {
   opacity: 1;
   transform: none;
   filter: none
+}
+
+.hero.slide-left .art:not(.on) {
+  transform: translateX(-40px) scale(.94);
+  opacity: 0;
+}
+
+.hero.slide-right .art:not(.on) {
+  transform: translateX(40px) scale(.94);
+  opacity: 0;
 }
 
 .art svg {
@@ -3541,6 +3576,18 @@ html[dir="rtl"] .hero-live {
   html[dir="rtl"] .art.on {
     opacity: 1;
     transform: none;
+  }
+
+  .hero.slide-left .art:not(.on),
+  html[dir="rtl"] .hero.slide-left .art:not(.on) {
+    transform: translateX(-40px) scale(1.15);
+    opacity: 0;
+  }
+
+  .hero.slide-right .art:not(.on),
+  html[dir="rtl"] .hero.slide-right .art:not(.on) {
+    transform: translateX(40px) scale(1.15);
+    opacity: 0;
   }
 
   .hero-char,
