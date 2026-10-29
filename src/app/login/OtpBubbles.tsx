@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion, type TargetAndTransition, type Transition } from 'framer-motion';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import { toEnglishDigits } from '@/lib/format';
 
@@ -77,12 +77,31 @@ export function OtpBubbles({ id, length, value, status, onChange, onComplete }: 
     if (status === 'idle') inputRef.current?.focus({ preventScroll: true });
   }, [status]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const accept = (raw: string) => {
     if (locked) return;
-    const digits = toEnglishDigits(event.target.value).replace(/\D/g, '').slice(0, length);
+    const digits = toEnglishDigits(raw).replace(/\D/g, '').slice(0, length);
     onChange(digits);
     if (digits.length === length) onComplete(digits);
   };
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => accept(event.target.value);
+
+  // Android Chrome fills the code straight from the SMS (WebOTP). Only works when the SMS ends
+  // with "@<site host> #<code>" — see the Kavenegar template in the README. iOS uses
+  // autoComplete="one-time-code" below instead.
+  const acceptSmsCode = useEffectEvent(accept);
+  useEffect(() => {
+    if (!('OTPCredential' in window)) return;
+    const controller = new AbortController();
+    navigator.credentials
+      .get({ otp: { transport: ['sms'] }, signal: controller.signal } as CredentialRequestOptions)
+      .then(credential => {
+        const code = (credential as (Credential & { code?: string }) | null)?.code;
+        if (code) acceptSmsCode(code);
+      })
+      .catch(() => {}); // aborted on unmount, timed out, or the user dismissed the prompt
+    return () => controller.abort();
+  }, []);
 
   const activeIndex = focused && status === 'idle' && value.length < length ? value.length : -1;
 
