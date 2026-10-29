@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
+import { getGuides, primaryGuide } from '../../guides/getGuides';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { composeMetaDescription } from '@/lib/seo/meta';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
@@ -146,10 +147,11 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [product, reviews, related] = await Promise.all([
+  const [product, reviews, related, guides] = await Promise.all([
     getProduct(slug),
     getProductReviews(slug),
     getRelatedProducts(slug),
+    getGuides({ product: slug }),
   ]);
 
   if (!product) {
@@ -176,6 +178,7 @@ export default async function ProductPage({
         initialData={product}
         initialReviews={reviews}
         initialRelated={related}
+        guide={primaryGuide(guides)}
       />
     </>
   );

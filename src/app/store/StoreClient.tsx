@@ -11,7 +11,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { errorMessage } from '@/lib/api/client';
 import { catalogApi, contentApi } from '@/lib/api/endpoints';
-import type { Game, Paginated, ProductSummary, Promo } from '@/lib/api/types';
+import type { Game, GuideSummary, Paginated, ProductSummary, Promo } from '@/lib/api/types';
 import { countdown, faNumber, mediaUrl, toman, toEnglishDigits } from '@/lib/format';
 import { gameIconSrc, isLocalAsset } from '@/lib/gameIcons';
 import { useApi } from '@/lib/hooks/useApi';
@@ -58,6 +58,38 @@ function useSecondsUntil(iso: string | null | undefined) {
     return () => window.clearInterval(timer);
   }, [iso]);
   return iso ? Math.max(0, (new Date(iso).getTime() - now) / 1000) : 0;
+}
+
+/** The Fortnite item shop rotates daily at 00:00 UTC. */
+function nextShopRotation() {
+  const next = new Date();
+  next.setUTCHours(24, 0, 0, 0);
+  return next.toISOString();
+}
+
+function FortniteShopLink() {
+  const secondsLeft = useSecondsUntil(nextShopRotation());
+  return (
+    <Link href="/fortnite-shop" className="fn-cta">
+      <span className="fn-cta-bg" aria-hidden="true" />
+      <img className="fn-cta-logo" src="/images/glossy-fortnite-logo.webp" alt="" width={64} height={64} />
+      <span className="fn-cta-text">
+        <span className="fn-cta-title">
+          <span className="fn-cta-live">
+            <i aria-hidden="true" />
+            زنده
+          </span>
+          آیتم شاپ فورتنایت
+        </span>
+        <span className="fn-cta-sub">
+          شاپ بعدی تا <b suppressHydrationWarning>{countdown(secondsLeft)}</b>
+        </span>
+      </span>
+      <span className="fn-cta-arrow" aria-hidden="true">
+        <Icon name="chevron-left" />
+      </span>
+    </Link>
+  );
 }
 
 /** Auto-rotating index that pauses while hovered or touched, supports swipe gestures. */
@@ -700,6 +732,8 @@ export interface StoreClientProps {
   initialDiscountPromos?: Promo[] | null;
   initialBestsellerPromos?: Promo[] | null;
   initialGame?: string;
+  /** The category's buying guide, linked next to the product list heading. */
+  guide?: GuideSummary | null;
 }
 
 function StorePageContent({
@@ -708,6 +742,7 @@ function StorePageContent({
   initialDiscountPromos,
   initialBestsellerPromos,
   initialGame,
+  guide,
 }: StoreClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -876,18 +911,14 @@ function StorePageContent({
       <div className="store-sec-h">
         <div className="store-sec-l">
           <h2>همه محصولات</h2>
+          {guide && (
+            <Link href={`/guides/${guide.slug}`} className="store-guide-link" title={guide.title}>
+              <img src="/icons/guides.svg" alt="" width={16} height={16} />
+              آموزش خرید
+            </Link>
+          )}
         </div>
-        <Link href="/fortnite-shop" className="store-fn-shop-link">
-          <span className="store-fn-shop-dot" aria-hidden="true" />
-          <img
-            src="/images/categories/fortnite.webp"
-            alt=""
-            width={32}
-            height={32}
-            style={{ width: '32px', height: '32px', objectFit: 'contain' }}
-          />
-          <span>آیتم شاپ زنده فورتنایت</span>
-        </Link>
+        <FortniteShopLink />
       </div>
 
       <div className="store-cat-row">

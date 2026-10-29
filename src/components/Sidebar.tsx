@@ -21,14 +21,14 @@ export function Sidebar() {
   }, []);
 
   let activeKey = pathname;
-  if (pathname.startsWith('/fortnite-shop')) {
-    activeKey = '/fortnite-shop';
-  } else if (pathname.startsWith('/product/') || pathname.startsWith('/store')) {
+  if (pathname.startsWith('/product/') || pathname.startsWith('/store') || pathname.startsWith('/fortnite-shop')) {
     activeKey = '/store';
   } else if (pathname.startsWith('/tournaments') && pathname.includes('/bracket')) {
     activeKey = '/dashboard';
   } else if (pathname.startsWith('/tournament') || pathname.startsWith('/tournaments')) {
     activeKey = '/tournament';
+  } else if (pathname.startsWith('/guides')) {
+    activeKey = '/guides';
   } else if (pathname.startsWith('/contact')) {
     activeKey = '/contact';
   } else if (pathname.startsWith('/about')) {
@@ -93,12 +93,12 @@ export function Sidebar() {
           </Link>
 
           <Link
-            href="/fortnite-shop"
-            className={`nav-item ${activeKey === '/fortnite-shop' ? 'active' : ''}`}
-            data-label="آیتم شاپ فورتنایت"
-            ref={el => { navRefs.current['/fortnite-shop'] = el; }}
+            href="/guides"
+            className={`nav-item ${activeKey === '/guides' ? 'active' : ''}`}
+            data-label="آموزش‌ها"
+            ref={el => { navRefs.current['/guides'] = el; }}
           >
-            <img src="/images/categories/fortnite.webp" alt="آیتم شاپ فورتنایت" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
+            <img src="/icons/guides.svg" alt="آموزش‌ها" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link

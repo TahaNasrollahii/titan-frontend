@@ -163,11 +163,11 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
         </motion.h4>
         <motion.div className={styles.rows} variants={fadeUp}>
           <AppRow
-            href="/fortnite-shop"
-            icon="/images/categories/fortnite.webp"
-            tone="53 198 255"
-            label="آیتم شاپ فورتنایت"
-            hint="مشاهده زنده اسکین‌ها و آیتم‌های امروز"
+            href="/guides"
+            icon="/icons/guides.svg"
+            tone="255 176 72"
+            label="آموزش‌ها"
+            hint="آموزش خرید، فعال‌سازی و راهنمای سایت"
             onClick={onClose}
           />
           <AppRow

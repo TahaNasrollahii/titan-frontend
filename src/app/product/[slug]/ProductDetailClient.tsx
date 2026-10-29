@@ -2,6 +2,7 @@
 
 import {
   BadgePercent,
+  BookOpen,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -37,6 +38,7 @@ import { errorMessage } from '@/lib/api/client';
 import { catalogApi } from '@/lib/api/endpoints';
 import type {
   DeliveryType,
+  GuideSummary,
   Paginated,
   Product,
   ProductSummary,
@@ -163,9 +165,11 @@ interface ProductDetailClientProps {
   initialData?: Product | null;
   initialRelated?: ProductSummary[];
   initialReviews?: Paginated<Review>;
+  /** How-to guide for buying or activating this product. */
+  guide?: GuideSummary | null;
 }
 
-export default function ProductPage({ initialData, initialRelated, initialReviews }: ProductDetailClientProps) {
+export default function ProductPage({ initialData, initialRelated, initialReviews, guide }: ProductDetailClientProps) {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
@@ -502,6 +506,12 @@ export default function ProductPage({ initialData, initialRelated, initialReview
               </Link>
             ) : null}
             <span className={styles.categoryChip}>{data.category.name}</span>
+            {guide && (
+              <Link href={`/guides/${guide.slug}`} className={styles.guideChip} title={guide.title}>
+                <BookOpen size={15} aria-hidden="true" />
+                آموزش خرید و فعال‌سازی
+              </Link>
+            )}
           </div>
 
           <h1 className={styles.title}>{data.title}</h1>

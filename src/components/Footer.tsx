@@ -53,6 +53,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { href: '/store', label: 'فروشگاه' },
       { href: '/about', label: 'درباره ما' },
       { href: '/contact', label: 'تماس با ما' },
+      { href: '/guides', label: 'آموزش‌ها و راهنمای خرید' },
       { href: '/faq', label: 'سوالات متداول' },
     ],
   },

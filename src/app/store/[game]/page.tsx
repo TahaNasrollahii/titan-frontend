@@ -19,6 +19,7 @@ import {
   getStoreProducts,
   getStorePromos,
 } from '../getStoreData';
+import { getGuides, primaryGuide } from '../../guides/getGuides';
 
 export const revalidate = 30;
 export const dynamicParams = true;
@@ -158,13 +159,15 @@ export default async function StoreCategoryPage({
     notFound();
   }
 
-  const [initialProducts, initialGames, initialDiscountPromos, initialBestsellerPromos] =
+  const [initialProducts, initialGames, initialDiscountPromos, initialBestsellerPromos, guides] =
     await Promise.all([
       getStoreProducts(game.slug, 12, currentPage),
       getStoreGames(),
       getStorePromos('store_discount'),
       getStorePromos('store_bestseller'),
+      getGuides({ game: game.slug }),
     ]);
+  const guide = primaryGuide(guides);
 
   const collectionSchema = buildCollectionPageSchema({
     name: `خرید محصولات ${game.title} (${game.titleEn})`,
@@ -175,10 +178,6 @@ export default async function StoreCategoryPage({
     path: currentPage > 1 ? `/store/${game.slug}?page=${currentPage}` : `/store/${game.slug}`,
     products: initialProducts?.results ?? [],
   });
-
-  const bottomSeoText =
-    game.bottomSeoText ||
-    `در این بخش می‌توانید انواع محصولات، پول درون‌برنامه‌ای، گیفت کارت و بسته‌های ویژه ${game.title} (${game.titleEn}) را با تحویل آنی، قیمت رقابتی و گارانتی معتبر از فروشگاه تایتان تهیه کنید.`;
 
   return (
     <>
@@ -196,6 +195,7 @@ export default async function StoreCategoryPage({
         initialGames={initialGames}
         initialDiscountPromos={initialDiscountPromos}
         initialBestsellerPromos={initialBestsellerPromos}
+        guide={guide}
       />
       <PaginationNav
         basePath={`/store/${game.slug}`}
@@ -203,25 +203,6 @@ export default async function StoreCategoryPage({
         totalCount={initialProducts?.count ?? 0}
         pageSize={12}
       />
-      <section
-        aria-label={`توضیحات تکمیلی خرید محصولات ${game.title}`}
-        style={{
-          maxWidth: '1320px',
-          margin: '24px auto 0',
-          padding: '20px 24px',
-          borderRadius: '18px',
-          background: 'rgba(255, 255, 255, 0.025)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
-          color: 'rgba(255, 255, 255, 0.72)',
-          fontSize: '0.86rem',
-          lineHeight: 1.85,
-        }}
-      >
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff', margin: '0 0 8px' }}>
-          راهنمای خرید {game.title} ({game.titleEn}) از تایتان
-        </h2>
-        <p style={{ margin: 0 }}>{bottomSeoText}</p>
-      </section>
     </>
   );
 }

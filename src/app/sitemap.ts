@@ -16,6 +16,7 @@ interface SeoSitemapResponse {
   games?: SitemapEntryItem[];
   categories?: SitemapEntryItem[];
   tournaments?: SitemapEntryItem[];
+  guides?: SitemapEntryItem[];
 }
 
 // Stable baseline date for static pages
@@ -79,6 +80,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/tournament`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
     { url: `${SITE_URL}/about`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/contact`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${SITE_URL}/guides`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${SITE_URL}/faq`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/terms`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${SITE_URL}/privacy`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.5 },
@@ -87,11 +89,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let gameRoutes: MetadataRoute.Sitemap = [];
   let productRoutes: MetadataRoute.Sitemap = [];
   let tournamentRoutes: MetadataRoute.Sitemap = [];
+  let guideRoutes: MetadataRoute.Sitemap = [];
 
   // 1. Primary: lightweight cached /api/v1/seo/sitemap/ endpoint (canonical, active, indexable items only)
   try {
     const seoRes = await fetch(`${API_URL}/seo/sitemap/`, {
-      next: { revalidate: 3600, tags: ['sitemap', 'products', 'games', 'tournaments'] },
+      next: { revalidate: 3600, tags: ['sitemap', 'products', 'games', 'tournaments', 'guides'] },
       signal: AbortSignal.timeout(4000),
     });
     if (seoRes.ok) {
@@ -110,6 +113,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: parseDate(p),
           changeFrequency: 'daily',
           priority: 0.85,
+        }));
+      }
+      if (Array.isArray(seoData.guides)) {
+        guideRoutes = seoData.guides.map((g) => ({
+          url: `${SITE_URL}/guides/${g.slug}`,
+          lastModified: parseDate(g),
+          changeFrequency: 'monthly',
+          priority: 0.7,
         }));
       }
       if (Array.isArray(seoData.tournaments) && seoData.tournaments.length > 0) {
@@ -219,5 +230,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   }
 
-  return [...staticRoutes, ...gameRoutes, ...productRoutes, ...tournamentRoutes];
+  return [...staticRoutes, ...gameRoutes, ...productRoutes, ...tournamentRoutes, ...guideRoutes];
 }
