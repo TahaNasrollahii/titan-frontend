@@ -93,6 +93,15 @@ export function Sidebar() {
           </Link>
 
           <Link
+            href="/tournament"
+            className={`nav-item ${activeKey === '/tournament' ? 'active' : ''}`}
+            data-label="تورنومنت"
+            ref={el => { navRefs.current['/tournament'] = el; }}
+          >
+            <img src="/icons/tournament.webp" alt="تورنومنت" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+          </Link>
+
+          <Link
             href="/guides"
             className={`nav-item ${activeKey === '/guides' ? 'active' : ''}`}
             data-label="آموزش‌ها"
@@ -101,14 +110,6 @@ export function Sidebar() {
             <img src="/icons/guides.svg" alt="آموزش‌ها" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
-          <Link
-            href="/tournament"
-            className={`nav-item ${activeKey === '/tournament' ? 'active' : ''}`}
-            data-label="تورنومنت"
-            ref={el => { navRefs.current['/tournament'] = el; }}
-          >
-            <img src="/icons/tournament.webp" alt="تورنومنت" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
-          </Link>
           <Link
             href="/contact"
             className={`nav-item ${activeKey === '/contact' ? 'active' : ''}`}
