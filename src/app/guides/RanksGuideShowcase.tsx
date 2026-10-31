@@ -30,28 +30,28 @@ const RANK_TIER_DETAILS: Record<string, RankTierDetail> = {
     faName: 'نقره',
     rangeLabel: '۱,۵۰۰ تا ۴,۹۹۹ امتیاز',
     ornamentLabel: 'نشان ستاره نقره‌ای',
-    perk: 'ارتقای سید (Seed) اولیه در براکت مسابقات و قاب نقره‌ای درخشان در پروفایل و لیدربرد',
+    perk: 'ارتقای سید (Seed) اولیه در براکت مسابقات و قاب نقره‌ای درخشان در پروفایل',
   },
   gold: {
     id: 'gold',
     faName: 'طلا',
     rangeLabel: '۵,۰۰۰ تا ۹,۹۹۹ امتیاز',
     ornamentLabel: 'نشان تاج طلایی',
-    perk: 'جایگاه ویژه در سیدبندی دور اول براکت‌ها و نمایش تاج طلایی روی آواتار بازیکن و تیم',
+    perk: 'جایگاه ویژه در سیدبندی دور اول براکت‌ها و نمایش تاج طلایی روی آواتار',
   },
   platinum: {
     id: 'platinum',
     faName: 'پلاتینیوم',
     rangeLabel: '۱۰,۰۰۰ تا ۱۹,۹۹۹ امتیاز',
     ornamentLabel: 'نشان الماس بنفش',
-    perk: 'اولویت دریافت استراحت دور اول (Bye) در جداول غیرکامل و قرارگیری در صدر جدول برترین‌ها',
+    perk: 'اولویت استراحت دور اول (Bye) در جداول غیرکامل و حضور در صدر لیدربرد',
   },
   titan: {
     id: 'titan',
     faName: 'تایتان',
     rangeLabel: '+۲۰,۰۰۰ امتیاز',
-    ornamentLabel: 'نشان اسطوره‌ای تایتان با چشمان درخشان',
-    perk: 'بالاترین سید ممکن در تمام تورنومنت‌ها، قاب سرخ-مشکی تایتان و جایگاه تالار افتخارات فصل',
+    ornamentLabel: 'نشان اسطوره‌ای تایتان',
+    perk: 'بالاترین سید ممکن در تمام تورنومنت‌ها، قاب سرخ-مشکی تایتان و تالار افتخارات',
   },
 };
 
@@ -60,75 +60,70 @@ const RANK_MECHANICS = [
     icon: 'trophy',
     badge: '+۲۵ تا +۱,۰۰۰ امتیاز',
     title: 'نحوه کسب امتیاز رنک (Points)',
-    desc: 'با پیروزی در هر مسابقه از جدول براکت ۲۵ امتیاز رنک می‌گیرید. علاوه بر آن، نفرات و تیم‌های برتر هر تورنومنت (رتبه‌های اول تا سوم) پاداش امتیازی ویژه جدول (از ۱۵۰ تا ۱,۰۰۰ امتیاز) دریافت می‌کنند.',
+    desc: 'با پیروزی در هر مسابقه از جدول براکت ۲۵ امتیاز رنک می‌گیرید و نفرات برتر هر تورنومنت نیز از ۱۵۰ تا ۱,۰۰۰ امتیاز پاداش می‌گیرند.',
     accent: '#f59e0b',
   },
   {
     icon: 'bolt',
     badge: '+۱۲۰ XP برد / +۴۰ XP حضور',
     title: 'تفاوت امتیاز رنک با تجربه (XP) و لول',
-    desc: 'امتیاز رنک سطح رقابتی شما (برنز تا تایتان) را مشخص می‌کند، اما XP نشان‌دهنده سابقه فعالیت شماست. در هر بازی برنده ۱۲۰ XP و حتی بازنده ۴۰ XP می‌گیرد و با فرمول 500 + (Level × 300) لول اکانت ارتقا می‌یابد.',
+    desc: 'امتیاز رنک سطح رقابتی شما (برنز تا تایتان) را مشخص می‌کند، اما XP سابقه فعالیت شماست و در هر بازی به برنده و بازنده تعلق می‌گیرد.',
     accent: '#00d4ff',
   },
   {
     icon: 'users',
     badge: 'سیدبندی هوشمند',
     title: 'تاثیر رنک در براکت و مسابقات تیمی',
-    desc: 'در مسابقات تیمی امتیاز هم به تیم و هم به بازیکنان داخل ترکیب (Roster) اضافه می‌شود. همچنین جدول براکت بر اساس امتیاز سیدبندی می‌شود تا تیم‌های قوی در دور اول به هم نخورند.',
+    desc: 'در مسابقات تیمی امتیاز هم به تیم و هم به بازیکنان ترکیب (Roster) اضافه می‌شود و جدول براکت بر اساس امتیاز سیدبندی می‌شود.',
     accent: '#9d6fff',
   },
   {
     icon: 'crown',
     badge: '۵ نشان افتخار',
     title: 'نشان‌های افتخار (Badges) پروفایل',
-    desc: 'با فتح فینال هر تورنومنت، نشان «قهرمان (Champion)» به‌صورت خودکار به پروفایل شما اضافه می‌شود. نشان‌های «استاد برد پیاپی»، «کهنه‌کار»، «سلطان هدشات» و «استاد کلاچ» نیز رکوردهای شما را نمایش می‌دهند.',
+    desc: 'با فتح فینال تورنومنت نشان «قهرمان» و با ثبت رکوردهای ویژه نشان‌های «برد پیاپی»، «کهنه‌کار»، «سلطان هدشات» و «استاد کلاچ» فعال می‌شوند.',
     accent: '#e2453f',
   },
 ];
 
 export function RanksGuideShowcase({ variant = 'hub' }: { variant?: 'hub' | 'article' }) {
+  const isHub = variant === 'hub';
+
   return (
     <section
       id="ranks-guide"
-      className={`${styles.ranksSection} ${variant === 'article' ? styles.ranksSectionArticle : ''}`}
+      className={`${styles.ranksSection} ${!isHub ? styles.ranksSectionArticle : ''}`}
       aria-labelledby="ranks-guide-title"
     >
       <div className={styles.ranksHeader}>
         <div className={styles.ranksHeaderRight}>
-          <span className={styles.sectionKicker}>
-            <span className={styles.kickerDot} aria-hidden="true" />
-            سیستم رنک‌بندی و سطح‌بندی تایتان
-          </span>
           <h2 id="ranks-guide-title" className={styles.ranksTitle}>
-            آموزش کامل رنک‌های سایت، امتیازات (Points) و مسیر صعود تا تایتان
+            {isHub ? 'رنک‌ها و سیستم امتیازدهی تایتان' : 'سطح‌های ۵گانه رنک و نحوه امتیازگیری'}
           </h2>
           <p className={styles.ranksSubtitle}>
-            در تایتان هر بازیکن و هر تیم بر اساس امتیازهای کسب‌شده در تورنومنت‌ها در یکی از ۵ سطح رنک قرار می‌گیرد.
-            رنک شما قاب و نشان آواتار، جایگاه در لیدربرد فصل و سیدبندی شما در جدول مسابقات را تعیین می‌کند.
+            بر اساس امتیازهای کسب‌شده در تورنومنت‌ها، اکانت و تیم شما از سطح ۱ (برنز) تا سطح ۵ (تایتان) ارتقا می‌یابد.
           </p>
         </div>
 
-        {variant === 'hub' && (
+        {isHub && (
           <div className={styles.ranksHeaderActions}>
             <Link href="/guides/ranks" className={styles.btnPrimary}>
-              <span>مطالعه راهنمای کامل رنک‌ها</span>
+              <span>آموزش کامل رنک‌ها و امتیازات</span>
               <Icon name="arrow" />
-            </Link>
-            <Link href="/tournament" className={styles.btnGhost}>
-              <span>مشاهده لیدربرد و رنک‌ها</span>
             </Link>
           </div>
         )}
       </div>
 
-      {/* 5 Rank Tiers Grid */}
+      {/* 5 Rank Tiers Grid (1 to 5 from Left to Right) */}
       <div className={styles.ranksTiersGrid}>
         {RANKS.map((rank, index) => {
           const detail = RANK_TIER_DETAILS[rank.id] ?? RANK_TIER_DETAILS.bronze;
           return (
-            <div
+            <Link
               key={rank.id}
-              className={`${styles.rankTierCard} ${styles.spotCard}`}
+              href="/guides/ranks"
+              className={`${styles.rankTierCard} ${isHub ? styles.rankTierCardCompact : ''}`}
               data-tier={rank.id}
               style={
                 {
@@ -138,11 +133,6 @@ export function RanksGuideShowcase({ variant = 'hub' }: { variant?: 'hub' | 'art
                 } as CSSProperties
               }
             >
-              <div className={styles.rankTierTop}>
-                <span className={styles.rankTierStep}>سطح {faNumber(index + 1)}</span>
-                <span className={styles.rankTierRange}>{detail.rangeLabel}</span>
-              </div>
-
               <div className={styles.rankVisualStage}>
                 <div
                   className={`rank-frame-wrap ${styles.rankFrameBox}`}
@@ -165,42 +155,42 @@ export function RanksGuideShowcase({ variant = 'hub' }: { variant?: 'hub' | 'art
                   <h3 style={{ color: rank.from }}>{detail.faName}</h3>
                   <span>{rank.name}</span>
                 </div>
-                <div className={styles.rankTierPointsBadge}>{rank.pts}</div>
+                <div className={styles.rankTierPointsBadge}>{detail.rangeLabel}</div>
               </div>
 
-              <p className={styles.rankTierMotto}>«{rank.desc}»</p>
+              <p className={styles.rankTierMotto}>{rank.desc}</p>
 
-              <div className={styles.rankTierMeta}>
-                <div className={styles.rankTierOrnamentTag}>
-                  <Icon name="sparkles" />
-                  <span>{detail.ornamentLabel}</span>
+              {!isHub && (
+                <div className={styles.rankTierMeta}>
+                  <p className={styles.rankTierPerk}>{detail.perk}</p>
                 </div>
-                <p className={styles.rankTierPerk}>{detail.perk}</p>
-              </div>
-            </div>
+              )}
+            </Link>
           );
         })}
       </div>
 
-      {/* 4 Mechanics Cards: Points, XP/Level, Seeding, Badges */}
-      <div className={styles.ranksMechanicsGrid}>
-        {RANK_MECHANICS.map(item => (
-          <div
-            key={item.title}
-            className={`${styles.rankMechanicCard} ${styles.spotCard}`}
-            style={{ '--mech-accent': item.accent } as CSSProperties}
-          >
-            <div className={styles.rankMechanicHead}>
-              <span className={styles.rankMechanicIcon} aria-hidden="true">
-                <Icon name={item.icon} />
-              </span>
-              <span className={styles.rankMechanicBadge}>{item.badge}</span>
+      {/* 4 Mechanics Cards — only shown on the dedicated /guides/ranks page */}
+      {!isHub && (
+        <div className={styles.ranksMechanicsGrid}>
+          {RANK_MECHANICS.map(item => (
+            <div
+              key={item.title}
+              className={styles.rankMechanicCard}
+              style={{ '--mech-accent': item.accent } as CSSProperties}
+            >
+              <div className={styles.rankMechanicHead}>
+                <span className={styles.rankMechanicIcon} aria-hidden="true">
+                  <Icon name={item.icon} />
+                </span>
+                <span className={styles.rankMechanicBadge}>{item.badge}</span>
+              </div>
+              <h4>{item.title}</h4>
+              <p>{item.desc}</p>
             </div>
-            <h4>{item.title}</h4>
-            <p>{item.desc}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

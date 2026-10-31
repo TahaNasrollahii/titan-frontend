@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { Icon } from '@/components/Icons';
@@ -13,7 +12,7 @@ import styles from './guides.module.css';
 
 export const revalidate = 300;
 
-const TITLE = 'آموزش‌ها و راهنمای خرید';
+const TITLE = 'آموزش‌ها و راهنمای تایتان';
 const DESCRIPTION =
   'آموزش قدم‌به‌قدم خرید و فعال‌سازی وی‌باکس، ولورانت پوینت، سی‌پی کالاف، جم کلش و اشتراک‌های پریمیوم، ساخت اکانت بازی‌ها، کیف پول و تورنومنت‌های تایتان.';
 
@@ -23,7 +22,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: TITLE,
     description: DESCRIPTION,
     alternates: { canonical: `${SITE_URL}/guides` },
-    // An empty hub is a thin page: keep it out of the index until guides are published.
     ...(guides.length === 0 ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: `${TITLE} | ${SITE_NAME}`,
@@ -71,46 +69,21 @@ export default async function GuidesPage() {
 
       <GuidesHubClient guides={guides} title={TITLE} />
 
-      {/* ─── Bottom Support & Ecosystem Command Banner ─── */}
-      <section className={styles.hubCtaBanner} aria-labelledby="hub-cta-title">
-        <div className={styles.hubCtaGlow} aria-hidden="true" />
-
-        <div className={styles.hubCtaContent}>
-          <span className={styles.sectionKicker}>
-            <span className={styles.livePulseDot} aria-hidden="true" />
-            پشتیبانی آنلاین ۲۴ ساعته تایتان
-          </span>
-          <h2 id="hub-cta-title" className={styles.hubCtaTitle}>
-            هنوز سوالی دارید یا به راهنمایی لحظه‌ای نیاز دارید؟
-          </h2>
-          <p className={styles.hubCtaText}>
-            کارشناسان تایتان در تمام مراحل آماده‌سازی اکانت، خرید و فعال‌سازی محصولات یا ثبت‌نام در
-            تورنومنت‌ها از طریق چت آنلاین سایت، تلگرام و دیسکورد همراه شما هستند.
-          </p>
-
-          <div className={styles.hubCtaActions}>
-            <Link href="/contact" className={styles.btnPrimary}>
-              <span>ارتباط با پشتیبانی</span>
-              <Icon name="arrow" />
-            </Link>
-            <Link href="/faq" className={styles.btnGhost}>
-              <span>سوالات متداول</span>
-            </Link>
-            <Link href="/store" className={styles.btnGhost}>
-              <span>ورود به فروشگاه</span>
-            </Link>
-          </div>
+      {/* ─── Compact Bottom Support Bar ─── */}
+      <section className={styles.helpBox} aria-labelledby="hub-cta-title">
+        <div>
+          <h2 id="hub-cta-title">پاسخ سوالتان را پیدا نکردید؟</h2>
+          <p>پشتیبانی آنلاین تایتان در تمام مراحل خرید، اتصال اکانت یا شرکت در مسابقات همراه شماست.</p>
         </div>
 
-        <div className={styles.hubCtaVisual} aria-hidden="true">
-          <div className={styles.hubCtaRing} />
-          <Image
-            src="/images/support-robot.webp"
-            alt=""
-            width={220}
-            height={220}
-            className={styles.hubCtaRobot}
-          />
+        <div className={styles.helpActions}>
+          <Link href="/contact" className={styles.btnPrimary}>
+            <span>ارتباط با پشتیبانی</span>
+            <Icon name="arrow" />
+          </Link>
+          <Link href="/faq" className={styles.btnGhost}>
+            <span>سوالات متداول</span>
+          </Link>
         </div>
       </section>
     </div>
