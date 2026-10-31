@@ -50,6 +50,7 @@ import { faNumber, mediaUrl, productPrice, toman } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
 
 import styles from './product.module.css';
+import { enrichProductSeo, getProductKeywords, parseDescriptionBlocks } from './productSeoContent';
 import { ReviewsSection, Stars } from './ReviewsSection';
 
 const TITAN_RED = '#e2453f';
@@ -250,7 +251,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
     isDraggingRelated.current = false;
   };
 
-  const data = product.data;
+  const data = useMemo(() => (product.data ? enrichProductSeo(product.data) : null), [product.data]);
   const hasData = Boolean(data);
   // Until the user picks one, the cheapest in-stock option is selected.
   const variant = useMemo(
@@ -348,7 +349,8 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const watermark = data.game ? gameWatermarkSrc(data.game.slug) : null;
   const deliveryLabel = data.deliveryInfo || DELIVERY_LABELS[data.deliveryType];
   const perks = data.features.length > 0 ? data.features : DEFAULT_PERKS;
-  const paragraphs = (data.description || '').split(/\n+/).map(p => p.trim()).filter(Boolean);
+  const descriptionBlocks = parseDescriptionBlocks(data.description || '');
+  const keywords = getProductKeywords(data);
   const mainAlt = data.imageAlt || data.title;
   const galleryImages = [
     ...(data.image ? [{ src: mediaUrl(data.image), alt: mainAlt }] : []),
@@ -363,7 +365,9 @@ export default function ProductPage({ initialData, initialRelated, initialReview
       ? [['پلتفرم‌ها', data.platforms.map(p => p.name).join('، ')] as [string, string]]
       : []),
     ['نوع تحویل', deliveryLabel],
-    ...Object.entries(data.specs).map(([key, value]) => [SPEC_LABELS[key] ?? key, String(value)] as [string, string]),
+    ...Object.entries(data.specs)
+      .filter(([key]) => key !== 'keywords')
+      .map(([key, value]) => [SPEC_LABELS[key] ?? key, String(value)] as [string, string]),
   ];
 
   const toggleWishlist = async () => {
@@ -835,11 +839,27 @@ export default function ProductPage({ initialData, initialRelated, initialReview
             <h2 id="pd-about-title" className={styles.blockTitle}>
               درباره {data.title}
             </h2>
-            {paragraphs.length > 0 ? (
+            {descriptionBlocks.length > 0 ? (
               <div className={styles.prose}>
-                {paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                {descriptionBlocks.map((block, i) => {
+                  if (block.type === 'heading') {
+                    return (
+                      <h3 key={i} className={styles.proseHeading}>
+                        {block.text}
+                      </h3>
+                    );
+                  }
+                  if (block.type === 'list') {
+                    return (
+                      <ul key={i} className={styles.proseList}>
+                        {block.items.map((item, j) => (
+                          <li key={j}>{item}</li>
+                        ))}
+                      </ul>
+                    );
+                  }
+                  return <p key={i}>{block.text}</p>;
+                })}
               </div>
             ) : (
               <p className={styles.prose}>
@@ -856,6 +876,18 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                   </li>
                 ))}
               </ul>
+            )}
+            {keywords.length > 0 && (
+              <div className={styles.keywordsBlock}>
+                <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
+                <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
+                  {keywords.map(kw => (
+                    <li key={kw} className={styles.keywordChip}>
+                      {kw}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </section>
         )}

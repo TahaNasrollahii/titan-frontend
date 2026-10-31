@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
+import { enrichProductSeo, getProductKeywords, plainTextDescription } from './productSeoContent';
 import { getGuides, primaryGuide } from '../../guides/getGuides';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { composeMetaDescription } from '@/lib/seo/meta';
@@ -40,9 +41,9 @@ async function getProduct(slug: string): Promise<Product | null> {
     tags: ['products', `product-${slug}`],
   });
   if (!prod && slug === 'clash-of-clans-gems') {
-    return DEFAULT_CLASH_PRODUCT_DETAIL;
+    return enrichProductSeo(DEFAULT_CLASH_PRODUCT_DETAIL);
   }
-  return prod;
+  return prod ? enrichProductSeo(prod) : null;
 }
 
 async function getProductReviews(slug: string): Promise<Paginated<Review> | undefined> {
@@ -94,7 +95,7 @@ export async function generateMetadata({
   // Strip duplicate brand suffix because RootLayout applies `%s | تایتان`
   const rawTitle = (product.metaTitle || `خرید ${product.title}`).replace(/\s*\|\s*(فروشگاه\s*)?تایتان\s*$/u, '');
   const description = composeMetaDescription(
-    product.metaDescription || product.description || product.subtitle,
+    product.metaDescription || plainTextDescription(product.description) || product.subtitle,
     `خرید ${product.title} با تحویل فوری، پرداخت امن و پشتیبانی ۲۴ ساعته در فروشگاه تایتان.`,
     'قیمت به‌روز، خرید قانونی و ضمانت تحویل.',
   );
@@ -104,6 +105,7 @@ export async function generateMetadata({
 
   return {
     title: rawTitle,
+    keywords: getProductKeywords(product),
     description,
     alternates: {
       canonical: canonicalUrl,

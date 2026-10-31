@@ -1,4 +1,5 @@
 import { permanentRedirect, redirect } from 'next/navigation';
+import { getProductKeywords, plainTextDescription } from '@/app/product/[slug]/productSeoContent';
 import { API_URL } from '@/lib/api/client';
 import type {
   ContactChannel,
@@ -193,9 +194,10 @@ export function buildProductSchema(product: Product, reviews: Review[] = []) {
     '@type': 'Product',
     name: product.title,
     description:
-      product.description ||
+      plainTextDescription(product.description) ||
       product.subtitle ||
       `خرید آنلاین ${product.title} با تحویل آنی در فروشگاه تایتان.`,
+    keywords: getProductKeywords(product).join('، '),
     sku: product.sku || `TITAN-${product.id || product.slug}`,
     image: images,
     brand: {

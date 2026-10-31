@@ -7,6 +7,7 @@ import { type CSSProperties, useMemo, useState } from 'react';
 import { Icon } from '@/components/Icons';
 import type { GuideCategory, GuideSummary } from '@/lib/api/types';
 import { faNumber } from '@/lib/format';
+import { useSpotlight } from '@/lib/hooks/useSpotlight';
 
 import { GuideCard } from './GuideCard';
 import { RanksGuideShowcase } from './RanksGuideShowcase';
@@ -120,6 +121,8 @@ export function GuidesHubClient({
     return counts;
   }, [guides]);
 
+  useSpotlight(`.${styles.heroStage}`, [activeCategory, activeGame, normalizedQuery]);
+
   const resetFilters = () => {
     setSearchQuery('');
     setActiveGame('all');
@@ -128,39 +131,109 @@ export function GuidesHubClient({
 
   return (
     <>
-      {/* ─── Clean, Focused Header & Filter Bar ─── */}
+      {/* ─── Hero Section with 3D Character Stage & Clean Filter Bar ─── */}
       <header className={styles.hubHeader}>
-        <div className={styles.hubHeaderTop}>
-          <div className={styles.hubHeaderTitles}>
-            <h1 className={styles.hubTitle}>{title}</h1>
-            <p className={styles.hubSubtitle}>
-              راهنمای گام‌به‌گام خرید محصولات، اتصال اکانت بازی‌ها، شرکت در تورنومنت‌ها و سیستم رنک‌بندی تایتان
-            </p>
+        <div className={styles.heroAmbientGlow} aria-hidden="true" />
+        <div className={styles.heroGridMask} aria-hidden="true" />
+
+        <div className={styles.hubHeroSplit}>
+          <div className={styles.hubHeroMain}>
+            <div className={styles.hubHeaderTitles}>
+              <div className={styles.heroEyebrowRow}>
+                <span className={styles.heroKicker}>
+                  <span className={styles.livePulseDot} aria-hidden="true" />
+                  <span>آکادمی و راهنمای رسمی تایتان</span>
+                </span>
+                {guides.length > 0 && (
+                  <span className={styles.heroCountBadge}>
+                    {faNumber(guides.length)} آموزش گام‌به‌گام
+                  </span>
+                )}
+              </div>
+
+              <h1 className={styles.hubTitle}>
+                {title}؛ <span className={styles.gradientText}>سریع، امن و قدم‌به‌قدم</span>
+              </h1>
+              <p className={styles.hubSubtitle}>
+                راهنمای گام‌به‌گام خرید محصولات، اتصال اکانت بازی‌ها، شرکت در تورنومنت‌ها و سیستم رنک‌بندی تایتان
+              </p>
+            </div>
+
+            {/* Search Input */}
+            <div className={styles.hubSearchBox} role="search" aria-label="جستجو در آموزش‌ها">
+              <span className={styles.hubSearchIcon} aria-hidden="true">
+                <Icon name="search" />
+              </span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="جستجو در آموزش‌ها (مثلاً: وی‌باکس، سوپرسل، تورنومنت، رنک...)"
+                aria-label="جستجو در عنوان یا متن آموزش‌ها"
+                className={styles.hubSearchInput}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className={styles.hubSearchClear}
+                  aria-label="پاک کردن جستجو"
+                >
+                  <Icon name="x" />
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Search Input */}
-          <div className={styles.hubSearchBox} role="search" aria-label="جستجو در آموزش‌ها">
-            <span className={styles.hubSearchIcon} aria-hidden="true">
-              <Icon name="search" />
-            </span>
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="جستجو در آموزش‌ها (مثلاً: وی‌باکس، سوپرسل، تورنومنت، رنک...)"
-              aria-label="جستجو در عنوان یا متن آموزش‌ها"
-              className={styles.hubSearchInput}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className={styles.hubSearchClear}
-                aria-label="پاک کردن جستجو"
-              >
-                <Icon name="x" />
-              </button>
-            )}
+          {/* 3D Character & Game Emblem Visual Stage */}
+          <div className={styles.heroStage} aria-hidden="true">
+            <div className={styles.stageHalo} />
+            <div className={styles.stageRingDashed} />
+            <div className={styles.stageRingGlow} />
+
+            <div className={`${styles.stageChar} ${styles.stageCharLeft}`}>
+              <Image
+                src="/images/hero/characters/fortnite.webp"
+                alt=""
+                width={320}
+                height={320}
+                priority
+                draggable={false}
+              />
+            </div>
+            <div className={`${styles.stageChar} ${styles.stageCharRight}`}>
+              <Image
+                src="/images/hero/characters/callof-v2.webp"
+                alt=""
+                width={320}
+                height={320}
+                priority
+                draggable={false}
+              />
+            </div>
+            <div className={`${styles.stageChar} ${styles.stageCharCenter}`}>
+              <Image
+                src="/images/hero/characters/valorant.webp"
+                alt=""
+                width={390}
+                height={390}
+                priority
+                draggable={false}
+              />
+            </div>
+
+            <div className={`${styles.stageOrbit} ${styles.stageOrbitA}`}>
+              <Image src="/images/glossy-fortnite-logo.webp" alt="" width={64} height={64} draggable={false} />
+            </div>
+            <div className={`${styles.stageOrbit} ${styles.stageOrbitB}`}>
+              <Image src="/images/glossy-valorant-logo.webp" alt="" width={60} height={60} draggable={false} />
+            </div>
+            <div className={`${styles.stageOrbit} ${styles.stageOrbitC}`}>
+              <Image src="/images/glossy-cod-logo.webp" alt="" width={56} height={56} draggable={false} />
+            </div>
+            <div className={`${styles.stageOrbit} ${styles.stageOrbitD}`}>
+              <Image src="/images/products/vbucks.webp" alt="" width={58} height={58} draggable={false} />
+            </div>
           </div>
         </div>
 

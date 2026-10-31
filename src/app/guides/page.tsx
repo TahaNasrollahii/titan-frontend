@@ -71,12 +71,12 @@ export default async function GuidesPage() {
 
       {/* ─── Compact Bottom Support Bar ─── */}
       <section className={styles.helpBox} aria-labelledby="hub-cta-title">
-        <div>
+        <div className={styles.helpBoxBody}>
           <h2 id="hub-cta-title">پاسخ سوالتان را پیدا نکردید؟</h2>
           <p>پشتیبانی آنلاین تایتان در تمام مراحل خرید، اتصال اکانت یا شرکت در مسابقات همراه شماست.</p>
         </div>
 
-        <div className={styles.helpActions}>
+        <div className={styles.helpBoxActions}>
           <Link href="/contact" className={styles.btnPrimary}>
             <span>ارتباط با پشتیبانی</span>
             <Icon name="arrow" />
