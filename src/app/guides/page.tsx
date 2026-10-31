@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
+import { Icon } from '@/components/Icons';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 
-import { GuideCard } from './GuideCard';
-import { GUIDE_CATEGORIES, getGuides } from './getGuides';
+import { getGuides } from './getGuides';
+import { GuidesHubClient } from './GuidesHubClient';
 import styles from './guides.module.css';
 
 export const revalidate = 300;
@@ -37,10 +39,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function GuidesPage() {
   const guides = await getGuides();
-  const sections = GUIDE_CATEGORIES.map(category => ({
-    ...category,
-    guides: guides.filter(guide => guide.category === category.key),
-  })).filter(section => section.guides.length > 0);
 
   const collectionSchema = {
     '@context': 'https://schema.org',
@@ -71,46 +69,50 @@ export default async function GuidesPage() {
         ]}
       />
 
-      <header className={styles.hero}>
-        <nav aria-label="مسیر صفحه" className={styles.crumbs}>
-          <Link href="/">تایتان</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">آموزش‌ها</span>
-        </nav>
-        <h1 className={styles.heroTitle}>{TITLE}</h1>
-        <p className={styles.heroText}>
-          هر چیزی که برای خرید از تایتان لازم دارید، یک‌جا: از آماده کردن اکانت بازی و مراحل خرید هر محصول تا
-          کیف پول، پیگیری سفارش و شرکت در تورنومنت‌ها.
-        </p>
-        {sections.length > 1 && (
-          <nav aria-label="دسته‌های آموزش" className={styles.jump}>
-            {sections.map(section => (
-              <a key={section.key} href={`#${section.key}`} className={styles.jumpChip}>
-                {section.title}
-                <span className={styles.jumpCount}>{section.guides.length.toLocaleString('fa-IR')}</span>
-              </a>
-            ))}
-          </nav>
-        )}
-      </header>
+      <GuidesHubClient guides={guides} title={TITLE} />
 
-      {sections.length === 0 ? (
-        <p className={styles.empty}>آموزش‌ها به‌زودی در این صفحه قرار می‌گیرند.</p>
-      ) : (
-        sections.map(section => (
-          <section key={section.key} id={section.key} className={styles.section} aria-labelledby={`${section.key}-title`}>
-            <div className={styles.sectionHead}>
-              <h2 id={`${section.key}-title`}>{section.title}</h2>
-              <p>{section.intro}</p>
-            </div>
-            <div className={styles.grid}>
-              {section.guides.map(guide => (
-                <GuideCard key={guide.slug} guide={guide} />
-              ))}
-            </div>
-          </section>
-        ))
-      )}
+      {/* ─── Bottom Support & Ecosystem Command Banner ─── */}
+      <section className={styles.hubCtaBanner} aria-labelledby="hub-cta-title">
+        <div className={styles.hubCtaGlow} aria-hidden="true" />
+
+        <div className={styles.hubCtaContent}>
+          <span className={styles.sectionKicker}>
+            <span className={styles.livePulseDot} aria-hidden="true" />
+            پشتیبانی آنلاین ۲۴ ساعته تایتان
+          </span>
+          <h2 id="hub-cta-title" className={styles.hubCtaTitle}>
+            هنوز سوالی دارید یا به راهنمایی لحظه‌ای نیاز دارید؟
+          </h2>
+          <p className={styles.hubCtaText}>
+            کارشناسان تایتان در تمام مراحل آماده‌سازی اکانت، خرید و فعال‌سازی محصولات یا ثبت‌نام در
+            تورنومنت‌ها از طریق چت آنلاین سایت، تلگرام و دیسکورد همراه شما هستند.
+          </p>
+
+          <div className={styles.hubCtaActions}>
+            <Link href="/contact" className={styles.btnPrimary}>
+              <span>ارتباط با پشتیبانی</span>
+              <Icon name="arrow" />
+            </Link>
+            <Link href="/faq" className={styles.btnGhost}>
+              <span>سوالات متداول</span>
+            </Link>
+            <Link href="/store" className={styles.btnGhost}>
+              <span>ورود به فروشگاه</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className={styles.hubCtaVisual} aria-hidden="true">
+          <div className={styles.hubCtaRing} />
+          <Image
+            src="/images/support-robot.webp"
+            alt=""
+            width={220}
+            height={220}
+            className={styles.hubCtaRobot}
+          />
+        </div>
+      </section>
     </div>
   );
 }
