@@ -1392,7 +1392,6 @@
 }
 
 .cardTitle {
-  position: relative;
   z-index: 1;
   margin: 0;
   font-size: clamp(16.5px, 1.8vw, 18.5px);
@@ -1438,7 +1437,7 @@
 
 .cardFooter {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   margin-top: auto;
   padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -1461,36 +1460,71 @@
   opacity: 0.75;
 }
 
-.cardMore {
+.cardMoreBtn {
+  position: relative;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  padding: 8px 14px 8px 10px;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--card-accent) 26%, rgba(255, 255, 255, 0.08)),
+      color-mix(in srgb, var(--card-accent) 14%, rgba(16, 4, 8, 0.85))
+    );
+  border: 1px solid color-mix(in srgb, var(--card-accent) 48%, rgba(255, 255, 255, 0.14));
+  box-shadow:
+    0 10px 22px -10px color-mix(in srgb, var(--card-accent) 55%, rgba(0, 0, 0, 0.7)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
   font-size: 13px;
   font-weight: 800;
-  color: color-mix(in srgb, var(--card-accent) 65%, #fff);
-  transition: color 0.25s;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    background 0.25s,
+    border-color 0.25s,
+    color 0.25s,
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s;
 }
 
 .cardMoreArrow {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--card-accent) 18%, rgba(255, 255, 255, 0.06));
-  border: 1px solid color-mix(in srgb, var(--card-accent) 38%, transparent);
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--card-accent) 28%, rgba(255, 255, 255, 0.1));
   color: #fff;
-  font-size: 14px;
-  transition: transform 0.3s var(--spring), background 0.25s;
+  font-size: 13px;
+  transition: transform 0.3s var(--spring), background 0.25s, color 0.25s;
 }
 
 .cardMoreArrow i svg {
   transform: scaleX(-1);
 }
 
-.card:hover .cardMoreArrow {
-  transform: translateX(-4px) scale(1.06);
-  background: var(--card-accent);
+.card:hover .cardMoreBtn,
+.cardMoreBtn:hover {
+  background: linear-gradient(
+    135deg,
+    var(--card-accent),
+    color-mix(in srgb, var(--card-accent) 78%, #e2453f)
+  );
+  border-color: transparent;
+  color: #140408;
+  transform: translateX(-2px);
+  box-shadow:
+    0 14px 28px -8px color-mix(in srgb, var(--card-accent) 70%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.card:hover .cardMoreArrow,
+.cardMoreBtn:hover .cardMoreArrow {
+  transform: translateX(-3px);
+  background: rgba(20, 4, 8, 0.22);
   color: #140408;
 }
 
@@ -2362,6 +2396,70 @@
   background: rgba(245, 158, 11, 0.1);
   border: 1px solid rgba(245, 158, 11, 0.32);
   color: #fde8c8;
+}
+
+/* Step Screenshot Figure */
+.proseFigure {
+  margin: 8px 0 14px;
+  padding: 12px;
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      110% 130% at 100% 0%,
+      color-mix(in srgb, var(--guide-accent) 14%, transparent),
+      transparent 68%
+    ),
+    rgba(12, 4, 7, 0.78);
+  border: 1px solid color-mix(in srgb, var(--guide-accent) 32%, rgba(255, 255, 255, 0.1));
+  box-shadow:
+    0 20px 44px -18px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proseImageFrame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #0b0508;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.proseImage {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  max-height: 620px;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.proseCaption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 10px 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(253, 241, 240, 0.78);
+  text-align: center;
+  line-height: 1.65;
+}
+
+.proseCaptionDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--guide-accent);
+  box-shadow: 0 0 8px var(--guide-accent);
+  flex-shrink: 0;
 }
 
 /* Gamified Step Timeline (ol) */

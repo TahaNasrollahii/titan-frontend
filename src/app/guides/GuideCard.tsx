@@ -92,12 +92,12 @@ export function GuideCard({
           <span>راهنمای گام‌به‌گام</span>
         </span>
 
-        <span className={styles.cardMore} aria-hidden="true">
+        <Link href={`/guides/${guide.slug}`} className={styles.cardMoreBtn}>
           <span>مشاهده آموزش</span>
-          <span className={styles.cardMoreArrow}>
+          <span className={styles.cardMoreArrow} aria-hidden="true">
             <Icon name="arrow" />
           </span>
-        </span>
+        </Link>
       </div>
     </article>
   );

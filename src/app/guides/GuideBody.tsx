@@ -16,7 +16,8 @@ import styles from './guides.module.css';
 type Block =
   | { kind: 'h2' | 'h3'; text: string; id: string; sectionIndex: number }
   | { kind: 'p'; text: string }
-  | { kind: 'ul' | 'ol'; items: string[] };
+  | { kind: 'ul' | 'ol'; items: string[] }
+  | { kind: 'img'; src: string; alt: string };
 
 export interface GuideHeading {
   id: string;
@@ -66,6 +67,7 @@ function parse(source: string): Block[] {
   for (const raw of source.replace(/\r\n/g, '\n').split('\n')) {
     const line = raw.trim();
     const heading = /^(#{2,3})\s+(.+)$/.exec(line);
+    const img = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(line);
     const bullet = /^[-•]\s+(.+)$/.exec(line);
     const step = /^\d+[.)]\s+(.+)$/.exec(line);
 
@@ -86,6 +88,13 @@ function parse(source: string): Block[] {
         text: cleanHeading,
         id: `section-${headingCount}`,
         sectionIndex: h2Count,
+      });
+    } else if (img) {
+      flush();
+      rawBlocks.push({
+        kind: 'img',
+        alt: cleanGuideText(img[1]),
+        src: img[2].trim(),
       });
     } else if (bullet) {
       flush();
@@ -245,6 +254,25 @@ export function GuideBody({ source }: { source: string }) {
                   );
                 })}
               </ul>
+            );
+          case 'img':
+            return (
+              <figure key={index} className={styles.proseFigure}>
+                <div className={styles.proseImageFrame}>
+                  <img
+                    src={block.src}
+                    alt={block.alt}
+                    loading="lazy"
+                    className={styles.proseImage}
+                  />
+                </div>
+                {block.alt && (
+                  <figcaption className={styles.proseCaption}>
+                    <span className={styles.proseCaptionDot} aria-hidden="true" />
+                    <span>{block.alt}</span>
+                  </figcaption>
+                )}
+              </figure>
             );
           default: {
             const isLead = index === 0;

@@ -211,12 +211,6 @@ export function GuidesHubClient({
     }
   };
 
-  const activeCategoryIndex = GUIDE_CATEGORIES.findIndex(c => c.key === effectiveCategory);
-  const nextCategory =
-    activeCategoryIndex >= 0
-      ? GUIDE_CATEGORIES[(activeCategoryIndex + 1) % GUIDE_CATEGORIES.length]
-      : GUIDE_CATEGORIES[0];
-
   return (
     <>
       {/* ─── Hero Section with 3D Character Stage & Upgraded Command Deck ─── */}
@@ -534,46 +528,9 @@ export function GuidesHubClient({
               key={section.key}
               id={section.key}
               className={styles.section}
-              aria-labelledby={`${section.key}-title`}
+              aria-label={section.title}
               style={{ '--section-accent': section.accent } as CSSProperties}
             >
-              <div className={styles.sectionBanner}>
-                <div className={styles.sectionBannerRight}>
-                  <div className={styles.sectionIconBox} aria-hidden="true">
-                    <Image
-                      src={section.icon}
-                      alt=""
-                      width={30}
-                      height={30}
-                      unoptimized
-                    />
-                  </div>
-                  <div className={styles.sectionHeadText}>
-                    <div className={styles.sectionKickerRow}>
-                      <span className={styles.sectionKickerBadge}>{section.badge}</span>
-                      <span className={styles.sectionTagBadge}>
-                        {faNumber(section.guides.length)} آموزش فعال
-                      </span>
-                    </div>
-                    <h2 id={`${section.key}-title`}>{section.title}</h2>
-                    <p>{section.intro}</p>
-                  </div>
-                </div>
-
-                {effectiveCategory !== 'all' && (
-                  <div className={styles.sectionBannerLeft}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveCategory(nextCategory.key)}
-                      className={styles.nextCategoryBtn}
-                    >
-                      <span>بخش بعدی: {nextCategory.shortTitle}</span>
-                      <Icon name="arrow" />
-                    </button>
-                  </div>
-                )}
-              </div>
-
               <div className={styles.bentoGrid}>
                 {section.guides.map((guide, idx) => (
                   <GuideCard

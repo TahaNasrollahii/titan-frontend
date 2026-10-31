@@ -15,7 +15,7 @@ import { SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 
 import { GuideBody, guideHeadings, guideStepsCount, readingMinutes } from '../GuideBody';
 import { GuideCard } from '../GuideCard';
-import { GuideReadingTools, GuideStickyStepBar, GuideStickyToc } from '../GuideTocClient';
+import { GuideReadingTools, GuideStickyToc } from '../GuideTocClient';
 import { RanksGuideShowcase } from '../RanksGuideShowcase';
 import {
   cleanGuideFaqs,
@@ -317,12 +317,6 @@ export default async function GuidePage({
       </header>
 
       {guide.slug === 'ranks' && <RanksGuideShowcase variant="article" />}
-
-      {/* ─── Sticky Floating Progress & Step Switcher HUD ─── */}
-      <GuideStickyStepBar
-        headings={headings}
-        hasFaq={cleanedFaqs.length > 0}
-      />
 
       {/* ─── Main Two-Column Mission Layout ─── */}
       <div className={styles.articleLayout}>
