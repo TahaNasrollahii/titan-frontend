@@ -3193,10 +3193,12 @@
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
+  direction: ltr;
 }
 
 .rankTierCard {
   position: relative;
+  direction: rtl;
   border-radius: 24px;
   padding: 20px 16px 18px;
   background:
