@@ -16,6 +16,7 @@ import { SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 import { GuideBody, guideHeadings, guideStepsCount, readingMinutes } from '../GuideBody';
 import { GuideCard } from '../GuideCard';
 import { GuideReadingTools, GuideStickyToc } from '../GuideTocClient';
+import { RanksGuideShowcase } from '../RanksGuideShowcase';
 import {
   cleanGuideFaqs,
   cleanGuideText,
@@ -314,6 +315,8 @@ export default async function GuidePage({
           </div>
         </div>
       </header>
+
+      {guide.slug === 'ranks' && <RanksGuideShowcase variant="article" />}
 
       {/* ─── Main Two-Column Mission Layout ─── */}
       <div className={styles.articleLayout}>

@@ -92,13 +92,6 @@ export const FIFA_SUMMARY_MOCK: TournamentSummary = {
   },
 };
 
-const STEPS = [
-  { num: '۱', icon: 'users', t: 'تیم خود را بسازید', d: 'یک تیم جدید با دوستان خود بسازید یا با لینک دعوت به تیمی که قبلاً ساخته شده ملحق شوید.' },
-  { num: '۲', icon: 'search', t: 'مسابقه را انتخاب کنید', d: 'به لیست مسابقات فعال بروید و تورنومنتی که با زمان و بازی شما همخوانی دارد را انتخاب کنید.' },
-  { num: '۳', icon: 'game', t: 'تکمیل ثبت‌نام', d: 'کاپیتان تیم را انتخاب می‌کند و بازیکنان این تورنومنت را از بین اعضا مشخص می‌کند (در مسابقات تک‌نفره خودتان ثبت‌نام کنید). در صورت نیاز هزینه ورودی را از کیف پول یا درگاه پرداخت کنید.' },
-  { num: '۴', icon: 'trophy', t: 'شروع رقابت و جوایز', d: 'پس از بسته شدن ثبت‌نام، براکت مسابقات منتشر می‌شود و حریف خود را در همین صفحه می‌بینید.' },
-];
-
 function Leaderboards({ initialGames }: { initialGames?: Game[] | null }) {
   const games = useApi(() => catalogApi.games({ is_featured: true }), [], initialGames ?? undefined);
   const playable = (games.data ?? []).filter(game => game.kind === 'game');
@@ -412,6 +405,10 @@ export default function TournamentPage({ initialData }: { initialData?: Tourname
 
       <div className="tour-sec-h reveal" style={{ '--d': 3 } as React.CSSProperties}>
         <h2>مسیر پیشرفت و رنک‌ها</h2>
+        <Link href="/guides/ranks" className="tour-sec-guide-link" aria-label="آموزش کامل سیستم رنک‌بندی و امتیازات">
+          <span>راهنمای کامل رنک‌ها</span>
+          <Icon name="arrow" />
+        </Link>
       </div>
       <div className="tour-timeline-wrap reveal" style={{ '--d': 4 } as React.CSSProperties}>
         <div className="tour-ranks-row">
@@ -456,28 +453,29 @@ export default function TournamentPage({ initialData }: { initialData?: Tourname
         </div>
       )}
 
-      <div className="tour-sec-h reveal" style={{ '--d': 7 } as React.CSSProperties}>
-        <h2>چطور در مسابقات شرکت کنم؟</h2>
-      </div>
-      <div className="tour-steps-grid reveal" style={{ '--d': 8 } as React.CSSProperties}>
-        {STEPS.map((step, i) => (
-          <div
-            key={step.num}
-            className="tour-step-card spot spot-track"
-            data-step={step.num}
-            style={{ '--d': 8 + i } as React.CSSProperties}
-          >
-            <div className="tsc-icon">
-              <Icon name={step.icon} />
-            </div>
-            <div className="tsc-content">
-              <span className="tsc-step">مرحله {step.num}</span>
-              <h4>{step.t}</h4>
-              <p>{step.d}</p>
-            </div>
-            <div className="tsc-glow"></div>
+      <div className="tour-guide-cta reveal spot spot-track" style={{ '--d': 7 } as React.CSSProperties}>
+        <div className="tour-guide-cta-glow" aria-hidden="true" />
+        <div className="tour-guide-cta-main">
+          <div className="tour-guide-cta-icon" aria-hidden="true">
+            <Icon name="trophy" />
           </div>
-        ))}
+          <div className="tour-guide-cta-copy">
+            <span className="tour-guide-cta-badge">راهنمای گام‌به‌گام تورنومنت</span>
+            <h2>چطور در مسابقات شرکت کنم؟</h2>
+            <p>
+              صفر تا صد ثبت‌نام انفرادی و تیمی، ساخت تیم و انتخاب ترکیب (Roster)، قوانین حضور در براکت و دریافت جوایز را در آموزش جامع شرکت در مسابقات بخوانید.
+            </p>
+          </div>
+        </div>
+        <div className="tour-guide-cta-actions">
+          <Link href="/guides/tournament-registration" className="tour-guide-btn-primary">
+            <span>آموزش شرکت در مسابقات</span>
+            <Icon name="arrow" />
+          </Link>
+          <Link href="/guides#tournament" className="tour-guide-btn-secondary">
+            <span>همه آموزش‌های تورنومنت</span>
+          </Link>
+        </div>
       </div>
 
       <Leaderboards initialGames={initialData?.games} />

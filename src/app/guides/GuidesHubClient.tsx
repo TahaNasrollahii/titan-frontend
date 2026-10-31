@@ -10,6 +10,7 @@ import { faNumber } from '@/lib/format';
 import { useSpotlight } from '@/lib/hooks/useSpotlight';
 
 import { GuideCard } from './GuideCard';
+import { RanksGuideShowcase } from './RanksGuideShowcase';
 import { GUIDE_CATEGORIES, cleanGuideText } from './getGuides';
 import styles from './guides.module.css';
 
@@ -72,6 +73,7 @@ const QUICK_TAGS = [
   { label: 'سوپرسل آیدی', query: 'سوپرسل' },
   { label: 'تأیید دومرحله‌ای 2FA', query: 'دومرحله‌ای' },
   { label: 'ثبت‌نام تورنومنت', query: 'تورنومنت' },
+  { label: 'رنک‌ها و امتیازات', query: 'رنک' },
 ];
 
 const QUICK_START_STEPS = [
@@ -113,8 +115,8 @@ const QUICK_START_STEPS = [
     accent: '#9d6fff',
     links: [
       { label: 'پیگیری وضعیت سفارش', href: '/guides/order-tracking' },
-      { label: 'امنیت اکانت بعد از خرید', href: '/guides/account-security-after-purchase' },
       { label: 'ثبت‌نام در تورنومنت‌ها', href: '/guides/tournament-registration' },
+      { label: 'سیستم رنک‌ها و امتیازات', href: '/guides/ranks' },
     ],
   },
 ];
@@ -539,48 +541,57 @@ export function GuidesHubClient({
           </button>
         </div>
       ) : (
-        sections.map(section => (
-          <section
-            key={section.key}
-            id={section.key}
-            className={styles.section}
-            aria-labelledby={`${section.key}-title`}
-            style={{ '--section-accent': section.accent } as CSSProperties}
-          >
-            <div className={styles.sectionBanner}>
-              <div className={styles.sectionBannerRight}>
-                <div className={styles.sectionIconBox} aria-hidden="true">
-                  <Image src={section.icon} alt="" width={34} height={34} unoptimized />
-                </div>
-                <div className={styles.sectionHeadText}>
-                  <div className={styles.sectionKickerRow}>
-                    <span className={styles.sectionKickerBadge}>{section.kicker}</span>
-                    <span className={styles.sectionTagBadge}>{section.badge}</span>
+        <>
+          {sections.map(section => (
+            <section
+              key={section.key}
+              id={section.key}
+              className={styles.section}
+              aria-labelledby={`${section.key}-title`}
+              style={{ '--section-accent': section.accent } as CSSProperties}
+            >
+              <div className={styles.sectionBanner}>
+                <div className={styles.sectionBannerRight}>
+                  <div className={styles.sectionIconBox} aria-hidden="true">
+                    <Image src={section.icon} alt="" width={34} height={34} unoptimized />
                   </div>
-                  <h2 id={`${section.key}-title`}>{section.title}</h2>
-                  <p>{section.intro}</p>
+                  <div className={styles.sectionHeadText}>
+                    <div className={styles.sectionKickerRow}>
+                      <span className={styles.sectionKickerBadge}>{section.kicker}</span>
+                      <span className={styles.sectionTagBadge}>{section.badge}</span>
+                    </div>
+                    <h2 id={`${section.key}-title`}>{section.title}</h2>
+                    <p>{section.intro}</p>
+                  </div>
+                </div>
+
+                <div className={styles.sectionBannerLeft}>
+                  <span className={styles.sectionCountPill}>
+                    <b>{faNumber(section.guides.length)}</b>
+                    <span>راهنمای تخصصی</span>
+                  </span>
                 </div>
               </div>
 
-              <div className={styles.sectionBannerLeft}>
-                <span className={styles.sectionCountPill}>
-                  <b>{faNumber(section.guides.length)}</b>
-                  <span>راهنمای تخصصی</span>
-                </span>
+              <div className={styles.grid}>
+                {section.guides.map((guide, idx) => (
+                  <GuideCard
+                    key={guide.slug}
+                    guide={guide}
+                    featured={section.key === 'purchase' && idx === 0 && !isFiltering}
+                  />
+                ))}
               </div>
-            </div>
+            </section>
+          ))}
 
-            <div className={styles.grid}>
-              {section.guides.map((guide, idx) => (
-                <GuideCard
-                  key={guide.slug}
-                  guide={guide}
-                  featured={section.key === 'purchase' && idx === 0 && !isFiltering}
-                />
-              ))}
-            </div>
-          </section>
-        ))
+          {(activeCategory === 'all' || activeCategory === 'tournament') &&
+            (activeGame === 'all' || activeGame === 'general') &&
+            (!normalizedQuery ||
+              'رنک امتیاز برنز نقره طلا پلاتینیوم تایتان لول xp سیدبندی تورنومنت'.includes(
+                normalizedQuery,
+              )) && <RanksGuideShowcase variant="hub" />}
+        </>
       )}
     </>
   );
