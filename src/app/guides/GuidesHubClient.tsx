@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { type CSSProperties, useMemo, useState } from 'react';
+import { type CSSProperties, useEffect, useMemo, useState } from 'react';
 
 import { Icon } from '@/components/Icons';
 import type { GuideCategory, GuideSummary } from '@/lib/api/types';
@@ -66,6 +66,33 @@ const GAME_FILTERS: GameFilterOption[] = [
   },
 ];
 
+const QUICK_SPOTLIGHTS = [
+  {
+    slug: 'how-to-buy',
+    kicker: 'شروع سریع خرید',
+    title: 'نحوه خرید و تحویل فوری محصولات',
+    desc: 'مراحل انتخاب محصول، ثبت اطلاعات اکانت و پیگیری لحظه‌ای سفارش در تایتان',
+    icon: '/icons/store.webp',
+    accent: '#ff645a',
+  },
+  {
+    slug: 'tournament-registration',
+    kicker: 'مسابقات و جوایز',
+    title: 'راهنمای ثبت‌نام و شرکت در تورنومنت‌ها',
+    desc: 'نحوه ورود به براکت مسابقات، دریافت کد لابی و واریز جوایز نقدی',
+    icon: '/icons/tournament.webp',
+    accent: '#f59e0b',
+  },
+  {
+    slug: 'ranks',
+    kicker: '۵ سطح رقابتی',
+    title: 'سیستم رنک‌بندی، امتیازات و XP تایتان',
+    desc: 'مسیر ارتقا از برنز تا تایتان، نحوه کسب امتیاز در مسابقات و نشان‌های افتخار',
+    icon: '/icons/sparkles.svg',
+    accent: '#9d6fff',
+  },
+];
+
 export function GuidesHubClient({
   guides,
   title,
@@ -75,15 +102,54 @@ export function GuidesHubClient({
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeGame, setActiveGame] = useState<string>('all');
-  const [activeCategory, setActiveCategory] = useState<GuideCategory | 'all'>('all');
+  const [activeCategory, setActiveCategory] = useState<GuideCategory | 'all'>('purchase');
+
+  useEffect(() => {
+    const syncFromHash = () => {
+      const rawHash = window.location.hash.replace('#', '');
+      const matched = GUIDE_CATEGORIES.find(c => c.key === rawHash);
+      if (matched) {
+        setActiveCategory(matched.key);
+      } else if (rawHash === 'ranks-guide') {
+        setActiveCategory('tournament');
+      }
+    };
+    syncFromHash();
+    window.addEventListener('hashchange', syncFromHash);
+    return () => window.removeEventListener('hashchange', syncFromHash);
+  }, []);
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const isFiltering =
-    normalizedQuery.length > 0 || activeGame !== 'all' || activeCategory !== 'all';
+  const isSearchOrGameFilter = normalizedQuery.length > 0 || activeGame !== 'all';
+
+  // When searching by text or filtering by a specific game, search across all categories
+  // unless the user explicitly filtered a category that also has results.
+  const effectiveCategory: GuideCategory | 'all' = useMemo(() => {
+    if (activeCategory === 'all') return 'all';
+    if (!isSearchOrGameFilter) return activeCategory;
+
+    const hasMatchInActiveCategory = guides.some(guide => {
+      if (guide.category !== activeCategory) return false;
+      if (activeGame !== 'all') {
+        if (activeGame === 'general') {
+          if (guide.game !== null) return false;
+        } else if (guide.game?.slug !== activeGame) {
+          return false;
+        }
+      }
+      if (normalizedQuery) {
+        const haystack = `${guide.title} ${cleanGuideText(guide.summary)} ${guide.game?.title ?? ''} ${guide.game?.titleEn ?? ''}`.toLowerCase();
+        if (!haystack.includes(normalizedQuery)) return false;
+      }
+      return true;
+    });
+
+    return hasMatchInActiveCategory ? activeCategory : 'all';
+  }, [activeCategory, activeGame, guides, isSearchOrGameFilter, normalizedQuery]);
 
   const filteredGuides = useMemo(() => {
     return guides.filter(guide => {
-      if (activeCategory !== 'all' && guide.category !== activeCategory) {
+      if (effectiveCategory !== 'all' && guide.category !== effectiveCategory) {
         return false;
       }
       if (activeGame !== 'all') {
@@ -99,7 +165,7 @@ export function GuidesHubClient({
       }
       return true;
     });
-  }, [guides, activeCategory, activeGame, normalizedQuery]);
+  }, [guides, effectiveCategory, activeGame, normalizedQuery]);
 
   const sections = useMemo(() => {
     return GUIDE_CATEGORIES.map(category => ({
@@ -121,17 +187,39 @@ export function GuidesHubClient({
     return counts;
   }, [guides]);
 
-  useSpotlight(`.${styles.heroStage}`, [activeCategory, activeGame, normalizedQuery]);
+  useSpotlight(`.${styles.heroStage}, .${styles.spotCard}`, [
+    effectiveCategory,
+    activeGame,
+    normalizedQuery,
+  ]);
 
   const resetFilters = () => {
     setSearchQuery('');
     setActiveGame('all');
-    setActiveCategory('all');
+    setActiveCategory('purchase');
   };
+
+  const handleSelectGame = (gameKey: string) => {
+    const nextGame = activeGame === gameKey && gameKey !== 'all' ? 'all' : gameKey;
+    setActiveGame(nextGame);
+    if (nextGame === 'general') {
+      setActiveCategory('all');
+    } else if (nextGame !== 'all') {
+      setActiveCategory('all');
+    } else if (activeCategory === 'all') {
+      setActiveCategory('purchase');
+    }
+  };
+
+  const activeCategoryIndex = GUIDE_CATEGORIES.findIndex(c => c.key === effectiveCategory);
+  const nextCategory =
+    activeCategoryIndex >= 0
+      ? GUIDE_CATEGORIES[(activeCategoryIndex + 1) % GUIDE_CATEGORIES.length]
+      : GUIDE_CATEGORIES[0];
 
   return (
     <>
-      {/* ─── Hero Section with 3D Character Stage & Clean Filter Bar ─── */}
+      {/* ─── Hero Section with 3D Character Stage & Upgraded Command Deck ─── */}
       <header className={styles.hubHeader}>
         <div className={styles.heroAmbientGlow} aria-hidden="true" />
         <div className={styles.heroGridMask} aria-hidden="true" />
@@ -155,7 +243,7 @@ export function GuidesHubClient({
                 {title}؛ <span className={styles.gradientText}>سریع، امن و قدم‌به‌قدم</span>
               </h1>
               <p className={styles.hubSubtitle}>
-                راهنمای گام‌به‌گام خرید محصولات، اتصال اکانت بازی‌ها، شرکت در تورنومنت‌ها و سیستم رنک‌بندی تایتان
+                دسته‌بندی یا بازی مورد نظر خود را انتخاب کنید تا فقط آموزش‌های مرتبط با همان بخش را به‌صورت خلاصه و گام‌به‌گام ببینید.
               </p>
             </div>
 
@@ -237,41 +325,97 @@ export function GuidesHubClient({
           </div>
         </div>
 
-        {/* Category Filter Tabs */}
+        {/* ─── Upgraded Two-Tier Command Dock (Categories + Game Filter) ─── */}
         {guides.length > 0 && (
-          <div className={styles.hubFilterBar}>
-            <nav aria-label="دسته‌بندی آموزش‌ها" className={styles.hubCategoryTabs}>
-              <button
-                type="button"
-                onClick={() => setActiveCategory('all')}
-                className={`${styles.hubCatTab} ${activeCategory === 'all' ? styles.hubCatTabActive : ''}`}
-              >
-                <span>همه دسته‌ها</span>
-                <span className={styles.hubCatCount}>{faNumber(guides.length)}</span>
-              </button>
-              {GUIDE_CATEGORIES.map(cat => {
-                const count = guides.filter(g => g.category === cat.key).length;
-                if (count === 0) return null;
-                const isActive = activeCategory === cat.key;
-                return (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    onClick={() => setActiveCategory(isActive ? 'all' : cat.key)}
-                    className={`${styles.hubCatTab} ${isActive ? styles.hubCatTabActive : ''}`}
-                    style={{ '--tab-accent': cat.accent } as CSSProperties}
-                  >
-                    <Image src={cat.icon} alt="" aria-hidden="true" width={18} height={18} unoptimized />
-                    <span>{cat.shortTitle}</span>
-                    <span className={styles.hubCatCount}>{faNumber(count)}</span>
-                  </button>
-                );
-              })}
-            </nav>
+          <div className={styles.hubCommandDock}>
+            {/* Tier 1: Interactive 4-Category Bento Deck */}
+            <div className={styles.hubDeckGroup}>
+              <div className={styles.hubDeckHeader}>
+                <span className={styles.hubDeckLabel}>
+                  <Icon name="grid" />
+                  <span>دسته‌بندی آموزش‌ها</span>
+                </span>
 
-            {/* Game Filter Pills */}
-            <div className={styles.gameFilterRow}>
-              <div className={styles.gameFilterPills} role="tablist" aria-label="فیلتر بر اساس بازی">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveCategory(effectiveCategory === 'all' ? 'purchase' : 'all')
+                  }
+                  className={`${styles.hubShowAllToggle} ${
+                    effectiveCategory === 'all' ? styles.hubShowAllToggleActive : ''
+                  }`}
+                >
+                  <span>
+                    {effectiveCategory === 'all'
+                      ? 'بازگشت به نمای دسته‌بندی‌شده'
+                      : `نمایش یکجای همه (${faNumber(guides.length)})`}
+                  </span>
+                </button>
+              </div>
+
+              <nav aria-label="دسته‌بندی آموزش‌ها" className={styles.hubCategoryDeckGrid}>
+                {GUIDE_CATEGORIES.map((cat, idx) => {
+                  const count = guides.filter(g => g.category === cat.key).length;
+                  if (count === 0) return null;
+                  const isActive = effectiveCategory === cat.key;
+                  return (
+                    <button
+                      key={cat.key}
+                      type="button"
+                      onClick={() => {
+                        setActiveCategory(cat.key);
+                        if (activeGame === 'general' && cat.key !== 'tournament' && cat.key !== 'site') {
+                          setActiveGame('all');
+                        }
+                      }}
+                      className={`${styles.hubCategoryCard} ${
+                        isActive ? styles.hubCategoryCardActive : ''
+                      }`}
+                      style={{ '--tab-accent': cat.accent } as CSSProperties}
+                    >
+                      <div className={styles.hubCategoryCardTop}>
+                        <div className={styles.hubCategoryIconWrap}>
+                          <Image
+                            src={cat.icon}
+                            alt=""
+                            aria-hidden="true"
+                            width={24}
+                            height={24}
+                            unoptimized
+                          />
+                        </div>
+                        <span className={styles.hubCategoryCountPill}>
+                          {faNumber(count)} آموزش
+                        </span>
+                      </div>
+
+                      <div className={styles.hubCategoryCardBody}>
+                        <div className={styles.hubCategoryTitleRow}>
+                          <span className={styles.hubCategoryStepNum}>
+                            {faNumber(idx + 1)}
+                          </span>
+                          <strong>{cat.shortTitle}</strong>
+                        </div>
+                        <p>{cat.badge}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Tier 2: Sleek Game Filter Strip */}
+            <div className={styles.hubGameBar}>
+              <span className={styles.hubGameBarLabel}>
+                <Icon name="sparkles" />
+                <span>فیلتر بازی:</span>
+              </span>
+
+              <div
+                className={styles.gameFilterPills}
+                role="tablist"
+                aria-label="فیلتر بر اساس بازی"
+              >
                 {GAME_FILTERS.map(gf => {
                   const count = gameCounts[gf.key] ?? 0;
                   if (gf.key !== 'all' && count === 0) return null;
@@ -282,8 +426,10 @@ export function GuidesHubClient({
                       type="button"
                       role="tab"
                       aria-selected={isSelected}
-                      onClick={() => setActiveGame(isSelected && gf.key !== 'all' ? 'all' : gf.key)}
-                      className={`${styles.gameFilterBtn} ${isSelected ? styles.gameFilterBtnActive : ''}`}
+                      onClick={() => handleSelectGame(gf.key)}
+                      className={`${styles.gameFilterBtn} ${
+                        isSelected ? styles.gameFilterBtnActive : ''
+                      }`}
                       style={{ '--filter-accent': gf.accent } as CSSProperties}
                     >
                       <Image
@@ -296,17 +442,22 @@ export function GuidesHubClient({
                         className={styles.gameFilterIcon}
                       />
                       <span>{gf.label}</span>
+                      <span className={styles.gameFilterCount}>{faNumber(count)}</span>
                     </button>
                   );
                 })}
               </div>
 
-              {isFiltering && (
+              {isSearchOrGameFilter && (
                 <div className={styles.activeFilterStatus}>
                   <span>
-                    <b>{faNumber(filteredGuides.length)}</b> آموزش
+                    <b>{faNumber(filteredGuides.length)}</b> نتیجه
                   </span>
-                  <button type="button" onClick={resetFilters} className={styles.resetFilterBtn}>
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className={styles.resetFilterBtn}
+                  >
                     <Icon name="x" />
                     <span>پاک کردن فیلتر</span>
                   </button>
@@ -317,7 +468,35 @@ export function GuidesHubClient({
         )}
       </header>
 
-      {/* ─── Guide Category Sections ─── */}
+      {/* ─── 3-Card Featured Quick-Start Spotlight (Only when not searching) ─── */}
+      {!isSearchOrGameFilter && guides.length > 0 && (
+        <section className={styles.spotlightSection} aria-label="پرمخاطب‌ترین آموزش‌ها">
+          <div className={styles.spotlightGrid}>
+            {QUICK_SPOTLIGHTS.map(item => (
+              <Link
+                key={item.slug}
+                href={`/guides/${item.slug}`}
+                className={`${styles.spotlightCard} ${styles.spotCard}`}
+                style={{ '--card-accent': item.accent } as CSSProperties}
+              >
+                <div className={styles.spotlightIconBox} aria-hidden="true">
+                  <Image src={item.icon} alt="" width={26} height={26} unoptimized />
+                </div>
+                <div className={styles.spotlightBody}>
+                  <span className={styles.spotlightKicker}>{item.kicker}</span>
+                  <strong className={styles.spotlightTitle}>{item.title}</strong>
+                  <p className={styles.spotlightDesc}>{item.desc}</p>
+                </div>
+                <span className={styles.spotlightArrow} aria-hidden="true">
+                  <Icon name="arrow" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── Focused Guide Explorer Stage ─── */}
       {guides.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyStateIcon} aria-hidden="true">
@@ -342,13 +521,13 @@ export function GuidesHubClient({
           </button>
         </div>
       ) : (
-        <>
-          {(activeCategory === 'all' || activeCategory === 'tournament') &&
-            (activeGame === 'all' || activeGame === 'general') &&
-            (!normalizedQuery ||
+        <div className={styles.explorerWorkspace}>
+          {/* Ranks 1-5 Progression Showcase: Shown when on Tournament tab or searching ranks */}
+          {(effectiveCategory === 'tournament' ||
+            (normalizedQuery &&
               'رنک امتیاز برنز نقره طلا پلاتینیوم تایتان لول xp سیدبندی تورنومنت'.includes(
                 normalizedQuery,
-              )) && <RanksGuideShowcase variant="hub" />}
+              ))) && <RanksGuideShowcase variant="hub" />}
 
           {sections.map(section => (
             <section
@@ -358,24 +537,96 @@ export function GuidesHubClient({
               aria-labelledby={`${section.key}-title`}
               style={{ '--section-accent': section.accent } as CSSProperties}
             >
-              <div className={styles.sectionSimpleHeader}>
-                <div className={styles.sectionSimpleTitleWrap}>
-                  <Image src={section.icon} alt="" width={24} height={24} unoptimized />
-                  <h2 id={`${section.key}-title`}>{section.title}</h2>
+              <div className={styles.sectionBanner}>
+                <div className={styles.sectionBannerRight}>
+                  <div className={styles.sectionIconBox} aria-hidden="true">
+                    <Image
+                      src={section.icon}
+                      alt=""
+                      width={30}
+                      height={30}
+                      unoptimized
+                    />
+                  </div>
+                  <div className={styles.sectionHeadText}>
+                    <div className={styles.sectionKickerRow}>
+                      <span className={styles.sectionKickerBadge}>{section.badge}</span>
+                      <span className={styles.sectionTagBadge}>
+                        {faNumber(section.guides.length)} آموزش فعال
+                      </span>
+                    </div>
+                    <h2 id={`${section.key}-title`}>{section.title}</h2>
+                    <p>{section.intro}</p>
+                  </div>
                 </div>
-                <span className={styles.sectionSimpleCount}>
-                  {faNumber(section.guides.length)} آموزش
-                </span>
+
+                {effectiveCategory !== 'all' && (
+                  <div className={styles.sectionBannerLeft}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory(nextCategory.key)}
+                      className={styles.nextCategoryBtn}
+                    >
+                      <span>بخش بعدی: {nextCategory.shortTitle}</span>
+                      <Icon name="arrow" />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div className={styles.grid}>
-                {section.guides.map(guide => (
-                  <GuideCard key={guide.slug} guide={guide} />
+              <div className={styles.bentoGrid}>
+                {section.guides.map((guide, idx) => (
+                  <GuideCard
+                    key={guide.slug}
+                    guide={guide}
+                    index={idx + 1}
+                    featured={idx === 0 && section.guides.length % 2 === 1}
+                  />
                 ))}
               </div>
             </section>
           ))}
-        </>
+
+          {/* Bottom Category Switcher Bar when viewing a single category */}
+          {effectiveCategory !== 'all' && !isSearchOrGameFilter && (
+            <div className={styles.bottomCategoryBar}>
+              <div className={styles.bottomCategoryInfo}>
+                <span>در حال مشاهده بخش:</span>
+                <strong>
+                  {GUIDE_CATEGORIES.find(c => c.key === effectiveCategory)?.title}
+                </strong>
+              </div>
+
+              <div className={styles.bottomCategoryActions}>
+                {GUIDE_CATEGORIES.map(cat => {
+                  if (cat.key === effectiveCategory) return null;
+                  return (
+                    <button
+                      key={cat.key}
+                      type="button"
+                      onClick={() => {
+                        setActiveCategory(cat.key);
+                        window.scrollTo({ top: 280, behavior: 'smooth' });
+                      }}
+                      className={styles.bottomCatPill}
+                      style={{ '--tab-accent': cat.accent } as CSSProperties}
+                    >
+                      <Image src={cat.icon} alt="" width={16} height={16} unoptimized />
+                      <span>{cat.shortTitle}</span>
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setActiveCategory('all')}
+                  className={styles.bottomCatAllBtn}
+                >
+                  <span>نمایش همه ({faNumber(guides.length)})</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </>
   );

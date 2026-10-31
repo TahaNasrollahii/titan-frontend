@@ -15,7 +15,7 @@ import { SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 
 import { GuideBody, guideHeadings, guideStepsCount, readingMinutes } from '../GuideBody';
 import { GuideCard } from '../GuideCard';
-import { GuideReadingTools, GuideStickyToc } from '../GuideTocClient';
+import { GuideReadingTools, GuideStickyStepBar, GuideStickyToc } from '../GuideTocClient';
 import { RanksGuideShowcase } from '../RanksGuideShowcase';
 import {
   cleanGuideFaqs,
@@ -318,6 +318,12 @@ export default async function GuidePage({
 
       {guide.slug === 'ranks' && <RanksGuideShowcase variant="article" />}
 
+      {/* ─── Sticky Floating Progress & Step Switcher HUD ─── */}
+      <GuideStickyStepBar
+        headings={headings}
+        hasFaq={cleanedFaqs.length > 0}
+      />
+
       {/* ─── Main Two-Column Mission Layout ─── */}
       <div className={styles.articleLayout}>
         <aside className={styles.articleSidebar}>
@@ -489,9 +495,9 @@ export default async function GuidePage({
             </Link>
           </div>
 
-          <div className={styles.grid}>
-            {guide.related.map(related => (
-              <GuideCard key={related.slug} guide={related} />
+          <div className={styles.bentoGrid}>
+            {guide.related.map((related, idx) => (
+              <GuideCard key={related.slug} guide={related} index={idx + 1} />
             ))}
           </div>
         </section>
