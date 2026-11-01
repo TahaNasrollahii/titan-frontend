@@ -895,6 +895,43 @@
 }
 
 /* Fortnite item shop CTA: Fortnite's own blue→violet so it stands out on the wine page */
+.store-live-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.codm-cta {
+  box-shadow:
+    0 14px 32px -12px rgba(245, 158, 11, 0.65),
+    0 0 0 1px rgba(255, 186, 0, 0.32) inset,
+    0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+
+.codm-cta:hover {
+  box-shadow:
+    0 20px 40px -12px rgba(245, 158, 11, 0.85),
+    0 0 0 1px rgba(255, 186, 0, 0.5) inset,
+    0 1px 0 rgba(255, 255, 255, 0.4) inset;
+}
+
+.codm-cta-bg {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(255, 186, 0, 0.45), transparent 55%),
+    linear-gradient(115deg, #1c1917 0%, #78350f 52%, #d97706 100%);
+}
+
+.codm-cta-live {
+  background: #f59e0b;
+  color: #090c10;
+  box-shadow: 0 4px 10px -3px rgba(245, 158, 11, 0.8);
+}
+
+.codm-cta-live i {
+  background: #090c10;
+}
+
 .fn-cta {
   position: relative;
   display: inline-flex;
@@ -1062,6 +1099,13 @@
   .store-sec-h {
     flex-wrap: wrap;
     row-gap: 28px; /* the logo pokes above the card */
+  }
+
+  .store-live-ctas {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
   }
 
   .fn-cta {

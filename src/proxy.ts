@@ -56,6 +56,12 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  if (pathname === '/call-of-duty-mobile-store') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/codm-store';
+    return NextResponse.redirect(url, 308);
+  }
+
   // Canonicalize /store?game=slug -> /store/slug
   if (pathname === '/store' && searchParams.has('game')) {
     const game = searchParams.get('game');

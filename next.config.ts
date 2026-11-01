@@ -24,6 +24,7 @@ const cspDirectives = [
     ...API_SOURCES,
     "https://*.public.blob.vercel-storage.com https://cdn.zarinpal.com https://trustseal.enamad.ir",
     "https://fortnite-api.com https://*.fortnite-api.com https://cdn2.unrealengine.com https://*.fn-api.cc",
+    "https://cdn1.codashop.com https://cc-assets.codashop.com https://*.codashop.com",
     ...DEV_API_SOURCES,
   ].join(" "),
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -67,6 +68,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '*.fn-api.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn1.codashop.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cc-assets.codashop.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.codashop.com',
       },
       ...(!isProd
         ? [

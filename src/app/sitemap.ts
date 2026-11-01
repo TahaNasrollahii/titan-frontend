@@ -76,6 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 1.0 },
     { url: `${SITE_URL}/store`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/fortnite-shop`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${SITE_URL}/codm-store`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
     { url: `${SITE_URL}/tournaments`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/tournament`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
     { url: `${SITE_URL}/about`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },

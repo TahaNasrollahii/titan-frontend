@@ -28,7 +28,7 @@ const SPRING = { type: 'spring', stiffness: 520, damping: 38 } as const;
 function tabFor(pathname: string | null | undefined): TabKey {
   const p = pathname?.replace(/\/+$/, '') || '/';
   if (p === '/') return 'home';
-  if (/^\/(store|product|cart|checkout|payment|fortnite-shop)/.test(p)) return 'store';
+  if (/^\/(store|product|cart|checkout|payment|fortnite-shop|codm-store)/.test(p)) return 'store';
   if (/^\/tournaments\/[^/]+\/bracket/.test(p)) return 'me';
   if (/^\/tournaments?(\/|$)/.test(p)) return 'tournament';
   if (/^\/(contact|about)/.test(p)) return 'more';

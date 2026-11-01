@@ -67,6 +67,28 @@ function nextShopRotation() {
   return next.toISOString();
 }
 
+function CodmStoreLink() {
+  return (
+    <Link href="/codm-store" className="fn-cta codm-cta">
+      <span className="fn-cta-bg codm-cta-bg" aria-hidden="true" />
+      <Image className="fn-cta-logo" src="/images/glossy-cod-logo.webp" alt="" width={64} height={64} />
+      <span className="fn-cta-text">
+        <span className="fn-cta-title">
+          <span className="fn-cta-live codm-cta-live">
+            <i aria-hidden="true" />
+            ویژه
+          </span>
+          وب‌استور کالاف دیوتی
+        </span>
+        <span className="fn-cta-sub">بونوس سی‌پی، باندل و هدیه روزانه</span>
+      </span>
+      <span className="fn-cta-arrow" aria-hidden="true">
+        <Icon name="chevron-left" />
+      </span>
+    </Link>
+  );
+}
+
 function FortniteShopLink() {
   const secondsLeft = useSecondsUntil(nextShopRotation());
   return (
@@ -918,7 +940,10 @@ function StorePageContent({
             </Link>
           )}
         </div>
-        <FortniteShopLink />
+        <div className="store-live-ctas">
+          {activeGame !== 'fortnite' && <CodmStoreLink />}
+          {activeGame !== 'call-of-duty' && <FortniteShopLink />}
+        </div>
       </div>
 
       <div className="store-cat-row">

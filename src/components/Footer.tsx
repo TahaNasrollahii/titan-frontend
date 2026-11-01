@@ -31,6 +31,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     title: 'خرید سریع',
     links: [
       { href: '/product/fortnite-vbucks', label: 'ویباکس فورتنایت' },
+      { href: '/product/cod-points', label: 'سی‌پی کالاف دیوتی' },
       { href: '/store/valorant', label: 'ولورانت پوینت' },
       { href: '/product/pubg-uc', label: 'یوسی پابجی' },
       { href: '/product/steam-wallet', label: 'شارژ استیم' },
@@ -41,6 +42,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     title: 'فورتنایت و رقابت',
     links: [
       { href: '/fortnite-shop', label: 'آیتم شاپ امروز' },
+      { href: '/codm-store', label: 'وب‌استور کالاف دیوتی' },
       { href: '/product/fortnite-crew', label: 'کروپک فورتنایت' },
       { href: '/tournaments', label: 'تورنومنت‌ها' },
       { href: '/tournament', label: 'لیدربرد' },

@@ -21,7 +21,7 @@ export function Sidebar() {
   }, []);
 
   let activeKey = pathname;
-  if (pathname.startsWith('/product/') || pathname.startsWith('/store') || pathname.startsWith('/fortnite-shop')) {
+  if (pathname.startsWith('/product/') || pathname.startsWith('/store') || pathname.startsWith('/fortnite-shop') || pathname.startsWith('/codm-store')) {
     activeKey = '/store';
   } else if (pathname.startsWith('/tournaments') && pathname.includes('/bracket')) {
     activeKey = '/dashboard';
