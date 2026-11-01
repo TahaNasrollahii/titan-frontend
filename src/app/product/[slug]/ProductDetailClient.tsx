@@ -185,6 +185,8 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<SectionId>('pd-about');
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
+  const descExpanded = expandedSlug === slug;
   const [showBuyBar, setShowBuyBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -839,56 +841,74 @@ export default function ProductPage({ initialData, initialRelated, initialReview
             <h2 id="pd-about-title" className={styles.blockTitle}>
               درباره {data.title}
             </h2>
-            {descriptionBlocks.length > 0 ? (
-              <div className={styles.prose}>
-                {descriptionBlocks.map((block, i) => {
-                  if (block.type === 'heading') {
-                    return (
-                      <h3 key={i} className={styles.proseHeading}>
-                        {block.text}
-                      </h3>
-                    );
-                  }
-                  if (block.type === 'list') {
-                    return (
-                      <ul key={i} className={styles.proseList}>
-                        {block.items.map((item, j) => (
-                          <li key={j}>{item}</li>
-                        ))}
-                      </ul>
-                    );
-                  }
-                  return <p key={i}>{block.text}</p>;
-                })}
-              </div>
-            ) : (
-              <p className={styles.prose}>
-                {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
-                پشتیبانی ۲۴ ساعته همراه شماست.
-              </p>
-            )}
-            {data.tags.length > 0 && (
-              <ul className={styles.tags} aria-label="ویژگی‌ها">
-                {data.tags.map(tag => (
-                  <li key={tag} className={styles.tag}>
-                    <Check size={14} strokeWidth={3} aria-hidden="true" />
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {keywords.length > 0 && (
-              <div className={styles.keywordsBlock}>
-                <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
-                <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
-                  {keywords.map(kw => (
-                    <li key={kw} className={styles.keywordChip}>
-                      {kw}
+            <div
+              id="pd-about-content"
+              className={`${styles.aboutCollapse} ${descExpanded ? styles.aboutCollapseOpen : ''}`}
+            >
+              {descriptionBlocks.length > 0 ? (
+                <div className={styles.prose}>
+                  {descriptionBlocks.map((block, i) => {
+                    if (block.type === 'heading') {
+                      return (
+                        <h3 key={i} className={styles.proseHeading}>
+                          {block.text}
+                        </h3>
+                      );
+                    }
+                    if (block.type === 'list') {
+                      return (
+                        <ul key={i} className={styles.proseList}>
+                          {block.items.map((item, j) => (
+                            <li key={j}>{item}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    return <p key={i}>{block.text}</p>;
+                  })}
+                </div>
+              ) : (
+                <p className={styles.prose}>
+                  {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
+                  پشتیبانی ۲۴ ساعته همراه شماست.
+                </p>
+              )}
+              {data.tags.length > 0 && (
+                <ul className={styles.tags} aria-label="ویژگی‌ها">
+                  {data.tags.map(tag => (
+                    <li key={tag} className={styles.tag}>
+                      <Check size={14} strokeWidth={3} aria-hidden="true" />
+                      {tag}
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
+              )}
+              {keywords.length > 0 && (
+                <div className={styles.keywordsBlock}>
+                  <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
+                  <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
+                    {keywords.map(kw => (
+                      <li key={kw} className={styles.keywordChip}>
+                        {kw}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.descMoreWrap}>
+              <button
+                type="button"
+                className={`${styles.descMoreBtn} ${descExpanded ? styles.descMoreBtnOpen : ''}`}
+                onClick={() => setExpandedSlug(prev => (prev === slug ? null : slug))}
+                aria-expanded={descExpanded}
+                aria-controls="pd-about-content"
+              >
+                <span>{descExpanded ? 'بستن توضیحات' : 'بارگزاری بیشتر'}</span>
+                <ChevronDown size={16} className={styles.descMoreChevron} aria-hidden="true" />
+              </button>
+            </div>
           </section>
         )}
 
