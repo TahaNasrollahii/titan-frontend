@@ -26,7 +26,7 @@ function safeNext(next: string | null) {
 /** Floating logo data */
 const floatingLogos = [
   {
-    src: '/images/glossy-cod-logo.webp',
+    src: '/images/glossy-cod-logo-v2.webp',
     alt: 'Call of Duty',
     className: 'logoCod',
     delay: 0,

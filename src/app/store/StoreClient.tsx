@@ -71,12 +71,12 @@ function CodmStoreLink() {
   return (
     <Link href="/codm-store" className="fn-cta codm-cta">
       <span className="fn-cta-bg codm-cta-bg" aria-hidden="true" />
-      <Image className="fn-cta-logo" src="/images/glossy-cod-logo.webp" alt="" width={64} height={64} />
+      <Image className="fn-cta-logo" src="/images/glossy-cod-logo-v2.webp" alt="" width={64} height={64} />
       <span className="fn-cta-text">
         <span className="fn-cta-title">
-          <span className="fn-cta-live codm-cta-live">
+          <span className="fn-cta-live">
             <i aria-hidden="true" />
-            ویژه
+            زنده
           </span>
           وب‌استور کالاف دیوتی
         </span>

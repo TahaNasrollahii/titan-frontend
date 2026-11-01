@@ -18,6 +18,7 @@ import { ErrorState, Loading } from '@/components/ui/State';
 import { faNumber } from '@/lib/format';
 import {
   CODM_REGIONS,
+  CODM_REVALIDATE_SECONDS,
   type CodmFilterCategory,
   type CodmRegionKey,
   type CodmStoreData,
@@ -52,34 +53,34 @@ const QUICK_CATEGORIES: QuickCategoryConfig[] = [
   {
     key: 'all',
     title: 'همه پیشنهادها',
-    desc: 'کاتالوگ کامل وب‌استور رسمی کالاف دیوتی موبایل',
+    desc: 'تمامی بسته‌های سی‌پی، باندل‌ها و هدایای وب‌استور',
     iconName: 'grid',
     accentColor: '#ffba00',
   },
   {
     key: 'cp',
-    title: 'بسته‌های سی‌پی (CP)',
-    desc: 'سی‌پی پایه به همراه بونوس انحصاری وب‌استور',
-    iconName: 'trophy',
-    accentColor: '#ffba00',
+    title: 'بسته‌های سی‌پی',
+    desc: 'بسته‌های رسمی CP همراه با بونوس اضافه وب‌استور',
+    iconName: 'zap',
+    accentColor: '#f59e0b',
   },
   {
     key: 'bundle',
-    title: 'باندل‌های محدود',
-    desc: 'پکیج‌های ترکیبی سی‌پی + اسکین سلاح و آیتم بونوس',
-    iconName: 'bag',
+    title: 'باندل‌های ویژه',
+    desc: 'باندل‌های ترکیبی سی‌پی، اسکین اپراتور و بلوپرینت سلاح',
+    iconName: 'layers',
     accentColor: '#f97316',
   },
   {
     key: 'event',
-    title: 'پیشنهادات رویداد',
-    desc: 'آیتم‌های رویداد همکاری و کریت‌های ویژه',
-    iconName: 'flame',
+    title: 'رویدادهای فصل',
+    desc: 'پیشنهادهای محدود رویدادهای ویژه و همکاری‌های رسمی',
+    iconName: 'star',
     accentColor: '#38bdf8',
   },
   {
     key: 'freebie',
-    title: 'هدیه رایگان روزانه',
+    title: 'هدیه رایگان',
     desc: 'جوایز و جعبه‌های رایگان روزانه وب‌استور',
     iconName: 'gift',
     accentColor: '#22c55e',
@@ -114,42 +115,20 @@ function normalizeForSearch(text: string): string {
     .toLowerCase()
     .replace(/[يى]/g, 'ی')
     .replace(/ك/g, 'ک')
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/ة/g, 'ه')
+    .replace(/[\u200c\u200f\u200e]/g, ' ')
     .replace(/[۰-۹]/g, d => String(PERSIAN_DIGITS.indexOf(d)))
-    .replace(/[ً-ٟـ‌‍‎‏]/g, '')
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
-function buildSearchText(offer: CodmStoreOffer): string {
-  return normalizeForSearch(
-    [
-      offer.title,
-      offer.titleFa,
-      offer.subtitle ?? '',
-      offer.subtitleFa ?? '',
-      offer.descriptionFa,
-      offer.categoryFa,
-      offer.sectionName,
-      offer.sectionNameFa,
-      offer.totalCp > 0 ? `${offer.totalCp} ${offer.baseCp} ${offer.bonusCp} cp سی پی` : '',
-      offer.isFreebie ? 'free رایگان هدیه روزانه' : '',
-      offer.isFirstPurchaseOffer || offer.isFirstPurchaseDiscount ? 'تخفیف خرید اول دوبل' : '',
-      ...offer.packageItems.flatMap(p => [p.title, p.titleFa, p.description ?? '', p.descriptionFa ?? '']),
-    ].join(' '),
-  );
-}
-
-function formatPersianDateTime(iso: string): string {
+function formatPersianDate(iso?: string): string {
+  if (!iso) return '';
   try {
     return new Intl.DateTimeFormat('fa-IR', {
+      weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Asia/Tehran',
     }).format(new Date(iso));
   } catch {
     return '';
@@ -158,7 +137,7 @@ function formatPersianDateTime(iso: string): string {
 
 function formatRemainingValidity(endTimeIso: string | null, refreshType: string | null): string | null {
   if (refreshType === 'DAILY') {
-    return 'تجدید روزانه (۱ بار در روز)';
+    return 'تجدید روزانه';
   }
   if (!endTimeIso) return null;
   try {
@@ -178,7 +157,7 @@ function formatRemainingValidity(endTimeIso: string | null, refreshType: string 
       return `معتبر تا ${dateFa}`;
     }
     if (daysLeft >= 1) {
-      return `${faNumber(daysLeft)} روز و ${faNumber(hoursLeft)} ساعت باقی‌مانده (تا ${dateFa})`;
+      return `${faNumber(daysLeft)} روز باقی‌مانده`;
     }
     return `${faNumber(Math.max(1, hoursLeft))} ساعت باقی‌مانده`;
   } catch {
@@ -192,14 +171,67 @@ function padPersianTwoDigits(val: number): string {
 
 const FALLBACK_OFFER_IMAGE = '/images/products/Molten-Gold-Lightning-King.webp';
 
-const SyncTimerBox = memo(function SyncTimerBox({
+interface TilePalette {
+  rarityColor: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+  plate: string;
+  tagEn: string;
+  tagFa: string;
+}
+
+function getOfferPalette(offer: CodmStoreOffer): TilePalette {
+  if (offer.isFreebie || offer.category === 'freebie') {
+    return {
+      rarityColor: '#22c55e',
+      primary: '#15803d',
+      secondary: '#071f12',
+      accent: '#4ade80',
+      plate: '#071b10',
+      tagEn: 'FREE GIFT',
+      tagFa: 'هدیه روزانه',
+    };
+  }
+  if (offer.category === 'bundle') {
+    return {
+      rarityColor: '#f97316',
+      primary: '#9a3412',
+      secondary: '#1c0f0a',
+      accent: '#fb923c',
+      plate: '#1a0e09',
+      tagEn: 'BUNDLE',
+      tagFa: 'باندل ویژه',
+    };
+  }
+  if (offer.category === 'event') {
+    return {
+      rarityColor: '#38bdf8',
+      primary: '#1d4ed8',
+      secondary: '#0a1428',
+      accent: '#60a5fa',
+      plate: '#0a1326',
+      tagEn: 'EVENT',
+      tagFa: 'رویداد فصل',
+    };
+  }
+  return {
+    rarityColor: '#ffba00',
+    primary: '#92400e',
+    secondary: '#171108',
+    accent: '#fbbf24',
+    plate: '#161108',
+    tagEn: 'CP PACK',
+    tagFa: 'بسته سی‌پی',
+  };
+}
+
+const StoreCountdownTimer = memo(function StoreCountdownTimer({
   nextRevalidateAt,
-  fetchedAt,
   isRefreshing,
   onRefresh,
 }: {
   nextRevalidateAt?: string;
-  fetchedAt?: string;
   isRefreshing: boolean;
   onRefresh: () => void;
 }) {
@@ -212,60 +244,73 @@ const SyncTimerBox = memo(function SyncTimerBox({
     return () => window.clearInterval(timer);
   }, []);
 
-  const targetMs = nextRevalidateAt ? new Date(nextRevalidateAt).getTime() : nowMs + 1800 * 1000;
+  const targetMs = nextRevalidateAt
+    ? new Date(nextRevalidateAt).getTime()
+    : nowMs + CODM_REVALIDATE_SECONDS * 1000;
   const secondsLeft = Math.max(0, Math.floor((targetMs - nowMs) / 1000));
-  const mins = Math.floor(secondsLeft / 60);
-  const secs = secondsLeft % 60;
+  const hoursLeft = Math.floor(secondsLeft / 3600);
+  const minutesLeft = Math.floor((secondsLeft % 3600) / 60);
+  const secsLeft = secondsLeft % 60;
+  const cycleElapsed = Math.min(1, Math.max(0, 1 - secondsLeft / CODM_REVALIDATE_SECONDS));
 
-  const updatedTimeFa = useMemo(() => {
-    if (!fetchedAt) return 'لحظاتی پیش';
-    try {
-      return new Intl.DateTimeFormat('fa-IR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Tehran',
-      }).format(new Date(fetchedAt));
-    } catch {
-      return 'لحظاتی پیش';
-    }
-  }, [fetchedAt]);
+  const cells = [
+    { value: hoursLeft, label: 'ساعت' },
+    { value: minutesLeft, label: 'دقیقه' },
+    { value: secsLeft, label: 'ثانیه' },
+  ];
 
   return (
-    <div className="codm-hud-box" aria-label="وضعیت بروزرسانی خودکار وب‌استور">
-      <div className="codm-hud-head">
-        <span className="codm-hud-status">
-          <span className="codm-live-dot" aria-hidden="true" />
-          بروزرسانی خودکار سرور
+    <div className="codm-timer" aria-label="شمارش معکوس تا بروزرسانی بعدی وب‌استور">
+      <div className="codm-timer-head">
+        <span className="codm-timer-title">
+          <Icon name="clock" />
+          بروزرسانی بعدی تا
         </span>
-        <span className="codm-hud-tag" dir="ltr">
-          SYNC // 30M
-        </span>
+        <button
+          type="button"
+          className="codm-timer-sync-btn"
+          onClick={onRefresh}
+          disabled={isRefreshing}
+          title="بروزرسانی دستی پیشنهادها"
+        >
+          <Icon name="refresh" className={isRefreshing ? 'codm-spin' : ''} />
+          <span dir="ltr">{isRefreshing ? 'SYNCING' : 'AUTO SYNC'}</span>
+        </button>
       </div>
 
-      <div className="codm-hud-grid">
-        <div className="codm-hud-cell">
-          <span className="codm-hud-lbl">آخرین همگام‌سازی</span>
-          <strong className="codm-hud-val" suppressHydrationWarning>
-            ساعت {updatedTimeFa}
-          </strong>
-        </div>
-        <div className="codm-hud-cell">
-          <span className="codm-hud-lbl">بروزرسانی بعدی تا</span>
-          <strong className="codm-hud-val codm-hud-val--gold" suppressHydrationWarning>
-            {padPersianTwoDigits(mins)}:{padPersianTwoDigits(secs)}
-          </strong>
-        </div>
+      <div className="codm-timer-grid" role="timer" aria-live="off">
+        {cells.map((cell, i) => (
+          <React.Fragment key={cell.label}>
+            {i > 0 && (
+              <span className="codm-timer-sep" aria-hidden="true">
+                :
+              </span>
+            )}
+            <div className="codm-timer-cell">
+              <span className="codm-timer-val" suppressHydrationWarning>
+                {padPersianTwoDigits(cell.value)}
+              </span>
+              <span className="codm-timer-lbl">{cell.label}</span>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
-      <button
-        type="button"
-        className="codm-hud-refresh-btn"
-        onClick={onRefresh}
-        disabled={isRefreshing}
-      >
-        <Icon name="refresh" className={isRefreshing ? 'codm-spin' : ''} />
-        <span>{isRefreshing ? 'در حال دریافت آخرین تغییرات…' : 'بروزرسانی دستی اطلاعات'}</span>
-      </button>
+      <div className="codm-cycle">
+        <div className="codm-cycle-head">
+          <span>چرخه بروزرسانی خودکار</span>
+          <span className="codm-cycle-pct" suppressHydrationWarning>
+            {faNumber(Math.round(cycleElapsed * 100))}٪
+          </span>
+        </div>
+        <div className="codm-cycle-track" aria-hidden="true">
+          <span
+            className="codm-cycle-fill"
+            style={{ transform: `scaleX(${cycleElapsed})` }}
+            suppressHydrationWarning
+          />
+        </div>
+      </div>
     </div>
   );
 });
@@ -281,166 +326,86 @@ const CodmOfferCard = memo(function CodmOfferCard({
 }) {
   const [imgError, setImgError] = useState(false);
   const imgSrc = imgError || !offer.image ? FALLBACK_OFFER_IMAGE : offer.image;
+  const palette = useMemo(() => getOfferPalette(offer), [offer]);
 
   const validityLabel = useMemo(
     () => formatRemainingValidity(offer.purchaseLimit?.endTime ?? null, offer.purchaseLimit?.refreshType ?? null),
     [offer.purchaseLimit],
   );
 
-  const accentColor =
-    offer.category === 'freebie'
-      ? '#22c55e'
-      : offer.category === 'bundle'
-        ? '#f97316'
-        : offer.category === 'event'
-          ? '#38bdf8'
-          : '#ffba00';
-
   return (
     <article
-      className={`codm-card codm-card--${offer.category}${offer.isHighlighted ? ' is-highlighted' : ''}`}
-      style={{ '--offer-accent': accentColor } as React.CSSProperties}
+      className="codm-card"
+      style={
+        {
+          '--rarity-color': palette.rarityColor,
+          '--tile-1': palette.primary,
+          '--tile-2': palette.secondary,
+          '--tile-3': palette.accent,
+          '--tile-plate': palette.plate,
+        } as React.CSSProperties
+      }
     >
-      {/* Top tactical badges */}
+      {/* Top badges: section/type pill + skewed bonus/discount pill */}
       <div className="codm-card-top">
-        <span className="codm-cat-badge">
-          <span className="codm-cat-dot" aria-hidden="true" />
-          <span>{offer.sectionNameFa}</span>
+        <span className="codm-rarity-badge" title={`${offer.sectionNameFa} (${offer.sectionName})`}>
+          <span className="codm-rarity-dot" aria-hidden="true" />
+          <span className="codm-rarity-name">{palette.tagFa}</span>
+          <span className="codm-rarity-en" dir="ltr">
+            {palette.tagEn}
+          </span>
         </span>
 
         {offer.isFreebie ? (
-          <span className="codm-promo-pill codm-promo-pill--free">هدیه رایگان</span>
+          <span className="codm-discount-pill codm-discount-pill--free">رایگان</span>
         ) : offer.isFirstPurchaseOffer ? (
-          <span className="codm-promo-pill codm-promo-pill--double">۲ برابر سی‌پی (خرید اول)</span>
+          <span className="codm-discount-pill">۲ برابر سی‌پی</span>
         ) : offer.discountPercent > 0 ? (
-          <span className="codm-promo-pill codm-promo-pill--discount">
-            {faNumber(offer.discountPercent)}٪ تخفیف خرید اول
-          </span>
-        ) : offer.isPopular ? (
-          <span className="codm-promo-pill codm-promo-pill--popular">پرفروش‌ترین</span>
+          <span className="codm-discount-pill">{faNumber(offer.discountPercent)}٪ تخفیف</span>
         ) : offer.bonusPercent > 0 ? (
-          <span className="codm-promo-pill codm-promo-pill--bonus">
-            +{faNumber(offer.bonusPercent)}٪ بونوس وب‌استور
-          </span>
-        ) : (
-          offer.webStoreExclusive && (
-            <span className="codm-promo-pill codm-promo-pill--exclusive">انحصاری وب‌استور</span>
-          )
-        )}
+          <span className="codm-discount-pill">+{faNumber(offer.bonusPercent)}٪ بونوس</span>
+        ) : offer.isPopular ? (
+          <span className="codm-banner-pill">پرفروش</span>
+        ) : null}
       </div>
 
-      {/* Visual stage */}
+      {/* Artwork stage */}
       <div
         className="codm-card-stage"
         onClick={() => onInspect(offer)}
         role="button"
         tabIndex={0}
+        aria-label={`مشاهده جزئیات ${offer.titleFa}`}
         onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             onInspect(offer);
           }
         }}
-        aria-label={`مشاهده جزئیات ${offer.titleFa}`}
       >
         <Image
           src={imgSrc}
-          alt={`${offer.titleFa} (${offer.title})`}
+          alt={offer.titleFa}
           width={240}
-          height={210}
-          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 260px"
+          height={220}
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
           priority={priority}
-          loading={priority ? 'eager' : 'lazy'}
           className="codm-card-img"
           onError={() => setImgError(true)}
         />
-
-        {/* CP base + bonus breakdown overlay bar */}
-        {offer.totalCp > 0 && (
-          <div className="codm-cp-bar">
-            {offer.bonusCp > 0 ? (
-              <>
-                <span className="codm-cp-base">{faNumber(offer.baseCp)} پایه</span>
-                <span className="codm-cp-plus" aria-hidden="true">
-                  +
-                </span>
-                <span className="codm-cp-bonus">{faNumber(offer.bonusCp)} بونوس وب‌استور</span>
-              </>
-            ) : (
-              <span className="codm-cp-base">{faNumber(offer.totalCp)} سی‌پی به همراه آیتم بونوس</span>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Content body */}
-      <div className="codm-card-body">
-        <div className="codm-card-titles">
-          <h3 className="codm-card-title">{offer.titleFa}</h3>
-          <span className="codm-card-title-en" dir="ltr">
-            {offer.title}
-          </span>
-        </div>
+      {/* Bottom name plate with hover reveal */}
+      <div className="codm-card-panel">
+        <div className="codm-card-main-info">
+          <h3 className="codm-card-title" title={offer.titleFa}>
+            {offer.titleFa}
+          </h3>
 
-        <p className="codm-card-desc">{offer.descriptionFa}</p>
-
-        {/* Validity or purchase limit meta */}
-        {(validityLabel || offer.purchaseLimit?.limit) && (
-          <div className="codm-card-meta-row">
-            {validityLabel && (
-              <span className="codm-validity-chip">
-                <Icon name="clock" />
-                <span>{validityLabel}</span>
-              </span>
-            )}
-            {offer.purchaseLimit?.limit && !offer.isFreebie && (
-              <span className="codm-limit-chip">
-                محدودیت وب‌استور: {faNumber(offer.purchaseLimit.limit)} بار
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Package sub-items preview */}
-        {offer.packageItems.length > 0 && (
-          <button
-            type="button"
-            className="codm-pkg-preview"
-            onClick={() => onInspect(offer)}
-            aria-label={`مشاهده ${faNumber(offer.packageItems.length)} آیتم داخل این پکیج`}
-          >
-            <div className="codm-pkg-thumbs">
-              {offer.packageItems.slice(0, 4).map(sub => (
-                <span key={sub.id} className="codm-pkg-thumb" title={sub.titleFa}>
-                  {sub.image ? (
-                    <Image
-                      src={sub.image}
-                      alt={sub.titleFa}
-                      width={34}
-                      height={34}
-                      sizes="34px"
-                      className="codm-pkg-thumb-img"
-                    />
-                  ) : (
-                    <Icon name="gift" />
-                  )}
-                </span>
-              ))}
-            </div>
-            <span className="codm-pkg-preview-label">
-              شامل {faNumber(offer.packageItems.length)} آیتم · مشاهده محتویات
-            </span>
-            <Icon name="eye" />
-          </button>
-        )}
-
-        {/* Footer: Price + Buy CP CTA */}
-        <div className="codm-card-footer">
-          <div className="codm-price-box">
-            <span className="codm-price-lbl">قیمت در وب‌استور</span>
-            <div className="codm-price-row">
+          <div className="codm-price-wrap">
+            <div className="codm-price-nums">
               {offer.isFreebie ? (
-                <span className="codm-price-free">رایگان (FREE)</span>
+                <span className="codm-price-current codm-price-current--free">رایگان (FREE)</span>
               ) : (
                 <>
                   <span className="codm-price-current" dir="ltr">
@@ -454,22 +419,52 @@ const CodmOfferCard = memo(function CodmOfferCard({
                 </>
               )}
             </div>
-          </div>
 
-          <div className="codm-card-actions">
-            <button
-              type="button"
-              className="codm-inspect-btn"
-              onClick={() => onInspect(offer)}
-              title="مشاهده جزئیات پیشنهاد"
-              aria-label={`جزئیات ${offer.titleFa}`}
-            >
-              <Icon name="eye" />
-            </button>
-            <Link href="/product/cod-points" className="codm-buy-cp-btn">
-              <Icon name="cart" />
-              <span>خرید سی‌پی</span>
-            </Link>
+            {offer.totalCp > 0 ? (
+              <span className="codm-cp-summary-pill">
+                {offer.bonusCp > 0
+                  ? `${faNumber(offer.baseCp)} + ${faNumber(offer.bonusCp)} CP`
+                  : `${faNumber(offer.totalCp)} CP`}
+              </span>
+            ) : offer.packageItems.length > 0 ? (
+              <span className="codm-cp-summary-pill">
+                {faNumber(offer.packageItems.length)} آیتم
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Hover reveal: extra info & action buttons */}
+        <div className="codm-card-reveal">
+          <div className="codm-card-reveal-inner">
+            <div className="codm-card-extra-meta">
+              <span className="codm-type-tag">
+                {offer.sectionNameFa}
+                {validityLabel ? ` · ${validityLabel}` : ''}
+              </span>
+              {offer.purchaseLimit?.limit && (
+                <span className="codm-bundle-count-tag">
+                  سقف {faNumber(offer.purchaseLimit.limit)} بار
+                </span>
+              )}
+            </div>
+
+            <div className="codm-card-actions">
+              <Link href="/product/cod-points" className="codm-buy-cp-btn">
+                <Icon name="cart" />
+                <span className="codm-btn-label">خرید سی‌پی</span>
+              </Link>
+
+              <button
+                type="button"
+                className="codm-bundle-popup-btn"
+                onClick={() => onInspect(offer)}
+                aria-label={`جزئیات ${offer.titleFa}`}
+                title="مشاهده جزئیات و محتویات بسته"
+              >
+                <Icon name={offer.packageItems.length > 0 ? 'layers' : 'eye'} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -477,55 +472,43 @@ const CodmOfferCard = memo(function CodmOfferCard({
   );
 });
 
-export default function CodmStoreClient({
-  initialData,
-}: {
-  initialData: CodmStoreData | null;
-}) {
+export default function CodmStoreClient({ initialData }: { initialData: CodmStoreData | null }) {
   const [store, setStore] = useState<CodmStoreData | null>(initialData);
   const [region, setRegion] = useState<CodmRegionKey>(initialData?.region ?? 'us');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(!initialData);
   const [error, setError] = useState<string | null>(
-    initialData ? null : 'دریافت اطلاعات وب‌استور کالاف دیوتی موبایل با خطا مواجه شد.',
+    initialData ? null : 'امکان دریافت اطلاعات وب‌استور کالاف دیوتی موبایل در حال حاضر وجود ندارد.',
   );
 
   const [selectedCategory, setSelectedCategory] = useState<CodmFilterCategory>('all');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState<string>('');
+  const deferredQuery = useDeferredValue(query);
   const [sortKey, setSortKey] = useState<SortKey>('featured');
-  const [sortOpen, setSortOpen] = useState(false);
-  const [onlyPromos, setOnlyPromos] = useState(false);
+  const [onlyBonusOrDiscount, setOnlyBonusOrDiscount] = useState<boolean>(false);
+  const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [inspectedOffer, setInspectedOffer] = useState<CodmStoreOffer | null>(null);
 
-  const refreshingRef = useRef(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const sortRef = useRef<HTMLDivElement>(null);
-
-  const deferredQuery = useDeferredValue(query);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const sortRef = useRef<HTMLDivElement | null>(null);
 
   const fetchStoreData = useCallback(async (targetRegion: CodmRegionKey, forceFresh = false) => {
-    if (refreshingRef.current) return;
-    refreshingRef.current = true;
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({ region: targetRegion });
-      if (forceFresh) params.set('fresh', '1');
-      const res = await fetch(`/api/codm-store?${params.toString()}`, {
-        cache: 'no-store',
+      const qs = new URLSearchParams({ region: targetRegion });
+      if (forceFresh) qs.set('fresh', '1');
+      const res = await fetch(`/api/codm-store?${qs.toString()}`, {
+        cache: forceFresh ? 'no-store' : 'default',
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.detail || 'خطا در برقراری ارتباط با وب‌استور کالاف دیوتی موبایل.');
+        throw new Error(`HTTP ${res.status}`);
       }
-      const nextData = (await res.json()) as CodmStoreData;
-      setStore(nextData);
-      setRegion(nextData.region);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'خطا در بارگذاری پیشنهادات وب‌استور.');
+      const data = (await res.json()) as CodmStoreData;
+      setStore(data);
+    } catch {
+      setError('خطا در برقراری ارتباط با وب‌استور کالاف دیوتی موبایل. لطفاً دوباره تلاش کنید.');
     } finally {
       setLoading(false);
-      refreshingRef.current = false;
     }
   }, []);
 
@@ -542,122 +525,105 @@ export default function CodmStoreClient({
     void fetchStoreData(region, true);
   }, [region, fetchStoreData]);
 
+  // Close sort menu on outside click
+  useEffect(() => {
+    if (!sortOpen) return;
+    const onPointerDown = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    return () => document.removeEventListener('mousedown', onPointerDown);
+  }, [sortOpen]);
+
   // Close modal on Escape
   useEffect(() => {
     if (!inspectedOffer) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setInspectedOffer(null);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [inspectedOffer]);
-
-  // Close sort dropdown on outside click or Escape
-  useEffect(() => {
-    if (!sortOpen) return;
-    const onPointerDown = (e: MouseEvent | TouchEvent) => {
-      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
-        setSortOpen(false);
-      }
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSortOpen(false);
-    };
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('touchstart', onPointerDown, { passive: true });
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('touchstart', onPointerDown);
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [sortOpen]);
-
-  const allOffers = useMemo(() => store?.offers ?? [], [store]);
-
-  const searchIndex = useMemo(() => allOffers.map(buildSearchText), [allOffers]);
-
-  const normalizedQuery = useMemo(() => normalizeForSearch(deferredQuery), [deferredQuery]);
-
-  const matchingOffers = useMemo(() => {
-    const terms = normalizedQuery ? normalizedQuery.split(' ').filter(Boolean) : [];
-    return allOffers.filter((offer, idx) => {
-      if (
-        onlyPromos &&
-        !(
-          offer.discountPercent > 0 ||
-          offer.isFirstPurchaseOffer ||
-          offer.isFirstPurchaseDiscount ||
-          offer.isFreebie
-        )
-      ) {
-        return false;
-      }
-      if (terms.length === 0) return true;
-      return terms.every(t => searchIndex[idx].includes(t));
-    });
-  }, [allOffers, searchIndex, normalizedQuery, onlyPromos]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<CodmFilterCategory, number> = {
-      all: matchingOffers.length,
+      all: 0,
       cp: 0,
       bundle: 0,
       event: 0,
       freebie: 0,
     };
-    for (const offer of matchingOffers) {
-      counts[offer.category] = (counts[offer.category] ?? 0) + 1;
+    if (!store) return counts;
+    counts.all = store.offers.length;
+    for (const offer of store.offers) {
+      counts[offer.category] = (counts[offer.category] || 0) + 1;
     }
     return counts;
-  }, [matchingOffers]);
+  }, [store]);
+
+  const normalizedQuery = useMemo(() => normalizeForSearch(deferredQuery), [deferredQuery]);
 
   const filteredOffers = useMemo(() => {
-    const byCat =
-      selectedCategory === 'all'
-        ? matchingOffers
-        : matchingOffers.filter(o => o.category === selectedCategory);
-    return [...byCat].sort(SORTERS[sortKey]);
-  }, [matchingOffers, selectedCategory, sortKey]);
+    if (!store) return [];
+    const sorter = SORTERS[sortKey] || SORTERS.featured;
 
-  const clearQuery = useCallback(() => {
-    setQuery('');
-    searchInputRef.current?.focus();
-  }, []);
+    return store.offers
+      .filter(offer => {
+        if (selectedCategory !== 'all' && offer.category !== selectedCategory) {
+          return false;
+        }
+        if (onlyBonusOrDiscount) {
+          const hasPromo =
+            offer.bonusCp > 0 ||
+            offer.discountPercent > 0 ||
+            offer.isFirstPurchaseOffer ||
+            offer.isFreebie;
+          if (!hasPromo) return false;
+        }
+        if (normalizedQuery) {
+          const haystack = normalizeForSearch(
+            `${offer.title} ${offer.titleFa} ${offer.subtitle || ''} ${offer.descriptionFa} ${offer.sectionName} ${offer.sectionNameFa} ${offer.totalCp}`,
+          );
+          if (!haystack.includes(normalizedQuery)) return false;
+        }
+        return true;
+      })
+      .sort(sorter);
+  }, [store, selectedCategory, onlyBonusOrDiscount, normalizedQuery, sortKey]);
 
   const resetFilters = useCallback(() => {
-    setQuery('');
     setSelectedCategory('all');
-    setOnlyPromos(false);
+    setQuery('');
     setSortKey('featured');
+    setOnlyBonusOrDiscount(false);
   }, []);
 
   const trimmedQuery = query.trim();
-  const hasActiveFilters = trimmedQuery !== '' || selectedCategory !== 'all' || onlyPromos;
-  const lastUpdatedFa = store ? formatPersianDateTime(store.fetchedAt) : '';
-  const activeCategoryConfig =
+  const hasActiveFilters =
+    trimmedQuery !== '' || selectedCategory !== 'all' || onlyBonusOrDiscount || sortKey !== 'featured';
+  const persianDate = store ? formatPersianDate(store.fetchedAt) : '';
+  const activeConfig =
     QUICK_CATEGORIES.find(c => c.key === selectedCategory) || QUICK_CATEGORIES[0];
-
-  const showSectionedLayout =
-    selectedCategory === 'all' && !trimmedQuery && !onlyPromos && sortKey === 'featured';
 
   return (
     <div
-      className={`codm-store-page ${codmDisplayFont.variable} ${codmLatinFont.variable} reveal`}
+      className={`codm-shop-page ${codmDisplayFont.variable} ${codmLatinFont.variable} reveal`}
       style={{ '--d': 2 } as React.CSSProperties}
     >
       {/* ---------- Hero ---------- */}
       <section className="codm-hero" aria-labelledby="codm-store-heading">
         <div className="codm-hero-bg" aria-hidden="true">
           <Image
-            src="/images/games/callof-background.webp"
+            src="/images/games/cod-background.webp"
             alt=""
             fill
             priority
             sizes="(max-width: 1280px) 100vw, 1280px"
-            className="codm-hero-bg-img"
+            className="codm-hero-map"
           />
-          <div className="codm-hero-grid-overlay" />
+          <div className="codm-hero-rays" />
           <div className="codm-hero-shade" />
         </div>
 
@@ -666,8 +632,8 @@ export default function CodmStoreClient({
             <Image
               src="/titan-logo.webp"
               alt="لوگوی تایتان"
-              width={28}
-              height={28}
+              width={30}
+              height={30}
               className="codm-collab-img"
               priority
             />
@@ -675,10 +641,10 @@ export default function CodmStoreClient({
               ✕
             </span>
             <Image
-              src="/images/glossy-cod-logo.webp"
+              src="/images/glossy-cod-logo-v2.webp"
               alt="لوگوی کالاف دیوتی موبایل"
-              width={28}
-              height={28}
+              width={30}
+              height={30}
               className="codm-collab-img"
               priority
             />
@@ -688,7 +654,7 @@ export default function CodmStoreClient({
           </div>
 
           <p className="codm-hero-eyebrow" dir="ltr">
-            OFFICIAL WEB STORE OFFERS // COD:M
+            WEB STORE OFFERS
           </p>
 
           <h1 id="codm-store-heading" className="codm-hero-title">
@@ -698,54 +664,35 @@ export default function CodmStoreClient({
           <div className="codm-hero-meta">
             <span className="codm-live-pill">
               <span className="codm-live-dot" aria-hidden="true" />
-              بروزرسانی خودکار از وب‌استور رسمی
+              زنده و خودکار
             </span>
-            {lastUpdatedFa && (
+            {persianDate && (
               <span className="codm-date-chip" suppressHydrationWarning>
-                <Icon name="clock" />
-                آخرین بروزرسانی: {lastUpdatedFa}
-              </span>
-            )}
-            {store && (
-              <span className="codm-region-chip">
-                <Icon name="globe" />
-                {store.regionNameFa}
+                <Icon name="clock" /> {persianDate}
               </span>
             )}
           </div>
 
           <p className="codm-hero-desc">
-            بسته‌های سی‌پی با بونوس اضافه وب‌استور، تخفیف‌های اولین خرید، باندل‌های زمانی محدود و هدیه
-            رایگان روزانه را به صورت زنده بررسی کنید و سی‌پی اکانت خود را فوری و قانونی از تایتان بخرید.
+            پیشنهادات انحصاری وب‌استور رسمی اکتیویژن (بسته‌های سی‌پی با بونوس اضافه، باندل‌ها و هدیه
+            روزانه) را لحظه‌ای ببینید و سی‌پی را فوری و قانونی از تایتان بخرید.
           </p>
 
           {store && (
             <dl className="codm-hero-stats">
               <div className="codm-hero-stat">
-                <dt>کل پیشنهادها</dt>
+                <dt>پیشنهاد فعال</dt>
                 <dd>{faNumber(store.totalOffers)}</dd>
-              </div>
-              <div className="codm-hero-stat">
-                <dt>بسته‌های سی‌پی</dt>
-                <dd>{faNumber(store.cpPacksCount)}</dd>
               </div>
               <div className="codm-hero-stat">
                 <dt>باندل و هدیه</dt>
                 <dd>{faNumber(store.bundlesCount + store.freebiesCount)}</dd>
               </div>
               {store.maxBonusPercent > 0 && (
-                <div className="codm-hero-stat codm-hero-stat--gold">
+                <div className="codm-hero-stat codm-hero-stat--hot">
                   <dt>بونوس وب‌استور</dt>
                   <dd>
                     <small>تا</small> {faNumber(store.maxBonusPercent)}٪
-                  </dd>
-                </div>
-              )}
-              {store.maxDiscountPercent > 0 && (
-                <div className="codm-hero-stat codm-hero-stat--hot">
-                  <dt>تخفیف خرید اول</dt>
-                  <dd>
-                    <small>تا</small> {faNumber(store.maxDiscountPercent)}٪
                   </dd>
                 </div>
               )}
@@ -755,10 +702,10 @@ export default function CodmStoreClient({
           <div className="codm-hero-actions">
             <Link href="/product/cod-points" className="codm-cta-primary">
               <Icon name="cart" />
-              <span>خرید سی‌پی (CP)</span>
+              <span>خرید فوری سی‌پی</span>
             </Link>
             <Link href="/store/call-of-duty" className="codm-cta-secondary">
-              <span>تمام محصولات کالاف دیوتی</span>
+              <span>بتل‌پس و محصولات کالاف</span>
             </Link>
           </div>
         </div>
@@ -773,34 +720,13 @@ export default function CodmStoreClient({
             priority
             className="codm-hero-character"
           />
-          <SyncTimerBox
+          <StoreCountdownTimer
             nextRevalidateAt={store?.nextRevalidateAt}
-            fetchedAt={store?.fetchedAt}
             isRefreshing={loading}
             onRefresh={handleManualRefresh}
           />
         </div>
       </section>
-
-      {/* ---------- Official Web Store Exclusive Notice Banner ---------- */}
-      <aside className="codm-exclusive-notice" aria-label="توضیحات پیشنهادات انحصاری وب‌استور">
-        <div className="codm-notice-icon" aria-hidden="true">
-          <Icon name="info" />
-        </div>
-        <div className="codm-notice-content">
-          <strong>پیشنهادات انحصاری وب‌استور رسمی (Web Store Exclusive Offers)</strong>
-          <p>
-            این صفحه به صورت خودکار پیشنهادات موجود در وب‌استور رسمی اکتیویژن (
-            <span dir="ltr">store.callofdutymobile.com</span>) شامل بسته‌های سی‌پی دارای بونوس اضافه،
-            باندل‌های اینترنتی و هدایای روزانه را نمایش می‌دهد و فروشگاه درون بازی (Credit Store یا Black
-            Market) نیست. برای شارژ مستقیم و ریالی سی‌پی روی اکانت خود، از دکمه «خرید سی‌پی» استفاده کنید.
-          </p>
-        </div>
-        <Link href="/product/cod-points" className="codm-notice-cta">
-          <span>شارژ فوری سی‌پی</span>
-          <Icon name="chevron-left" />
-        </Link>
-      </aside>
 
       {!store && error && !loading && (
         <ErrorState
@@ -815,44 +741,43 @@ export default function CodmStoreClient({
 
       {store && (
         <>
-          {/* ---------- Region Switcher & Filter Toolbar ---------- */}
+          {/* ---------- Search, Sort, Region & Categories ---------- */}
           <section className="codm-filters" aria-labelledby="codm-filters-heading">
-            <div className="codm-filters-top">
-              <div className="codm-filters-title-group">
-                <h2 id="codm-filters-heading">
-                  <span className="codm-filters-kicker" dir="ltr">
-                    TACTICAL LOADOUT
-                  </span>
-                  فیلتر، ریجن و دسته‌بندی پیشنهادات
-                </h2>
-              </div>
-
-              {/* Region selector */}
-              <div className="codm-region-bar" role="group" aria-label="انتخاب ریجن وب‌استور">
-                <span className="codm-region-bar-label">
-                  <Icon name="globe" />
-                  ریجن وب‌استور:
+            <div className="codm-filters-head">
+              <h2 id="codm-filters-heading">
+                <span className="codm-filters-kicker" dir="ltr">
+                  BROWSE
                 </span>
-                <div className="codm-region-pills">
+                جستجو و دسته‌بندی
+              </h2>
+
+              <div className="codm-head-controls">
+                <div className="codm-region-pills" role="group" aria-label="انتخاب ریجن وب‌استور">
                   {CODM_REGIONS.map(r => {
-                    const isSelected = r.key === region;
+                    const isActive = r.key === region;
                     return (
                       <button
                         key={r.key}
                         type="button"
-                        className={`codm-region-pill${isSelected ? ' is-active' : ''}`}
+                        className={`codm-region-pill${isActive ? ' is-active' : ''}`}
                         onClick={() => handleRegionChange(r.key)}
-                        disabled={loading && isSelected}
-                        aria-pressed={isSelected}
+                        disabled={loading && isActive}
+                        title={`${r.nameFa} (${r.currency})`}
                       >
-                        <span className="codm-region-flag" aria-hidden="true">
-                          {r.flag}
-                        </span>
-                        <span>{r.nameFa}</span>
+                        <span>{r.flag}</span>
+                        <span>{r.nameFa.replace('ریجن ', '')}</span>
+                        <small dir="ltr">{r.currencySymbol}</small>
                       </button>
                     );
                   })}
                 </div>
+
+                {hasActiveFilters && (
+                  <button type="button" className="codm-filters-reset" onClick={resetFilters}>
+                    <Icon name="refresh" />
+                    <span>پاک کردن فیلترها</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -868,11 +793,11 @@ export default function CodmStoreClient({
                   onKeyDown={e => {
                     if (e.key === 'Escape' && query) {
                       e.preventDefault();
-                      clearQuery();
+                      setQuery('');
                     }
                   }}
-                  placeholder="جستجو در بسته‌های سی‌پی، باندل هالووین، Honkai، جعبه یا هدیه روزانه…"
-                  aria-label="جستجو در پیشنهادات وب‌استور کالاف دیوتی موبایل"
+                  placeholder="جستجوی مقدار سی‌پی (مثلاً 880 یا 2400)، نام باندل یا هدیه…"
+                  aria-label="جستجو در پیشنهادات وب‌استور"
                   enterKeyHint="search"
                   autoComplete="off"
                   spellCheck={false}
@@ -881,7 +806,10 @@ export default function CodmStoreClient({
                   <button
                     type="button"
                     className="codm-search-clear"
-                    onClick={clearQuery}
+                    onClick={() => {
+                      setQuery('');
+                      searchInputRef.current?.focus();
+                    }}
                     aria-label="پاک کردن جستجو"
                   >
                     <Icon name="x" />
@@ -893,12 +821,12 @@ export default function CodmStoreClient({
                 <button
                   type="button"
                   className="codm-sort-trigger"
-                  onClick={() => setSortOpen(o => !o)}
+                  onClick={() => setSortOpen(open => !open)}
                   aria-haspopup="listbox"
                   aria-expanded={sortOpen}
                   aria-label="مرتب‌سازی پیشنهادها"
                 >
-                  <span className="codm-sort-label">مرتب‌سازی:</span>
+                  <span className="codm-sort-label">مرتب‌سازی</span>
                   <span className="codm-sort-value">
                     {SORT_OPTIONS.find(opt => opt.key === sortKey)?.label ?? SORT_OPTIONS[0].label}
                   </span>
@@ -920,7 +848,11 @@ export default function CodmStoreClient({
                             }}
                           >
                             <span>{opt.label}</span>
-                            {isSelected && <Icon name="check" />}
+                            {isSelected && (
+                              <span className="codm-sort-check" aria-hidden="true">
+                                <Icon name="check" />
+                              </span>
+                            )}
                           </button>
                         </li>
                       );
@@ -931,25 +863,18 @@ export default function CodmStoreClient({
 
               <button
                 type="button"
-                className={`codm-toggle${onlyPromos ? ' is-on' : ''}`}
-                onClick={() => setOnlyPromos(prev => !prev)}
-                aria-pressed={onlyPromos}
+                className={`codm-toggle${onlyBonusOrDiscount ? ' is-on' : ''}`}
+                onClick={() => setOnlyBonusOrDiscount(v => !v)}
+                aria-pressed={onlyBonusOrDiscount}
               >
                 <span className="codm-toggle-box" aria-hidden="true">
                   <Icon name="check" />
                 </span>
-                <span>فقط تخفیف‌دار و خرید اول</span>
+                فقط دارای بونوس / تخفیف
               </button>
-
-              {hasActiveFilters && (
-                <button type="button" className="codm-reset-btn" onClick={resetFilters}>
-                  <Icon name="refresh" />
-                  <span>حذف فیلترها</span>
-                </button>
-              )}
             </div>
 
-            <div className="codm-tabs" role="group" aria-label="دسته‌بندی پیشنهادها">
+            <div className="codm-tabs" role="group" aria-label="دسته‌بندی پیشنهادات وب‌استور">
               {QUICK_CATEGORIES.map(cat => {
                 const count = categoryCounts[cat.key] ?? 0;
                 const isActive = selectedCategory === cat.key;
@@ -975,15 +900,28 @@ export default function CodmStoreClient({
             </div>
           </section>
 
-          {/* Loading overlay when switching regions */}
-          {loading && (
-            <div className="codm-region-loading" role="status" aria-live="polite">
-              <Icon name="refresh" className="codm-spin" />
-              <span>در حال بروزرسانی قیمت‌ها و پیشنهادات ریجن انتخابی…</span>
+          {/* ---------- Results Header ---------- */}
+          <section className="codm-view-header">
+            <div className="codm-view-title-group">
+              <h2>{trimmedQuery ? 'نتایج جستجو' : activeConfig.title}</h2>
+              <span className="codm-view-count-badge" aria-live="polite">
+                {faNumber(filteredOffers.length)} پیشنهاد
+                {trimmedQuery && (
+                  <>
+                    {' '}
+                    برای «<bdi>{trimmedQuery}</bdi>»
+                  </>
+                )}
+              </span>
             </div>
-          )}
 
-          {/* ---------- Offers Display ---------- */}
+            <span className="codm-exclusive-pill">
+              <Icon name="info" />
+              پیشنهادات انحصاری وب‌استور رسمی (Web Store Exclusive)
+            </span>
+          </section>
+
+          {/* ---------- Results Grid ---------- */}
           {filteredOffers.length === 0 ? (
             <div className="codm-empty" role="status">
               <span className="codm-empty-icon" aria-hidden="true">
@@ -999,79 +937,12 @@ export default function CodmStoreClient({
                 )}
               </h3>
               <p>عبارت جستجو را تغییر دهید یا فیلترهای فعال را پاک کنید.</p>
-              <button type="button" className="codm-cta-primary" onClick={resetFilters}>
-                نمایش همه پیشنهادها
+              <button type="button" className="codm-empty-btn" onClick={resetFilters}>
+                پاک کردن جستجو و فیلترها
               </button>
             </div>
-          ) : showSectionedLayout ? (
-            <div className="codm-sections-stack">
-              {store.sections.map((sec, secIdx) => (
-                <section
-                  key={sec.uuid || sec.id}
-                  className="codm-section-block"
-                  aria-labelledby={`codm-sec-${sec.id}`}
-                >
-                  <header className="codm-section-head">
-                    <div className="codm-section-title-wrap">
-                      {sec.imageUrl && (
-                        <Image
-                          src={sec.imageUrl}
-                          alt={sec.nameFa}
-                          width={44}
-                          height={44}
-                          className="codm-section-logo"
-                        />
-                      )}
-                      <div>
-                        <div className="codm-section-title-row">
-                          <h2 id={`codm-sec-${sec.id}`} className="codm-section-title">
-                            {sec.nameFa}
-                          </h2>
-                          <span className="codm-section-en" dir="ltr">
-                            {sec.name}
-                          </span>
-                          <span className="codm-section-count">
-                            {faNumber(sec.offers.length)} پیشنهاد
-                          </span>
-                        </div>
-                        {sec.descriptionFa && (
-                          <p className="codm-section-desc">{sec.descriptionFa}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <Link href="/product/cod-points" className="codm-section-buy-link">
-                      <Icon name="cart" />
-                      <span>خرید سی‌پی از تایتان</span>
-                    </Link>
-                  </header>
-
-                  <div className="codm-grid">
-                    {sec.offers.map((offer, idx) => (
-                      <CodmOfferCard
-                        key={offer.id}
-                        offer={offer}
-                        priority={secIdx === 0 && idx < 4}
-                        onInspect={setInspectedOffer}
-                      />
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
           ) : (
-            <section className="codm-section-block" aria-label="لیست پیشنهادهای فیلترشده">
-              <header className="codm-section-head">
-                <div className="codm-section-title-row">
-                  <h2 className="codm-section-title">
-                    {trimmedQuery ? 'نتایج جستجو' : activeCategoryConfig.title}
-                  </h2>
-                  <span className="codm-section-count">
-                    {faNumber(filteredOffers.length)} پیشنهاد
-                  </span>
-                </div>
-              </header>
-
+            <div className="codm-grid-container">
               <div className="codm-grid">
                 {filteredOffers.map((offer, idx) => (
                   <CodmOfferCard
@@ -1082,55 +953,49 @@ export default function CodmStoreClient({
                   />
                 ))}
               </div>
-            </section>
+            </div>
           )}
 
           {/* ---------- Bottom Buy CP CTA Banner ---------- */}
           <aside className="codm-bottom-cta" aria-label="خرید سی‌پی کالاف دیوتی موبایل از تایتان">
             <div className="codm-bottom-cta-text">
-              <span className="codm-bottom-kicker" dir="ltr">
-                INSTANT CP TOP-UP // TITAN STORE
-              </span>
-              <h2>قصد خرید سی‌پی کالاف دیوتی موبایل با تحویل فوری و قیمت ریالی دارید؟</h2>
+              <h2>سی‌پی کافی برای خرید باندل‌ها و گردونه‌های کالاف دیوتی موبایل ندارید؟</h2>
               <p>
-                در فروشگاه تایتان، تمامی بسته‌های سی‌پی کالاف دیوتی موبایل به صورت کاملاً قانونی، با
-                پشتیبانی ۲۴ ساعته و در سریع‌ترین زمان ممکن روی اکانت اکتیویژن شما شارژ می‌شوند.
+                شارژ مستقیم، قانونی و مطمئن سی‌پی کالاف دیوتی موبایل روی اکانت اکتیویژن شما با قیمت ریالی و
+                تحویل فوری در فروشگاه تایتان.
               </p>
             </div>
             <div className="codm-hero-actions">
               <Link href="/product/cod-points" className="codm-cta-primary">
                 <Icon name="cart" />
-                <span>خرید سی‌پی کالاف دیوتی</span>
+                <span>خرید فوری سی‌پی</span>
               </Link>
               <Link href="/store/call-of-duty" className="codm-cta-secondary">
-                <span>مشاهده بتل‌پس و محصولات کالاف</span>
+                <span>تمام محصولات کالاف دیوتی</span>
               </Link>
             </div>
           </aside>
         </>
       )}
 
-      {/* ---------- Offer / Bundle Detail Modal ---------- */}
+      {/* ---------- Offer / Bundle Detail Drawer Modal ---------- */}
       {inspectedOffer && (
         <div
-          className="codm-modal-backdrop"
+          className="codm-drawer-backdrop"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="codm-modal-title"
+          aria-labelledby="codm-drawer-title"
           onClick={() => setInspectedOffer(null)}
         >
-          <div className="codm-modal" onClick={e => e.stopPropagation()}>
-            <div className="codm-modal-head">
-              <div className="codm-modal-title-wrap">
-                <span className="codm-modal-badge">{inspectedOffer.sectionNameFa}</span>
-                <h3 id="codm-modal-title">{inspectedOffer.titleFa}</h3>
-                <span className="codm-modal-title-en" dir="ltr">
-                  {inspectedOffer.title}
-                </span>
+          <div className="codm-drawer" onClick={e => e.stopPropagation()}>
+            <div className="codm-drawer-head">
+              <div className="codm-drawer-title-wrap">
+                <span className="codm-drawer-badge">{inspectedOffer.sectionNameFa}</span>
+                <h3 id="codm-drawer-title">{inspectedOffer.titleFa}</h3>
               </div>
               <button
                 type="button"
-                className="codm-modal-close"
+                className="codm-drawer-close"
                 onClick={() => setInspectedOffer(null)}
                 aria-label="بستن پنجره جزئیات"
               >
@@ -1138,102 +1003,78 @@ export default function CodmStoreClient({
               </button>
             </div>
 
-            <div className="codm-modal-body">
-              <div className="codm-modal-hero">
+            <div className="codm-drawer-body">
+              <div className="codm-drawer-hero">
                 <Image
                   src={inspectedOffer.image || FALLBACK_OFFER_IMAGE}
                   alt={inspectedOffer.titleFa}
-                  width={150}
-                  height={150}
-                  className="codm-modal-img"
+                  width={120}
+                  height={120}
+                  className="codm-drawer-img"
                 />
-                <div className="codm-modal-summary">
-                  <p className="codm-modal-desc">{inspectedOffer.descriptionFa}</p>
-
+                <div className="codm-drawer-summary">
+                  <p className="codm-drawer-desc">{inspectedOffer.descriptionFa}</p>
                   {inspectedOffer.totalCp > 0 && (
-                    <div className="codm-modal-cp-breakdown">
-                      <div>
-                        <span>سی‌پی پایه:</span>
-                        <strong>{faNumber(inspectedOffer.baseCp)} CP</strong>
-                      </div>
+                    <div className="codm-drawer-cp-pills">
+                      <span className="codm-drawer-cp-pill">
+                        سی‌پی پایه: <strong>{faNumber(inspectedOffer.baseCp)} CP</strong>
+                      </span>
                       {inspectedOffer.bonusCp > 0 && (
-                        <div>
-                          <span>بونوس وب‌استور:</span>
-                          <strong className="is-bonus">
-                            +{faNumber(inspectedOffer.bonusCp)} CP ({faNumber(inspectedOffer.bonusPercent)}٪)
-                          </strong>
-                        </div>
-                      )}
-                      <div>
-                        <span>مجموع دریافتی:</span>
-                        <strong className="is-total">{faNumber(inspectedOffer.totalCp)} CP</strong>
-                      </div>
-                    </div>
-                  )}
-
-                  {inspectedOffer.purchaseLimit && (
-                    <div className="codm-modal-limits">
-                      {inspectedOffer.purchaseLimit.limit && (
-                        <span>
-                          محدودیت خرید: <strong>{faNumber(inspectedOffer.purchaseLimit.limit)} بار</strong>
+                        <span className="codm-drawer-cp-pill is-bonus">
+                          بونوس وب‌استور: <strong>+{faNumber(inspectedOffer.bonusCp)} CP</strong>
                         </span>
                       )}
-                      {inspectedOffer.purchaseLimit.endTime && (
-                        <span>
-                          اعتبار پیشنهاد:{' '}
-                          <strong>
-                            {formatRemainingValidity(
-                              inspectedOffer.purchaseLimit.endTime,
-                              inspectedOffer.purchaseLimit.refreshType,
-                            )}
-                          </strong>
-                        </span>
-                      )}
+                      <span className="codm-drawer-cp-pill is-total">
+                        مجموع دریافتی: <strong>{faNumber(inspectedOffer.totalCp)} CP</strong>
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
 
               {inspectedOffer.packageItems.length > 0 && (
-                <div className="codm-modal-pkg">
-                  <h4 className="codm-modal-pkg-title">
-                    محتویات داخل این باندل ({faNumber(inspectedOffer.packageItems.length)} آیتم):
-                  </h4>
-                  <div className="codm-modal-pkg-list">
+                <>
+                  <div className="codm-drawer-meta-banner">
+                    <span>
+                      شامل <strong>{faNumber(inspectedOffer.packageItems.length)}</strong> آیتم داخل این پکیج:
+                    </span>
+                    {inspectedOffer.discountPercent > 0 && (
+                      <span className="codm-discount-pill">
+                        {faNumber(inspectedOffer.discountPercent)}٪ تخفیف
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="codm-drawer-list">
                     {inspectedOffer.packageItems.map(sub => (
-                      <div key={sub.id} className="codm-modal-pkg-item">
+                      <div key={sub.id} className="codm-drawer-item">
                         {sub.image && (
                           <Image
                             src={sub.image}
                             alt={sub.titleFa}
-                            width={56}
-                            height={56}
-                            className="codm-modal-pkg-img"
+                            width={54}
+                            height={54}
+                            className="codm-drawer-item-img"
                           />
                         )}
-                        <div className="codm-modal-pkg-info">
-                          <div className="codm-modal-pkg-head">
-                            <strong>{sub.titleFa}</strong>
-                            <span className="codm-modal-pkg-type">{sub.itemTypeFa}</span>
-                          </div>
-                          <span className="codm-modal-pkg-en" dir="ltr">
-                            {sub.title}
+                        <div className="codm-drawer-item-info">
+                          <strong>{sub.titleFa}</strong>
+                          <span className="codm-drawer-sub-type">
+                            {sub.itemTypeFa} ({sub.title})
                           </span>
-                          {sub.descriptionFa && <p>{sub.descriptionFa}</p>}
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
+                </>
               )}
             </div>
 
-            <div className="codm-modal-foot">
-              <div className="codm-price-box">
-                <span className="codm-price-lbl">قیمت رسمی در وب‌استور ({store?.currency})</span>
-                <div className="codm-price-row">
+            <div className="codm-drawer-foot">
+              <div className="codm-price-wrap">
+                <div className="codm-price-nums">
                   {inspectedOffer.isFreebie ? (
-                    <span className="codm-price-free">رایگان (FREE)</span>
+                    <span className="codm-price-current codm-price-current--free">رایگان (FREE)</span>
                   ) : (
                     <>
                       <span className="codm-price-current" dir="ltr">
@@ -1251,7 +1092,7 @@ export default function CodmStoreClient({
 
               <Link href="/product/cod-points" className="codm-cta-primary">
                 <Icon name="cart" />
-                <span>خرید فوری سی‌پی از تایتان</span>
+                <span>خرید فوری سی‌پی</span>
               </Link>
             </div>
           </div>

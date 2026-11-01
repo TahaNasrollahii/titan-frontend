@@ -96,7 +96,7 @@ const CHARACTERS = [
 
 const ORBIT_LOGOS = [
   { src: '/images/glossy-valorant-logo.webp', className: styles.orbitA },
-  { src: '/images/glossy-cod-logo.webp', className: styles.orbitB },
+  { src: '/images/glossy-cod-logo-v2.webp', className: styles.orbitB },
   { src: '/images/glossy-fortnite-logo.webp', className: styles.orbitC },
   { src: '/images/login-premium.webp', className: styles.orbitD },
 ];
