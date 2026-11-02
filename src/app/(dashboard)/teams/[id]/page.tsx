@@ -8,6 +8,7 @@ import { Icon } from '@/components/Icons';
 import { ProfileAvatar } from '@/components/ProfileAvatar';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
+import { errorMessage } from '@/lib/api/client';
 import { teamsApi } from '@/lib/api/endpoints';
 import { faNumber, initials, jalaliDate } from '@/lib/format';
 import { useApi } from '@/lib/hooks/useApi';
@@ -33,14 +34,17 @@ export default function TeamDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { addToast } = useAppContext();
   const team = useApi(() => teamsApi.get(id), [id]);
+  const isCaptain = team.data?.myRole === 'captain';
+  const invitations = useApi(isCaptain ? () => teamsApi.invitations(Number(id)) : null, [id, isCaptain]);
   const history = useApi(() => teamsApi.tournaments(id), [id]);
   const [copied, setCopied] = useState(false);
+  const [inviteName, setInviteName] = useState('');
+  const [inviting, setInviting] = useState(false);
 
   if (team.loading) return <Loading />;
   const data = team.data;
   if (!data) return <ErrorState error={team.error} onRetry={team.reload} />;
 
-  const isCaptain = data.myRole === 'captain';
   const captain = data.members.find(m => m.role === 'captain');
   const winRate = Math.round(data.winRate || (data.matchesPlayed > 0 ? (data.wins / data.matchesPlayed) * 100 : 0));
   const remainingSlots = Math.max(0, data.maxMembers - data.memberCount);
@@ -61,6 +65,21 @@ export default function TeamDetailsPage() {
       tone: 'success',
     });
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const invite = async () => {
+    if (!inviteName.trim() || inviting) return;
+    setInviting(true);
+    try {
+      await teamsApi.invite(data.id, inviteName.trim());
+      setInviteName('');
+      addToast({ title: 'دعوت‌نامه ارسال شد', icon: 'team', tone: 'success' });
+      await invitations.reload();
+    } catch (error) {
+      addToast({ title: 'دعوت بازیکن', text: errorMessage(error), icon: 'team', tone: 'error' });
+    } finally {
+      setInviting(false);
+    }
   };
 
   return (
@@ -342,6 +361,42 @@ export default function TeamDetailsPage() {
                 </div>
                 <div className={styles.codeSnippet}>
                   کد مستقیم عضویت: <strong>{data.inviteCode}</strong>
+                </div>
+
+                <div className={styles.directInviteSection}>
+                  <label className={styles.directInviteLabel} htmlFor="direct-invite-input">
+                    دعوت مستقیم با شناسه بازی (Game ID)
+                  </label>
+                  <div className={styles.inviteInputRow}>
+                    <input
+                      id="direct-invite-input"
+                      type="text"
+                      value={inviteName}
+                      onChange={e => setInviteName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          void invite();
+                        }
+                      }}
+                      placeholder="مثلا: ShadowHunter"
+                      dir="ltr"
+                      className={styles.inviteInput}
+                    />
+                    <button
+                      type="button"
+                      className={styles.copyBtn}
+                      onClick={invite}
+                      disabled={!inviteName.trim() || inviting}
+                    >
+                      <span>{inviting ? 'در حال ارسال...' : 'ارسال دعوت'}</span>
+                    </button>
+                  </div>
+                  {invitations.data && invitations.data.length > 0 && (
+                    <p className={styles.pendingInvitesText}>
+                      در انتظار پاسخ: {invitations.data.map(i => i.invitedUser.displayName).join('، ')}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

@@ -676,6 +676,152 @@ export const EPIC_GAMES_CHANGE_REGION_GUIDE: Guide = {
   ],
 };
 
+export const EPIC_GAMES_CHANGE_PASSWORD_GUIDE: Guide = {
+  slug: 'epic-games-change-password',
+  title: 'تغییر پسوورد اپیک گیمز',
+  category: 'account',
+  summary:
+    'آموزش تصویری و گام‌به‌گام تغییر پسوورد (رمز عبور) اکانت اپیک گیمز در ۳ مرحله ساده از بخش Password and security برای حفظ امنیت اکانت فورتنایت.',
+  publishedAt: '2026-04-20T00:00:00Z',
+  updatedAt: '2026-11-01T00:00:00Z',
+  game: {
+    slug: 'fortnite',
+    title: 'فورتنایت',
+    titleEn: 'Fortnite',
+    accentColor: '#00d4ff',
+    iconImage: '/images/categories/large/fortnite.webp',
+  },
+  products: [],
+  related: [],
+  metaTitle: 'آموزش تصویری تغییر پسوورد اپیک گیمز (Epic Games) | تایتان',
+  metaDescription:
+    'آموزش گام‌به‌گام و تصویری تغییر پسوورد (رمز عبور) اکانت اپیک گیمز برای فورتنایت در ۳ مرحله ساده از طریق بخش Password and security.',
+  noindex: false,
+  ogImage: '/images/guides/epic-games-change-password/3.webp',
+  canonicalUrl: '',
+  body: `تغییر دوره‌ای پسوورد (رمز عبور) اکانت اپیک گیمز، به‌خصوص پس از دریافت سفارش‌های [فروشگاه فورتنایت تایتان](/store/fortnite) یا برای افزایش امنیت حساب، یکی از بهترین راه‌ها برای محافظت کامل از اسکین‌ها و وی‌باکس‌های شماست. در این آموزش تصویری، نحوه تغییر پسوورد اکانت در [سایت رسمی اپیک گیمز (Epic Games)](https://www.epicgames.com/) را در **۳ مرحله ساده** یاد می‌گیرید.
+
+## مرحله اول: ورود به اکانت اپیک گیمز و باز کردن بخش Account
+
+ابتدا وارد [سایت رسمی اپیک گیمز به آدرس epicgames.com](https://www.epicgames.com/) شوید و با ایمیل و رمز عبور فعلی خود وارد حساب کاربری شوید.
+
+1. همان‌طور که در تصویر زیر با فلش قرمز مشخص شده است، در گوشه بالا سمت راست سایت روی **نام کاربری یا آیکون پروفایل خود** کلیک کنید.
+2. از منوی بازشده، گزینه **Account** را انتخاب کنید تا وارد صفحه تنظیمات حساب شوید.
+
+![مرحله اول تغییر پسوورد اپیک گیمز: ورود به اکانت در سایت Epic Games، کلیک روی پروفایل و انتخاب گزینه Account](/images/guides/epic-games-change-password/1.webp)
+
+## مرحله دوم: ورود به بخش Password and security و کلیک روی Change password
+
+پس از ورود به تنظیمات حساب، از منوی سمت چپ صفحه وارد قسمت **Password and security** شوید (یا مستقیماً صفحه [تنظیمات رمز عبور و امنیت اپیک گیمز](https://www.epicgames.com/account/password) را باز کنید) و باقی مراحل را طبق تصویر زیر پیش بروید:
+
+1. از منوی سمت چپ وارد بخش **Password and security** شوید.
+2. صفحه را به پایین اسکرول کنید تا به قسمت **Change your password** برسید.
+3. طبق کادر قرمز در تصویر زیر، روی دکمه آبی‌رنگ **Change password** کلیک کنید.
+
+![مرحله دوم تغییر پسوورد اپیک گیمز: ورود به بخش Password and security و کلیک روی دکمه Change password](/images/guides/epic-games-change-password/2.webp)
+
+## مرحله سوم: وارد کردن رمز عبور فعلی و جدید و کلیک روی Confirm
+
+با کلیک روی دکمه **Change password**، پنجره تغییر رمز عبور برای شما باز می‌شود. مطابق کادرهای راهنمای فارسی در تصویر زیر عمل کنید:
+
+1. در کادر اول (**Current password**)، **رمز عبور فعلی خود** را وارد کنید.
+2. در کادر دوم (**New password**)، **رمز عبور جدید خود** را وارد کنید (رمز جدید نباید یکی از ۵ رمز قبلی شما باشد، نباید فاصله یا Space داشته باشد و باید حداقل شامل ۱۰ کاراکتر، ۱ حرف انگلیسی و ۱ عدد باشد).
+3. در پایان، روی دکمه آبی‌رنگ **Confirm** کلیک کنید تا پسوورد اکانت اپیک گیمز شما با موفقیت تغییر کند.
+
+![مرحله سوم تغییر پسوورد اپیک گیمز: وارد کردن رمز عبور فعلی در Current password، رمز عبور جدید در New password و کلیک روی دکمه Confirm](/images/guides/epic-games-change-password/3.webp)
+
+## نکات مهم پس از تغییر پسوورد اپیک گیمز
+
+- **به‌روزرسانی رمز در پنل تایتان:** اگر اطلاعات اکانت فورتنایت خود را برای خریدهای سریع در [بخش اکانت‌های من در پنل تایتان](/dashboard/accounts) ذخیره کرده‌اید، پس از تغییر پسوورد، رمز جدید را در پنل تایتان نیز ویرایش کنید تا در سفارش‌های بعدی [فروشگاه فورتنایت](/store/fortnite) تاخیری ایجاد نشود.
+- **قوانین رمز عبور جدید:** رمز عبور جدید باید حداقل ۱۰ کاراکتر بوده و شامل حداقل یک حرف و یک عدد بدون فاصله (Space) باشد.`,
+  faqs: [
+    {
+      question: 'تغییر پسوورد اکانت اپیک گیمز از کدام بخش انجام می‌شود؟',
+      answer:
+        'وارد سایت epicgames.com شوید، از منوی پروفایل بالا سمت راست گزینه Account را بزنید، سپس از منوی تنظیمات وارد بخش Password and security شوید و در قسمت Change your password روی دکمه Change password کلیک کنید.',
+    },
+    {
+      question: 'رمز عبور جدید اپیک گیمز (New password) باید چه شرایطی داشته باشد؟',
+      answer:
+        'رمز عبور جدید باید حداقل ۱۰ کاراکتر باشد، حداقل شامل ۱ حرف انگلیسی و ۱ عدد باشد، هیچ فاصله‌ای (Space) نداشته باشد و تکراری (جزو ۵ رمز عبور قبلی شما) نباشد.',
+    },
+    {
+      question: 'آیا بعد از تغییر پسوورد باید اطلاعات اکانت را در سایت تایتان هم ویرایش کنم؟',
+      answer:
+        'بله، اگر قصد ثبت سفارش جدید برای شارژ وی‌باکس یا کروپک دارید، وارد بخش «اکانت‌های من» در داشبورد تایتان شوید و رمز عبور جدید اکانت اپیک گیمز خود را جایگزین کنید.',
+    },
+  ],
+};
+
+export const CREATE_TEAM_GUIDE: Guide = {
+  slug: 'create-team',
+  title: 'ساخت تیم در تایتان',
+  category: 'tournament',
+  summary:
+    'آموزش تصویری و گام‌به‌گام ساخت تیم در تایتان در ۲ مرحله ساده: ورود به بخش تیم‌های من در پنل کاربری، آپلود لوگوی تیم، انتخاب نام تیم و دریافت لینک دعوت هم‌تیمی‌ها.',
+  publishedAt: '2026-11-02T00:00:00Z',
+  updatedAt: '2026-11-02T00:00:00Z',
+  game: null,
+  products: [],
+  related: [],
+  metaTitle: 'آموزش تصویری ساخت تیم در تایتان و دعوت هم‌تیمی‌ها | تایتان',
+  metaDescription:
+    'آموزش گام‌به‌گام و تصویری ساخت تیم در تایتان در ۲ مرحله ساده: ورود به بخش تیم‌های من در پنل کاربری، آپلود لوگو، انتخاب نام تیم و دریافت لینک دعوت هم‌تیمی‌ها.',
+  noindex: false,
+  ogImage: '/images/guides/create-team/2.webp',
+  canonicalUrl: '',
+  body: `برای شرکت در [تورنومنت‌های تیمی تایتان](/tournaments) (دو نفره، سه نفره، چهار نفره یا پنج نفره)، ابتدا باید تیم اختصاصی خود را بسازید و هم‌تیمی‌هایتان را به آن دعوت کنید. در این آموزش تصویری، نحوه **ساخت تیم در تایتان** را در **۲ مرحله ساده** یاد می‌گیرید.
+
+## مرحله اول: ورود به بخش تیم‌های من و کلیک روی ساخت تیم
+
+ابتدا وارد حساب کاربری خود در سایت تایتان شوید و به [پنل کاربری (داشبورد)](/dashboard?tab=teams) بروید. سپس مطابق راهنمای مشخص‌شده در تصویر زیر عمل کنید:
+
+1. از منوی سمت راست پنل کاربری، **روی «تیم‌های من» کلیک کنید**.
+2. در کادر بازشده، از قسمت بالا سمت چپ **سپس روی دکمه «+ ساخت تیم» کلیک کنید** تا وارد صفحه ساخت تیم جدید شوید.
+
+![مرحله اول ساخت تیم در تایتان: کلیک روی گزینه تیم‌های من در منوی پنل کاربری و سپس کلیک روی دکمه ساخت تیم](/images/guides/create-team/1.webp)
+
+## مرحله دوم: وارد کردن آیکون و نام تیم و کلیک روی ایجاد تیم
+
+پس از کلیک روی دکمه ساخت تیم، وارد صفحه [ساخت تیم جدید](/teams/create) (بخش **مشخصات اولیه تیم**) می‌شوید. مطابق کادرهای راهنمای فارسی در تصویر زیر، اطلاعات تیم خود را تکمیل کنید:
+
+1. **آیکون تیمت رو وارد کن:** روی بخش **«آپلود لوگوی تیم»** کلیک کنید و تصویر لوگو یا آیکون تیم خود را انتخاب نمایید (حداکثر حجم مجاز **۲ مگابایت** با فرمت **PNG** یا **JPG**).
+2. **نام تیم رو بزن:** در کادر **«نام تیم»**، نام دلخواه و رسمی تیم خود (مانند \`TitanTeam\`) را وارد کنید. این نام در جدول مسابقات و پروفایل عمومی تیم نمایش داده می‌شود.
+3. **سپس روی ایجاد تیم کلیک کنید:** در پایان، روی دکمه قرمز رنگ **«ایجاد تیم و دریافت لینک دعوت»** کلیک کنید تا تیم شما ساخته شود.
+
+![مرحله دوم ساخت تیم در تایتان: آپلود لوگوی تیم، وارد کردن نام تیم و کلیک روی دکمه ایجاد تیم و دریافت لینک دعوت](/images/guides/create-team/2.webp)
+
+## نکات مهم پس از ساخت تیم و دعوت هم‌تیمی‌ها
+
+بلافاصله پس از ساخت تیم، شما به‌عنوان **کاپیتان تیم (Captain)** شناخته می‌شوید و به صفحه مدیریت تیم هدایت خواهید شد:
+
+- **دعوت با لینک اختصاصی:** در صفحه مدیریت تیم می‌توانید **لینک دعوت اعضا** را کپی کرده و برای دوستان خود بفرستید تا با یک کلیک به تیم شما بپیوندند.
+- **دعوت مستقیم با نام کاربری:** همچنین می‌توانید نام کاربری (Username) هم‌تیمی خود در تایتان را در بخش **«دعوت مستقیم با شناسه بازی»** وارد کنید تا دعوت‌نامه در بخش **پیام‌ها و اعلان‌ها** و **تیم‌های من** برای او ارسال شود و با زدن دکمه **«قبول»** عضو تیم گردد.
+- **ثبت‌نام در تورنومنت‌ها:** پس از تکمیل اعضا، کاپیتان می‌تواند از صفحه [تورنومنت‌های تایتان](/tournaments) تیم را در مسابقات تیمی ثبت‌نام کرده و ترکیب اصلی (Roster) را انتخاب کند.`,
+  faqs: [
+    {
+      question: 'چطور در سایت تایتان یک تیم جدید بسازم؟',
+      answer:
+        'وارد پنل کاربری (داشبورد) شوید، از منوی سمت راست روی «تیم‌های من» کلیک کنید و سپس دکمه «+ ساخت تیم» را بزنید. در صفحه جدید، لوگوی تیم و نام تیم را وارد کرده و روی «ایجاد تیم و دریافت لینک دعوت» کلیک کنید.',
+    },
+    {
+      question: 'لوگوی تیم باید چه فرمت و حجمی داشته باشد؟',
+      answer:
+        'تصویر لوگو یا آیکون تیم باید با فرمت PNG یا JPG و حداکثر حجم ۲ مگابایت باشد. آپلود لوگو اختیاری است و هر زمان از بخش مدیریت تیم نیز قابل تغییر است.',
+    },
+    {
+      question: 'بعد از ساخت تیم چطور هم‌تیمی‌هایم را به تیم اضافه کنم؟',
+      answer:
+        'پس از ایجاد تیم، وارد صفحه مدیریت تیم می‌شوید. در این صفحه می‌توانید لینک دعوت اختصاصی تیم را کپی کرده و برای دوستانتان بفرستید، یا نام کاربری آن‌ها را در بخش دعوت مستقیم وارد کنید تا از طریق اعلان‌های پنل کاربری دعوت شما را قبول کنند.',
+    },
+    {
+      question: 'چه کسی می‌تواند تیم را در تورنومنت‌های تایتان ثبت‌نام کند؟',
+      answer:
+        'فردی که تیم را می‌سازد به‌صورت خودکار کاپیتان تیم می‌شود. ثبت‌نام تیم در تورنومنت‌ها، انتخاب اعضای ترکیب اصلی مسابقه و مدیریت دعوت‌نامه‌ها بر عهده کاپیتان تیم است.',
+    },
+  ],
+};
+
 function toSummary(guide: Guide): GuideSummary {
   return {
     slug: guide.slug,
@@ -737,6 +883,22 @@ export async function getGuides(params: Record<string, string> = {}): Promise<Gu
         updatedAt: EPIC_GAMES_CHANGE_REGION_GUIDE.updatedAt,
       };
     }
+    if (item.slug === EPIC_GAMES_CHANGE_PASSWORD_GUIDE.slug) {
+      return {
+        ...item,
+        title: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.title,
+        summary: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.summary,
+        updatedAt: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.updatedAt,
+      };
+    }
+    if (item.slug === CREATE_TEAM_GUIDE.slug) {
+      return {
+        ...item,
+        title: CREATE_TEAM_GUIDE.title,
+        summary: CREATE_TEAM_GUIDE.summary,
+        updatedAt: CREATE_TEAM_GUIDE.updatedAt,
+      };
+    }
     return item;
   });
 
@@ -760,12 +922,21 @@ export async function getGuides(params: Record<string, string> = {}): Promise<Gu
   ) {
     list = [...list, toSummary(EPIC_GAMES_CHANGE_REGION_GUIDE)];
   }
+  if (
+    matchesConsoleFilter &&
+    !list.some(item => item.slug === EPIC_GAMES_CHANGE_PASSWORD_GUIDE.slug)
+  ) {
+    list = [...list, toSummary(EPIC_GAMES_CHANGE_PASSWORD_GUIDE)];
+  }
 
   const matchesRanksFilter =
     !params.game &&
     !params.product &&
     (!params.category || params.category === 'tournament');
 
+  if (matchesRanksFilter && !list.some(item => item.slug === CREATE_TEAM_GUIDE.slug)) {
+    list = [...list, toSummary(CREATE_TEAM_GUIDE)];
+  }
   if (matchesRanksFilter && !list.some(item => item.slug === RANKS_GUIDE.slug)) {
     list = [...list, toSummary(RANKS_GUIDE)];
   }
@@ -832,6 +1003,34 @@ export async function getGuide(slug: string): Promise<Guide | null> {
           updatedAt: EPIC_GAMES_CHANGE_REGION_GUIDE.updatedAt,
         }
       : EPIC_GAMES_CHANGE_REGION_GUIDE;
+  }
+  if (slug === EPIC_GAMES_CHANGE_PASSWORD_GUIDE.slug) {
+    return remote
+      ? {
+          ...remote,
+          title: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.title,
+          summary: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.summary,
+          body: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.body,
+          faqs: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.faqs,
+          metaTitle: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.metaTitle,
+          metaDescription: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.metaDescription,
+          updatedAt: EPIC_GAMES_CHANGE_PASSWORD_GUIDE.updatedAt,
+        }
+      : EPIC_GAMES_CHANGE_PASSWORD_GUIDE;
+  }
+  if (slug === CREATE_TEAM_GUIDE.slug) {
+    return remote
+      ? {
+          ...remote,
+          title: CREATE_TEAM_GUIDE.title,
+          summary: CREATE_TEAM_GUIDE.summary,
+          body: CREATE_TEAM_GUIDE.body,
+          faqs: CREATE_TEAM_GUIDE.faqs,
+          metaTitle: CREATE_TEAM_GUIDE.metaTitle,
+          metaDescription: CREATE_TEAM_GUIDE.metaDescription,
+          updatedAt: CREATE_TEAM_GUIDE.updatedAt,
+        }
+      : CREATE_TEAM_GUIDE;
   }
   if (remote) return remote;
   if (slug === RANKS_GUIDE.slug) return RANKS_GUIDE;

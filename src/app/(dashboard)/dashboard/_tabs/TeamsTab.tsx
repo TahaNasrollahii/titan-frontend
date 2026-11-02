@@ -14,7 +14,7 @@ import { useApi } from '@/lib/hooks/useApi';
 import styles from '../page.module.css';
 
 export function TeamsTab() {
-  const { addToast } = useAppContext();
+  const { addToast, refreshUnread } = useAppContext();
   const teams = useApi(meApi.teams);
   const invitations = useApi(meApi.teamInvitations);
 
@@ -24,6 +24,7 @@ export function TeamsTab() {
       else await meApi.declineTeamInvitation(id);
       addToast({ title: accept ? 'به تیم پیوستید' : 'دعوت رد شد', icon: 'team', tone: accept ? 'success' : 'info' });
       await Promise.all([teams.reload(), invitations.reload()]);
+      void refreshUnread();
     } catch (error) {
       addToast({ title: 'دعوت تیم', text: errorMessage(error), icon: 'team', tone: 'error' });
     }
