@@ -109,7 +109,7 @@ const GAME_THEMES: Record<string, GuideVisualTheme> = {
     characterImage: '/images/hero/characters/callof-v2.webp',
     backgroundImage: '/images/games/callof-background.webp',
     watermarkImage: '/images/categories/large/callof-v2.webp',
-    floatingImage: '/images/glossy-cod-logo.webp',
+    floatingImage: '/images/glossy-cod-logo-v2.webp',
     storeHref: '/store/call-of-duty',
     storeLabel: 'فروشگاه کالاف دیوتی',
   },

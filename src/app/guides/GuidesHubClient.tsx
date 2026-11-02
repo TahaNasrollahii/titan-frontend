@@ -311,7 +311,7 @@ export function GuidesHubClient({
               <Image src="/images/glossy-valorant-logo.webp" alt="" width={60} height={60} draggable={false} />
             </div>
             <div className={`${styles.stageOrbit} ${styles.stageOrbitC}`}>
-              <Image src="/images/glossy-cod-logo.webp" alt="" width={56} height={56} draggable={false} />
+              <Image src="/images/glossy-cod-logo-v2.webp" alt="" width={56} height={56} draggable={false} />
             </div>
             <div className={`${styles.stageOrbit} ${styles.stageOrbitD}`}>
               <Image src="/images/products/vbucks.webp" alt="" width={58} height={58} draggable={false} />
