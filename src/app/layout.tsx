@@ -14,6 +14,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { RouteScrollReset } from "@/components/RouteScrollReset";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { SupportWidgetClient } from "@/components/support/SupportWidgetClient";
+import { GlobalImageLightbox } from "@/components/ui/ImageLightbox";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildGlobalGraphSchema } from "@/lib/seo/schema";
 import {
@@ -122,6 +123,7 @@ export default function RootLayout({
             </div>
             <MobileNav />
             <SupportWidgetClient />
+            <GlobalImageLightbox />
             <RouteScrollReset />
             <WebVitalsReporter />
           </AppProvider>

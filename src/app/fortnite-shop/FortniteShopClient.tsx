@@ -390,7 +390,13 @@ const ShopItemCard = memo(function ShopItemCard({
         )}
       </div>
 
-      <div className={`fn-card-stage${stageTileClass}`}>
+      <div
+        className={`fn-card-stage${stageTileClass}`}
+        data-zoomable="true"
+        data-lightbox-src={imgSrc}
+        data-lightbox-alt={`${entry.name} — ${entry.typeFa} فورتنایت`}
+        style={{ cursor: 'zoom-in' }}
+      >
         <Image
           src={imgSrc}
           alt={`${entry.name} — ${entry.typeFa} فورتنایت`}
@@ -1150,6 +1156,10 @@ export default function FortniteShopClient({
                         unoptimized
                         loading="lazy"
                         className="fn-drawer-item-img"
+                        data-zoomable="true"
+                        data-lightbox-src={sub.image}
+                        data-lightbox-alt={sub.name}
+                        style={{ cursor: 'zoom-in' }}
                       />
                     )}
                     <div className="fn-drawer-item-info">

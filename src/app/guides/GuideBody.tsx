@@ -258,7 +258,13 @@ export function GuideBody({ source }: { source: string }) {
           case 'img':
             return (
               <figure key={index} className={styles.proseFigure}>
-                <div className={styles.proseImageFrame}>
+                <div
+                  className={styles.proseImageFrame}
+                  data-zoomable="true"
+                  data-lightbox-src={block.src}
+                  data-lightbox-alt={block.alt}
+                  style={{ cursor: 'zoom-in' }}
+                >
                   <img
                     src={block.src}
                     alt={block.alt}

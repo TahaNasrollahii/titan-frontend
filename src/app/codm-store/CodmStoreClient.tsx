@@ -1011,6 +1011,10 @@ export default function CodmStoreClient({ initialData }: { initialData: CodmStor
                   width={120}
                   height={120}
                   className="codm-drawer-img"
+                  data-zoomable="true"
+                  data-lightbox-src={inspectedOffer.image || FALLBACK_OFFER_IMAGE}
+                  data-lightbox-alt={inspectedOffer.titleFa}
+                  style={{ cursor: 'zoom-in' }}
                 />
                 <div className="codm-drawer-summary">
                   <p className="codm-drawer-desc">{inspectedOffer.descriptionFa}</p>

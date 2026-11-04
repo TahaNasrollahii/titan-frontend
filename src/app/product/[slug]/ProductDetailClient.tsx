@@ -25,12 +25,14 @@ import {
   Trophy,
   UserRound,
   Zap,
+  ZoomIn,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+import { openImageLightbox } from '@/components/ui/ImageLightbox';
 import { ErrorState, Loading } from '@/components/ui/State';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -497,7 +499,33 @@ export default function ProductPage({ initialData, initialRelated, initialReview
               )}
             </div>
 
-            <div className={styles.stageArt}>
+            <div
+              className={styles.stageArt}
+              role="button"
+              tabIndex={0}
+              aria-label="بزرگ‌نمایی تصویر محصول"
+              onClick={() => {
+                const list =
+                  galleryImages.length > 0 ? galleryImages : [{ src: currentImage, alt: mainAlt }];
+                const idx = Math.max(
+                  0,
+                  list.findIndex(img => img.src === currentImage),
+                );
+                openImageLightbox(list, idx);
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  const list =
+                    galleryImages.length > 0 ? galleryImages : [{ src: currentImage, alt: mainAlt }];
+                  const idx = Math.max(
+                    0,
+                    list.findIndex(img => img.src === currentImage),
+                  );
+                  openImageLightbox(list, idx);
+                }
+              }}
+            >
               <Image
                 src={currentImage}
                 alt={mainAlt}
@@ -506,11 +534,15 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                 height={560}
                 priority
                 sizes="(max-width: 900px) 80vw, 480px"
-                unoptimized={process.env.NODE_ENV !== 'production'}
+                unoptimized={isLocalAsset(currentImage) || process.env.NODE_ENV !== 'production'}
                 onError={() => {
                   if (currentImage !== fallbackImage) setSelectedImage(fallbackImage);
                 }}
               />
+              <span className={styles.stageZoomBadge} aria-hidden="true">
+                <ZoomIn size={15} />
+                <span>بزرگ‌نمایی</span>
+              </span>
               <span className={styles.stageFloor} aria-hidden="true" />
             </div>
           </div>
@@ -914,16 +946,42 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                   if (block.type === 'image') {
                     return (
                       <figure key={i} className={styles.proseFigure}>
-                        <Image
-                          src={block.src}
-                          alt={block.alt}
-                          width={960}
-                          height={500}
-                          sizes="(max-width: 900px) 100vw, 860px"
-                          loading="lazy"
-                          className={styles.proseImage}
-                          unoptimized={isLocalAsset(block.src) || process.env.NODE_ENV !== 'production'}
-                        />
+                        <div
+                          className={styles.proseImageWrap}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`بزرگ‌نمایی تصویر: ${block.alt}`}
+                          onClick={() =>
+                            openImageLightbox(
+                              [{ src: block.src, alt: block.alt || block.caption || data.title }],
+                              0,
+                            )
+                          }
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              openImageLightbox(
+                                [{ src: block.src, alt: block.alt || block.caption || data.title }],
+                                0,
+                              );
+                            }
+                          }}
+                        >
+                          <Image
+                            src={block.src}
+                            alt={block.alt}
+                            width={1200}
+                            height={620}
+                            sizes="(max-width: 900px) 100vw, 860px"
+                            loading="lazy"
+                            className={styles.proseImage}
+                            unoptimized={isLocalAsset(block.src) || process.env.NODE_ENV !== 'production'}
+                          />
+                          <span className={styles.proseZoomBadge} aria-hidden="true">
+                            <ZoomIn size={14} />
+                            <span>بزرگ‌نمایی</span>
+                          </span>
+                        </div>
                         {block.caption && (
                           <figcaption className={styles.proseCaption}>{block.caption}</figcaption>
                         )}
