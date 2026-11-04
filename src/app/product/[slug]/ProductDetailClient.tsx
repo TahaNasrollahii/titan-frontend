@@ -121,18 +121,39 @@ function scrollToSection(id: string) {
 }
 
 function renderRichInline(text: string): React.ReactNode {
-  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
-  return parts.map((part, idx) => {
-    const match = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
-    if (match) {
-      const [, label, href] = match;
+  const tokens = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g);
+  return tokens.map((token, idx) => {
+    const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(token);
+    if (linkMatch) {
+      const [, label, href] = linkMatch;
+      if (/^https?:\/\//i.test(href)) {
+        return (
+          <a
+            key={idx}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.inlineExternalLink}
+          >
+            {label} <span aria-hidden="true">↗</span>
+          </a>
+        );
+      }
       return (
         <Link key={idx} href={href} className={styles.inlineSeoLink}>
           {label}
         </Link>
       );
     }
-    return part;
+    const boldMatch = /^\*\*([^*]+)\*\*$/.exec(token);
+    if (boldMatch) {
+      return (
+        <strong key={idx} className={styles.proseStrong}>
+          {boldMatch[1]}
+        </strong>
+      );
+    }
+    return token;
   });
 }
 
@@ -888,6 +909,25 @@ export default function ProductPage({ initialData, initialRelated, initialReview
                       <h3 key={i} className={styles.proseHeading}>
                         {block.text}
                       </h3>
+                    );
+                  }
+                  if (block.type === 'image') {
+                    return (
+                      <figure key={i} className={styles.proseFigure}>
+                        <Image
+                          src={block.src}
+                          alt={block.alt}
+                          width={960}
+                          height={500}
+                          sizes="(max-width: 900px) 100vw, 860px"
+                          loading="lazy"
+                          className={styles.proseImage}
+                          unoptimized={isLocalAsset(block.src) || process.env.NODE_ENV !== 'production'}
+                        />
+                        {block.caption && (
+                          <figcaption className={styles.proseCaption}>{block.caption}</figcaption>
+                        )}
+                      </figure>
                     );
                   }
                   if (block.type === 'list') {

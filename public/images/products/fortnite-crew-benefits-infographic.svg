@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" width="1200" height="540" dir="rtl">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b101b" />
+      <stop offset="50%" stop-color="#11192c" />
+      <stop offset="100%" stop-color="#0d121f" />
+    </linearGradient>
+    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#e2453f" stop-opacity="0.18" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#182238" />
+      <stop offset="100%" stop-color="#101726" />
+    </linearGradient>
+    <linearGradient id="accentCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff" />
+      <stop offset="100%" stop-color="#0088ff" />
+    </linearGradient>
+    <linearGradient id="accentRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff5a52" />
+      <stop offset="100%" stop-color="#e2453f" />
+    </linearGradient>
+    <linearGradient id="accentGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="accentPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="540" rx="28" fill="url(#bgGrad)" />
+  <rect x="2" y="2" width="1196" height="536" rx="26" fill="none" stroke="#00d4ff" stroke-opacity="0.28" stroke-width="2" />
+
+  <!-- Decorative Grid & Glow -->
+  <circle cx="1050" cy="90" r="220" fill="url(#cyanGlow)" />
+  <circle cx="150" cy="450" r="220" fill="url(#cyanGlow)" />
+
+  <!-- Header Banner -->
+  <rect x="380" y="28" width="440" height="36" rx="18" fill="#00d4ff" fill-opacity="0.12" stroke="#00d4ff" stroke-opacity="0.4" />
+  <text x="600" y="52" text-anchor="middle" fill="#00d4ff" font-family="Tahoma, Vazirmatn, sans-serif" font-size="15" font-weight="bold">
+    مزایای دائمی اشتراک ماهانه کروپک فورتنایت (Fortnite Crew) در تایتان
+  </text>
+
+  <text x="600" y="102" text-anchor="middle" fill="#ffffff" font-family="Tahoma, Vazirmatn, sans-serif" font-size="26" font-weight="bold">
+    با یک بار خرید کروپک در هر ماه چه چیزهایی دریافت می‌کنید؟
+  </text>
+  <text x="600" y="134" text-anchor="middle" fill="#94a3b8" font-family="Tahoma, Vazirmatn, sans-serif" font-size="15">
+    بروزرسانی خودکار اسکین در اول هر ماه میلادی • حفظ دائمی آیتم‌ها در لاکر • فعال‌سازی روی تمام پلتفرم‌ها
+  </text>
+
+  <!-- Card 1 (Rightmost): 1,000 V-Bucks -->
+  <g transform="translate(905, 165)">
+    <rect width="255" height="320" rx="20" fill="url(#cardGrad)" stroke="#00d4ff" stroke-opacity="0.35" stroke-width="1.5" />
+    <circle cx="127.5" cy="64" r="34" fill="url(#accentCyan)" fill-opacity="0.2" stroke="#00d4ff" stroke-width="2" />
+    <text x="127.5" y="73" text-anchor="middle" fill="#00d4ff" font-family="Tahoma, sans-serif" font-size="24" font-weight="bold">V</text>
+    <text x="127.5" y="132" text-anchor="middle" fill="#ffffff" font-family="Tahoma, Vazirmatn, sans-serif" font-size="20" font-weight="bold">
+      ۱٬۰۰۰ وی‌باکس ماهانه
+    </text>
+    <text x="127.5" y="168" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      شارژ مستقیم ۱٬۰۰۰ عدد V-Bucks
+    </text>
+    <text x="127.5" y="192" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      برای خرید اسکین، دنس و باندل
+    </text>
+    <text x="127.5" y="216" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      از آیتم‌شاپ روزانه فورتنایت
+    </text>
+    <rect x="28" y="254" width="199" height="38" rx="10" fill="#00d4ff" fill-opacity="0.14" />
+    <text x="127.5" y="278" text-anchor="middle" fill="#38bdf8" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13" font-weight="bold">
+      ماندگاری دائمی در اکانت
+    </text>
+  </g>
+
+  <!-- Card 2: All 4 Fortnite Passes -->
+  <g transform="translate(617, 165)">
+    <rect width="255" height="320" rx="20" fill="url(#cardGrad)" stroke="#fbbf24" stroke-opacity="0.35" stroke-width="1.5" />
+    <circle cx="127.5" cy="64" r="34" fill="url(#accentGold)" fill-opacity="0.2" stroke="#fbbf24" stroke-width="2" />
+    <text x="127.5" y="73" text-anchor="middle" fill="#fbbf24" font-family="Tahoma, sans-serif" font-size="21" font-weight="bold">4X</text>
+    <text x="127.5" y="132" text-anchor="middle" fill="#ffffff" font-family="Tahoma, Vazirmatn, sans-serif" font-size="20" font-weight="bold">
+      هر ۴ پس فعال فورتنایت
+    </text>
+    <text x="127.5" y="168" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      • Battle Pass فصل جاری
+    </text>
+    <text x="127.5" y="192" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      • Fortnite OG Pass کلاسیک
+    </text>
+    <text x="127.5" y="216" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      • LEGO Pass + Music Pass
+    </text>
+    <rect x="28" y="254" width="199" height="38" rx="10" fill="#fbbf24" fill-opacity="0.14" />
+    <text x="127.5" y="278" text-anchor="middle" fill="#fbbf24" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13" font-weight="bold">
+      دسترسی هم‌زمان با یک اشتراک
+    </text>
+  </g>
+
+  <!-- Card 3: Exclusive Monthly Skin Bundle -->
+  <g transform="translate(329, 165)">
+    <rect width="255" height="320" rx="20" fill="url(#cardGrad)" stroke="#e2453f" stroke-opacity="0.4" stroke-width="1.5" />
+    <circle cx="127.5" cy="64" r="34" fill="url(#accentRed)" fill-opacity="0.2" stroke="#e2453f" stroke-width="2" />
+    <text x="127.5" y="73" text-anchor="middle" fill="#ff6b63" font-family="Tahoma, sans-serif" font-size="22" font-weight="bold">★</text>
+    <text x="127.5" y="132" text-anchor="middle" fill="#ffffff" font-family="Tahoma, Vazirmatn, sans-serif" font-size="20" font-weight="bold">
+      باندل اسکین ماهانه جدید
+    </text>
+    <text x="127.5" y="168" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      اسکین انحصاری ماه + استایل لگو
+    </text>
+    <text x="127.5" y="192" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      بک‌بلینگ، پیک‌اکس و استایل‌های
+    </text>
+    <text x="127.5" y="216" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      ارتقایافته Legacy در هر ماه
+    </text>
+    <rect x="28" y="254" width="199" height="38" rx="10" fill="#e2453f" fill-opacity="0.16" />
+    <text x="127.5" y="278" text-anchor="middle" fill="#ff7b74" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13" font-weight="bold">
+      تغییر خودکار اسکین هر ماه
+    </text>
+  </g>
+
+  <!-- Card 4 (Leftmost): Rocket Pass Premium -->
+  <g transform="translate(40, 165)">
+    <rect width="255" height="320" rx="20" fill="url(#cardGrad)" stroke="#a855f7" stroke-opacity="0.35" stroke-width="1.5" />
+    <circle cx="127.5" cy="64" r="34" fill="url(#accentPurple)" fill-opacity="0.2" stroke="#a855f7" stroke-width="2" />
+    <text x="127.5" y="73" text-anchor="middle" fill="#c084fc" font-family="Tahoma, sans-serif" font-size="20" font-weight="bold">RL</text>
+    <text x="127.5" y="132" text-anchor="middle" fill="#ffffff" font-family="Tahoma, Vazirmatn, sans-serif" font-size="20" font-weight="bold">
+      Rocket Pass پریمیوم
+    </text>
+    <text x="127.5" y="168" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      فعال‌سازی رایگان بتل پس بازی
+    </text>
+    <text x="127.5" y="192" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      Rocket League روی همان اکانت
+    </text>
+    <text x="127.5" y="216" text-anchor="middle" fill="#cbd5e1" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13.5">
+      به همراه آیتم‌های مشترک دو بازی
+    </text>
+    <rect x="28" y="254" width="199" height="38" rx="10" fill="#a855f7" fill-opacity="0.16" />
+    <text x="127.5" y="278" text-anchor="middle" fill="#c084fc" font-family="Tahoma, Vazirmatn, sans-serif" font-size="13" font-weight="bold">
+      هدیه ویژه روی اکانت اپیک
+    </text>
+  </g>
+</svg>
+

@@ -1660,6 +1660,48 @@
   color: #fff;
 }
 
+.inlineExternalLink {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 700;
+}
+
+.inlineExternalLink:hover {
+  color: #7dd3fc;
+}
+
+.proseStrong {
+  color: #fff;
+  font-weight: 800;
+}
+
+.proseFigure {
+  margin: 18px 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.proseImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: cover;
+}
+
+.proseCaption {
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+
 .faqList {
   display: flex;
   flex-direction: column;
