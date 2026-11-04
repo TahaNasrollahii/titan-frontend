@@ -30,7 +30,7 @@ export function TournamentsTab() {
       {entries.data?.results.length === 0 && (
         <div className={styles.emptyState}>
           <Icon name="trophy" />
-          <p>در هیچ تورنمنتی ثبت‌نام نکرده‌اید.</p>
+          <p>در هیچ تورنومنتی ثبت‌نام نکرده‌اید.</p>
           <Link href="/tournaments" className={styles.btnPrimary}>
             مشاهده مسابقات
           </Link>

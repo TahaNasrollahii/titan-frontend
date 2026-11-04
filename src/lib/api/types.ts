@@ -230,6 +230,7 @@ export interface Product extends Omit<ProductSummary, 'platforms'> {
   noindex?: boolean;
   ogImage?: string | null;
   canonicalUrl?: string;
+  faqs?: { question: string; answer: string }[];
 }
 
 export interface Review {
@@ -532,6 +533,7 @@ export interface Tournament extends TournamentSummary {
   noindex?: boolean;
   ogImage?: string | null;
   canonicalUrl?: string;
+  faqs?: { question: string; answer: string }[];
 }
 
 export interface MyTournament extends Registration {

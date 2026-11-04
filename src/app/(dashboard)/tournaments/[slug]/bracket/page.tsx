@@ -47,7 +47,7 @@ export default function BracketPage() {
           </button>
         ) : (
           <Link href={`/tournaments/${slug}`} className={styles.btnPrimary} style={{ textDecoration: 'none' }}>
-            جزئیات تورنمنت
+            جزئیات تورنومنت
           </Link>
         )}
       </div>
@@ -55,7 +55,7 @@ export default function BracketPage() {
       {rounds.length ? (
         <BracketView rounds={rounds} />
       ) : (
-        <Empty icon="chart">براکت این تورنمنت هنوز منتشر نشده است.</Empty>
+        <Empty icon="chart">براکت این تورنومنت هنوز منتشر نشده است.</Empty>
       )}
     </div>
   );

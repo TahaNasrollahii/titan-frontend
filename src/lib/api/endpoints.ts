@@ -1,4 +1,9 @@
-import { api, DEFAULT_CLASH_PRODUCT_DETAIL, DEFAULT_CLASH_PRODUCT_SUMMARY } from './client';
+import {
+  api,
+  DEFAULT_CLASH_PRODUCT_DETAIL,
+  DEFAULT_CLASH_PRODUCT_SUMMARY,
+  DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL,
+} from './client';
 import type {
   Announcement,
   BracketRound,
@@ -139,6 +144,14 @@ export const catalogApi = {
     try {
       return await api<Product>(`products/${slug}/`);
     } catch (err) {
+      if (slug === 'fortnite-crew') {
+        try {
+          const fallbackPack = await api<Product>('products/fortnite-crew-pack/');
+          return { ...fallbackPack, slug: 'fortnite-crew' };
+        } catch {
+          return DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL;
+        }
+      }
       if (slug === 'clash-of-clans-gems') return DEFAULT_CLASH_PRODUCT_DETAIL;
       throw err;
     }

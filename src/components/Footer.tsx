@@ -45,7 +45,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { href: '/codm-store', label: 'وب‌استور کالاف دیوتی' },
       { href: '/product/fortnite-crew', label: 'کروپک فورتنایت' },
       { href: '/tournaments', label: 'تورنومنت‌ها' },
-      { href: '/tournament', label: 'لیدربرد' },
+      { href: '/tournaments#leaderboard', label: 'لیدربرد' },
     ],
   },
   {
@@ -67,8 +67,8 @@ const LEGAL_LINKS: FooterLink[] = [
 ];
 
 const TRUST_POINTS = [
-  { icon: 'clock', title: 'تحویل فوری', desc: 'شارژ سریع پس از پرداخت' },
-  { icon: 'shield', title: 'خرید قانونی و امن', desc: 'دارای نماد اعتماد الکترونیکی' },
+  { icon: 'clock', title: 'تحویل سریع', desc: 'پردازش و شارژ سفارش پس از پرداخت' },
+  { icon: 'shield', title: 'پرداخت امن و پیگیری سفارش', desc: 'دارای نماد اعتماد الکترونیکی' },
   { icon: 'chat', title: 'پشتیبانی ۲۴ ساعته', desc: 'همراه شما در تمام مراحل خرید' },
   { icon: 'trophy', title: 'تورنومنت هفتگی', desc: 'رقابت با جوایز نقدی' },
 ];
@@ -235,8 +235,8 @@ export function Footer() {
             </Link>
 
             <p className={styles.brandDesc}>
-              خرید قانونی و سریع پول بازی‌ها، گیفت کارت و اکانت‌های پریمیوم، همراه با تورنومنت‌های
-              آنلاین هفتگی.
+              خرید سریع ارز و آیتم بازی‌ها، گیفت کارت و اشتراک‌های پرمیوم با پشتیبانی مستمر، همراه با
+              تورنومنت‌های آنلاین هفتگی.
             </p>
 
             <div className={styles.brandActions}>

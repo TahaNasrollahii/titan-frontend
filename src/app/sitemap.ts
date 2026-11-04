@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/siteConfig';
 import { API_URL } from '@/lib/api/client';
+import { getGuides } from '@/app/guides/getGuides';
 
 interface SitemapEntryItem {
   slug: string;
@@ -78,7 +79,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/fortnite-shop`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
     { url: `${SITE_URL}/codm-store`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
     { url: `${SITE_URL}/tournaments`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${SITE_URL}/tournament`, lastModified: STATIC_LASTMOD, changeFrequency: 'daily', priority: 0.85 },
     { url: `${SITE_URL}/about`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/contact`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/guides`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
@@ -223,12 +223,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/product/${slug}`,
       lastModified: STATIC_LASTMOD,
     }));
+  } else if (!productRoutes.some((p) => p.url === `${SITE_URL}/product/fortnite-crew`)) {
+    productRoutes.unshift({
+      url: `${SITE_URL}/product/fortnite-crew`,
+      lastModified: STATIC_LASTMOD,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    });
   }
   if (tournamentRoutes.length === 0) {
     tournamentRoutes = FALLBACK_TOURNAMENTS.map((slug) => ({
       url: `${SITE_URL}/tournaments/${slug}`,
       lastModified: STATIC_LASTMOD,
     }));
+  }
+
+  // Ensure all local/merged guides are included in sitemap
+  try {
+    const allGuides = await getGuides();
+    const seenGuideUrls = new Set(guideRoutes.map((g) => g.url));
+    for (const g of allGuides) {
+      const url = `${SITE_URL}/guides/${g.slug}`;
+      if (!seenGuideUrls.has(url)) {
+        seenGuideUrls.add(url);
+        guideRoutes.push({
+          url,
+          lastModified: STATIC_LASTMOD,
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        });
+      }
+    }
+  } catch {
+    // Ignore
   }
 
   return [...staticRoutes, ...gameRoutes, ...productRoutes, ...tournamentRoutes, ...guideRoutes];

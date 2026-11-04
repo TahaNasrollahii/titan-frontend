@@ -16,7 +16,7 @@ export interface ResultRow {
 
 export const KIND_LABELS: Record<ResultRow['kind'], string> = {
   game: 'بازی',
-  tournament: 'تورنمنت',
+  tournament: 'تورنومنت',
   product: 'محصول',
 };
 
@@ -26,7 +26,7 @@ function toRows(results: SearchResults): ResultRow[] {
       key: `g-${game.slug}`,
       title: game.title,
       kind: 'game' as const,
-      href: `/store?game=${game.slug}`,
+      href: `/store/${game.slug}`,
     })),
     ...results.tournaments.map(tournament => ({
       key: `t-${tournament.slug}`,

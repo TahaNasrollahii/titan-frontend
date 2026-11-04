@@ -18,7 +18,7 @@ const SUCCESS_STATUSES = new Set(['paid', 'processing', 'completed', 'confirmed'
 
 function nextStep(purpose: string | null, reference: string | null) {
   if (purpose === 'tournament_registration' && reference) {
-    return { href: `/tournaments/${reference}`, label: 'مشاهده تورنمنت' };
+    return { href: `/tournaments/${reference}`, label: 'مشاهده تورنومنت' };
   }
   if (purpose === 'wallet_topup') return { href: '/dashboard', label: 'رفتن به پیشخوان' };
   if (reference && (reference.startsWith('TTN-') || purpose === 'order')) {

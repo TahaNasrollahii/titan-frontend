@@ -1649,6 +1649,105 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.inlineSeoLink {
+  color: color-mix(in srgb, var(--accent) 85%, #fff);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 700;
+}
+
+.inlineSeoLink:hover {
+  color: #fff;
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faqItem {
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.faqSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faqSummary::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.6;
+  color: #fff;
+}
+
+.faqChevron {
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.25s ease;
+}
+
+.faqItem[open] .faqChevron {
+  transform: rotate(180deg);
+  color: #fff;
+}
+
+.faqAnswer {
+  padding: 0 18px 16px;
+  font-size: 14px;
+  line-height: 2;
+  color: var(--soft);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.faqAnswer p {
+  margin: 12px 0 0;
+}
+
+.internalLinksBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.internalLinkChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--soft);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.internalLinkChip:hover {
+  color: #fff;
+  background: color-mix(in srgb, var(--accent) 20%, rgba(255, 255, 255, 0.06));
+  border-color: color-mix(in srgb, var(--accent) 45%, rgba(255, 255, 255, 0.2));
+}
+
 .specs {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

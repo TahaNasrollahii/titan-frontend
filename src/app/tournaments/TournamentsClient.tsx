@@ -221,8 +221,8 @@ export default function TournamentsListPage({
         <div className="l-blob blob-3"></div>
       </div>
 
-      <div className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as React.CSSProperties}>
-        <h1>لیست مسابقات و تورنومنت‌های فعال</h1>
+      <div id="all-tournaments" className="tour-sec-h reveal" style={{ '--d': 1, marginTop: '20px' } as React.CSSProperties}>
+        <h2>لیست مسابقات و تورنومنت‌های فعال</h2>
       </div>
 
       <div className="filter-bar-wrapper spot reveal" style={{ '--d': 2 } as React.CSSProperties}>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import StoreClient from '../StoreClient';
@@ -91,7 +92,7 @@ export async function generateMetadata({
 
   const description = composeMetaDescription(
     game.metaDescription || game.introText || game.description,
-    `خرید سریع و قانونی پول، اسکین‌ها و آیتم‌های ${game.title} (${game.titleEn}) با بهترین قیمت در فروشگاه تایتان.`,
+    `خرید سریع ارز، اسکین‌ها و آیتم‌های ${game.title} (${game.titleEn}) با پشتیبانی ۲۴ ساعته در فروشگاه تایتان.`,
   );
 
   const imageUrl = toAbsoluteUrl(
@@ -189,6 +190,7 @@ export default async function StoreCategoryPage({
           { name: `${game.title} (${game.titleEn})`, path: `/store/${game.slug}` },
         ]}
       />
+      <h1 className="sr-only">خرید محصولات و آیتم‌های {game.title} ({game.titleEn}) در تایتان</h1>
       <StoreClient
         initialGame={game.slug}
         initialProducts={initialProducts}
@@ -203,6 +205,65 @@ export default async function StoreCategoryPage({
         totalCount={initialProducts?.count ?? 0}
         pageSize={12}
       />
+      <section
+        aria-label={`راهنما و لینک‌های مرتبط با ${game.title}`}
+        style={{
+          marginTop: '24px',
+          padding: '18px 22px',
+          borderRadius: '20px',
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        <h2 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>
+          راهنمای خرید محصولات {game.title} از تایتان
+        </h2>
+        <p style={{ fontSize: '13px', lineHeight: 1.9, color: 'rgba(255, 255, 255, 0.78)', marginBottom: '12px' }}>
+          {game.description || `مشاهده و مقایسه تمام بسته‌ها و آیتم‌های ${game.title} (${game.titleEn}) در فروشگاه تایتان.`} برای آشنایی با نحوه فعال‌سازی سفارش‌ها، زمان تحویل و شرایط بازگشت وجه می‌توانید از لینک‌های زیر استفاده کنید:
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '12.5px' }}>
+          {guide && (
+            <Link href={`/guides/${guide.slug}`} style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+              {guide.title}
+            </Link>
+          )}
+          {game.slug === 'fortnite' && (
+            <>
+              <Link href="/product/fortnite-crew" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                خرید کروپک فورتنایت از تایتان
+              </Link>
+              <Link href="/product/fortnite-vbucks" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                خرید ویباکس فورتنایت
+              </Link>
+              <Link href="/fortnite-shop" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                آیتم شاپ روزانه فورتنایت
+              </Link>
+              <Link href="/guides/fortnite-crew-buying-guide" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                راهنمای خرید اشتراک فورتنایت کرو در ایران
+              </Link>
+            </>
+          )}
+          {game.slug === 'call-of-duty' && (
+            <>
+              <Link href="/product/cod-points" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                خرید سی‌پی کالاف دیوتی موبایل
+              </Link>
+              <Link href="/codm-store" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                وب‌استور کالاف دیوتی موبایل
+              </Link>
+            </>
+          )}
+          <Link href="/guides" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+            همه آموزش‌ها و راهنماهای خرید
+          </Link>
+          <Link href="/faq" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+            سوالات متداول خرید و تحویل
+          </Link>
+          <Link href="/terms" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+            قوانین، پشتیبانی و شرایط بازگشت وجه
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

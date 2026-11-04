@@ -64,10 +64,12 @@ function ico(name: string) {
 
 function renderCardArt(g: any, idx: number) {
   if (g.bg || g.char) {
+    const bgAlt = g.char ? '' : `خرید ${esc(g.t)} در فروشگاه تایتان`;
+    const charAlt = `خرید آیتم و ارز بازی ${esc(g.t)} در تایتان`;
     return `
-      ${g.bg ? `<img src="${esc(optimizedImg(g.bg, 384))}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
+      ${g.bg ? `<img src="${esc(optimizedImg(g.bg, 384))}" alt="${bgAlt}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
       <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-      ${g.char ? `<img src="${esc(optimizedImg(g.char, 384))}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
+      ${g.char ? `<img src="${esc(optimizedImg(g.char, 384))}" alt="${charAlt}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
     `;
   }
   const t = THEME[g.theme] || THEME.noir, id = 'c' + idx;
@@ -100,7 +102,7 @@ function renderScrollerCards(games: any[]) {
   <article class="gcard spot${g.slug === 'premium' ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
     <div class="gart">${renderCardArt(g, i)}</div>
     <div class="gbody">
-      <h4>${esc(g.t)}</h4>
+      <h3>${esc(g.t)}</h3>
       <div class="gdesc"><p>${esc(g.d)}</p><a href="/store/${esc(g.slug)}" class="gbtn-view" data-view="${i}" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">${esc(g.p)}</a></div>
     </div>
   </article>`).join('');
@@ -117,7 +119,7 @@ export const DEFAULT_FALLBACK_HOME: Home = {
       titleEn: 'Fortnite',
       genre: 'بتل رویال',
       coverImage: '/images/games/fortnite-background.webp',
-      characterImage: '/images/hero/characters/fortnite-crewpack-october2026.webp',
+      characterImage: '/images/hero/characters/fortnite-crew-subscription-character.webp',
       backgroundImage: '/images/games/fortnite-background.webp',
       accentColor: '#8b5cf6',
       accentGradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -219,7 +221,7 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
           slug: 'call-of-duty',
           title: 'کالاف دیوتی موبایل',
           titleEn: 'Call of Duty Mobile',
-          description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
+          description: 'فعال‌سازی سریع انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
           backgroundImage: '/images/games/callof-background.webp',
           characterImage: '/images/games/callof-character-v2.webp',
           coverImage: '/images/games/callof-background.webp',
@@ -232,7 +234,7 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
         ...cat,
         title: 'کالاف دیوتی موبایل',
         titleEn: 'Call of Duty Mobile',
-        description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
+        description: 'فعال‌سازی سریع انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
       });
       continue;
     }
@@ -245,7 +247,7 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
       slug: 'call-of-duty',
       title: 'کالاف دیوتی موبایل',
       titleEn: 'Call of Duty Mobile',
-      description: 'فعال‌سازی قانونی و فوری انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
+      description: 'فعال‌سازی سریع انواع بسته‌های سی‌پی (CP) و بتل‌پس کالاف دیوتی موبایل.',
       backgroundImage: '/images/games/callof-background.webp',
       characterImage: '/images/games/callof-character-v2.webp',
       coverImage: '/images/games/callof-background.webp',
@@ -259,7 +261,7 @@ function normalizeHomeCategories(rawCategories: Home['categories'] = []): Home['
       slug: 'clash-of-clans',
       title: 'کلش آف کلنز',
       titleEn: 'Clash of Clans',
-      description: 'خرید قانونی و فوری جم و گلدپس کلش آف کلنز با تحویل آنی.',
+      description: 'خرید سریع جم و گلدپس کلش آف کلنز روی اکانت Supercell ID.',
       backgroundImage: '/images/games/clash-background.webp',
       characterImage: '/images/games/clash-character.webp',
       coverImage: '/images/games/clash-background.webp',
@@ -287,15 +289,15 @@ const DEFAULT_HERO_SLIDES = [
     descMobile: '۱۰۰۰ ویباکس + اسکین انحصاری!',
     watch: 0,
     eta: 0,
-    art: '/images/hero/characters/fortnite-crewpack-october2026.webp',
+    art: '/images/hero/characters/fortnite-crew-subscription-character.webp',
     artClass: 'fortnite',
     href: '/product/fortnite-crew',
     price: '۵۹۹,۰۰۰ تومان',
   },
   {
     title: 'ولورانت پوینت',
-    desc: 'فعال‌سازی قانونی انواع بسته‌های ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!',
-    descMobile: 'فعال‌سازی قانونی انواع بسته‌های VP',
+    desc: 'خرید و تحویل سریع کد ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!',
+    descMobile: 'تحویل سریع انواع بسته‌های VP',
     watch: 0,
     eta: 0,
     art: '/images/hero/characters/valorant.webp',
@@ -305,8 +307,8 @@ const DEFAULT_HERO_SLIDES = [
   },
   {
     title: 'سی‌پی کالاف دیوتی موبایل',
-    desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کالاف دیوتی موبایل برای خرید بتل‌پس و گردونه!',
-    descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
+    desc: 'شارژ سریع انواع بسته‌های سی‌پی (CP) کالاف دیوتی موبایل برای خرید بتل‌پس و گردونه!',
+    descMobile: 'شارژ سریع انواع بسته‌های سی‌پی (CP)',
     watch: 0,
     eta: 0,
     art: '/images/hero/characters/callof-v2.webp',
@@ -334,8 +336,8 @@ function buildSceneData(data: Home) {
       seenGames.add('call-of-duty');
       slides.push({
         title: 'سی‌پی کالاف دیوتی موبایل',
-        desc: 'شارژ قانونی و فوری انواع بسته‌های سی‌پی (CP) کالاف دیوتی موبایل برای خرید بتل‌پس و گردونه!',
-        descMobile: 'شارژ قانونی انواع بسته‌های سی‌پی (CP)',
+        desc: 'شارژ سریع انواع بسته‌های سی‌پی (CP) کالاف دیوتی موبایل برای خرید بتل‌پس و گردونه!',
+        descMobile: 'شارژ سریع انواع بسته‌های سی‌پی (CP)',
         watch: 0,
         eta: 0,
         art: '/images/hero/characters/callof-v2.webp',
@@ -361,14 +363,14 @@ function buildSceneData(data: Home) {
       price = '۵۹۹,۰۰۰ تومان';
     } else if (effectiveSlug === 'valorant') {
       title = 'ولورانت پوینت';
-      desc = 'فعال‌سازی قانونی انواع بسته‌های ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!';
-      descMobile = 'فعال‌سازی قانونی انواع بسته‌های VP';
+      desc = 'خرید و تحویل سریع کد ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!';
+      descMobile = 'تحویل سریع انواع بسته‌های VP';
       href = '/product/valorant-points-375';
       price = '۱۸۰,۰۰۰ تومان';
     }
 
     const art = effectiveSlug === 'fortnite'
-      ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+      ? '/images/hero/characters/fortnite-crew-subscription-character.webp'
       : (HERO_ART[effectiveSlug] ? `/images/hero/characters/${HERO_ART[effectiveSlug]}.webp` : (t.coverImage || null));
 
     if (art) {
@@ -825,10 +827,12 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
          ===================================================== */
       function cardArt(g, idx) {
         if (g.bg || g.char) {
+          const bgAlt = g.char ? '' : `خرید ${esc(g.t)} در فروشگاه تایتان`;
+          const charAlt = `خرید آیتم و ارز بازی ${esc(g.t)} در تایتان`;
           return `
-            ${g.bg ? `<img src="${esc(optimizedImg(g.bg, 384))}" alt="${esc(g.t)}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
+            ${g.bg ? `<img src="${esc(optimizedImg(g.bg, 384))}" alt="${bgAlt}" width="200" height="220" loading="lazy" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0.85;" />` : ''}
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,5,15,0.95) 0%, rgba(10,5,15,0.3) 50%, transparent 100%); z-index:2;"></div>
-            ${g.char ? `<img src="${esc(optimizedImg(g.char, 384))}" alt="${esc(g.t)}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
+            ${g.char ? `<img src="${esc(optimizedImg(g.char, 384))}" alt="${charAlt}" width="200" height="209" loading="lazy" decoding="async" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100%; height:95%; object-fit:contain; object-position:bottom; z-index:3; pointer-events:none;" />` : ''}
           `;
         }
         const t = THEME[g.theme], id = 'c' + idx;
@@ -861,8 +865,8 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
   <article class="gcard spot${g.slug === 'premium' ? ' feat' : ''}" data-i="${i}" style="--d:${i}">
     <div class="gart">${cardArt(g, i)}</div>
     <div class="gbody">
-      <h4>${esc(g.t)}</h4>
-      <div class="gdesc"><p>${esc(g.d)}</p><button class="gbtn-view" data-view="${i}">${esc(g.p)}</button></div>
+      <h3>${esc(g.t)}</h3>
+      <div class="gdesc"><p>${esc(g.d)}</p><a href="/store/${esc(g.slug)}" class="gbtn-view" data-view="${i}" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">${esc(g.p)}</a></div>
     </div>
   </article>`).join('');
 
@@ -1133,7 +1137,7 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
             </div>
           </div>
 
-          <div class="hero-art" id="heroArt" aria-hidden="true">
+           <div class="hero-art" id="heroArt">
             ${sceneData.slides.map((s, i) => `<div class="art${i === 0 ? ' on' : ''}" data-hue="${i}">${s.art ? `<img src="${esc(s.art)}" class="hero-char ${s.artClass}" alt="${esc(s.title)} — فروشگاه تایتان" width="256" height="265" ${i === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'} decoding="async" />` : ''}</div>`).join('')}
           </div>
 
@@ -1142,7 +1146,7 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
           </div>
         </article>
 
-        <div class="sec-h reveal" style="--d:3"><h3>دسته‌بندی‌ها</h3></div>
+        <div class="sec-h reveal" style="--d:3"><h2>دسته‌بندی‌ها</h2></div>
         <div class="carousel">
           <div class="scroller" id="scroller" tabindex="0" aria-label="دسته‌بندی‌ها">
             ${renderScrollerCards(sceneData.games)}
@@ -1163,8 +1167,8 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
             <div class="trust-item">
               <div class="trust-icon"><i data-icon="flame">${ico('flame')}</i><div class="glow"></div></div>
               <div class="trust-text">
-                <span>تحویل آنی</span>
-                <small>در کمتر از یک دقیقه</small>
+                <span>تحویل سریع</span>
+                <small>پردازش فوری پس از پرداخت</small>
               </div>
             </div>
             <div class="trust-divider"></div>
@@ -1179,12 +1183,23 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
             <div class="trust-item">
               <div class="trust-icon"><i data-icon="like">${ico('like')}</i><div class="glow"></div></div>
               <div class="trust-text">
-                <span>ضمانت اصالت کالا</span>
-                <small>۱۰۰٪ قانونی و اورجینال</small>
+                <span>تضمین تحویل و پشتیبانی</span>
+                <small>پیگیری سفارش و بازگشت وجه طبق قوانین</small>
               </div>
             </div>
           </div>
         </article>
+
+        <nav class="reveal" aria-label="لینک‌های کاربردی فروشگاه و آموزش‌ها" style="--d:7; margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px;">
+          <a href="/product/fortnite-crew" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید کروپک فورتنایت</a>
+          <a href="/product/fortnite-vbucks" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید ویباکس فورتنایت</a>
+          <a href="/fortnite-shop" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">آیتم شاپ روزانه فورتنایت</a>
+          <a href="/store/valorant" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید ولورانت پوینت</a>
+          <a href="/product/cod-points" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید سی‌پی کالاف دیوتی موبایل</a>
+          <a href="/guides/fortnite-crew-buying-guide" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">راهنمای خرید کروپک فورتنایت در ایران</a>
+          <a href="/guides" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">مرکز آموزش و راهنمای خرید</a>
+          <a href="/faq" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">سوالات متداول</a>
+        </nav>
 
 
       </section>
@@ -1197,20 +1212,20 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
             <span class="sheen"></span>
           </div>
           <div class="tb-content">
-            <span class="tb-badge"><i data-icon="trophy">${ico('trophy')}</i> تورنمنت‌های تایتان</span>
-            <h3>رقابت با بهترین‌ها</h3>
+            <span class="tb-badge"><i data-icon="trophy">${ico('trophy')}</i> تورنومنت‌های تایتان</span>
+            <h2>رقابت با بهترین‌ها</h2>
             <p>جوایز نقدی بزرگ در انتظار شماست. تیم خود را ثبت‌نام کنید.</p>
-            <a href="/tournament" class="tb-btn">مشاهده تورنومنت‌ها</a>
+            <a href="/tournaments" data-nav class="tb-btn">مشاهده تورنومنت‌ها</a>
           </div>
-          <img src="${optimizedImg('/images/tournoment-banner.webp', 640)}" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" width="320" height="180" loading="lazy" decoding="async" />
-          <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none">
+          <img src="${optimizedImg('/images/titan-tournament-banner.webp', 640)}" alt="بنر تورنومنت‌های هفتگی تایتان" class="tb-img" width="320" height="180" loading="lazy" decoding="async" />
+          <svg class="tb-art" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true">
             <circle cx="160" cy="40" r="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="30" />
             <circle cx="160" cy="40" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="20" />
           </svg>
         </article>
 
         <div class="stat-wrap col reveal" style="--d:4">
-          <div class="sec-h"><h3>امتیاز شما</h3><a class="arrow" href="/tournament" aria-label="باز کردن آمار"><i data-icon="arrow">${ico('arrow')}</i></a></div>
+          <div class="sec-h"><h2>امتیاز شما</h2><a class="arrow" href="/tournaments#leaderboard" data-nav aria-label="مشاهده لیدربرد و آمار"><i data-icon="arrow">${ico('arrow')}</i></a></div>
           <article class="stat spot reveal" style="--d:5">
             <div class="blob" id="blob">
               <canvas id="blobCanvas" aria-hidden="true"></canvas>

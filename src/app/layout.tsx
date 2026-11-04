@@ -22,6 +22,7 @@ import {
   SITE_DEFAULT_TITLE,
   SITE_DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
+  IS_STAGING_ENV,
 } from "@/lib/siteConfig";
 
 const vazirmatn = Vazirmatn({
@@ -31,9 +32,7 @@ const vazirmatn = Vazirmatn({
   weight: ["400", "500", "600", "700"],
 });
 
-const isNonProdEnv =
-  process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ||
-  process.env.NEXT_PUBLIC_NOINDEX === "true";
+const isNonProdEnv = IS_STAGING_ENV;
 
 const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 const yandexVerification = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION;

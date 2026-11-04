@@ -710,6 +710,7 @@ i[data-icon] svg {
   margin-bottom: -4px
 }
 
+.sec-h h2,
 .sec-h h3 {
   font-size: clamp(20px, 1.8vw, 24px);
   font-weight: 700;
@@ -721,6 +722,7 @@ i[data-icon] svg {
   gap: 10px;
 }
 
+.sec-h h2::before,
 .sec-h h3::before {
   content: '';
   display: block;
@@ -1377,6 +1379,7 @@ html[dir="rtl"] .hero-char {
   color: #ffcf8a;
 }
 
+.tourney-banner h2,
 .tourney-banner h3 {
   font-size: 20px;
   font-weight: 700;
@@ -1528,6 +1531,7 @@ html[dir="rtl"] .hero-char {
   z-index: 2
 }
 
+.gbody h3,
 .gbody h4 {
   font-size: clamp(15px, 1.4vw, 19px);
   font-weight: 600;
@@ -3241,6 +3245,7 @@ html[dir="rtl"] .hero-live {
 @media (max-width: 768px) {
 
   /* Typography & Spacing */
+  .sec-h h2,
   .sec-h h3 {
     font-size: 18px;
   }
@@ -3412,6 +3417,7 @@ html[dir="rtl"] .hero-live {
     border-radius: 20px;
   }
 
+  .tourney-banner h2,
   .tourney-banner h3 {
     font-size: 16px;
   }
@@ -3439,6 +3445,7 @@ html[dir="rtl"] .hero-live {
     bottom: 12px;
   }
 
+  .gbody h3,
   .gbody h4 {
     font-size: 13px;
   }
@@ -3640,6 +3647,7 @@ html[dir="rtl"] .hero-live {
     gap: 8px;
   }
 
+  .tourney-banner h2,
   .tourney-banner h3 {
     font-size: 20px;
   }

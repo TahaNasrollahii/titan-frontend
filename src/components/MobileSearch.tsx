@@ -66,8 +66,8 @@ export function MobileSearch({ open, onClose }: { open: boolean; onClose: () => 
                 ref={inputRef}
                 type="search"
                 enterKeyHint="search"
-                placeholder="بازی، محصول یا تورنمنت…"
-                aria-label="جستجوی بازی‌ها، محصولات و تورنمنت‌ها"
+                placeholder="بازی، محصول یا تورنومنت…"
+                aria-label="جستجوی بازی‌ها، محصولات و تورنومنت‌ها"
                 autoComplete="off"
                 autoFocus
                 value={query}

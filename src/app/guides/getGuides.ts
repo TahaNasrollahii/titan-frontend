@@ -108,7 +108,7 @@ const GAME_THEMES: Record<string, GuideVisualTheme> = {
     badgeLabel: 'Call of Duty Mobile',
     characterImage: '/images/hero/characters/callof-v2.webp',
     backgroundImage: '/images/games/callof-background.webp',
-    watermarkImage: '/images/categories/large/callof-v2.webp',
+    watermarkImage: '/images/categories/large/codm-official-m-20x20.svg',
     floatingImage: '/images/glossy-cod-logo-v2.webp',
     storeHref: '/store/call-of-duty',
     storeLabel: 'فروشگاه کالاف دیوتی',
@@ -149,7 +149,7 @@ export function getGuideTheme(guide: Pick<GuideSummary, 'category' | 'game'>): G
       secondaryAccent: '#e2453f',
       badgeLabel: 'Titan Tournaments',
       characterImage: '/images/hero/characters/callof-v2.webp',
-      backgroundImage: '/images/tournoment-banner.webp',
+      backgroundImage: '/images/titan-tournament-banner.webp',
       watermarkImage: '/icons/tournament.webp',
       floatingImage: '/icons/tournament.webp',
       storeHref: '/tournaments',
@@ -554,7 +554,7 @@ export const EPIC_GAMES_2FA_GUIDE: Guide = {
 1. وارد [سایت رسمی اپیک گیمز](https://www.epicgames.com/) شوید و در گوشه بالا سمت راست روی **نام کاربری یا آیکون پروفایل خود** کلیک کنید.
 2. از منوی بازشده روی گزینه **Account** کلیک کنید.
 
-![مرحله اول خاموش کردن تایید دومرحله‌ای اپیک گیمز: کلیک روی آیکون پروفایل در سایت Epic Games و انتخاب Account](/images/guides/epic-games-2fa/D1.webp)
+![مرحله اول خاموش کردن تایید دومرحله‌ای اپیک گیمز: کلیک روی آیکون پروفایل در سایت Epic Games و انتخاب Account](/images/guides/epic-games-2fa/disable-step-1.webp)
 
 ## مرحله دوم خاموش کردن 2FA: رفتن به Password and security و زدن Remove method
 
@@ -565,7 +565,7 @@ export const EPIC_GAMES_2FA_GUIDE: Guide = {
 3. در سمت راست همان ردیف، روی دکمه **سه‌نقطه (...)** کلیک کنید تا منوی آن باز شود.
 4. روی گزینه **Remove method** کلیک کنید تا تایید دومرحله‌ای اکانت شما غیرفعال (خاموش) شود.
 
-![مرحله دوم خاموش کردن تایید دومرحله‌ای اپیک گیمز: ورود به Password and security، کلیک روی دکمه سه‌نقطه و انتخاب گزینه Remove method](/images/guides/epic-games-2fa/D2.webp)
+![مرحله دوم خاموش کردن تایید دومرحله‌ای اپیک گیمز: ورود به Password and security، کلیک روی دکمه سه‌نقطه و انتخاب گزینه Remove method](/images/guides/epic-games-2fa/disable-step-2.webp)
 
 ## نکات مهم امنیتی برای خریداران تایتان
 
@@ -888,6 +888,99 @@ export const INVITE_TEAM_GUIDE: Guide = {
   ],
 };
 
+export const FORTNITE_CREW_BUYING_GUIDE: Guide = {
+  slug: 'fortnite-crew-buying-guide',
+  title: 'راهنمای خرید کروپک فورتنایت در ایران و مراحل فعال‌سازی اشتراک Fortnite Crew',
+  category: 'purchase',
+  summary:
+    'آموزش گام‌به‌گام نحوه خرید کروپک فورتنایت در ایران با کارت بانکی ریالی، پیش‌نیازهای اکانت اپیک گیمز و کنسول، روش فعال‌سازی ({{DELIVERY_METHOD}}) و نکات مهم مدیریت اشتراک در تایتان.',
+  publishedAt: '2026-11-04T00:00:00Z',
+  updatedAt: '2026-11-04T00:00:00Z',
+  game: {
+    slug: 'fortnite',
+    title: 'فورتنایت',
+    titleEn: 'Fortnite',
+    accentColor: '#00d4ff',
+    iconImage: '/images/categories/large/fortnite.webp',
+  },
+  products: [
+    {
+      slug: 'fortnite-crew',
+      title: 'اشتراک کروپک فورتنایت (Fortnite Crew)',
+    },
+    {
+      slug: 'fortnite-vbucks',
+      title: 'وی‌باکس فورتنایت (V-Bucks)',
+    },
+  ],
+  related: [
+    toSummary(EPIC_GAMES_ACCOUNT_GUIDE),
+    toSummary(EPIC_GAMES_LINK_CONSOLE_GUIDE),
+    toSummary(EPIC_GAMES_2FA_GUIDE),
+  ],
+  metaTitle: 'راهنمای خرید کروپک فورتنایت در ایران (Fortnite Crew) | تایتان',
+  metaDescription:
+    'آموزش کامل خرید کروپک فورتنایت در ایران با پرداخت ریالی؛ پیش‌نیازهای اکانت اپیک گیمز و کنسول، مراحل ثبت سفارش و فعال‌سازی Fortnite Crew در تایتان.',
+  noindex: false,
+  ogImage: '/images/banner-hero.webp',
+  canonicalUrl: '',
+  body: `بسیاری از بازیکنان فورتنایت در ایران به دنبال فعال‌سازی اشتراک ماهانه **کروپک فورتنایت (Fortnite Crew)** هستند تا با یک پرداخت، هم به بتل‌پس فصل دسترسی داشته باشند و هم وی‌باکس و اسکین ماهانه را دریافت کنند. از آنجا که پرداخت مستقیم در استورهای بین‌المللی نیازمند کارت‌های بانکی ارزی است، شما می‌توانید از طریق [صفحه خرید کروپک فورتنایت از تایتان](/product/fortnite-crew) این اشتراک را با کارت بانکی عضو شتاب سفارش دهید. در این راهنمای آموزشی، پیش‌نیازهای اکانت و مراحل ثبت سفارش را گام‌به‌گام مرور می‌کنیم (اطلاعات اختصاصی قیمت، زمان تحویل و روش فعال‌سازی با علامت \`{{VERIFY}}\` مشخص شده‌اند تا توسط مدیریت فروشگاه تایید نهایی شوند).
+
+## ۱. پیش‌نیازهای اکانت قبل از خرید کروپک فورتنایت در ایران
+
+پیش از آنکه سفارش خود را در [فروشگاه فورتنایت تایتان](/store/fortnite) ثبت کنید، بررسی سه مورد زیر روی اکانت باعث می‌شود فرآیند فعال‌سازی بدون توقف انجام شود:
+
+1. **داشتن اکانت اپیک گیمز فعال:** تمام آیتم‌ها و پیشرفت فورتنایت روی حساب Epic Games ذخیره می‌شوند. اگر روی کنسول بازی می‌کنید و هنوز حساب اپیک نساخته‌اید، ابتدا [آموزش تصویری ساخت اکانت اپیک گیمز](/guides/epic-games-account) را مطالعه کنید.
+2. **اتصال اکانت کنسول (PlayStation یا Xbox) به اپیک گیمز:** بسته به روش فعال‌سازی در تایتان (\`{{DELIVERY_METHOD}}\` — \`{{VERIFY}}\`)، لازم است اکانت کنسول شما به درستی به حساب اپیک گیمز لینک شده باشد. برای این کار می‌توانید از [آموزش اتصال اکانت اپیک گیمز به پلی‌استیشن یا ایکس‌باکس](/guides/epic-games-link-console) کمک بگیرید.
+3. **مدیریت تایید دومرحله‌ای (2FA):** اگر تایید دومرحله‌ای حساب شما روشن است، یا باید هنگام پردازش سفارش برای اعلام کد امنیتی در دسترس باشید و یا طبق [آموزش روشن و خاموش کردن تایید دومرحله‌ای اپیک گیمز](/guides/epic-games-2fa) آن را به شکل موقت غیرفعال کرده و بلافاصله پس از تحویل دوباره روشن کنید.
+
+## ۲. مراحل ثبت سفارش اشتراک Fortnite Crew در تایتان
+
+فرآیند سفارش اشتراک ماهانه در تایتان در چهار گام خلاصه می‌شود:
+
+1. **انتخاب محصول:** وارد صفحه [خرید کروپک فورتنایت از تایتان](/product/fortnite-crew) شوید و قیمت روز (\`{{PRICE}}\`) و توضیحات محصول را بررسی کنید.
+2. **ثبت اطلاعات اکانت بازی:** اطلاعات ورود به اکانت بازی خود را در فرم سفارش یا از طریق [بخش اکانت‌های من در پنل کاربری](/dashboard/accounts) وارد نمایید تا کارشناسان به حساب مقصد دسترسی داشته باشند.
+3. **پرداخت ریالی از درگاه بانکی:** مبلغ سفارش را با کارت‌های بانکی عضو شتاب پرداخت کنید و کد پیگیری سفارش را دریافت نمایید.
+4. **فعال‌سازی و تحویل سفارش:** تیم پشتیبانی تایتان سفارش شما را از طریق روش \`{{DELIVERY_METHOD}}\` در بازه زمانی \`{{DELIVERY_TIME}}\` روی اکانت اعمال می‌کند و پیامک یا اعلان تکمیل سفارش برای شما ارسال می‌شود.
+
+## ۳. با فعال شدن کروپک چه مواردی به اکانت اضافه می‌شود؟
+
+با فعال‌سازی اشتراک یک‌ماهه Fortnite Crew روی حساب شما، موارد زیر طبق ساختار اشتراک در بازی قابل دریافت هستند (\`{{VERIFY}}\`):
+
+- **۱٬۰۰۰ وی‌باکس (V-Bucks):** این اعتبار پس از فعال‌سازی به موجودی شما اضافه می‌شود و برای تهیه اسکین‌ها و ایموت‌ها در [آیتم‌شاپ روزانه فورتنایت](/fortnite-shop) کاربرد دارد.
+- **باندل اسکین و آیتم‌های ماهانه Crew:** هر ماه یک ست تزئینی اختصاصی شامل اسکین و آیتم‌های جانبی (مانند بک‌بلینگ یا پیک‌اکس) به لاکر دارندگان اشتراک اضافه می‌گردد که پس از پایان اشتراک نیز در لاکر باقی می‌ماند (\`{{VERIFY}}\`).
+- **دسترسی به بتل‌پس و پس‌های فعال فورتنایت:** در طول دوره فعال بودن اشتراک، امکان دریافت جوایز پرمیوم بتل‌پس فصل جاری و سایر پس‌های مشمول (\`{{VERIFY}}\`) با کسب XP فراهم است.
+- **اشتراک Rocket Pass Premium در بازی راکت لیگ:** در صورتی که با همان حساب اپیک گیمز وارد بازی Rocket League شوید، دسترسی به Rocket Pass فصل جاری نیز فعال می‌شود (\`{{VERIFY}}\`).
+
+## ۴. نکات مهم درباره تمدید اشتراک و مقایسه با خرید وی‌باکس
+
+- **عدم تمدید خودکار ناخواسته در خریدهای تک‌دوره‌ای:** زمانی که اشتراک یک‌ماهه را از تایتان تهیه می‌کنید، سفارش شما برای همان دوره یک‌ماهه ثبت می‌شود و بدون ثبت سفارش جدید، مبلغی از حساب بانکی شما کسر نخواهد شد (\`{{VERIFY}}\`).
+- **مقایسه با خرید مستقیم وی‌باکس:** اگر هدف شما هم‌زمان گرفتن بتل‌پس فصل و دریافت ۱٬۰۰۰ وی‌باکس است، کروپک معمولاً گزینه اقتصادی‌تری نسبت به خرید جداگانه است؛ اما اگر صرفاً برای خرید یک باندل مشخص در آیتم‌شاپ به وی‌باکس بیشتر نیاز دارید، می‌توانید به صفحه [خرید وی‌باکس فورتنایت](/product/fortnite-vbucks) مراجعه کنید.
+- **پشتیبانی و قوانین سفارش:** در صورت بروز هرگونه سوال یا نیاز به بررسی وضعیت سفارش، کارشناسان پشتیبانی تایتان پاسخگوی شما هستند و شرایط لغو یا بازگشت وجه در صفحه [قوانین و مقررات تایتان](/terms) به صورت شفاف درج شده است.`,
+  faqs: [
+    {
+      question: 'چطور می‌توانیم در ایران اشتراک کروپک فورتنایت را بدون کارت ارزی بخریم؟',
+      answer:
+        'شما می‌توانید از طریق صفحه خرید کروپک فورتنایت در سایت تایتان، هزینه اشتراک را به صورت ریالی با کارت بانکی عضو شتاب پرداخت کنید تا کارشناسان تایتان اشتراک را روی اکانت شما فعال کنند.',
+    },
+    {
+      question: 'فعال‌سازی کروپک فورتنایت در تایتان چقدر زمان می‌برد؟',
+      answer:
+        'مدت زمان تحویل و فعال‌سازی سفارش کروپک در تایتان {{DELIVERY_TIME}} است (مشروط به صحیح بودن اطلاعات اکانت و هماهنگی کد تایید دومرحله‌ای در صورت روشن بودن 2FA).',
+    },
+    {
+      question: 'آیا بعد از تمام شدن اشتراک یک‌ماهه کروپک، اسکین‌ها و وی‌باکس حذف می‌شوند؟',
+      answer:
+        'خیر؛ ۱٬۰۰۰ وی‌باکس دریافتی و باندل اسکین ماهانه‌ای که به لاکر شما اضافه شده است پس از پایان دوره اشتراک نیز در اکانت شما باقی می‌مانند ({{VERIFY}}).',
+    },
+    {
+      question: 'آیا برای خرید کروپک فورتنایت باید رمز اکانت را پس از تحویل تغییر دهیم؟',
+      answer:
+        'اطلاعات اکانت شما صرفاً برای انجام سفارش استفاده می‌شود؛ با این حال برای آرامش خاطر بیشتر می‌توانید پس از تکمیل سفارش، طبق آموزش تغییر پسوورد اپیک گیمز رمز خود را عوض کرده و تایید دومرحله‌ای (2FA) را روشن کنید.',
+    },
+  ],
+};
+
 function toSummary(guide: Guide): GuideSummary {
   return {
     slug: guide.slug,
@@ -975,6 +1068,20 @@ export async function getGuides(params: Record<string, string> = {}): Promise<Gu
     }
     return item;
   });
+
+  const matchesCrewPurchaseFilter =
+    (!params.product ||
+      params.product === 'fortnite-crew' ||
+      params.product === 'fortnite-crew-pack') &&
+    (!params.game || params.game === 'fortnite') &&
+    (!params.category || params.category === 'purchase');
+
+  if (
+    matchesCrewPurchaseFilter &&
+    !list.some(item => item.slug === FORTNITE_CREW_BUYING_GUIDE.slug)
+  ) {
+    list = [toSummary(FORTNITE_CREW_BUYING_GUIDE), ...list];
+  }
 
   const matchesConsoleFilter =
     !params.product &&
@@ -1122,6 +1229,20 @@ export async function getGuide(slug: string): Promise<Guide | null> {
           updatedAt: INVITE_TEAM_GUIDE.updatedAt,
         }
       : INVITE_TEAM_GUIDE;
+  }
+  if (slug === FORTNITE_CREW_BUYING_GUIDE.slug) {
+    return remote
+      ? {
+          ...remote,
+          title: FORTNITE_CREW_BUYING_GUIDE.title,
+          summary: FORTNITE_CREW_BUYING_GUIDE.summary,
+          body: FORTNITE_CREW_BUYING_GUIDE.body,
+          faqs: FORTNITE_CREW_BUYING_GUIDE.faqs,
+          metaTitle: FORTNITE_CREW_BUYING_GUIDE.metaTitle,
+          metaDescription: FORTNITE_CREW_BUYING_GUIDE.metaDescription,
+          updatedAt: FORTNITE_CREW_BUYING_GUIDE.updatedAt,
+        }
+      : FORTNITE_CREW_BUYING_GUIDE;
   }
   if (remote) return remote;
   if (slug === RANKS_GUIDE.slug) return RANKS_GUIDE;

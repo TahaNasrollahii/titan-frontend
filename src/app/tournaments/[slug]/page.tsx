@@ -83,7 +83,7 @@ export async function generateMetadata({
   );
 
   const imageUrl = toAbsoluteUrl(
-    tournament?.ogImage || tournament?.coverImage || '/images/tournoment-banner.webp',
+    tournament?.ogImage || tournament?.coverImage || '/images/titan-tournament-banner.webp',
   );
   const canonicalUrl = tournament?.canonicalUrl || `${SITE_URL}/tournaments/${slug}`;
 
@@ -144,7 +144,7 @@ export default async function TournamentDetailPage({
     : buildSportsEventSchema({
         slug,
         title: 'مسابقات فیفا ۲۴ — جام ویژه تایتان',
-        description: 'تورنمنت حذفی جام ویژه فیفا ۲۴ با حضور ۱۶ تیم برتر و جدول مسابقات زنده.',
+        description: 'تورنومنت حذفی جام ویژه فیفا ۲۴ با حضور ۱۶ تیم برتر و جدول مسابقات زنده.',
       });
 
   const breadcrumbItems = [

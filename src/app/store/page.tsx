@@ -47,9 +47,9 @@ export async function generateMetadata({
   const isFiltered = hasFacetFilters(resolved);
 
   const pageSuffix = pageNum > 1 ? ` (صفحه ${pageNum.toLocaleString('fa-IR')})` : '';
-  const title = `فروشگاه گیمینگ، خرید پول و آیتم بازی‌ها${pageSuffix}`;
+  const title = `فروشگاه گیمینگ، خرید ارز و آیتم بازی‌ها${pageSuffix}`;
   const description =
-    'فروشگاه تخصصی تایتان؛ خرید قانونی ویباکس فورتنایت، ولورانت پوینت (VP)، سی‌پی کالاف دیوتی موبایل، جم کلش آف کلنز، گیفت کارت‌های استیم و پلی‌استیشن، و اکانت‌های پرمیوم با تحویل سریع.';
+    'فروشگاه گیمینگ تایتان؛ خرید ویباکس و کروپک فورتنایت، ولورانت پوینت (VP)، سی‌پی کالاف دیوتی موبایل، جم کلش آف کلنز و گیفت کارت با تحویل سریع و پشتیبانی.';
 
   const canonicalPath = !isFiltered && pageNum > 1 ? `/store?page=${pageNum}` : '/store';
   const canonicalUrl = `${SITE_URL}${canonicalPath}`;
@@ -107,9 +107,9 @@ export default async function StorePage({
     ]);
 
   const collectionSchema = buildCollectionPageSchema({
-    name: 'فروشگاه آنلاین گیمینگ تایتان — خرید پول و آیتم بازی‌ها',
+    name: 'فروشگاه آنلاین گیمینگ تایتان — خرید ارز و آیتم بازی‌ها',
     description:
-      'خرید قانونی ویباکس فورتنایت، ولورانت پوینت، سی‌پی کالاف دیوتی موبایل، جم کلش آف کلنز، گیفت کارت و اشتراک‌های پرمیوم با تحویل آنی در فروشگاه تایتان.',
+      'خرید ویباکس و کروپک فورتنایت، ولورانت پوینت، سی‌پی کالاف دیوتی موبایل، جم کلش آف کلنز، گیفت کارت و اشتراک‌های پرمیوم با تحویل سریع در فروشگاه تایتان.',
     path: currentPage > 1 ? `/store?page=${currentPage}` : '/store',
     products: initialProducts?.results ?? [],
   });
@@ -124,7 +124,7 @@ export default async function StorePage({
           { name: 'فروشگاه گیمینگ', path: '/store' },
         ]}
       />
-      <h1 className="sr-only">فروشگاه آنلاین گیمینگ تایتان — خرید پول و آیتم بازی‌ها</h1>
+      <h1 className="sr-only">فروشگاه آنلاین گیمینگ تایتان — خرید ارز و آیتم بازی‌ها</h1>
       <StoreClient
         initialProducts={initialProducts}
         initialGames={initialGames}

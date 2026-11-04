@@ -7,11 +7,16 @@ import { getGuides, primaryGuide } from '../../guides/getGuides';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { composeMetaDescription } from '@/lib/seo/meta';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
-import { API_URL, DEFAULT_CLASH_PRODUCT_DETAIL } from '@/lib/api/client';
+import {
+  API_URL,
+  DEFAULT_CLASH_PRODUCT_DETAIL,
+  DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL,
+} from '@/lib/api/client';
 import { fetchEntity } from '@/lib/api/server';
 import type { Paginated, Product, ProductSummary, Review } from '@/lib/api/types';
 import {
   buildBreadcrumbSchema,
+  buildFaqSchema,
   buildProductSchema,
   resolveBackendRedirect,
   toAbsoluteUrl,
@@ -28,9 +33,13 @@ export async function generateStaticParams() {
     if (!res.ok) return [];
     const data = await res.json();
     const results = Array.isArray(data) ? data : data.results || [];
-    return results.map((p: { slug: string }) => ({ slug: p.slug }));
+    const slugs = new Set<string>(['fortnite-crew']);
+    for (const p of results) {
+      if (p?.slug) slugs.add(p.slug);
+    }
+    return Array.from(slugs).map((slug) => ({ slug }));
   } catch {
-    return [];
+    return [{ slug: 'fortnite-crew' }];
   }
 }
 
@@ -40,6 +49,16 @@ async function getProduct(slug: string): Promise<Product | null> {
     revalidate: 60,
     tags: ['products', `product-${slug}`],
   });
+  if (!prod && slug === 'fortnite-crew') {
+    const altProd = await fetchEntity<Product>('/products/fortnite-crew-pack/', {
+      revalidate: 60,
+      tags: ['products', 'product-fortnite-crew'],
+    });
+    if (altProd) {
+      return enrichProductSeo({ ...altProd, slug: 'fortnite-crew' });
+    }
+    return enrichProductSeo(DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL);
+  }
   if (!prod && slug === 'clash-of-clans-gems') {
     return enrichProductSeo(DEFAULT_CLASH_PRODUCT_DETAIL);
   }
@@ -96,8 +115,8 @@ export async function generateMetadata({
   const rawTitle = (product.metaTitle || `خرید ${product.title}`).replace(/\s*\|\s*(فروشگاه\s*)?تایتان\s*$/u, '');
   const description = composeMetaDescription(
     product.metaDescription || plainTextDescription(product.description) || product.subtitle,
-    `خرید ${product.title} با تحویل فوری، پرداخت امن و پشتیبانی ۲۴ ساعته در فروشگاه تایتان.`,
-    'قیمت به‌روز، خرید قانونی و ضمانت تحویل.',
+    `خرید ${product.title} با تحویل سریع، پرداخت امن ریالی و پشتیبانی ۲۴ ساعته در فروشگاه تایتان.`,
+    'قیمت به‌روز، پیگیری آنلاین سفارش و پشتیبانی ۲۴ ساعته.',
   );
 
   const imageUrl = toAbsoluteUrl(product.ogImage || product.image);
@@ -176,6 +195,7 @@ export default async function ProductPage({
     <>
       <JsonLd data={productJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
+      {product.faqs && product.faqs.length > 0 && <JsonLd data={buildFaqSchema(product.faqs)} />}
       <ProductDetailClient
         initialData={product}
         initialReviews={reviews}

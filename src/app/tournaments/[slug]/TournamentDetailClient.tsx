@@ -208,7 +208,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
   };
 
   const withdraw = async () => {
-    if (!window.confirm('از انصراف در این تورنمنت مطمئن هستید؟ هزینه ورودی به کیف پول بازگردانده می‌شود.')) return;
+    if (!window.confirm('از انصراف در این تورنومنت مطمئن هستید؟ هزینه ورودی به کیف پول بازگردانده می‌شود.')) return;
     setBusy(true);
     try {
       await tournamentsApi.withdraw(tournament.slug);
@@ -293,7 +293,7 @@ function RegistrationWidget({ tournament, onChanged }: { tournament: Tournament;
           )}
           {registration.canManage && !editingLineup && tournament.status !== 'live' && tournament.status !== 'completed' && (
             <button className={styles.btnRegister} onClick={withdraw} disabled={busy}>
-              <Icon name="x" /> انصراف از تورنمنت
+              <Icon name="x" /> انصراف از تورنومنت
             </button>
           )}
           {tournament.status === 'live' && (
@@ -446,7 +446,7 @@ const FIFA_DETAIL_MOCK: Tournament = {
   viewerCount: 12408,
   isRegistered: false,
   featuredMatch: null,
-  description: 'تورنمنت حذفی جام ویژه فیفا ۲۴ با حضور ۱۶ تیم برتر و جدول مسابقات زنده تایتان.',
+  description: 'تورنومنت حذفی جام ویژه فیفا ۲۴ با حضور ۱۶ تیم برتر و جدول مسابقات زنده تایتان.',
   rules: [
     'مسابقات به صورت تک‌حذفی (Knockout) برگزار می‌شود',
     'زمان هر بازی: دو نیمه ۶ دقیقه‌ای',
@@ -733,7 +733,7 @@ export default function TournamentDetailsPage({ initialData }: { initialData?: T
                   ))}
                 </ul>
               ) : (
-                <p>قوانین این تورنمنت به‌زودی منتشر می‌شود.</p>
+                <p>قوانین این تورنومنت به‌زودی منتشر می‌شود.</p>
               )}
             </div>
 

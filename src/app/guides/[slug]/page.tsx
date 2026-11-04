@@ -250,7 +250,7 @@ export default async function GuidePage({
               <div className={styles.buyDockHeader}>
                 <span className={styles.buyDockPulse} aria-hidden="true" />
                 <span className={styles.buyDockLabel}>
-                  محصولات مرتبط با این آموزش (تحویل فوری و قانونی):
+                  محصولات مرتبط با این آموزش (تحویل سریع و پشتیبانی ۲۴ ساعته):
                 </span>
               </div>
               <div className={styles.buyRow}>
@@ -304,7 +304,7 @@ export default async function GuidePage({
               <Icon name="sparkles" />
             </span>
             <div className={styles.stageHudText}>
-              <strong>تحویل سریع و قانونی</strong>
+              <strong>تحویل سریع و مطمئن</strong>
               <span>پشتیبانی آنلاین ۲۴/۷</span>
             </div>
           </div>
@@ -352,7 +352,7 @@ export default async function GuidePage({
             <ul className={styles.sideStoreChecklist}>
               <li>
                 <Icon name="check" />
-                <span>شارژ قانونی و مستقیم بدون خطر بن</span>
+                <span>شارژ مستقیم روی اکانت با پیگیری سفارش</span>
               </li>
               <li>
                 <Icon name="check" />

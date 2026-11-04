@@ -176,7 +176,7 @@ function Leaderboards({ initialGames }: { initialGames?: Game[] | null }) {
 
   return (
     <>
-      <div className="lb-header reveal" style={{ '--d': 9 } as React.CSSProperties}>
+      <div id="leaderboard" className="lb-header reveal" style={{ '--d': 9 } as React.CSSProperties}>
         <div className="lb-head-left">
           <div className="lb-accent-bar" />
           <div>
@@ -340,8 +340,8 @@ export default function TournamentPage({ initialData }: { initialData?: Tourname
                   </span>
                 </div>
               )}
-              <h1>تایتان تورنومنت</h1>
-              <p>رقابت کنید و جایزه ببرید.</p>
+              <h1>تورنومنت‌ها و جدول رتبه‌بندی مسابقات تایتان</h1>
+              <p>در تورنومنت‌های هفتگی بازی‌ها رقابت کنید، امتیاز لیدربرد بگیرید و برنده جوایز نقدی شوید.</p>
               <div className="th-foot">
                 <Link href={promoHref} className="th-btn-primary" style={{ textDecoration: 'none' }}>
                   <Icon name="game" />
@@ -433,7 +433,7 @@ export default function TournamentPage({ initialData }: { initialData?: Tourname
 
       <div className="tour-sec-h reveal" style={{ '--d': 4 } as React.CSSProperties}>
         <h2>مسابقات پیش‌رو</h2>
-        <Link href="/tournaments" className="arrow" aria-label="مشاهده تمام مسابقات">
+        <Link href="#all-tournaments" className="arrow" aria-label="مشاهده تمام تورنومنت‌ها">
           <Icon name="arrow" />
         </Link>
       </div>

@@ -64,7 +64,7 @@ const FEATURE_ICONS: Record<string, React.ElementType> = {
 
 // Shown when a product has no features of its own; same promises as the site footer
 const DEFAULT_PERKS = [
-  { icon: 'shield', title: 'خرید قانونی و اورجینال', description: 'ضمانت اصالت کالا' },
+  { icon: 'shield', title: 'تضمین تحویل سفارش', description: 'پیگیری و بازگشت وجه طبق قوانین' },
   { icon: 'flame', title: 'تحویل سریع', description: 'پردازش فوری سفارش' },
   { icon: 'chat', title: 'پشتیبانی ۲۴ ساعته', description: 'همراه شما تا تحویل' },
 ];
@@ -118,6 +118,22 @@ function defaultVariant(product: Product): ProductVariant | null {
 function scrollToSection(id: string) {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+}
+
+function renderRichInline(text: string): React.ReactNode {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, idx) => {
+    const match = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+    if (match) {
+      const [, label, href] = match;
+      return (
+        <Link key={idx} href={href} className={styles.inlineSeoLink}>
+          {label}
+        </Link>
+      );
+    }
+    return part;
+  });
 }
 
 function PlatformGlyph({ slug, icon }: { slug: string; icon?: string | null }) {
@@ -185,7 +201,8 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<SectionId>('pd-about');
-  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
+  const isCrewProduct = slug === 'fortnite-crew' || slug === 'fortnite-crew-pack';
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(isCrewProduct ? slug : null);
   const descExpanded = expandedSlug === slug;
   const [showBuyBar, setShowBuyBar] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -263,13 +280,17 @@ export default function ProductPage({ initialData, initialRelated, initialReview
 
   const fallbackImage = useMemo(() => {
     if (!data) return '/images/banner-hero.webp';
-    if (data.slug === 'cod-points') return '/images/products/Molten-Gold-Lightning-King.webp';
-    if (data.slug === 'clash-of-clans-gems') return '/images/products/goblin_transparent.webp';
-    if (data.slug === 'clash-of-clans-gold-pass') return '/images/products/Barbarian-Pig-Rider-Reward-Rush.webp';
-    if (data.slug === 'fortnite-starter-pack') return '/images/products/Starter-Pack-Fortnite.webp';
+    if (data.slug === 'fortnite-crew' || data.slug === 'fortnite-crew-pack') {
+      return '/images/fortnite-crew-subscription-banner.webp';
+    }
+    if (data.slug === 'fortnite-vbucks') return '/images/products/fortnite-vbucks-coins.webp';
+    if (data.slug === 'cod-points') return '/images/products/call-of-duty-mobile-cp-king.webp';
+    if (data.slug === 'clash-of-clans-gems') return '/images/products/clash-of-clans-gems-goblin.webp';
+    if (data.slug === 'clash-of-clans-gold-pass') return '/images/products/clash-of-clans-gold-pass-rider.webp';
+    if (data.slug === 'fortnite-starter-pack') return '/images/products/fortnite-starter-pack-character.webp';
     if (data.slug === 'fortnite-final-reckoning-pack') return '/images/products/fortnite-final-reckoning-pack.webp';
     if (data.slug?.includes('valorant') || data.game?.slug === 'valorant') {
-      return '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp';
+      return '/images/products/valorant-points-375-turkish-agent.webp';
     }
     return '/images/banner-hero.webp';
   }, [data]);
@@ -553,8 +574,8 @@ export default function ProductPage({ initialData, initialRelated, initialReview
               ) : (
                 <>
                   <span className={styles.ratingBadge}>
-                    <Star size={14} fill="currentColor" aria-hidden="true" />
-                    <span className={styles.ratingScore}>۵.۰</span>
+                    <MessageSquare size={14} aria-hidden="true" />
+                    <span className={styles.ratingScore}>دیدگاه‌ها</span>
                   </span>
                   <span className={styles.ratingBody}>
                     <span className={styles.ratingCount}>هنوز نظری ثبت نشده؛ اولین نفر باشید</span>
@@ -836,135 +857,209 @@ export default function ProductPage({ initialData, initialRelated, initialReview
       </div>
 
       <div className={styles.details}>
-        {activeSection === 'pd-about' && (
-          <section id="pd-about" role="tabpanel" aria-labelledby="tab-pd-about" className={styles.block}>
+        <section
+          id="pd-about"
+          role="tabpanel"
+          aria-labelledby="tab-pd-about"
+          className={styles.block}
+          hidden={activeSection !== 'pd-about'}
+        >
+          {!isCrewProduct && (
             <h2 id="pd-about-title" className={styles.blockTitle}>
               درباره {data.title}
             </h2>
-            <div
-              id="pd-about-content"
-              className={`${styles.aboutCollapse} ${descExpanded ? styles.aboutCollapseOpen : ''}`}
-            >
-              {descriptionBlocks.length > 0 ? (
-                <div className={styles.prose}>
-                  {descriptionBlocks.map((block, i) => {
-                    if (block.type === 'heading') {
-                      return (
-                        <h3 key={i} className={styles.proseHeading}>
-                          {block.text}
-                        </h3>
-                      );
-                    }
-                    if (block.type === 'list') {
-                      return (
-                        <ul key={i} className={styles.proseList}>
-                          {block.items.map((item, j) => (
-                            <li key={j}>{item}</li>
-                          ))}
-                        </ul>
-                      );
-                    }
-                    return <p key={i}>{block.text}</p>;
-                  })}
-                </div>
-              ) : (
-                <p className={styles.prose}>
-                  {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
-                  پشتیبانی ۲۴ ساعته همراه شماست.
-                </p>
-              )}
-              {data.tags.length > 0 && (
-                <ul className={styles.tags} aria-label="ویژگی‌ها">
-                  {data.tags.map(tag => (
-                    <li key={tag} className={styles.tag}>
-                      <Check size={14} strokeWidth={3} aria-hidden="true" />
-                      {tag}
+          )}
+          <div
+            id="pd-about-content"
+            className={`${styles.aboutCollapse} ${descExpanded ? styles.aboutCollapseOpen : ''}`}
+          >
+            {descriptionBlocks.length > 0 ? (
+              <div className={styles.prose}>
+                {descriptionBlocks.map((block, i) => {
+                  if (block.type === 'heading') {
+                    return (
+                      <h2 key={i} className={styles.proseHeading}>
+                        {block.text}
+                      </h2>
+                    );
+                  }
+                  if (block.type === 'subheading') {
+                    return (
+                      <h3 key={i} className={styles.proseHeading}>
+                        {block.text}
+                      </h3>
+                    );
+                  }
+                  if (block.type === 'list') {
+                    return (
+                      <ul key={i} className={styles.proseList}>
+                        {block.items.map((item, j) => (
+                          <li key={j}>{renderRichInline(item)}</li>
+                        ))}
+                      </ul>
+                    );
+                  }
+                  return <p key={i}>{renderRichInline(block.text)}</p>;
+                })}
+              </div>
+            ) : (
+              <p className={styles.prose}>
+                {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
+                پشتیبانی ۲۴ ساعته همراه شماست.
+              </p>
+            )}
+            {data.tags.length > 0 && (
+              <ul className={styles.tags} aria-label="ویژگی‌ها">
+                {data.tags.map(tag => (
+                  <li key={tag} className={styles.tag}>
+                    <Check size={14} strokeWidth={3} aria-hidden="true" />
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {keywords.length > 0 && (
+              <div className={styles.keywordsBlock}>
+                <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
+                <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
+                  {keywords.map(kw => (
+                    <li key={kw} className={styles.keywordChip}>
+                      {kw}
                     </li>
                   ))}
                 </ul>
-              )}
-              {keywords.length > 0 && (
-                <div className={styles.keywordsBlock}>
-                  <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
-                  <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
-                    {keywords.map(kw => (
-                      <li key={kw} className={styles.keywordChip}>
-                        {kw}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
 
-            <div className={styles.descMoreWrap}>
-              <button
-                type="button"
-                className={`${styles.descMoreBtn} ${descExpanded ? styles.descMoreBtnOpen : ''}`}
-                onClick={() => setExpandedSlug(prev => (prev === slug ? null : slug))}
-                aria-expanded={descExpanded}
-                aria-controls="pd-about-content"
-              >
-                <span>{descExpanded ? 'بستن توضیحات' : 'بارگزاری بیشتر'}</span>
-                <ChevronDown size={16} className={styles.descMoreChevron} aria-hidden="true" />
-              </button>
-            </div>
-          </section>
-        )}
+          <div className={styles.descMoreWrap}>
+            <button
+              type="button"
+              className={`${styles.descMoreBtn} ${descExpanded ? styles.descMoreBtnOpen : ''}`}
+              onClick={() => setExpandedSlug(prev => (prev === slug ? null : slug))}
+              aria-expanded={descExpanded}
+              aria-controls="pd-about-content"
+            >
+              <span>{descExpanded ? 'بستن توضیحات' : 'بارگزاری بیشتر'}</span>
+              <ChevronDown size={16} className={styles.descMoreChevron} aria-hidden="true" />
+            </button>
+          </div>
+        </section>
 
-        {activeSection === 'pd-specs' && (
-          <section id="pd-specs" role="tabpanel" aria-labelledby="tab-pd-specs" className={styles.block}>
-            <h2 id="pd-specs-title" className={styles.blockTitle}>
-              مشخصات
-            </h2>
-            <dl className={styles.specs}>
-              {specs.map(([label, value]) => (
-                <div key={label} className={styles.spec}>
-                  <dt>{label}</dt>
-                  <dd>{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        )}
+        <section
+          id="pd-specs"
+          role="tabpanel"
+          aria-labelledby="tab-pd-specs"
+          className={styles.block}
+          hidden={activeSection !== 'pd-specs'}
+        >
+          <h2 id="pd-specs-title" className={styles.blockTitle}>
+            مشخصات
+          </h2>
+          <dl className={styles.specs}>
+            {specs.map(([label, value]) => (
+              <div key={label} className={styles.spec}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
-        {activeSection === 'pd-delivery' && (
-          <section id="pd-delivery" role="tabpanel" aria-labelledby="tab-pd-delivery" className={styles.block}>
-            <h2 id="pd-delivery-title" className={styles.blockTitle}>
-              نحوه دریافت
-            </h2>
-            <ol className={styles.steps}>
-              {DELIVERY_STEPS[data.deliveryType].map((step, i) => {
-                const StepIcon = step.icon;
-                return (
-                  <li key={step.title} className={styles.step}>
-                    <span className={styles.stepIcon} aria-hidden="true">
-                      <StepIcon size={20} />
-                      <span className={styles.stepNumber}>{faNumber(i + 1)}</span>
-                    </span>
-                    <strong>{step.title}</strong>
-                    <p>{step.text}</p>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
-        )}
+        <section
+          id="pd-delivery"
+          role="tabpanel"
+          aria-labelledby="tab-pd-delivery"
+          className={styles.block}
+          hidden={activeSection !== 'pd-delivery'}
+        >
+          <h2 id="pd-delivery-title" className={styles.blockTitle}>
+            نحوه دریافت
+          </h2>
+          <ol className={styles.steps}>
+            {DELIVERY_STEPS[data.deliveryType].map((step, i) => {
+              const StepIcon = step.icon;
+              return (
+                <li key={step.title} className={styles.step}>
+                  <span className={styles.stepIcon} aria-hidden="true">
+                    <StepIcon size={20} />
+                    <span className={styles.stepNumber}>{faNumber(i + 1)}</span>
+                  </span>
+                  <strong>{step.title}</strong>
+                  <p>{step.text}</p>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
 
         {/* Plain: the reviews UI brings its own cards */}
-        {activeSection === 'pd-reviews' && (
-          <section
-            id="pd-reviews"
-            role="tabpanel"
-            aria-labelledby="tab-pd-reviews"
-            className={`${styles.block} ${styles.blockPlain}`}
-          >
-            <h2 id="pd-reviews-title" className={styles.blockTitle}>
-              نظرات کاربران
+        <section
+          id="pd-reviews"
+          role="tabpanel"
+          aria-labelledby="tab-pd-reviews"
+          className={`${styles.block} ${styles.blockPlain}`}
+          hidden={activeSection !== 'pd-reviews'}
+        >
+          <h2 id="pd-reviews-title" className={styles.blockTitle}>
+            نظرات کاربران
+          </h2>
+          <ReviewsSection product={data} onChanged={product.reload} initialData={initialReviews} />
+        </section>
+
+        {data.faqs && data.faqs.length > 0 && (
+          <section id="pd-faq" aria-labelledby="pd-faq-title" className={styles.block}>
+            <h2 id="pd-faq-title" className={styles.blockTitle}>
+              سوالات متداول درباره {data.title}
             </h2>
-            <ReviewsSection product={data} onChanged={product.reload} initialData={initialReviews} />
+            <div className={styles.faqList}>
+              {data.faqs.map((faq, idx) => (
+                <details key={faq.question} className={styles.faqItem} open={idx === 0}>
+                  <summary className={styles.faqSummary}>
+                    <h3 className={styles.faqQuestion}>{faq.question}</h3>
+                    <ChevronDown size={16} className={styles.faqChevron} aria-hidden="true" />
+                  </summary>
+                  <div className={styles.faqAnswer}>
+                    <p>{faq.answer}</p>
+                  </div>
+                </details>
+              ))}
+            </div>
           </section>
         )}
+
+        <nav aria-label="لینک‌های مفید مرتبط با این محصول" className={styles.internalLinksBar}>
+          {data.game?.slug === 'fortnite' && (
+            <>
+              <Link href="/store/fortnite" className={styles.internalLinkChip}>
+                فروشگاه فورتنایت تایتان
+              </Link>
+              <Link href="/product/fortnite-vbucks" className={styles.internalLinkChip}>
+                خرید وی‌باکس فورتنایت (V-Bucks)
+              </Link>
+              <Link href="/fortnite-shop" className={styles.internalLinkChip}>
+                آیتم‌شاپ روزانه فورتنایت
+              </Link>
+              <Link href="/guides/fortnite-crew-buying-guide" className={styles.internalLinkChip}>
+                راهنمای خرید کروپک فورتنایت در ایران
+              </Link>
+            </>
+          )}
+          {data.game && data.game.slug !== 'fortnite' && (
+            <Link href={`/store/${data.game.slug}`} className={styles.internalLinkChip}>
+              مشاهده تمام محصولات {data.game.title}
+            </Link>
+          )}
+          <Link href="/guides" className={styles.internalLinkChip}>
+            مرکز آموزش و راهنمای خرید
+          </Link>
+          <Link href="/faq" className={styles.internalLinkChip}>
+            سوالات متداول تایتان
+          </Link>
+          <Link href="/terms" className={styles.internalLinkChip}>
+            قوانین، پشتیبانی و شرایط بازگشت وجه
+          </Link>
+        </nav>
       </div>
 
       {(related.data?.length ?? 0) > 0 && (

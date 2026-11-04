@@ -43,7 +43,7 @@ const GAME_FILTERS: GameFilterOption[] = [
   {
     key: 'call-of-duty',
     label: 'کالاف دیوتی',
-    icon: '/images/categories/callof-v2.webp',
+    icon: '/images/categories/codm-official-m-20x20.svg',
     accent: '#f59e0b',
   },
   {
@@ -314,7 +314,7 @@ export function GuidesHubClient({
               <Image src="/images/glossy-cod-logo-v2.webp" alt="" width={56} height={56} draggable={false} />
             </div>
             <div className={`${styles.stageOrbit} ${styles.stageOrbitD}`}>
-              <Image src="/images/products/vbucks.webp" alt="" width={58} height={58} draggable={false} />
+              <Image src="/images/products/fortnite-vbucks-coins.webp" alt="" width={58} height={58} draggable={false} />
             </div>
           </div>
         </div>

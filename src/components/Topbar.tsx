@@ -102,13 +102,15 @@ export function Topbar() {
         <img
           src="/icons/search.webp"
           alt=""
+          width={20}
+          height={20}
           style={{ width: '20px', height: '20px', objectFit: 'contain', marginLeft: '10px' }}
         />
         <input
           type="search"
           placeholder="جستجو"
           autoComplete="off"
-          aria-label="جستجوی بازی‌ها، محصولات و تورنمنت‌ها"
+          aria-label="جستجوی بازی‌ها، محصولات و تورنومنت‌ها"
           ref={searchInputRef}
           value={searchQuery}
           suppressHydrationWarning

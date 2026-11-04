@@ -190,7 +190,7 @@ function WelcomeView({
     <div className={cx(styles.view, styles.welcome, styles.scroll)}>
       <div className={styles.hello}>
         <h2>سلام! کارت رو راه بندازیم؟</h2>
-        <p>سفارش، پرداخت، کد تحویلی یا ثبت‌نام تورنمنت؛ تیم پشتیبانی تایتان همین‌جا کنارته.</p>
+        <p>سفارش، پرداخت، کد تحویلی یا ثبت‌نام تورنومنت؛ تیم پشتیبانی تایتان همین‌جا کنارته.</p>
         {online && (
           <div className={styles.chips}>
             {avgSeconds != null && (

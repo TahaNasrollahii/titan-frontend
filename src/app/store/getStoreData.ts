@@ -11,7 +11,7 @@ export const FALLBACK_FEATURED_GAMES: Record<string, Game> = {
     accentColor: '#f59e0b',
     accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
     description:
-      'خرید قانونی و فوری سی‌پی کالاف دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
+      'خرید سریع سی‌پی کالاف دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با پشتیبانی ۲۴ ساعته.',
     genre: 'شوتر اول‌شخص',
     kind: 'game',
     coverImage: '/images/games/callof-background.webp',
@@ -31,7 +31,7 @@ export const FALLBACK_FEATURED_GAMES: Record<string, Game> = {
     accentColor: '#38bdf8',
     accentGradient: 'linear-gradient(135deg,#0c4a6e,#38bdf8)',
     description:
-      'خرید قانونی و فوری جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) با بهترین قیمت و تحویل آنی در تایتان.',
+      'خرید سریع جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) روی اکانت Supercell ID در تایتان.',
     genre: 'استراتژی آنلاین',
     kind: 'game',
     coverImage: '/images/games/clash-background.webp',

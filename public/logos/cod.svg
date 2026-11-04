@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#ffffff">
-  <!-- CoD text badge -->
-  <rect x="10" y="30" width="80" height="40" rx="4" stroke="#ffffff" stroke-width="6" fill="none" />
-  <text x="50" y="55" font-family="system-ui, sans-serif" font-weight="900" font-size="24" letter-spacing="2" text-anchor="middle" dominant-baseline="central" fill="#ffffff">COD</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g fill="#FFFFFF">
+    <path d="M0 1.57 2.30 0 5.62 1.94 5.62 17.39 2.30 20 0 18.21Z"/>
+    <path d="M6.19 2.54 10 5.04 13.81 2.54 13.81 14.85 10 17.16 6.19 14.93Z"/>
+    <path d="M14.38 1.94 17.70 0 20 1.57 20 18.21 17.70 20 14.38 17.39Z"/>
+  </g>
 </svg>

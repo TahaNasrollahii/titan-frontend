@@ -26,7 +26,7 @@ export function Sidebar() {
   } else if (pathname.startsWith('/tournaments') && pathname.includes('/bracket')) {
     activeKey = '/dashboard';
   } else if (pathname.startsWith('/tournament') || pathname.startsWith('/tournaments')) {
-    activeKey = '/tournament';
+    activeKey = '/tournaments';
   } else if (pathname.startsWith('/guides')) {
     activeKey = '/guides';
   } else if (pathname.startsWith('/contact')) {
@@ -78,63 +78,70 @@ export function Sidebar() {
             href="/"
             className={`nav-item ${activeKey === '/' ? 'active' : ''}`}
             data-label="خانه"
+            aria-label="خانه"
             ref={el => { navRefs.current['/'] = el; }}
           >
-            <img src="/icons/home.webp" alt="خانه" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/home.webp" alt="" width="28" height="28" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
             href="/store"
             className={`nav-item ${activeKey === '/store' ? 'active' : ''}`}
             data-label="فروشگاه"
+            aria-label="فروشگاه"
             ref={el => { navRefs.current['/store'] = el; }}
           >
-            <img src="/icons/store.webp" alt="فروشگاه" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/store.webp" alt="" width="28" height="28" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
-            href="/tournament"
-            className={`nav-item ${activeKey === '/tournament' ? 'active' : ''}`}
+            href="/tournaments"
+            className={`nav-item ${activeKey === '/tournaments' ? 'active' : ''}`}
             data-label="تورنومنت"
-            ref={el => { navRefs.current['/tournament'] = el; }}
+            aria-label="تورنومنت‌ها"
+            ref={el => { navRefs.current['/tournaments'] = el; }}
           >
-            <img src="/icons/tournament.webp" alt="تورنومنت" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/tournament.webp" alt="" width="28" height="28" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
             href="/guides"
             className={`nav-item ${activeKey === '/guides' ? 'active' : ''}`}
             data-label="آموزش‌ها"
+            aria-label="آموزش‌ها"
             ref={el => { navRefs.current['/guides'] = el; }}
           >
-            <img src="/icons/guides.svg" alt="آموزش‌ها" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/guides.svg" alt="" width="28" height="28" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
             href="/contact"
             className={`nav-item ${activeKey === '/contact' ? 'active' : ''}`}
             data-label="ارتباط با ما"
+            aria-label="ارتباط با ما"
             ref={el => { navRefs.current['/contact'] = el; }}
           >
-            <img src="/icons/contact-us.webp" alt="ارتباط با ما" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <img src="/icons/contact-us.webp" alt="" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </Link>
 
           <Link
             href="/about"
             className={`nav-item ${activeKey === '/about' ? 'active' : ''}`}
             data-label="درباره ما"
+            aria-label="درباره ما"
             ref={el => { navRefs.current['/about'] = el; }}
           >
-            <img src="/icons/about-us.webp" alt="درباره ما" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/about-us.webp" alt="" width="28" height="28" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
           <Link
             href="/dashboard"
             className={`nav-item ${activeKey === '/dashboard' ? 'active' : ''}`}
             data-label="داشبورد"
+            aria-label="داشبورد"
             ref={el => { navRefs.current['/dashboard'] = el; }}
           >
-            <img src="/icons/dashboard.webp" alt="داشبورد" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <img src="/icons/dashboard.webp" alt="" width="28" height="28" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </Link>
 
         </nav>
@@ -146,7 +153,7 @@ export function Sidebar() {
           onClick={() => toggleSupportChat()}
         >
           <span className="support-nav-ring" />
-          <img src="/icons/support.svg" alt="پشتیبانی" />
+          <img src="/icons/support.svg" alt="" width="28" height="28" />
           {unread > 0 && <span className="support-nav-badge">{unread > 9 ? '9+' : unread}</span>}
         </button>
       </div>

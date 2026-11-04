@@ -7,9 +7,9 @@ import { buildFaqSchema, type FaqItem } from '@/lib/seo/schema';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 
 export const metadata: Metadata = {
-  title: 'سوالات متداول خرید آیتم بازی، تحویل آنی و تورنومنت‌ها',
+  title: 'سوالات متداول خرید آیتم بازی، تحویل سفارش و تورنومنت‌ها',
   description:
-    'پاسخ به سوالات متداول کاربران درباره خرید ویباکس فورتنایت، ولورنت پوینت، گیفت کارت، زمان تحویل سفارش‌ها و نحوه ثبت‌نام در تورنومنت‌های تایتان.',
+    'پاسخ به سوالات متداول کاربران درباره خرید ویباکس و کروپک فورتنایت، ولورانت پوینت، گیفت کارت، زمان تحویل سفارش‌ها و ثبت‌نام در تورنومنت‌های تایتان.',
   alternates: {
     canonical: `${SITE_URL}/faq`,
   },
@@ -39,9 +39,9 @@ const FAQ_ITEMS: FaqItem[] = [
       'محصولات دارای کد دیجیتال (گیفت کارت‌ها و کدهای ریدیم) بلافاصله پس از پرداخت تحویل داده می‌شوند. سفارش‌های شارژ مستقیم اکانت (مانند ویباکس فورتنایت یا سی‌پی کالاف دیوتی موبایل) معمولاً بین ۱۵ تا ۶۰ دقیقه تکمیل می‌گردند.',
   },
   {
-    question: 'آیا خرید ویباکس، ولورنت پوینت و آیتم‌های بازی در تایتان قانونی است؟',
+    question: 'شارژ ویباکس، کروپک فورتنایت، ولورانت پوینت و آیتم‌های بازی در تایتان چگونه انجام می‌شود؟',
     answer:
-      'بله، تمامی محصولات و شارژهای اکانت از طریق استورهای رسمی و با روش‌های ۱۰۰٪ قانونی انجام می‌شوند و هیچ‌گونه خطر بن یا محدودیت برای اکانت شما ندارند.',
+      'بسته به نوع محصول، سفارش‌ها یا به‌صورت کد دیجیتال (قابل ثبت مستقیم در حساب شما) تحویل می‌شوند یا از طریق اکانت متصل‌شده به پلتفرم‌های معتبر (مانند اکانت ایکس‌باکس لینک‌شده به Epic Games یا Supercell ID) توسط تیم تایتان فعال می‌گردند.',
   },
   {
     question: 'چگونه می‌توانم در تورنومنت‌های آنلاین تایتان شرکت کنم؟',
@@ -114,6 +114,50 @@ export default function FaqPage() {
           </section>
         ))}
       </div>
+
+      <section
+        aria-label="لینک‌های مفید و راهنماهای مرتبط"
+        style={{
+          marginTop: '28px',
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '16px',
+          padding: '22px 24px',
+        }}
+      >
+        <h2 style={{ fontSize: '1.12rem', fontWeight: 700, color: '#fff', margin: '0 0 10px' }}>
+          راهنماها و صفحات پرکاربرد تایتان
+        </h2>
+        <p style={{ margin: '0 0 12px', color: 'rgba(255, 255, 255, 0.76)' }}>
+          برای مشاهده جزئیات هر محصول یا مطالعه آموزش‌های تصویری گام‌به‌گام می‌توانید به صفحات زیر مراجعه کنید:
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '0.92rem' }}>
+          <Link href="/product/fortnite-crew" style={{ color: '#ff6b72' }}>
+            خرید کروپک فورتنایت از تایتان
+          </Link>
+          <Link href="/product/fortnite-vbucks" style={{ color: '#ff6b72' }}>
+            خرید ویباکس فورتنایت
+          </Link>
+          <Link href="/store/fortnite" style={{ color: '#ff6b72' }}>
+            دسته‌بندی محصولات فورتنایت
+          </Link>
+          <Link href="/store/valorant" style={{ color: '#ff6b72' }}>
+            خرید ولورانت پوینت (VP)
+          </Link>
+          <Link href="/product/cod-points" style={{ color: '#ff6b72' }}>
+            خرید سی‌پی کالاف دیوتی موبایل
+          </Link>
+          <Link href="/guides/fortnite-crew-buying-guide" style={{ color: '#ff6b72' }}>
+            راهنمای خرید اشتراک کروپک فورتنایت در ایران
+          </Link>
+          <Link href="/guides" style={{ color: '#ff6b72' }}>
+            مرکز آموزش‌های تایتان
+          </Link>
+          <Link href="/terms" style={{ color: '#ff6b72' }}>
+            قوانین، پشتیبانی و شرایط بازگشت وجه
+          </Link>
+        </div>
+      </section>
     </article>
   );
 }

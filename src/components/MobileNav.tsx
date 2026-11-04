@@ -39,7 +39,7 @@ function tabFor(pathname: string | null | undefined): TabKey {
 const LINK_TABS: { key: Exclude<TabKey, 'me' | 'more'>; href: string; label: string; icon: string }[] = [
   { key: 'home', href: '/', label: 'خانه', icon: '/icons/home.webp' },
   { key: 'store', href: '/store', label: 'فروشگاه', icon: '/icons/store.webp' },
-  { key: 'tournament', href: '/tournament', label: 'تورنومنت', icon: '/icons/tournament.webp' },
+  { key: 'tournament', href: '/tournaments', label: 'تورنومنت', icon: '/icons/tournament.webp' },
 ];
 
 const ACCOUNT_TABS = ['orders', 'teams', 'favorites', 'accounts'].map(sectionByTab);

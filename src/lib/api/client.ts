@@ -196,8 +196,20 @@ function replaceApexText(value: string): string {
   if (!value) return value;
   if (value.includes('apexlegends-background')) return '/images/games/callof-background.webp';
   if (value.includes('apexlegends-character') || value.includes('callof-character.webp')) return '/images/games/callof-character-v2.webp';
-  if (value.includes('categories/apex') || value.includes('categories/callof.webp')) return '/images/categories/callof-v2.webp';
+  if (value.includes('categories/apex') || value.includes('categories/callof.webp')) return '/images/categories/codm-official-m-20x20.svg';
   if (value.includes('hero/characters/apexlegends') || value.includes('hero/characters/callof.webp')) return '/images/hero/characters/callof-v2.webp';
+  if (value.includes('hero/characters/fortnite-crewpack-october2026.webp')) return '/images/hero/characters/fortnite-crew-subscription-character.webp';
+  if (value.includes('fortnite-crewpack-october2026.webp')) return '/images/fortnite-crew-subscription-banner.webp';
+  if (value.includes('tournoment-banner.webp')) return '/images/titan-tournament-banner.webp';
+  if (value.includes('Barbarian-Pig-Rider-Reward-Rush.webp')) return '/images/products/clash-of-clans-gold-pass-rider.webp';
+  if (value.includes('goblin_transparent.webp')) return '/images/products/clash-of-clans-gems-goblin.webp';
+  if (value.includes('Jett-Inspired Agent with Turkish 375 VP Badge.webp') || value.includes('Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp')) {
+    return '/images/products/valorant-points-375-turkish-agent.webp';
+  }
+  if (value.includes('Molten-Gold-Lightning-King.webp')) return '/images/products/call-of-duty-mobile-cp-king.webp';
+  if (value.includes('Starter-Pack-Fortnite.webp')) return '/images/products/fortnite-starter-pack-character.webp';
+  if (value === '/images/products/vbucks.webp') return '/images/products/fortnite-vbucks-coins.webp';
+  if (value === '/images/products/giftcard.svg') return '/images/products/digital-gift-card-icon.svg';
   return value
     .replace(/Apex\s+Predators/gi, 'Task Force 141')
     .replace(/Apex_Predator/gi, 'Ghost_Operator')
@@ -206,14 +218,21 @@ function replaceApexText(value: string): string {
     .replace(/Apex\s+Legends/gi, 'Call of Duty Mobile')
     .replace(/Apex\s+Coins/gi, 'COD Points')
     .replace(/باندل ویژه\s+(?:Apex|Call of Duty)/gi, 'CP کالاف دیوتی موبایل')
-    .replace(/شامل اسکین (?:اپیک و ۱۰۰۰ کوین|اپراتور و ۱,۱۰۰ سی‌پی)/g, 'شارژ فوری و قانونی سی‌پی روی اکانت اکتیویژن')
+    .replace(/شامل اسکین (?:اپیک و ۱۰۰۰ کوین|اپراتور و ۱,۱۰۰ سی‌پی)/g, 'شارژ سریع سی‌پی روی اکانت اکتیویژن')
     .replace(/ایپکس\s*لجندز|اپکس\s*لجندز/g, 'کالاف دیوتی موبایل')
     .replace(/ایپکس\s*کوین|اپکس\s*کوین/g, 'سی‌پی کالاف دیوتی موبایل')
     .replace(/ایپکس|اپکس/g, 'کالاف دیوتی موبایل')
     .replace(/\bApex\b/g, 'Call of Duty Mobile')
     .replace(/کال\s*آو\s*دیوتی(?!\s*موبایل)/g, 'کالاف دیوتی موبایل')
     .replace(/کال\s*آو\s*دیوتی\s*موبایل/g, 'کالاف دیوتی موبایل')
-    .replace(/کالاف\s*دیوتی(?!\s*موبایل)/g, 'کالاف دیوتی موبایل');
+    .replace(/کالاف\s*دیوتی(?!\s*موبایل)/g, 'کالاف دیوتی موبایل')
+    .replace(/ولورنت/g, 'ولورانت')
+    .replace(/تورنمنت/g, 'تورنومنت')
+    .replace(/۱۰۰٪\s*قانونی\s*و\s*اورجینال/g, 'تحویل سریع و پشتیبانی ۲۴ ساعته')
+    .replace(/۱۰۰٪\s*قانونی/g, 'تحویل امن و سریع')
+    .replace(/خرید\s+قانونی/g, 'خرید امن')
+    .replace(/شارژ\s+فوری\s+و\s+قانونی/g, 'شارژ سریع و امن')
+    .replace(/کاملاً\s+قانونی/g, 'از طریق روش‌های معتبر');
 }
 
 function isGameArray(arr: unknown[]): boolean {
@@ -232,11 +251,11 @@ const DEFAULT_COD_GAME = {
   slug: 'call-of-duty',
   title: 'کالاف دیوتی موبایل',
   titleEn: 'Call of Duty Mobile',
-  iconImage: '/images/categories/callof-v2.webp',
+  iconImage: '/images/categories/codm-official-m-20x20.svg',
   accentColor: '#f59e0b',
   accentGradient: 'linear-gradient(135deg,#78350f,#f59e0b)',
   description:
-    'خرید قانونی و فوری سی‌پی کالاف دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با تحویل آنی.',
+    'خرید سریع سی‌پی کالاف دیوتی موبایل (CP) و بتل‌پس برای Call of Duty Mobile با پشتیبانی ۲۴ ساعته.',
   genre: 'شوتر اول‌شخص',
   kind: 'game',
   coverImage: '/images/games/callof-background.webp',
@@ -257,7 +276,7 @@ const DEFAULT_CLASH_GAME = {
   accentColor: '#38bdf8',
   accentGradient: 'linear-gradient(135deg,#0c4a6e,#38bdf8)',
   description:
-    'خرید قانونی و فوری جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) با بهترین قیمت و تحویل آنی در تایتان.',
+    'خرید سریع جم کلش آف کلنز (Gems) و گلدپس (Gold Pass) روی اکانت Supercell ID در تایتان.',
   genre: 'استراتژی آنلاین',
   kind: 'game',
   coverImage: '/images/games/clash-background.webp',
@@ -274,9 +293,9 @@ export const DEFAULT_CLASH_PRODUCT_SUMMARY: ProductSummary = {
   id: 9902,
   slug: 'clash-of-clans-gems',
   title: 'جم کلش آف کلنز (Gems)',
-  subtitle: 'شارژ فوری و قانونی اکانت Supercell ID',
-  image: '/images/products/goblin_transparent.webp',
-  imageAlt: 'خرید جم کلش آف کلنز (Clash of Clans Gems) با تحویل آنی',
+  subtitle: 'شارژ مستقیم اکانت Supercell ID',
+  image: '/images/products/clash-of-clans-gems-goblin.webp',
+  imageAlt: 'خرید جم کلش آف کلنز (Clash of Clans Gems) در فروشگاه تایتان',
   sku: 'TITAN-COC-GEMS',
   price: 95000,
   originalPrice: 110000,
@@ -305,21 +324,21 @@ export const DEFAULT_CLASH_PRODUCT_SUMMARY: ProductSummary = {
 export const DEFAULT_CLASH_PRODUCT_DETAIL: Product = {
   ...DEFAULT_CLASH_PRODUCT_SUMMARY,
   mpn: 'COC-GEMS',
-  metaTitle: 'خرید جم کلش آف کلنز (Clash of Clans Gems) | شارژ فوری و ارزان',
+  metaTitle: 'خرید جم کلش آف کلنز (Clash of Clans Gems) | شارژ سریع و ارزان',
   metaDescription:
-    'خرید قانونی و ارزان جم کلش آف کلنز (Clash of Clans Gems) در بسته‌های ۸۰ تا ۲۵۰۰ تایی با شارژ فوری روی اکانت Supercell ID، بدون خطر بن و پشتیبانی ۲۴ ساعته.',
+    'خرید جم کلش آف کلنز (Clash of Clans Gems) در بسته‌های ۸۰ تا ۲۵۰۰ تایی با شارژ سریع روی اکانت Supercell ID و پشتیبانی ۲۴ ساعته در تایتان.',
   platforms: [{ slug: 'mobile', name: 'Mobile', icon: null }],
   description:
-    'جم کلش آف کلنز (Clash of Clans Gems) اصلی‌ترین ارز درون‌برنامه‌ای بازی استراتژیک سوپرسل است که برای استخدام کارگران بیشتر (Builder\'s Hut)، خرید تجهیزات اپیک هیروها (Hero Equipment)، اسکین‌های قهرمانان، کتاب‌های جادویی تاجر (Trader) و تکمیل سریع ارتقای ساختمان‌ها و نیروها استفاده می‌شود. تمامی بسته‌های جم در فروشگاه تایتان به صورت کاملاً قانونی و از طریق درگاه رسمی Supercell روی اکانت شما شارژ می‌شوند.',
-  deliveryInfo: 'تحویل آنی — شارژ مستقیم اکانت',
+    'جم کلش آف کلنز (Clash of Clans Gems) اصلی‌ترین ارز درون‌برنامه‌ای بازی استراتژیک سوپرسل است که برای استخدام کارگران بیشتر (Builder\'s Hut)، خرید تجهیزات اپیک هیروها (Hero Equipment)، اسکین‌های قهرمانان، کتاب‌های جادویی تاجر (Trader) و تکمیل سریع ارتقای ساختمان‌ها و نیروها استفاده می‌شود. بسته‌های جم در فروشگاه تایتان از طریق Supercell ID روی اکانت شما شارژ می‌شوند.',
+  deliveryInfo: 'شارژ مستقیم اکانت Supercell ID',
   requiresGameAccount: true,
   stock: null,
   features: [
-    { title: 'تحویل آنی', description: 'در کمتر از ۱۵ دقیقه', icon: 'flame' },
-    { title: '۱۰۰٪ قانونی', description: 'بدون خطر بن اکانت', icon: 'shield' },
+    { title: 'تحویل سریع', description: 'در کمتر از ۱۵ دقیقه', icon: 'flame' },
+    { title: 'تضمین تحویل', description: 'شارژ امن روی Supercell ID', icon: 'shield' },
     { title: 'پشتیبانی ۲۴/۷', description: 'پاسخگویی سریع در چت', icon: 'chat' },
   ],
-  tags: ['تحویل آنی', '۱۰۰٪ قانونی و اورجینال', 'پشتیبانی ۲۴ ساعته'],
+  tags: ['تحویل سریع', 'شارژ روی Supercell ID', 'پشتیبانی ۲۴ ساعته'],
   specs: { region: 'Global', delivery: 'زیر ۱۵ دقیقه', activation: 'شارژ مستقیم اکانت' },
   variants: [
     { id: 99021, label: '۸۰ جم', price: 95000, originalPrice: 110000, discountPercent: 14, inStock: true },
@@ -327,6 +346,62 @@ export const DEFAULT_CLASH_PRODUCT_DETAIL: Product = {
     { id: 99023, label: '۱,۲۰۰ جم', price: 790000, originalPrice: 890000, discountPercent: 11, inStock: true },
     { id: 99024, label: '۲,۵۰۰ جم', price: 1850000, originalPrice: 2050000, discountPercent: 10, inStock: true },
   ],
+  gallery: [],
+};
+
+export const DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL: Product = {
+  id: 9903,
+  slug: 'fortnite-crew',
+  title: 'خرید کروپک فورتنایت (Fortnite Crew) از تایتان',
+  subtitle:
+    'سفارش اشتراک ماهانه کروپک فورتنایت با پرداخت ریالی؛ شامل ۱٬۰۰۰ وی‌باکس، اسکین ماهانه و دسترسی به پس‌های فصل ({{VERIFY}})',
+  image: '/images/fortnite-crew-subscription-banner.webp',
+  imageAlt: 'نمایش اشتراک ماهانه کروپک فورتنایت (Fortnite Crew) در فروشگاه تایتان',
+  sku: 'TITAN-FN-CREW',
+  mpn: 'FN-CREW-1M',
+  price: null,
+  originalPrice: null,
+  discountPercent: 0,
+  hasVariants: false,
+  priceMax: null,
+  rating: 0,
+  reviewCount: 0,
+  badges: ['bestseller'],
+  inStock: true,
+  vendor: 'Epic Games',
+  deliveryType: 'account',
+  credentialType: 'email_password',
+  game: {
+    slug: 'fortnite',
+    title: 'فورتنایت',
+    titleEn: 'Fortnite',
+    iconImage: '/images/categories/fortnite.webp',
+    accentColor: '#00d4ff',
+  },
+  category: { slug: 'subscriptions', name: 'اشتراک بازی' },
+  platforms: [
+    { slug: 'pc', name: 'PC', icon: null },
+    { slug: 'playstation', name: 'PlayStation', icon: null },
+    { slug: 'xbox', name: 'Xbox', icon: null },
+    { slug: 'mobile', name: 'Mobile', icon: null },
+  ],
+  isWishlisted: false,
+  description: '',
+  deliveryInfo: '{{DELIVERY_METHOD}} (زمان تحویل: {{DELIVERY_TIME}})',
+  requiresGameAccount: true,
+  stock: null,
+  features: [
+    { title: 'تضمین تحویل سفارش', description: 'پیگیری و بازگشت وجه طبق قوانین', icon: 'shield' },
+    { title: 'تحویل در {{DELIVERY_TIME}}', description: 'روش فعال‌سازی: {{DELIVERY_METHOD}}', icon: 'flame' },
+    { title: 'پشتیبانی ۲۴ ساعته', description: 'همراه شما تا تکمیل سفارش', icon: 'chat' },
+  ],
+  tags: [],
+  specs: {
+    region: '{{VERIFY}}',
+    delivery: '{{DELIVERY_TIME}}',
+    activation: '{{DELIVERY_METHOD}}',
+  },
+  variants: [],
   gallery: [],
 };
 
@@ -382,7 +457,7 @@ export function sanitizeApiPayload<T>(input: T): T {
         ...obj,
         title: 'کالاف دیوتی موبایل',
         titleEn: 'Call of Duty Mobile',
-        iconImage: '/images/categories/callof-v2.webp',
+        iconImage: '/images/categories/codm-official-m-20x20.svg',
         accentColor: obj.accentColor || '#f59e0b',
         backgroundImage: '/images/games/callof-background.webp',
         characterImage: '/images/games/callof-character-v2.webp',
@@ -412,9 +487,9 @@ export function sanitizeApiPayload<T>(input: T): T {
       return {
         ...obj,
         title: 'CP کالاف دیوتی موبایل',
-        subtitle: 'شارژ فوری و قانونی سی‌پی روی اکانت اکتیویژن',
+        subtitle: 'شارژ سریع سی‌پی روی اکانت اکتیویژن',
         price: 95000,
-        image: '/images/products/Molten-Gold-Lightning-King.webp',
+        image: '/images/products/call-of-duty-mobile-cp-king.webp',
         backgroundImage: '/images/games/callof-background.webp',
         product: 'cod-points',
       } as unknown as T;
@@ -427,26 +502,26 @@ export function sanitizeApiPayload<T>(input: T): T {
         ...obj,
         slug: 'cod-points',
         title: 'سی‌پی کالاف دیوتی موبایل (COD Points)',
-        description: 'خرید قانونی و فوری سی‌پی کالاف دیوتی موبایل (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه.',
-        image: '/images/products/Molten-Gold-Lightning-King.webp',
+        description: 'خرید سی‌پی کالاف دیوتی موبایل (CP) برای خرید بتل‌پس، اسکین اپراتور و گردونه با شارژ سریع.',
+        image: '/images/products/call-of-duty-mobile-cp-king.webp',
         game: gameObj
           ? {
               ...gameObj,
               slug: 'call-of-duty',
               title: 'کالاف دیوتی موبایل',
               titleEn: 'Call of Duty Mobile',
-              iconImage: '/images/categories/callof-v2.webp',
+              iconImage: '/images/categories/codm-official-m-20x20.svg',
               accentColor: '#f59e0b',
             }
           : obj.game,
       } as unknown as T;
     }
 
-    if (obj.slug === 'cod-points' && 'price' in obj && (!obj.image || String(obj.image).includes('callof-character'))) {
-      obj.image = 'https://35tmectztpibboo6.public.blob.vercel-storage.com/products/Molten-Gold-Lightning-King.webp';
+    if (obj.slug === 'cod-points' && 'price' in obj && (!obj.image || String(obj.image).includes('callof-character') || String(obj.image).includes('Molten-Gold'))) {
+      obj.image = '/images/products/call-of-duty-mobile-cp-king.webp';
     }
-    if (obj.slug === 'clash-of-clans-gems' && 'price' in obj && (!obj.image || String(obj.image).includes('clash-character'))) {
-      obj.image = 'https://35tmectztpibboo6.public.blob.vercel-storage.com/products/goblin_transparent.webp';
+    if (obj.slug === 'clash-of-clans-gems' && 'price' in obj && (!obj.image || String(obj.image).includes('clash-character') || String(obj.image).includes('goblin_transparent'))) {
+      obj.image = '/images/products/clash-of-clans-gems-goblin.webp';
     }
 
     const out: Record<string, unknown> = {};

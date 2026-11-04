@@ -14,9 +14,20 @@ export const SITE_URL = (
 ).replace(/\/$/, '');
 
 export const SITE_NAME = 'تایتان';
-export const SITE_DEFAULT_TITLE = 'تایتان | پلتفرم گیمینگ، خرید پول بازی‌ها و تورنومنت آنلاین';
+export const SITE_DEFAULT_TITLE = 'تایتان | فروشگاه آیتم و ارز بازی‌ها و تورنومنت آنلاین';
 export const SITE_DEFAULT_DESCRIPTION =
-  'پلتفرم تخصصی گیمینگ تایتان؛ خرید قانونی و سریع ویباکس فورتنایت، ولورانت پوینت، سی‌پی کالاف دیوتی موبایل، جم کلش آف کلنز، اکانت پرمیوم و شرکت در تورنومنت‌های هفتگی همراه با جوایز نقدی.';
+  'فروشگاه گیمینگ تایتان؛ خرید ویباکس و کروپک فورتنایت، ولورانت پوینت، سی‌پی کالاف دیوتی موبایل و جم کلش آف کلنز با تحویل سریع، پشتیبانی و تورنومنت‌های هفتگی.';
+
+/**
+ * True on Vercel preview deployments, explicit noindex overrides, or while SITE_URL
+ * still points to a staging `*.vercel.app` hostname instead of the production domain.
+ * Once NEXT_PUBLIC_SITE_URL is set to the production domain, production indexing is enabled automatically.
+ */
+export const IS_STAGING_ENV =
+  process.env.VERCEL_ENV === 'preview' ||
+  process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' ||
+  process.env.NEXT_PUBLIC_NOINDEX === 'true' ||
+  SITE_URL.includes('.vercel.app');
 
 export const SECURITY_CONTACT_EMAIL =
   process.env.SECURITY_CONTACT_EMAIL ||

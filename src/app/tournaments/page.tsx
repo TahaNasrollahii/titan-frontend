@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import TournamentsClient from './TournamentsClient';
+import TournamentHubClient from '../tournament/TournamentHubClient';
 import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import { API_URL, sanitizeApiPayload } from '@/lib/api/client';
-import type { Game, Paginated, TournamentSummary } from '@/lib/api/types';
+import type { Game, Paginated, Promo, RankTier, TournamentSummary } from '@/lib/api/types';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { PaginationNav } from '@/components/seo/PaginationNav';
 
@@ -28,10 +29,10 @@ export async function generateMetadata({
       ? `${SITE_URL}/tournaments?page=${page}`
       : `${SITE_URL}/tournaments`;
 
-  const baseTitle = 'لیست مسابقات و تورنومنت‌های فعال';
+  const baseTitle = 'تورنومنت‌های آنلاین و جدول رتبه‌بندی فصل بازی‌ها';
   const title = page > 1 ? `${baseTitle} — صفحه ${page}` : baseTitle;
   const description =
-    'لیست کامل تورنومنت‌های فعال و رویدادهای آینده فورتنایت، ولورانت و کالاف دیوتی موبایل در تایتان؛ مشاهده زمان برگزاری، ظرفیت، استخر جوایز نقدی و ثبت‌نام مسابقات.';
+    'شرکت در تورنومنت‌های هفتگی فورتنایت، ولورانت، کالاف دیوتی موبایل و فیفا در تایتان؛ مشاهده جدول رتبه‌بندی فصل، جوایز نقدی و ثبت‌نام آنلاین مسابقات.';
 
   return {
     title,
@@ -44,16 +45,15 @@ export async function generateMetadata({
       : { index: true, follow: true },
     openGraph: {
       title: `${title} | ${SITE_NAME}`,
-      description:
-        'مشاهده رویدادهای در حال ثبت‌نام و فعال، استخر جوایز نقدی و ثبت‌نام تیمی یا انفرادی در مسابقات آنلاین تایتان.',
+      description,
       url: canonical,
       siteName: SITE_NAME,
       images: [
         {
-          url: `${SITE_URL}/images/tournoment-banner.webp`,
+          url: `${SITE_URL}/images/titan-tournament-banner.webp`,
           width: 1200,
           height: 630,
-          alt: 'لیست مسابقات و تورنومنت‌های فعال تایتان',
+          alt: 'بنر تورنومنت‌ها و جدول رتبه‌بندی مسابقات تایتان',
         },
       ],
       locale: 'fa_IR',
@@ -62,36 +62,35 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: `${title} | ${SITE_NAME}`,
-      description: 'مشاهده رویدادهای فعال و ثبت‌نام مسابقات هفتگی بازی‌ها در تایتان با جوایز نقدی',
-      images: [`${SITE_URL}/images/tournoment-banner.webp`],
+      description,
+      images: [`${SITE_URL}/images/titan-tournament-banner.webp`],
     },
   };
 }
 
-async function getInitialTournaments(page = 1): Promise<Paginated<TournamentSummary> | null> {
+async function fetchJson<T>(url: string, revalidateSec = 300, tags: string[] = []): Promise<T | null> {
   try {
-    const res = await fetch(`${API_URL}/tournaments/?ordering=starts_at&page=${page}&page_size=${PAGE_SIZE}`, {
-      next: { revalidate: 300, tags: ['tournaments'] },
+    const res = await fetch(url, {
+      next: { revalidate: revalidateSec, tags },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
-    return sanitizeApiPayload(await res.json());
+    return sanitizeApiPayload((await res.json()) as T);
   } catch {
     return null;
   }
 }
 
+async function getInitialTournaments(page = 1): Promise<Paginated<TournamentSummary> | null> {
+  return fetchJson<Paginated<TournamentSummary>>(
+    `${API_URL}/tournaments/?ordering=starts_at&page=${page}&page_size=${PAGE_SIZE}`,
+    300,
+    ['tournaments'],
+  );
+}
+
 async function getGames(): Promise<Game[] | null> {
-  try {
-    const res = await fetch(`${API_URL}/games/`, {
-      next: { revalidate: 3600, tags: ['games'] },
-      signal: AbortSignal.timeout(4000),
-    });
-    if (!res.ok) return null;
-    return sanitizeApiPayload(await res.json());
-  } catch {
-    return null;
-  }
+  return fetchJson<Game[]>(`${API_URL}/games/`, 3600, ['games']);
 }
 
 export default async function TournamentsPage({
@@ -103,9 +102,17 @@ export default async function TournamentsPage({
   const pageRaw = typeof sp.page === 'string' ? parseInt(sp.page, 10) : 1;
   const currentPage = Number.isFinite(pageRaw) && pageRaw > 1 ? pageRaw : 1;
 
-  const [initialTournaments, initialGames] = await Promise.all([
+  const [initialTournaments, initialGames, promos, ranks, upcoming, featuredGames] = await Promise.all([
     getInitialTournaments(currentPage),
     getGames(),
+    fetchJson<Promo[]>(`${API_URL}/content/promos/?placement=tournament_hero`, 300, ['promos']),
+    fetchJson<RankTier[]>(`${API_URL}/ranks/`, 3600, ['ranks']),
+    fetchJson<Paginated<TournamentSummary>>(
+      `${API_URL}/tournaments/?status=registration_open&status=upcoming&status=live&ordering=starts_at&page_size=3`,
+      300,
+      ['tournaments'],
+    ),
+    fetchJson<Game[]>(`${API_URL}/games/?is_featured=true`, 3600, ['games']),
   ]);
 
   const totalCount = initialTournaments?.count ?? 0;
@@ -115,10 +122,10 @@ export default async function TournamentsPage({
       <Breadcrumbs
         items={[
           { name: 'صفحه اصلی', path: '/' },
-          { name: 'مرکز مسابقات', path: '/tournament' },
-          { name: 'لیست تورنومنت‌ها', path: '/tournaments' },
+          { name: 'تورنومنت‌ها', path: '/tournaments' },
         ]}
       />
+      <TournamentHubClient initialData={{ promos, ranks, upcoming, games: featuredGames ?? initialGames }} />
       <TournamentsClient initialTournaments={initialTournaments} initialGames={initialGames} />
       <PaginationNav
         currentPage={currentPage}

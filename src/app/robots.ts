@@ -1,10 +1,8 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from '@/lib/siteConfig';
+import { SITE_URL, IS_STAGING_ENV } from '@/lib/siteConfig';
 
 export default function robots(): MetadataRoute.Robots {
-  const isNonProdEnv =
-    process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' ||
-    process.env.NEXT_PUBLIC_NOINDEX === 'true';
+  const isNonProdEnv = IS_STAGING_ENV;
 
   if (isNonProdEnv) {
     return {

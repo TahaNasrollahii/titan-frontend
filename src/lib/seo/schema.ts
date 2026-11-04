@@ -210,18 +210,24 @@ export function buildProductSchema(product: Product, reviews: Review[] = []) {
     offers,
   };
 
-  if (product.rating && product.rating > 0 && product.reviewCount && product.reviewCount > 0) {
+  const validReviews = reviews.filter((r) => r && r.rating >= 1 && r.rating <= 5);
+  if (validReviews.length > 0) {
+    const avgRating =
+      validReviews.reduce((sum, r) => sum + r.rating, 0) / validReviews.length;
+    const ratingVal = product.rating && product.rating > 0 ? product.rating : avgRating;
+    const countVal =
+      product.reviewCount && product.reviewCount >= validReviews.length
+        ? product.reviewCount
+        : validReviews.length;
+
     schema.aggregateRating = {
       '@type': 'AggregateRating',
-      ratingValue: Number(product.rating.toFixed(1)),
-      reviewCount: product.reviewCount,
+      ratingValue: Number(ratingVal.toFixed(1)),
+      reviewCount: countVal,
       bestRating: 5,
       worstRating: 1,
     };
-  }
 
-  const validReviews = reviews.filter((r) => r && r.rating >= 1 && r.rating <= 5);
-  if (validReviews.length > 0) {
     schema.review = validReviews.slice(0, 10).map((r) => ({
       '@type': 'Review',
       author: {
@@ -271,7 +277,7 @@ export function buildCollectionPageSchema(options: {
 
 export function buildSportsEventSchema(tournament: Partial<Tournament> & { slug: string; title: string }) {
   const eventUrl = `${SITE_URL}/tournaments/${tournament.slug}`;
-  const imageUrl = toAbsoluteUrl(tournament.coverImage || '/images/tournoment-banner.webp');
+  const imageUrl = toAbsoluteUrl(tournament.coverImage || '/images/titan-tournament-banner.webp');
   const rulesText = Array.isArray(tournament.rules)
     ? tournament.rules.join(' — ')
     : typeof tournament.rules === 'string'

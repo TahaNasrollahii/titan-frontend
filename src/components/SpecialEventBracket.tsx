@@ -672,7 +672,7 @@ export function SpecialEventBracket({ event = DEFAULT_FIFA_EVENT }: { event?: Ev
                   {champCode}
                 </span>
                 <span className={styles.champTxt}>
-                  <span className={styles.champK}>قهرمان تورنمنت</span>
+                  <span className={styles.champK}>قهرمان تورنومنت</span>
                   <span className={styles.champV}>{event.teams[champCode][0]}</span>
                 </span>
               </div>

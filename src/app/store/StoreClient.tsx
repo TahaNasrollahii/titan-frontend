@@ -255,7 +255,7 @@ function DiscountPromos({ promos }: { promos: Promo[] }) {
                   promo.product === 'fortnite-crew-pack' ||
                   promo.subtitle.includes('فورتنایت') ||
                   (promo.image && promo.image.includes('fortnite')))
-                  ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+                  ? '/images/hero/characters/fortnite-crew-subscription-character.webp'
                   : getOptimizedAssetUrl(promo.image, '/images/support-robot.webp')
               }
               alt={promo.title || 'محصول ویژه فروشگاه تایتان'}
@@ -337,7 +337,7 @@ function BestsellerPromos({ promos }: { promos: Promo[] }) {
                   promo.product === 'fortnite-crew-pack' ||
                   promo.subtitle.includes('فورتنایت') ||
                   (promo.image && promo.image.includes('fortnite')))
-                  ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+                  ? '/images/hero/characters/fortnite-crew-subscription-character.webp'
                   : getOptimizedAssetUrl(promo.image, '/images/character-behind-login-form.webp')
               }
               alt={promo.title || 'محصول پرفروش فروشگاه تایتان'}
@@ -393,7 +393,7 @@ const LOCAL_CHARACTERS = [
   '/images/games/callof-character-v2.webp',
   '/images/games/clash-character.webp',
   '/images/hero/characters/valorant.webp',
-  '/images/products/vbucks.webp',
+  '/images/products/fortnite-vbucks-coins.webp',
   '/images/character-behind-login-form.webp',
   '/images/support-robot.webp',
   '/images/games/premium.webp',
@@ -417,21 +417,21 @@ function ProductCard({
   const defaultImage =
     (product.slug.includes('elden') ? TEMPLATE_CHARACTER : null) ||
     (product.image && !product.image.endsWith('.jpg') ? mediaUrl(product.image) : null) ||
-    (product.slug === 'cod-points' ? '/images/products/Molten-Gold-Lightning-King.webp' : null) ||
-    (product.slug === 'clash-of-clans-gems' ? '/images/products/goblin_transparent.webp' : null) ||
-    (product.slug === 'clash-of-clans-gold-pass' ? '/images/products/Barbarian-Pig-Rider-Reward-Rush.webp' : null) ||
-    (product.slug === 'fortnite-starter-pack' ? '/images/products/Starter-Pack-Fortnite.webp' : null) ||
+    (product.slug === 'cod-points' ? '/images/products/call-of-duty-mobile-cp-king.webp' : null) ||
+    (product.slug === 'clash-of-clans-gems' ? '/images/products/clash-of-clans-gems-goblin.webp' : null) ||
+    (product.slug === 'clash-of-clans-gold-pass' ? '/images/products/clash-of-clans-gold-pass-rider.webp' : null) ||
+    (product.slug === 'fortnite-starter-pack' ? '/images/products/fortnite-starter-pack-character.webp' : null) ||
     (product.slug === 'fortnite-final-reckoning-pack' ? '/images/products/fortnite-final-reckoning-pack.webp' : null) ||
     (gameSlug === 'fortnite'
-      ? '/images/hero/characters/fortnite-crewpack-october2026.webp'
+      ? '/images/hero/characters/fortnite-crew-subscription-character.webp'
       : gameSlug === 'call-of-duty'
-        ? '/images/products/Molten-Gold-Lightning-King.webp'
+        ? '/images/products/call-of-duty-mobile-cp-king.webp'
         : gameSlug === 'clash-of-clans'
-          ? '/images/products/goblin_transparent.webp'
+          ? '/images/products/clash-of-clans-gems-goblin.webp'
           : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
-            ? '/images/products/Jett-Inspired%20Agent%20with%20Turkish%20375%20VP%20Badge.webp'
+            ? '/images/products/valorant-points-375-turkish-agent.webp'
             : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
-              ? '/images/products/vbucks.webp'
+              ? '/images/products/fortnite-vbucks-coins.webp'
               : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);
 
   const [imgError, setImgError] = useState(false);
