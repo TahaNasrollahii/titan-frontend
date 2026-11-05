@@ -1189,19 +1189,6 @@ const HomeScene = memo(function HomeScene({ data, user }: { data: Home; user?: a
             </div>
           </div>
         </article>
-
-        <nav class="reveal" aria-label="لینک‌های کاربردی فروشگاه و آموزش‌ها" style="--d:7; margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px;">
-          <a href="/product/fortnite-crew" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید کروپک فورتنایت</a>
-          <a href="/product/fortnite-vbucks" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید ویباکس فورتنایت</a>
-          <a href="/fortnite-shop" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">آیتم شاپ روزانه فورتنایت</a>
-          <a href="/store/valorant" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید ولورانت پوینت</a>
-          <a href="/product/cod-points" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">خرید سی‌پی کالاف دیوتی موبایل</a>
-          <a href="/guides/fortnite-crew-buying-guide" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">راهنمای خرید کروپک فورتنایت در ایران</a>
-          <a href="/guides" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">مرکز آموزش و راهنمای خرید</a>
-          <a href="/faq" data-nav style="font-size: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); text-decoration: none;">سوالات متداول</a>
-        </nav>
-
-
       </section>
 
       <!-- ---- Column B ---- -->
