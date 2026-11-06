@@ -33,13 +33,13 @@ export async function generateStaticParams() {
     if (!res.ok) return [];
     const data = await res.json();
     const results = Array.isArray(data) ? data : data.results || [];
-    const slugs = new Set<string>(['fortnite-crew']);
+    const slugs = new Set<string>();
     for (const p of results) {
-      if (p?.slug) slugs.add(p.slug);
+      if (p?.slug && p.slug !== 'fortnite-crew') slugs.add(p.slug);
     }
     return Array.from(slugs).map((slug) => ({ slug }));
   } catch {
-    return [{ slug: 'fortnite-crew' }];
+    return [];
   }
 }
 
