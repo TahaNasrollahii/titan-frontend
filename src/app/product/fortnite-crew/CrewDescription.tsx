@@ -442,3 +442,4 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
     </div>
   );
 }
+
