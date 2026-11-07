@@ -38,24 +38,27 @@ export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverPr
       }
     });
 
+    const revealEl = (el: HTMLElement) => {
+      el.classList.add(styles.in);
+      el.dataset.rvIn = '1';
+    };
+
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!('IntersectionObserver' in window) || prefersReducedMotion) {
-      els.forEach((el) => {
-        el.classList.add(styles.in);
-        el.dataset.rvIn = '1';
-      });
+      els.forEach(revealEl);
     } else {
+      const observed = new WeakSet<HTMLElement>();
+
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((en) => {
             if (en.isIntersecting) {
               const target = en.target as HTMLElement;
-              target.classList.add(styles.in);
-              target.dataset.rvIn = '1';
+              revealEl(target);
               io.unobserve(target);
             }
           });
@@ -63,18 +66,26 @@ export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverPr
         { threshold: 0, rootMargin: '0px 0px -12% 0px' }
       );
 
-      const scan = () => {
+      const checkInView = () => {
+        const triggerBottom = window.innerHeight * 0.88;
         els.forEach((el) => {
-          if (!el.dataset.rvSeen) {
-            el.dataset.rvSeen = '1';
+          if (el.dataset.rvIn === '1') return;
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= triggerBottom && rect.bottom >= 0) {
+            revealEl(el);
+            io.unobserve(el);
+          } else if (!observed.has(el)) {
+            observed.add(el);
             io.observe(el);
           }
         });
       };
 
-      const t1 = window.setTimeout(scan, 150);
-      const t2 = window.setTimeout(scan, 900);
-      scan();
+      checkInView();
+      const t1 = window.setTimeout(checkInView, 150);
+      const t2 = window.setTimeout(checkInView, 600);
+      window.addEventListener('scroll', checkInView, { passive: true });
+      window.addEventListener('resize', checkInView, { passive: true });
 
       const buyBtns = cartProduct
         ? Array.from(root.querySelectorAll<HTMLElement>('[data-crew-buy-btn="true"]'))
@@ -89,6 +100,8 @@ export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverPr
       return () => {
         window.clearTimeout(t1);
         window.clearTimeout(t2);
+        window.removeEventListener('scroll', checkInView);
+        window.removeEventListener('resize', checkInView);
         io.disconnect();
         buyBtns.forEach((btn) => btn.removeEventListener('click', handleBuyClick));
       };
