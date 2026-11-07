@@ -1461,12 +1461,6 @@
   border: 0;
 }
 
-.blockCrew {
-  padding: 0;
-  background: transparent;
-  border: 0;
-}
-
 .blockTitle {
   display: flex;
   align-items: center;

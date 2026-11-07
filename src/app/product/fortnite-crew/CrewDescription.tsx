@@ -32,12 +32,12 @@ interface CrewDescriptionProps {
 }
 
 export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) {
-  const [mobileExpanded, setMobileExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const pricing = resolveCrewPricing(product);
 
   const handleActiveCardClick = (targetId: string) => {
-    if (!mobileExpanded) {
-      setMobileExpanded(true);
+    if (!expanded) {
+      setExpanded(true);
       window.setTimeout(() => {
         document.getElementById(targetId)?.scrollIntoView({
           behavior: 'smooth',
@@ -61,12 +61,12 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
     <div
       id="crew-page-root"
       dir="rtl"
-      className={`${styles.page} ${!mobileExpanded ? styles.pageCollapsedMobile : ''}`}
+      className={`${styles.page} ${!expanded ? styles.pageCollapsed : ''}`}
     >
       <CrewRevealObserver
         rootId="crew-page-root"
         cartProduct={onAddToCart ? undefined : cartProduct}
-        expanded={mobileExpanded}
+        expanded={expanded}
       />
 
       {/* 1. HERO */}
@@ -111,7 +111,7 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
 
       <div
         id="crew-more-body"
-        className={`${styles.moreBody} ${mobileExpanded ? styles.moreBodyExpanded : ''}`}
+        className={`${styles.moreBody} ${expanded ? styles.moreBodyExpanded : ''}`}
       >
       {/* 2. INTRO */}
       <section className={styles.introSection} data-rv="rv">
@@ -465,13 +465,13 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
         </a>
       </section>
 
-      {mobileExpanded && (
+      {expanded && (
         <div className={styles.readLessWrap}>
           <button
             type="button"
             className={styles.readLessBtn}
             onClick={() => {
-              setMobileExpanded(false);
+              setExpanded(false);
               document.getElementById('crew-page-root')?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start',
@@ -497,7 +497,7 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
       )}
       </div>
 
-      {!mobileExpanded && (
+      {!expanded && (
         <div className={styles.readMoreGate}>
           <div className={styles.readMoreDivider} aria-hidden="true">
             <span className={styles.readMoreLine} />
@@ -507,9 +507,9 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
           <button
             type="button"
             className={styles.readMoreBtn}
-            aria-expanded={mobileExpanded}
+            aria-expanded={expanded}
             aria-controls="crew-more-body"
-            onClick={() => setMobileExpanded(true)}
+            onClick={() => setExpanded(true)}
           >
             <span className={styles.readMoreGlow} aria-hidden="true" />
             <span className={styles.readMoreBadge} aria-hidden="true">

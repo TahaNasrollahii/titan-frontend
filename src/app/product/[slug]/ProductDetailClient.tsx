@@ -915,7 +915,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
           id="pd-about"
           role="tabpanel"
           aria-labelledby="tab-pd-about"
-          className={`${styles.block} ${isCrewProduct ? styles.blockCrew : ''}`}
+          className={styles.block}
           hidden={activeSection !== 'pd-about'}
         >
           {isCrewProduct ? (
