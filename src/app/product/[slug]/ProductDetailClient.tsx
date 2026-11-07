@@ -54,6 +54,7 @@ import { useApi } from '@/lib/hooks/useApi';
 import styles from './product.module.css';
 import { enrichProductSeo, getProductKeywords, parseDescriptionBlocks } from './productSeoContent';
 import { ReviewsSection, Stars } from './ReviewsSection';
+import { CrewDescription } from '../fortnite-crew/CrewDescription';
 
 const TITAN_RED = '#e2453f';
 const MAX_QUANTITY = 20;
@@ -914,134 +915,138 @@ export default function ProductPage({ initialData, initialRelated, initialReview
           id="pd-about"
           role="tabpanel"
           aria-labelledby="tab-pd-about"
-          className={styles.block}
+          className={`${styles.block} ${isCrewProduct ? styles.blockCrew : ''}`}
           hidden={activeSection !== 'pd-about'}
         >
-          {!isCrewProduct && (
-            <h2 id="pd-about-title" className={styles.blockTitle}>
-              درباره {data.title}
-            </h2>
-          )}
-          <div
-            id="pd-about-content"
-            className={`${styles.aboutCollapse} ${descExpanded ? styles.aboutCollapseOpen : ''}`}
-          >
-            {descriptionBlocks.length > 0 ? (
-              <div className={styles.prose}>
-                {descriptionBlocks.map((block, i) => {
-                  if (block.type === 'heading') {
-                    return (
-                      <h2 key={i} className={styles.proseHeading}>
-                        {block.text}
-                      </h2>
-                    );
-                  }
-                  if (block.type === 'subheading') {
-                    return (
-                      <h3 key={i} className={styles.proseHeading}>
-                        {block.text}
-                      </h3>
-                    );
-                  }
-                  if (block.type === 'image') {
-                    return (
-                      <figure key={i} className={styles.proseFigure}>
-                        <div
-                          className={styles.proseImageWrap}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`بزرگ‌نمایی تصویر: ${block.alt}`}
-                          onClick={() =>
-                            openImageLightbox(
-                              [{ src: block.src, alt: block.alt || block.caption || data.title }],
-                              0,
-                            )
-                          }
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              openImageLightbox(
-                                [{ src: block.src, alt: block.alt || block.caption || data.title }],
-                                0,
-                              );
-                            }
-                          }}
-                        >
-                          <Image
-                            src={block.src}
-                            alt={block.alt}
-                            width={1200}
-                            height={620}
-                            sizes="(max-width: 900px) 100vw, 860px"
-                            loading="lazy"
-                            className={styles.proseImage}
-                            unoptimized={isLocalAsset(block.src) || process.env.NODE_ENV !== 'production'}
-                          />
-                          <span className={styles.proseZoomBadge} aria-hidden="true">
-                            <ZoomIn size={14} />
-                            <span>بزرگ‌نمایی</span>
-                          </span>
-                        </div>
-                        {block.caption && (
-                          <figcaption className={styles.proseCaption}>{block.caption}</figcaption>
-                        )}
-                      </figure>
-                    );
-                  }
-                  if (block.type === 'list') {
-                    return (
-                      <ul key={i} className={styles.proseList}>
-                        {block.items.map((item, j) => (
-                          <li key={j}>{renderRichInline(item)}</li>
-                        ))}
-                      </ul>
-                    );
-                  }
-                  return <p key={i}>{renderRichInline(block.text)}</p>;
-                })}
+          {isCrewProduct ? (
+            <CrewDescription product={data} onAddToCart={handleAddToCart} />
+          ) : (
+            <>
+              <h2 id="pd-about-title" className={styles.blockTitle}>
+                درباره {data.title}
+              </h2>
+              <div
+                id="pd-about-content"
+                className={`${styles.aboutCollapse} ${descExpanded ? styles.aboutCollapseOpen : ''}`}
+              >
+                {descriptionBlocks.length > 0 ? (
+                  <div className={styles.prose}>
+                    {descriptionBlocks.map((block, i) => {
+                      if (block.type === 'heading') {
+                        return (
+                          <h2 key={i} className={styles.proseHeading}>
+                            {block.text}
+                          </h2>
+                        );
+                      }
+                      if (block.type === 'subheading') {
+                        return (
+                          <h3 key={i} className={styles.proseHeading}>
+                            {block.text}
+                          </h3>
+                        );
+                      }
+                      if (block.type === 'image') {
+                        return (
+                          <figure key={i} className={styles.proseFigure}>
+                            <div
+                              className={styles.proseImageWrap}
+                              role="button"
+                              tabIndex={0}
+                              aria-label={`بزرگ‌نمایی تصویر: ${block.alt}`}
+                              onClick={() =>
+                                openImageLightbox(
+                                  [{ src: block.src, alt: block.alt || block.caption || data.title }],
+                                  0,
+                                )
+                              }
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  openImageLightbox(
+                                    [{ src: block.src, alt: block.alt || block.caption || data.title }],
+                                    0,
+                                  );
+                                }
+                              }}
+                            >
+                              <Image
+                                src={block.src}
+                                alt={block.alt}
+                                width={1200}
+                                height={620}
+                                sizes="(max-width: 900px) 100vw, 860px"
+                                loading="lazy"
+                                className={styles.proseImage}
+                                unoptimized={isLocalAsset(block.src) || process.env.NODE_ENV !== 'production'}
+                              />
+                              <span className={styles.proseZoomBadge} aria-hidden="true">
+                                <ZoomIn size={14} />
+                                <span>بزرگ‌نمایی</span>
+                              </span>
+                            </div>
+                            {block.caption && (
+                              <figcaption className={styles.proseCaption}>{block.caption}</figcaption>
+                            )}
+                          </figure>
+                        );
+                      }
+                      if (block.type === 'list') {
+                        return (
+                          <ul key={i} className={styles.proseList}>
+                            {block.items.map((item, j) => (
+                              <li key={j}>{renderRichInline(item)}</li>
+                            ))}
+                          </ul>
+                        );
+                      }
+                      return <p key={i}>{renderRichInline(block.text)}</p>;
+                    })}
+                  </div>
+                ) : (
+                  <p className={styles.prose}>
+                    {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
+                    پشتیبانی ۲۴ ساعته همراه شماست.
+                  </p>
+                )}
+                {data.tags.length > 0 && (
+                  <ul className={styles.tags} aria-label="ویژگی‌ها">
+                    {data.tags.map(tag => (
+                      <li key={tag} className={styles.tag}>
+                        <Check size={14} strokeWidth={3} aria-hidden="true" />
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {keywords.length > 0 && (
+                  <div className={styles.keywordsBlock}>
+                    <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
+                    <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
+                      {keywords.map(kw => (
+                        <li key={kw} className={styles.keywordChip}>
+                          {kw}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-            ) : (
-              <p className={styles.prose}>
-                {data.title} را با پرداخت امن و تحویل سریع از فروشگاه تایتان تهیه کنید. برای راهنمایی بیشتر،
-                پشتیبانی ۲۴ ساعته همراه شماست.
-              </p>
-            )}
-            {data.tags.length > 0 && (
-              <ul className={styles.tags} aria-label="ویژگی‌ها">
-                {data.tags.map(tag => (
-                  <li key={tag} className={styles.tag}>
-                    <Check size={14} strokeWidth={3} aria-hidden="true" />
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {keywords.length > 0 && (
-              <div className={styles.keywordsBlock}>
-                <span className={styles.keywordsLabel}>کلمات کلیدی:</span>
-                <ul className={styles.keywordsList} aria-label="کلمات کلیدی محصول">
-                  {keywords.map(kw => (
-                    <li key={kw} className={styles.keywordChip}>
-                      {kw}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
 
-          <div className={styles.descMoreWrap}>
-            <button
-              type="button"
-              className={`${styles.descMoreBtn} ${descExpanded ? styles.descMoreBtnOpen : ''}`}
-              onClick={() => setExpandedSlug(prev => (prev === slug ? null : slug))}
-              aria-expanded={descExpanded}
-              aria-controls="pd-about-content"
-            >
-              <span>{descExpanded ? 'بستن توضیحات' : 'بارگزاری بیشتر'}</span>
-              <ChevronDown size={16} className={styles.descMoreChevron} aria-hidden="true" />
-            </button>
-          </div>
+              <div className={styles.descMoreWrap}>
+                <button
+                  type="button"
+                  className={`${styles.descMoreBtn} ${descExpanded ? styles.descMoreBtnOpen : ''}`}
+                  onClick={() => setExpandedSlug(prev => (prev === slug ? null : slug))}
+                  aria-expanded={descExpanded}
+                  aria-controls="pd-about-content"
+                >
+                  <span>{descExpanded ? 'بستن توضیحات' : 'بارگزاری بیشتر'}</span>
+                  <ChevronDown size={16} className={styles.descMoreChevron} aria-hidden="true" />
+                </button>
+              </div>
+            </>
+          )}
         </section>
 
         <section
@@ -1105,7 +1110,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
           <ReviewsSection product={data} onChanged={product.reload} initialData={initialReviews} />
         </section>
 
-        {data.faqs && data.faqs.length > 0 && (
+        {!isCrewProduct && data.faqs && data.faqs.length > 0 && (
           <section id="pd-faq" aria-labelledby="pd-faq-title" className={styles.block}>
             <h2 id="pd-faq-title" className={styles.blockTitle}>
               سوالات متداول درباره {data.title}
@@ -1126,38 +1131,40 @@ export default function ProductPage({ initialData, initialRelated, initialReview
           </section>
         )}
 
-        <nav aria-label="لینک‌های مفید مرتبط با این محصول" className={styles.internalLinksBar}>
-          {data.game?.slug === 'fortnite' && (
-            <>
-              <Link href="/store/fortnite" className={styles.internalLinkChip}>
-                فروشگاه فورتنایت تایتان
+        {!isCrewProduct && (
+          <nav aria-label="لینک‌های مفید مرتبط با این محصول" className={styles.internalLinksBar}>
+            {data.game?.slug === 'fortnite' && (
+              <>
+                <Link href="/store/fortnite" className={styles.internalLinkChip}>
+                  فروشگاه فورتنایت تایتان
+                </Link>
+                <Link href="/product/fortnite-vbucks" className={styles.internalLinkChip}>
+                  خرید وی‌باکس فورتنایت (V-Bucks)
+                </Link>
+                <Link href="/fortnite-shop" className={styles.internalLinkChip}>
+                  آیتم‌شاپ روزانه فورتنایت
+                </Link>
+                <Link href="/guides/fortnite-crew-buying-guide" className={styles.internalLinkChip}>
+                  راهنمای خرید کروپک فورتنایت در ایران
+                </Link>
+              </>
+            )}
+            {data.game && data.game.slug !== 'fortnite' && (
+              <Link href={`/store/${data.game.slug}`} className={styles.internalLinkChip}>
+                مشاهده تمام محصولات {data.game.title}
               </Link>
-              <Link href="/product/fortnite-vbucks" className={styles.internalLinkChip}>
-                خرید وی‌باکس فورتنایت (V-Bucks)
-              </Link>
-              <Link href="/fortnite-shop" className={styles.internalLinkChip}>
-                آیتم‌شاپ روزانه فورتنایت
-              </Link>
-              <Link href="/guides/fortnite-crew-buying-guide" className={styles.internalLinkChip}>
-                راهنمای خرید کروپک فورتنایت در ایران
-              </Link>
-            </>
-          )}
-          {data.game && data.game.slug !== 'fortnite' && (
-            <Link href={`/store/${data.game.slug}`} className={styles.internalLinkChip}>
-              مشاهده تمام محصولات {data.game.title}
+            )}
+            <Link href="/guides" className={styles.internalLinkChip}>
+              مرکز آموزش و راهنمای خرید
             </Link>
-          )}
-          <Link href="/guides" className={styles.internalLinkChip}>
-            مرکز آموزش و راهنمای خرید
-          </Link>
-          <Link href="/faq" className={styles.internalLinkChip}>
-            سوالات متداول تایتان
-          </Link>
-          <Link href="/terms" className={styles.internalLinkChip}>
-            قوانین، پشتیبانی و شرایط بازگشت وجه
-          </Link>
-        </nav>
+            <Link href="/faq" className={styles.internalLinkChip}>
+              سوالات متداول تایتان
+            </Link>
+            <Link href="/terms" className={styles.internalLinkChip}>
+              قوانین، پشتیبانی و شرایط بازگشت وجه
+            </Link>
+          </nav>
+        )}
       </div>
 
       {(related.data?.length ?? 0) > 0 && (

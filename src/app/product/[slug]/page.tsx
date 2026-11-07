@@ -3,10 +3,16 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
 import { enrichProductSeo, getProductKeywords, plainTextDescription } from './productSeoContent';
+import {
+  CREW_FAQ_ITEMS,
+  CREW_HERO_CONTENT,
+  CREW_SEO_METADATA,
+  resolveCrewPricing,
+} from '../fortnite-crew/content';
 import { getGuides, primaryGuide } from '../../guides/getGuides';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { composeMetaDescription } from '@/lib/seo/meta';
-import { SITE_URL, SITE_NAME } from '@/lib/siteConfig';
+import { IS_STAGING_ENV, SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import {
   API_URL,
   DEFAULT_CLASH_PRODUCT_DETAIL,
@@ -33,9 +39,9 @@ export async function generateStaticParams() {
     if (!res.ok) return [];
     const data = await res.json();
     const results = Array.isArray(data) ? data : data.results || [];
-    const slugs = new Set<string>();
+    const slugs = new Set<string>(['fortnite-crew']);
     for (const p of results) {
-      if (p?.slug && p.slug !== 'fortnite-crew') slugs.add(p.slug);
+      if (p?.slug) slugs.add(p.slug);
     }
     return Array.from(slugs).map((slug) => ({ slug }));
   } catch {
@@ -45,17 +51,28 @@ export async function generateStaticParams() {
 
 async function getProduct(slug: string): Promise<Product | null> {
   if (slug === 'apex-coins') return null;
-  const prod = await fetchEntity<Product>(`/products/${slug}/`, {
-    revalidate: 60,
-    tags: ['products', `product-${slug}`],
-  });
-  if (!prod && slug === 'fortnite-crew') {
-    const altProd = await fetchEntity<Product>('/products/fortnite-crew-pack/', {
+  let prod: Product | null = null;
+  try {
+    prod = await fetchEntity<Product>(`/products/${slug}/`, {
       revalidate: 60,
-      tags: ['products', 'product-fortnite-crew'],
+      tags: ['products', `product-${slug}`],
+      timeoutMs: 3000,
     });
-    if (altProd) {
-      return enrichProductSeo({ ...altProd, slug: 'fortnite-crew' });
+  } catch {
+    prod = null;
+  }
+  if (!prod && slug === 'fortnite-crew') {
+    try {
+      const altProd = await fetchEntity<Product>('/products/fortnite-crew-pack/', {
+        revalidate: 60,
+        tags: ['products', 'product-fortnite-crew'],
+        timeoutMs: 2500,
+      });
+      if (altProd) {
+        return enrichProductSeo({ ...altProd, slug: 'fortnite-crew' });
+      }
+    } catch {
+      // Fall back to default Fortnite Crew product detail
     }
     return enrichProductSeo(DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL);
   }
@@ -108,6 +125,55 @@ export async function generateMetadata({
     return {
       title: 'محصول یافت نشد',
       robots: { index: false, follow: false },
+    };
+  }
+
+  if (slug === 'fortnite-crew') {
+    const isIndexable = !IS_STAGING_ENV;
+    const canonicalUrl = `${SITE_URL}/product/fortnite-crew`;
+    const ogImageUrl = `${SITE_URL}${CREW_SEO_METADATA.ogImagePath}`;
+
+    return {
+      title: {
+        absolute: CREW_SEO_METADATA.title,
+      },
+      description: CREW_SEO_METADATA.description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
+      robots: {
+        index: isIndexable,
+        follow: isIndexable,
+        googleBot: {
+          index: isIndexable,
+          follow: isIndexable,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+      openGraph: {
+        type: 'website',
+        locale: 'fa_IR',
+        url: canonicalUrl,
+        siteName: SITE_NAME,
+        title: CREW_SEO_METADATA.title,
+        description: CREW_SEO_METADATA.description,
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: CREW_SEO_METADATA.ogImageAlt,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: CREW_SEO_METADATA.title,
+        description: CREW_SEO_METADATA.description,
+        images: [ogImageUrl],
+      },
     };
   }
 
@@ -180,22 +246,69 @@ export default async function ProductPage({
     notFound();
   }
 
-  const productJsonLd = buildProductSchema(product, reviews?.results ?? []);
-  const breadcrumbItems = [
-    { name: 'صفحه اصلی', path: '/' },
-    { name: 'فروشگاه', path: '/store' },
-    ...(product.game
-      ? [{ name: product.game.title, path: `/store/${product.game.slug}` }]
-      : []),
-    { name: product.title, path: `/product/${product.slug}` },
-  ];
+  const isCrew = slug === 'fortnite-crew';
+  const crewPricing = isCrew ? resolveCrewPricing(product) : null;
+  const crewCanonicalUrl = `${SITE_URL}/product/fortnite-crew`;
+  const crewOgImageUrl = `${SITE_URL}${CREW_SEO_METADATA.ogImagePath}`;
+
+  const productJsonLd = isCrew
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        '@id': `${crewCanonicalUrl}#product`,
+        name: CREW_HERO_CONTENT.title,
+        description: CREW_SEO_METADATA.description,
+        image: [crewOgImageUrl],
+        sku: 'fortnite-crew',
+        url: crewCanonicalUrl,
+        offers: {
+          '@type': 'Offer',
+          url: crewCanonicalUrl,
+          priceCurrency: 'IRR',
+          price: String(Math.round((crewPricing?.priceToman ?? 589000) * 10)),
+          availability:
+            product.inStock === false
+              ? 'https://schema.org/OutOfStock'
+              : 'https://schema.org/InStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          seller: {
+            '@type': 'Organization',
+            '@id': `${SITE_URL}/#organization`,
+            name: SITE_NAME,
+            url: SITE_URL,
+          },
+        },
+      }
+    : buildProductSchema(product, reviews?.results ?? []);
+
+  const breadcrumbItems = isCrew
+    ? [
+        { name: 'خانه', path: '/' },
+        { name: 'فروشگاه', path: '/store' },
+        { name: 'فورتنایت', path: '/store/fortnite' },
+        { name: 'کروپک فورتنایت', path: '/product/fortnite-crew' },
+      ]
+    : [
+        { name: 'صفحه اصلی', path: '/' },
+        { name: 'فروشگاه', path: '/store' },
+        ...(product.game
+          ? [{ name: product.game.title, path: `/store/${product.game.slug}` }]
+          : []),
+        { name: product.title, path: `/product/${product.slug}` },
+      ];
   const breadcrumbJsonLd = buildBreadcrumbSchema(breadcrumbItems);
+  const faqItems = isCrew
+    ? CREW_FAQ_ITEMS.map((item) => ({
+        question: item.question,
+        answer: item.answer,
+      }))
+    : product.faqs;
 
   return (
     <>
       <JsonLd data={productJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
-      {product.faqs && product.faqs.length > 0 && <JsonLd data={buildFaqSchema(product.faqs)} />}
+      {faqItems && faqItems.length > 0 && <JsonLd data={buildFaqSchema(faqItems)} />}
       <ProductDetailClient
         initialData={product}
         initialReviews={reviews}

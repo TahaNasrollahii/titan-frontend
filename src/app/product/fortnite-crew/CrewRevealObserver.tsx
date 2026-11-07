@@ -6,7 +6,7 @@ import styles from './crew.module.css';
 
 interface CrewRevealObserverProps {
   rootId: string;
-  cartProduct: AddToCartInput['product'];
+  cartProduct?: AddToCartInput['product'];
 }
 
 const REVEAL_CLASS_MAP: Record<string, string> = {
@@ -76,10 +76,11 @@ export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverPr
       const t2 = window.setTimeout(scan, 900);
       scan();
 
-      const buyBtns = Array.from(
-        root.querySelectorAll<HTMLElement>('[data-crew-buy-btn="true"]')
-      );
+      const buyBtns = cartProduct
+        ? Array.from(root.querySelectorAll<HTMLElement>('[data-crew-buy-btn="true"]'))
+        : [];
       const handleBuyClick = (e: Event) => {
+        if (!cartProduct) return;
         e.preventDefault();
         void addToCart({ product: cartProduct, quantity: 1 });
       };
@@ -93,10 +94,11 @@ export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverPr
       };
     }
 
-    const buyBtns = Array.from(
-      root.querySelectorAll<HTMLElement>('[data-crew-buy-btn="true"]')
-    );
+    const buyBtns = cartProduct
+      ? Array.from(root.querySelectorAll<HTMLElement>('[data-crew-buy-btn="true"]'))
+      : [];
     const handleBuyClick = (e: Event) => {
+      if (!cartProduct) return;
       e.preventDefault();
       void addToCart({ product: cartProduct, quantity: 1 });
     };

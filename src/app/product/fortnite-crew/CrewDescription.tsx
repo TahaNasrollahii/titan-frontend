@@ -1,11 +1,5 @@
-import type { Metadata } from 'next';
 import React from 'react';
-import { JsonLd } from '@/components/seo/JsonLd';
-import { DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL } from '@/lib/api/client';
-import { fetchEntity } from '@/lib/api/server';
 import type { Product } from '@/lib/api/types';
-import { buildBreadcrumbSchema, buildFaqSchema } from '@/lib/seo/schema';
-import { IS_STAGING_ENV, SITE_NAME, SITE_URL } from '@/lib/siteConfig';
 import {
   CREW_ACTIVATION_CONTENT,
   CREW_ACTIVATION_INFO,
@@ -22,7 +16,6 @@ import {
   CREW_PRICE_DELIVERY_CONTENT,
   CREW_RELATED_HEADER,
   CREW_RELATED_LINKS,
-  CREW_SEO_METADATA,
   CREW_SUPPORT_CONTENT,
   resolveCrewPricing,
 } from './content';
@@ -31,137 +24,30 @@ import { CrewIcon } from './CrewIcon';
 import { CrewRevealObserver } from './CrewRevealObserver';
 import styles from './crew.module.css';
 
-export const revalidate = 60;
-
-const CANONICAL_URL = `${SITE_URL}/product/fortnite-crew`;
-const OG_IMAGE_URL = `${SITE_URL}${CREW_SEO_METADATA.ogImagePath}`;
-
-export async function generateMetadata(): Promise<Metadata> {
-  const isIndexable = !IS_STAGING_ENV;
-
-  return {
-    title: {
-      absolute: CREW_SEO_METADATA.title,
-    },
-    description: CREW_SEO_METADATA.description,
-    alternates: {
-      canonical: CANONICAL_URL,
-    },
-    robots: {
-      index: isIndexable,
-      follow: isIndexable,
-      googleBot: {
-        index: isIndexable,
-        follow: isIndexable,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-    openGraph: {
-      type: 'website',
-      locale: 'fa_IR',
-      url: CANONICAL_URL,
-      siteName: SITE_NAME,
-      title: CREW_SEO_METADATA.title,
-      description: CREW_SEO_METADATA.description,
-      images: [
-        {
-          url: OG_IMAGE_URL,
-          width: 1200,
-          height: 630,
-          alt: CREW_SEO_METADATA.ogImageAlt,
-          type: 'image/png',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: CREW_SEO_METADATA.title,
-      description: CREW_SEO_METADATA.description,
-      images: [OG_IMAGE_URL],
-    },
-  };
+interface CrewDescriptionProps {
+  product?: Product | null;
+  onAddToCart?: () => void;
 }
 
-async function getFortniteCrewProduct(): Promise<Product> {
-  try {
-    const prod = await fetchEntity<Product>('/products/fortnite-crew/', {
-      revalidate: 60,
-      tags: ['products', 'product-fortnite-crew'],
-      timeoutMs: 2500,
-    });
-    if (prod) return prod;
-  } catch {
-    // Fallback to default product detail when remote backend is unreachable
-  }
-
-  return DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL;
-}
-
-export default async function FortniteCrewPage() {
-  const product = await getFortniteCrewProduct();
+export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) {
   const pricing = resolveCrewPricing(product);
 
   const cartProduct = {
-    slug: 'fortnite-crew',
-    title: product.title || CREW_HERO_CONTENT.title,
-    image: product.image ?? null,
+    slug: product?.slug || 'fortnite-crew',
+    title: product?.title || CREW_HERO_CONTENT.title,
+    image: product?.image ?? null,
     price: pricing.priceToman,
     originalPrice: pricing.originalPriceToman,
-    requiresGameAccount: product.requiresGameAccount ?? true,
-    credentialType: product.credentialType ?? ('email_password' as const),
+    requiresGameAccount: product?.requiresGameAccount ?? true,
+    credentialType: product?.credentialType ?? ('email_password' as const),
   };
-
-  const priceRials = Math.round(pricing.priceToman * 10);
-  const productJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': `${CANONICAL_URL}#product`,
-    name: CREW_HERO_CONTENT.title,
-    description: CREW_SEO_METADATA.description,
-    image: [OG_IMAGE_URL],
-    sku: 'fortnite-crew',
-    url: CANONICAL_URL,
-    offers: {
-      '@type': 'Offer',
-      url: CANONICAL_URL,
-      priceCurrency: 'IRR',
-      price: String(priceRials),
-      availability:
-        product.inStock === false
-          ? 'https://schema.org/OutOfStock'
-          : 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      seller: {
-        '@type': 'Organization',
-        '@id': `${SITE_URL}/#organization`,
-        name: SITE_NAME,
-        url: SITE_URL,
-      },
-    },
-  };
-
-  const faqJsonLd = buildFaqSchema(
-    CREW_FAQ_ITEMS.map((item) => ({
-      question: item.question,
-      answer: item.answer,
-    }))
-  );
-
-  const breadcrumbJsonLd = buildBreadcrumbSchema([
-    { name: 'خانه', path: '/' },
-    { name: 'فروشگاه', path: '/store' },
-    { name: 'فورتنایت', path: '/store/fortnite' },
-    { name: 'کروپک فورتنایت', path: '/product/fortnite-crew' },
-  ]);
 
   return (
     <div id="crew-page-root" dir="rtl" className={styles.page}>
-      <JsonLd data={productJsonLd} />
-      <JsonLd data={faqJsonLd} />
-      <JsonLd data={breadcrumbJsonLd} />
-      <CrewRevealObserver rootId="crew-page-root" cartProduct={cartProduct} />
+      <CrewRevealObserver
+        rootId="crew-page-root"
+        cartProduct={onAddToCart ? undefined : cartProduct}
+      />
 
       {/* 1. HERO */}
       <section className={styles.hero}>
@@ -172,7 +58,7 @@ export default async function FortniteCrewPage() {
 
         <div className={styles.heroTextCol}>
           <span className={styles.t1}>{CREW_HERO_CONTENT.eyebrow}</span>
-          <h1 className={styles.t2}>{CREW_HERO_CONTENT.title}</h1>
+          <h2 className={styles.t2}>{CREW_HERO_CONTENT.title}</h2>
           <p className={styles.t3}>{CREW_HERO_CONTENT.lead}</p>
           <div className={styles.t4}>
             {CREW_HERO_CONTENT.factChips.map((chip) => (
@@ -186,6 +72,7 @@ export default async function FortniteCrewPage() {
               type="button"
               data-crew-buy-btn="true"
               className={styles.btn}
+              onClick={onAddToCart}
             >
               {CREW_HERO_CONTENT.ctaLabel}
             </button>
