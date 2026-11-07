@@ -7,6 +7,7 @@ import styles from './crew.module.css';
 interface CrewRevealObserverProps {
   rootId: string;
   cartProduct?: AddToCartInput['product'];
+  expanded?: boolean;
 }
 
 const REVEAL_CLASS_MAP: Record<string, string> = {
@@ -21,7 +22,7 @@ const REVEAL_CLASS_MAP: Record<string, string> = {
   ln: styles.ln,
 };
 
-export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverProps) {
+export function CrewRevealObserver({ rootId, cartProduct, expanded }: CrewRevealObserverProps) {
   const { addToCart } = useAppContext();
 
   useEffect(() => {
@@ -120,7 +121,7 @@ export function CrewRevealObserver({ rootId, cartProduct }: CrewRevealObserverPr
     return () => {
       buyBtns.forEach((btn) => btn.removeEventListener('click', handleBuyClick));
     };
-  }, [rootId, cartProduct, addToCart]);
+  }, [rootId, cartProduct, addToCart, expanded]);
 
   return null;
 }

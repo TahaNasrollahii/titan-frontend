@@ -8,9 +8,10 @@ import styles from './crew.module.css';
 interface CrewCarouselProps {
   items: CrewBenefitBlock[];
   hint: string;
+  onActiveCardClick?: (id: string) => void;
 }
 
-export function CrewCarousel({ items, hint }: CrewCarouselProps) {
+export function CrewCarousel({ items, hint, onActiveCardClick }: CrewCarouselProps) {
   const [cur, setCur] = useState(0);
   const startXRef = useRef<number | null>(null);
   const movedRef = useRef(false);
@@ -77,6 +78,8 @@ export function CrewCarousel({ items, hint }: CrewCarouselProps) {
                   if (!front) {
                     e.preventDefault();
                     go(i);
+                  } else if (onActiveCardClick) {
+                    onActiveCardClick(b.id);
                   }
                 }}
               >

@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import type { Product } from '@/lib/api/types';
 import {
   CREW_ACTIVATION_CONTENT,
@@ -30,7 +32,20 @@ interface CrewDescriptionProps {
 }
 
 export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) {
+  const [mobileExpanded, setMobileExpanded] = useState(false);
   const pricing = resolveCrewPricing(product);
+
+  const handleActiveCardClick = (targetId: string) => {
+    if (!mobileExpanded) {
+      setMobileExpanded(true);
+      window.setTimeout(() => {
+        document.getElementById(targetId)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 60);
+    }
+  };
 
   const cartProduct = {
     slug: product?.slug || 'fortnite-crew',
@@ -43,10 +58,15 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
   };
 
   return (
-    <div id="crew-page-root" dir="rtl" className={styles.page}>
+    <div
+      id="crew-page-root"
+      dir="rtl"
+      className={`${styles.page} ${!mobileExpanded ? styles.pageCollapsedMobile : ''}`}
+    >
       <CrewRevealObserver
         rootId="crew-page-root"
         cartProduct={onAddToCart ? undefined : cartProduct}
+        expanded={mobileExpanded}
       />
 
       {/* 1. HERO */}
@@ -54,6 +74,7 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
         <CrewCarousel
           items={CREW_BENEFIT_BLOCKS}
           hint={CREW_HERO_CONTENT.carouselHint}
+          onActiveCardClick={handleActiveCardClick}
         />
 
         <div className={styles.heroTextCol}>
@@ -88,6 +109,10 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
         </div>
       </section>
 
+      <div
+        id="crew-more-body"
+        className={`${styles.moreBody} ${mobileExpanded ? styles.moreBodyExpanded : ''}`}
+      >
       {/* 2. INTRO */}
       <section className={styles.introSection} data-rv="rv">
         <span className={styles.kicker}>{CREW_INTRO_CONTENT.kicker}</span>
@@ -439,6 +464,91 @@ export function CrewDescription({ product, onAddToCart }: CrewDescriptionProps) 
           {CREW_FINAL_CTA_CONTENT.ctaLabel}
         </a>
       </section>
+
+      {mobileExpanded && (
+        <div className={styles.readLessWrap}>
+          <button
+            type="button"
+            className={styles.readLessBtn}
+            onClick={() => {
+              setMobileExpanded(false);
+              document.getElementById('crew-page-root')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+            }}
+          >
+            <span>بستن جزئیات و بازگشت به بالا</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m18 15-6-6-6 6" />
+            </svg>
+          </button>
+        </div>
+      )}
+      </div>
+
+      {!mobileExpanded && (
+        <div className={styles.readMoreGate}>
+          <div className={styles.readMoreDivider} aria-hidden="true">
+            <span className={styles.readMoreLine} />
+            <span className={styles.readMoreDiamond} />
+            <span className={styles.readMoreLine} />
+          </div>
+          <button
+            type="button"
+            className={styles.readMoreBtn}
+            aria-expanded={mobileExpanded}
+            aria-controls="crew-more-body"
+            onClick={() => setMobileExpanded(true)}
+          >
+            <span className={styles.readMoreGlow} aria-hidden="true" />
+            <span className={styles.readMoreBadge} aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.9"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z" />
+              </svg>
+            </span>
+            <span className={styles.readMoreTextCol}>
+              <span className={styles.readMoreTitle}>بیشتر بخوانید</span>
+              <span className={styles.readMoreSub}>
+                مشاهده ۷ مزیت، مراحل فعال‌سازی و سؤالات متداول
+              </span>
+            </span>
+            <span className={styles.readMoreArrow} aria-hidden="true">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
