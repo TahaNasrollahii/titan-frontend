@@ -1256,16 +1256,46 @@
   border-color: rgba(242, 184, 75, 0.6);
 }
 
-/* ---------- Mobile Adaptations (adapt only as much as needed) ---------- */
-@media (max-width: 640px) {
+/* ---------- Mobile Compact Layout (keeps 100% of SEO copy, headings & links) ---------- */
+@media (max-width: 768px) {
   .page {
-    --hc-dx: 96px;
-    --hc-dy: 12px;
-    padding: 8px 0 24px;
+    --hc-dx: 88px;
+    --hc-dy: 10px;
+    padding: 4px 0 16px;
+    gap: 36px;
+  }
+
+  .pageCollapsed {
+    gap: 16px;
+    padding-bottom: 6px;
+  }
+
+  .hero {
+    min-height: auto;
+    gap: 20px;
+  }
+
+  .carouselCol {
+    gap: 10px;
   }
 
   .cardStage {
-    height: 370px;
+    height: 290px;
+  }
+
+  .deckArea {
+    transform: scale(0.8);
+  }
+
+  .glow {
+    width: 280px;
+    height: 280px;
+    margin: -140px 0 0 -140px;
+  }
+
+  .navBtn {
+    width: 40px;
+    height: 40px;
   }
 
   .dotsRow {
@@ -1273,34 +1303,317 @@
   }
 
   .dotBtn {
-    min-width: 24px;
-    min-height: 44px;
-    padding: 0 4px;
+    min-width: 22px;
+    min-height: 36px;
+    padding: 0 3px;
   }
 
-  .comparisonRow,
-  .comparisonTotalRow {
+  .carouselHint {
+    font-size: 11.5px;
+  }
+
+  .heroTextCol {
+    gap: 12px;
+  }
+
+  .t1 {
+    font-size: 11.5px;
+    padding: 4px 12px;
+  }
+
+  .t2 {
+    font-size: 22px;
+    line-height: 1.4;
+  }
+
+  .t3 {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .t4 {
+    gap: 6px;
+  }
+
+  .factChip {
+    font-size: 11.5px;
+    padding: 4px 10px;
+  }
+
+  /* Product page already has the primary buy box above and sticky mobile buy bar below */
+  .t5 {
+    display: none;
+  }
+
+  .moreBody {
+    gap: 36px;
+  }
+
+  .moreBody:not(.moreBodyExpanded) {
+    max-height: 58px;
+  }
+
+  .readMoreGate {
+    margin-top: -12px;
+    gap: 10px;
+  }
+
+  .introSection {
+    gap: 10px;
+  }
+
+  .kicker,
+  .benefitKicker {
+    font-size: 11.5px;
+  }
+
+  .h2_36_16,
+  .h2_38_15,
+  .h2_34_16,
+  .h2_34_15,
+  .h2_36_15 {
+    font-size: 20px;
+    line-height: 1.45;
+  }
+
+  .bodyP {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .benefitsSection {
+    gap: 14px;
+  }
+
+  .sectionHeader {
+    gap: 6px;
+  }
+
+  /* Hide decorative 440px gradient panels on mobile (cards are already in the top carousel);
+     keep all h3, p, and internal links inside a clean compact card */
+  .benefitVisualCol {
+    display: none;
+  }
+
+  .benefitRow {
+    gap: 10px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .benefitTextCol {
+    gap: 8px;
+  }
+
+  .benefitTitle {
+    font-size: 17.5px;
+    line-height: 1.45;
+  }
+
+  .benefitLinks {
+    gap: 8px 16px;
+    padding-top: 4px;
+    font-size: 13px;
+  }
+
+  .stepsSection {
+    gap: 16px;
+  }
+
+  .sectionLead {
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+
+  .stepsLine {
+    display: none;
+  }
+
+  .stepsRow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stepCard {
+    gap: 8px;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .stepNum {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .stepTitle {
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+
+  .stepText {
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+
+  .priceSection {
+    gap: 16px;
+  }
+
+  .tilesGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .tile {
+    padding: 14px 16px;
+    border-radius: 16px;
+    gap: 4px;
+  }
+
+  .tileLabel {
+    font-size: 12px;
+  }
+
+  .tileValueAccent,
+  .tileValueLarge {
+    font-size: 20px;
+  }
+
+  .tileValueMedium {
+    font-size: 17px;
+  }
+
+  .tileSub,
+  .guideNote {
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .comparisonSection {
+    gap: 18px;
+  }
+
+  .comparisonTextCol {
+    gap: 10px;
+  }
+
+  .comparisonTableCard {
+    padding: 8px 16px;
+    border-radius: 18px;
+  }
+
+  .comparisonTableHead {
+    padding: 10px 0 6px;
+    font-size: 12px;
+  }
+
+  .comparisonRow {
+    padding: 10px 0;
+    font-size: 13px;
     flex-wrap: wrap;
+  }
+
+  .comparisonTotalRow {
+    padding: 12px 0;
+    font-size: 13.5px;
+    flex-wrap: wrap;
+  }
+
+  .supportSection {
+    gap: 8px;
+  }
+
+  .relatedSection {
+    gap: 12px;
+  }
+
+  .chipsWrap {
+    gap: 8px;
+  }
+
+  .page .chip {
+    padding: 7px 13px;
+    font-size: 12.5px;
+  }
+
+  .faqSection {
+    gap: 16px;
+  }
+
+  .faqHeaderCol {
+    gap: 6px;
+  }
+
+  .faqSub {
+    font-size: 13px;
+  }
+
+  .faqSummary {
+    min-height: 48px;
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .plus {
+    font-size: 22px;
+  }
+
+  .faqAnswer {
+    padding: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .ctaSection {
+    padding: 20px 16px;
+    border-radius: 20px;
+    gap: 14px;
+  }
+
+  .ctaTitle {
+    font-size: 18px;
+  }
+
+  .ctaSub {
+    font-size: 13px;
+  }
+
+  .page .btnCta {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 24px;
+    font-size: 14.5px;
+  }
+
+  .readLessWrap {
+    margin-top: -12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .stepsRow {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 360px) {
   .page {
-    --hc-dx: 76px;
-    --hc-dy: 10px;
-    padding: 4px 0 20px;
+    --hc-dx: 72px;
+    --hc-dy: 8px;
   }
 
   .cardStage {
-    height: 340px;
+    height: 265px;
   }
 
   .deckArea {
-    transform: scale(0.9);
-  }
-
-  .ctaSection {
-    padding: 36px 20px;
+    transform: scale(0.74);
   }
 }
 
