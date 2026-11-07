@@ -30,7 +30,7 @@ const vazirmatn = Vazirmatn({
   subsets: ["arabic", "latin"],
   display: "swap",
   variable: "--font-vazirmatn",
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 const isNonProdEnv = IS_STAGING_ENV;
