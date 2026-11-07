@@ -55,6 +55,7 @@ import styles from './product.module.css';
 import { enrichProductSeo, getProductKeywords, parseDescriptionBlocks } from './productSeoContent';
 import { ReviewsSection, Stars } from './ReviewsSection';
 import { CrewDescription } from '../fortnite-crew/CrewDescription';
+import { isFortniteTemplateProduct } from '../fortnite-crew/fortniteTemplates';
 
 const TITAN_RED = '#e2453f';
 const MAX_QUANTITY = 20;
@@ -225,7 +226,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<SectionId>('pd-about');
-  const isCrewProduct = slug === 'fortnite-crew' || slug === 'fortnite-crew-pack';
+  const isCrewProduct = isFortniteTemplateProduct(slug, product.data);
   const [expandedSlug, setExpandedSlug] = useState<string | null>(isCrewProduct ? slug : null);
   const descExpanded = expandedSlug === slug;
   const [showBuyBar, setShowBuyBar] = useState(false);
@@ -308,6 +309,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
       return '/images/fortnite-crew-subscription-banner.webp';
     }
     if (data.slug === 'fortnite-vbucks') return '/images/products/fortnite-vbucks-coins.webp';
+    if (data.slug === 'fortnite-battle-pass') return '/images/games/fortnite-character.webp';
     if (data.slug === 'cod-points') return '/images/products/call-of-duty-mobile-cp-king.webp';
     if (data.slug === 'clash-of-clans-gems') return '/images/products/clash-of-clans-gems-goblin.webp';
     if (data.slug === 'clash-of-clans-gold-pass') return '/images/products/clash-of-clans-gold-pass-rider.webp';
@@ -919,7 +921,11 @@ export default function ProductPage({ initialData, initialRelated, initialReview
           hidden={activeSection !== 'pd-about'}
         >
           {isCrewProduct ? (
-            <CrewDescription product={data} onAddToCart={handleAddToCart} />
+            <CrewDescription
+              product={data}
+              selectedVariant={variant}
+              onAddToCart={handleAddToCart}
+            />
           ) : (
             <>
               <h2 id="pd-about-title" className={styles.blockTitle}>

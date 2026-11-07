@@ -9,6 +9,10 @@ import {
   CREW_SEO_METADATA,
   resolveCrewPricing,
 } from '../fortnite-crew/content';
+import {
+  getFortniteProductTemplate,
+  isFortniteTemplateProduct,
+} from '../fortnite-crew/fortniteTemplates';
 import { getGuides, primaryGuide } from '../../guides/getGuides';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { composeMetaDescription } from '@/lib/seo/meta';
@@ -39,7 +43,13 @@ export async function generateStaticParams() {
     if (!res.ok) return [];
     const data = await res.json();
     const results = Array.isArray(data) ? data : data.results || [];
-    const slugs = new Set<string>(['fortnite-crew']);
+    const slugs = new Set<string>([
+      'fortnite-crew',
+      'fortnite-vbucks',
+      'fortnite-battle-pass',
+      'fortnite-starter-pack',
+      'fortnite-final-reckoning-pack',
+    ]);
     for (const p of results) {
       if (p?.slug) slugs.add(p.slug);
     }
@@ -297,12 +307,21 @@ export default async function ProductPage({
         { name: product.title, path: `/product/${product.slug}` },
       ];
   const breadcrumbJsonLd = buildBreadcrumbSchema(breadcrumbItems);
+  const isFortniteTemplate = isFortniteTemplateProduct(slug, product);
+  const fortniteTemplate = isFortniteTemplate
+    ? getFortniteProductTemplate(slug, product)
+    : null;
   const faqItems = isCrew
     ? CREW_FAQ_ITEMS.map((item) => ({
         question: item.question,
         answer: item.answer,
       }))
-    : product.faqs;
+    : fortniteTemplate
+      ? fortniteTemplate.faqItems.map((item) => ({
+          question: item.question,
+          answer: item.answer,
+        }))
+      : product.faqs;
 
   return (
     <>
