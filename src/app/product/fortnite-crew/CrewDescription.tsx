@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState } from 'react';
 import type { Product, ProductVariant } from '@/lib/api/types';
 import { CREW_ACTIVATION_INFO } from './content';
@@ -167,25 +168,69 @@ export function CrewDescription({
                         background: `radial-gradient(circle,${item.glow},transparent 65%)`,
                       }}
                     />
-                    <div className={`${styles.benefitIconTile} ${styles.fl}`}>
-                      <CrewIcon
-                        icon={item.icon}
-                        size={88}
-                        stroke={item.ink}
-                        strokeWidth={1.4}
-                      />
+                    <div
+                      className={`${styles.benefitIconTile} ${styles.fl}${
+                        item.image ? ` ${styles.benefitIconTileMedia}` : ''
+                      }`}
+                    >
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.imageAlt || item.title}
+                          width={146}
+                          height={146}
+                          sizes="170px"
+                          className={styles.benefitIconImg}
+                        />
+                      ) : (
+                        <CrewIcon
+                          icon={item.icon}
+                          size={88}
+                          stroke={item.ink}
+                          strokeWidth={1.4}
+                        />
+                      )}
                     </div>
                     <span className={styles.benefitBadge}>{item.tag}</span>
                   </div>
                 </div>
 
                 <div className={styles.benefitTextCol}>
-                  <span className={styles.benefitKicker} data-rv="x1">
-                    {item.kicker}
-                  </span>
-                  <h3 className={styles.benefitTitle} data-rv="x2">
-                    {item.title}
-                  </h3>
+                  <div className={styles.benefitHeadRow}>
+                    <span
+                      className={`${styles.benefitMobileIcon}${
+                        item.image ? ` ${styles.benefitMobileIconMedia}` : ''
+                      }`}
+                      style={{ background: item.grad }}
+                      aria-hidden="true"
+                    >
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt=""
+                          width={42}
+                          height={42}
+                          sizes="52px"
+                          className={styles.benefitMobileIconImg}
+                        />
+                      ) : (
+                        <CrewIcon
+                          icon={item.icon}
+                          size={24}
+                          stroke={item.ink}
+                          strokeWidth={1.6}
+                        />
+                      )}
+                    </span>
+                    <div className={styles.benefitHeadTitles}>
+                      <span className={styles.benefitKicker} data-rv="x1">
+                        {item.kicker}
+                      </span>
+                      <h3 className={styles.benefitTitle} data-rv="x2">
+                        {item.title}
+                      </h3>
+                    </div>
+                  </div>
                   <p className={styles.bodyP} data-rv="x3">
                     {item.p1}
                   </p>

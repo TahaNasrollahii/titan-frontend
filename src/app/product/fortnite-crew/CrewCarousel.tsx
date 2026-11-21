@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import type { CrewBenefitBlock } from './content';
 import { CrewIcon } from './CrewIcon';
@@ -91,8 +92,24 @@ export function CrewCarousel({ items, hint, onActiveCardClick }: CrewCarouselPro
                   }}
                 >
                   <div className={styles.hcTop}>
-                    <div className={styles.hcIconBox}>
-                      <CrewIcon icon={b.icon} size={34} stroke={b.ink} strokeWidth={1.5} />
+                    <div
+                      className={`${styles.hcIconBox}${
+                        b.image ? ` ${styles.hcIconBoxMedia}` : ''
+                      }`}
+                    >
+                      {b.image ? (
+                        <Image
+                          src={b.image}
+                          alt=""
+                          aria-hidden="true"
+                          width={64}
+                          height={64}
+                          sizes="76px"
+                          className={styles.hcIconImg}
+                        />
+                      ) : (
+                        <CrewIcon icon={b.icon} size={34} stroke={b.ink} strokeWidth={1.5} />
+                      )}
                     </div>
                   </div>
                   <div className={styles.hcBottom}>
