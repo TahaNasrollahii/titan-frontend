@@ -316,7 +316,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
     if (data.slug === 'fortnite-starter-pack') return '/images/products/fortnite-starter-pack-character.webp';
     if (data.slug === 'fortnite-final-reckoning-pack') return '/images/products/fortnite-final-reckoning-pack.webp';
     if (data.slug?.includes('valorant') || data.game?.slug === 'valorant') {
-      return '/images/products/valorant-points-375-turkish-agent.webp';
+      return '/images/games/valorant-character.webp';
     }
     return '/images/banner-hero.webp';
   }, [data]);

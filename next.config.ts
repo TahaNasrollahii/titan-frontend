@@ -161,12 +161,25 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
+    const legacyValorantSlugs = [
+      'valorant-points-375',
+      'valorant-point-825',
+      'valorant-points-1700',
+      'valorant-point-2925',
+      'valorant-point-4325',
+      'valorant-point-8900',
+    ];
     return [
       {
         source: "/tournament",
         destination: "/tournaments",
         statusCode: 301,
       },
+      ...legacyValorantSlugs.map((slug) => ({
+        source: `/product/${slug}`,
+        destination: '/product/valorant-points',
+        statusCode: 301 as const,
+      })),
     ];
   },
 

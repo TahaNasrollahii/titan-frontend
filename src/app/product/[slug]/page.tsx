@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
 import { enrichProductSeo, getProductKeywords, plainTextDescription } from './productSeoContent';
@@ -21,6 +21,8 @@ import {
   API_URL,
   DEFAULT_CLASH_PRODUCT_DETAIL,
   DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL,
+  DEFAULT_VALORANT_POINTS_PRODUCT_DETAIL,
+  LEGACY_VALORANT_POINT_SLUGS,
 } from '@/lib/api/client';
 import { fetchEntity } from '@/lib/api/server';
 import type { Paginated, Product, ProductSummary, Review } from '@/lib/api/types';
@@ -49,9 +51,12 @@ export async function generateStaticParams() {
       'fortnite-battle-pass',
       'fortnite-starter-pack',
       'fortnite-final-reckoning-pack',
+      'valorant-points',
     ]);
     for (const p of results) {
-      if (p?.slug) slugs.add(p.slug);
+      if (p?.slug && !LEGACY_VALORANT_POINT_SLUGS.has(p.slug)) {
+        slugs.add(p.slug);
+      }
     }
     return Array.from(slugs).map((slug) => ({ slug }));
   } catch {
@@ -88,6 +93,9 @@ async function getProduct(slug: string): Promise<Product | null> {
   }
   if (!prod && slug === 'clash-of-clans-gems') {
     return enrichProductSeo(DEFAULT_CLASH_PRODUCT_DETAIL);
+  }
+  if (!prod && slug === 'valorant-points') {
+    return enrichProductSeo(DEFAULT_VALORANT_POINTS_PRODUCT_DETAIL);
   }
   return prod ? enrichProductSeo(prod) : null;
 }
@@ -244,6 +252,9 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (LEGACY_VALORANT_POINT_SLUGS.has(slug)) {
+    permanentRedirect('/product/valorant-points');
+  }
   const [product, reviews, related, guides] = await Promise.all([
     getProduct(slug),
     getProductReviews(slug),

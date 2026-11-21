@@ -253,6 +253,11 @@ export default async function StoreCategoryPage({
               </Link>
             </>
           )}
+          {game.slug === 'valorant' && (
+            <Link href="/product/valorant-points" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+              خرید ولورانت پوینت (Valorant Points / VP)
+            </Link>
+          )}
           <Link href="/guides" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
             همه آموزش‌ها و راهنماهای خرید
           </Link>

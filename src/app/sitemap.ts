@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/siteConfig';
-import { API_URL } from '@/lib/api/client';
+import { API_URL, LEGACY_VALORANT_POINT_SLUGS } from '@/lib/api/client';
 import { getGuides } from '@/app/guides/getGuides';
 
 interface SitemapEntryItem {
@@ -43,7 +43,7 @@ const FALLBACK_PRODUCTS = [
   'fortnite-final-reckoning-pack',
   'fortnite-crew',
   'fortnite-battle-pass',
-  'valorant-points-1700',
+  'valorant-points',
   'cod-points',
   'clash-of-clans-gems',
   'clash-of-clans-gold-pass',
@@ -109,12 +109,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
       }
       if (Array.isArray(seoData.products) && seoData.products.length > 0) {
-        productRoutes = seoData.products.map((p) => ({
-          url: `${SITE_URL}/product/${p.slug}`,
-          lastModified: parseDate(p),
-          changeFrequency: 'daily',
-          priority: 0.85,
-        }));
+        const seenProdSlugs = new Set<string>();
+        productRoutes = seoData.products
+          .map((p) =>
+            LEGACY_VALORANT_POINT_SLUGS.has(p.slug) ? { ...p, slug: 'valorant-points' } : p
+          )
+          .filter((p) => {
+            if (seenProdSlugs.has(p.slug)) return false;
+            seenProdSlugs.add(p.slug);
+            return true;
+          })
+          .map((p) => ({
+            url: `${SITE_URL}/product/${p.slug}`,
+            lastModified: parseDate(p),
+            changeFrequency: 'daily' as const,
+            priority: 0.85,
+          }));
       }
       if (Array.isArray(seoData.guides)) {
         guideRoutes = seoData.guides.map((g) => ({

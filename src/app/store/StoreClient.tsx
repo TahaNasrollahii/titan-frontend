@@ -170,8 +170,11 @@ function promoHref(promo: Promo) {
   ) {
     return '/product/fortnite-crew';
   }
-  if (promo.product === 'valorant-points') {
-    return '/product/valorant-points-375';
+  if (
+    promo.product === 'valorant-points' ||
+    (promo.product && promo.product.startsWith('valorant-point'))
+  ) {
+    return '/product/valorant-points';
   }
   if (promo.product) return `/product/${promo.product}`;
   if (promo.tournament) return `/tournaments/${promo.tournament}`;
@@ -429,7 +432,7 @@ function ProductCard({
         : gameSlug === 'clash-of-clans'
           ? '/images/products/clash-of-clans-gems-goblin.webp'
           : (gameSlug === 'valorant' || product.slug?.includes('valorant'))
-            ? '/images/products/valorant-points-375-turkish-agent.webp'
+            ? '/images/games/valorant-character.webp'
             : product.slug.includes('v-bucks') || product.slug.includes('vbucks')
               ? '/images/products/fortnite-vbucks-coins.webp'
               : LOCAL_CHARACTERS[index % LOCAL_CHARACTERS.length]);

@@ -302,7 +302,7 @@ const DEFAULT_HERO_SLIDES = [
     eta: 0,
     art: '/images/hero/characters/valorant.webp',
     artClass: 'valorant',
-    href: '/product/valorant-points-375',
+    href: '/product/valorant-points',
     price: '۱۸۰,۰۰۰ تومان',
   },
   {
@@ -363,9 +363,9 @@ function buildSceneData(data: Home) {
       price = '۵۹۹,۰۰۰ تومان';
     } else if (effectiveSlug === 'valorant') {
       title = 'ولورانت پوینت';
-      desc = 'خرید و تحویل سریع کد ولورانت پوینت (VP) برای خرید اسکین و بتل‌پس!';
+      desc = 'شارژ مستقیم و سریع ولورانت پوینت (VP) در بسته‌های متنوع برای خرید اسکین و بتل‌پس!';
       descMobile = 'تحویل سریع انواع بسته‌های VP';
-      href = '/product/valorant-points-375';
+      href = '/product/valorant-points';
       price = '۱۸۰,۰۰۰ تومان';
     }
 
