@@ -249,7 +249,7 @@ export const FORTNITE_CREW_TEMPLATE: FortniteProductTemplate = {
   defaultOriginalPriceToman: CREW_ORIGINAL_PRICE_TOMAN,
   defaultDiscountPercent: CREW_DISCOUNT_PERCENT,
   deliveryTime: CREW_DELIVERY_TIME,
-  readMoreSub: 'مشاهده ۷ مزیت، مراحل فعال‌سازی و سؤالات متداول',
+  readMoreSub: 'مشاهده ۶ مزیت، مراحل فعال‌سازی و سؤالات متداول',
   hero: CREW_HERO_CONTENT,
   intro: CREW_INTRO_CONTENT,
   benefitsHeader: CREW_BENEFITS_HEADER,
