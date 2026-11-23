@@ -60,16 +60,11 @@ export function CrewDescription({
     credentialType: product?.credentialType ?? ('email_password' as const),
   };
 
-  const isValorant = template.theme === 'valorant';
-  const accentColor = isValorant ? '#ff4655' : '#f2b84b';
-
   return (
     <div
       id="crew-page-root"
       dir="rtl"
-      className={`${styles.page}${isValorant ? ` ${styles.pageValorant}` : ''} ${
-        !expanded ? styles.pageCollapsed : ''
-      }`}
+      className={`${styles.page} ${!expanded ? styles.pageCollapsed : ''}`}
     >
       <CrewRevealObserver
         rootId="crew-page-root"
@@ -83,7 +78,6 @@ export function CrewDescription({
           key={currentSlug}
           items={template.benefitBlocks}
           hint={template.hero.carouselHint}
-          accentColor={accentColor}
           onActiveCardClick={handleActiveCardClick}
         />
 

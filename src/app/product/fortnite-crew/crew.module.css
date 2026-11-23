@@ -55,8 +55,8 @@
 
 .page {
   --accent: #f2b84b;
-  --hc-dx: 150px;
-  --hc-dy: 16px;
+  --hc-dx: 78px;
+  --hc-dy: 14px;
   font-family: var(--font-vazirmatn), 'Vazirmatn', system-ui, sans-serif;
   color: #f4eaec;
   background: transparent;
@@ -199,18 +199,27 @@
 .hcBottom {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+.hc:not([data-front='true']) .hcBottom {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
 }
 
 .hcTag {
-  font-size: 13px;
+  font-size: 12.5px;
   color: rgba(255, 255, 255, 0.65);
 }
 
 .hcTitle {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 800;
-  line-height: 1.4;
+  line-height: 1.38;
 }
 
 .hcMore {
@@ -1334,47 +1343,37 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
   padding: 26px 24px;
-  border-radius: 26px;
+  border-radius: 24px;
   text-align: right;
   font-family: inherit;
   color: #f4eaec;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(255, 70, 85, 0.14), transparent 58%),
-    linear-gradient(160deg, rgba(19, 28, 42, 0.88) 0%, rgba(12, 16, 26, 0.94) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  box-shadow:
-    0 22px 44px -18px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: pointer;
   transition:
     transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.28s ease,
-    box-shadow 0.28s ease;
+    background 0.28s ease;
 }
 
 .packageCard:hover {
   transform: translateY(-5px);
-  border-color: rgba(255, 70, 85, 0.58);
-  box-shadow:
-    0 28px 54px -16px rgba(255, 70, 85, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  border-color: rgba(242, 184, 75, 0.55);
+  background: rgba(0, 0, 0, 0.26);
 }
 
 .packageCardActive {
-  border-color: #ff4655;
+  border-color: #f2b84b;
   background:
-    radial-gradient(circle at 15% 0%, rgba(255, 70, 85, 0.26), transparent 62%),
-    linear-gradient(160deg, rgba(36, 18, 29, 0.94) 0%, rgba(14, 19, 31, 0.96) 100%);
-  box-shadow:
-    0 26px 52px -14px rgba(255, 70, 85, 0.32),
-    0 0 0 1px rgba(255, 70, 85, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    radial-gradient(circle at 15% 0%, rgba(242, 184, 75, 0.16), transparent 62%),
+    rgba(0, 0, 0, 0.28);
+  box-shadow: 0 20px 44px -16px rgba(242, 184, 75, 0.25);
 }
 
 .packageCardPopular {
-  border-color: rgba(255, 70, 85, 0.42);
+  border-color: rgba(242, 184, 75, 0.36);
 }
 
 .packageTopRow {
@@ -1397,9 +1396,9 @@
   font-weight: 700;
   padding: 4px 11px;
   border-radius: 999px;
-  color: #ff8c96;
-  background: rgba(255, 70, 85, 0.14);
-  border: 1px solid rgba(255, 70, 85, 0.36);
+  color: #f2b84b;
+  background: rgba(242, 184, 75, 0.12);
+  border: 1px solid rgba(242, 184, 75, 0.35);
   white-space: nowrap;
 }
 
@@ -1408,7 +1407,7 @@
   font-size: 16.5px;
   font-weight: 700;
   line-height: 1.5;
-  color: #f6eaed;
+  color: #f4eaec;
 }
 
 .packageCardDesc {
@@ -1416,7 +1415,7 @@
   font-size: 14px;
   font-weight: 300;
   line-height: 1.85;
-  color: #c5ccd8;
+  color: #cdb4ba;
 }
 
 .packageFooter {
@@ -1432,13 +1431,13 @@
   font-size: 18px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: #ff6b78;
+  color: #f2b84b;
 }
 
 .packageAction {
   font-size: 13px;
   font-weight: 700;
-  color: #7ee8fa;
+  color: #e6cfd5;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -1451,14 +1450,14 @@
   gap: 14px;
   padding: 24px 28px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .seoTopicsLabel {
   font-size: 13px;
   font-weight: 700;
-  color: #a9b2c1;
+  color: #f2b84b;
 }
 
 .seoTopicsList {
@@ -1472,206 +1471,11 @@
 
 .seoTopicPill {
   font-size: 12.5px;
-  color: #d6dde8;
+  color: #e6cfd5;
   padding: 5px 12px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ---------- Valorant Tactical Crimson Theme (.pageValorant) ---------- */
-.pageValorant {
-  --accent: #ff4655;
-  color: #eef2f7;
-}
-
-.pageValorant a {
-  color: #ff6b78;
-}
-
-.pageValorant a:hover {
-  color: #ff949d;
-}
-
-.pageValorant .glow {
-  background: radial-gradient(
-    circle,
-    rgba(255, 70, 85, 0.3),
-    rgba(15, 25, 35, 0.45) 48%,
-    transparent 72%
-  );
-}
-
-.pageValorant .navBtn:hover {
-  background: rgba(255, 70, 85, 0.14) !important;
-  border-color: rgba(255, 70, 85, 0.65) !important;
-}
-
-.pageValorant .t1 {
-  color: #ff6b78;
-  border-color: rgba(255, 70, 85, 0.45);
-  background: rgba(255, 70, 85, 0.08);
-}
-
-.pageValorant .t3,
-.pageValorant .bodyP,
-.pageValorant .stepText,
-.pageValorant .tileSub,
-.pageValorant .guideNote,
-.pageValorant .faqAnswer,
-.pageValorant .ctaSub {
-  color: #c5ccd8;
-}
-
-.pageValorant .carouselHint,
-.pageValorant .sectionLead,
-.pageValorant .tileLabel,
-.pageValorant .comparisonTableHead,
-.pageValorant .faqSub {
-  color: #93a0b4;
-}
-
-.pageValorant .factChip {
-  color: #e2e8f0;
-  background: rgba(15, 25, 35, 0.55);
-  border-color: rgba(255, 255, 255, 0.14);
-}
-
-.pageValorant .btn,
-.pageValorant .btnCta {
-  background: linear-gradient(135deg, #ff4655 0%, #e02e3d 100%);
-  color: #ffffff;
-  box-shadow: 0 12px 28px -8px rgba(255, 70, 85, 0.45);
-}
-
-.pageValorant .btn:hover,
-.pageValorant .btnCta:hover {
-  color: #ffffff;
-  box-shadow: 0 16px 34px -6px rgba(255, 70, 85, 0.6);
-}
-
-.pageValorant .kicker,
-.pageValorant .benefitKicker,
-.pageValorant .tileValueAccent,
-.pageValorant .plus {
-  color: #ff6b78;
-}
-
-.pageValorant .lnk {
-  color: #ff6b78;
-}
-
-.pageValorant .lnk:hover {
-  color: #ff949d;
-}
-
-.pageValorant .lnkSecondary {
-  color: #9fb0c7;
-}
-
-.pageValorant .lnkSecondary:hover {
-  color: #d6e1f0;
-}
-
-.pageValorant .stepsLine {
-  background: linear-gradient(to left, #ff4655, rgba(94, 234, 212, 0.18));
-}
-
-.pageValorant .stepNum {
-  background: #141e2b;
-  border-color: #ff4655;
-  color: #ff6b78;
-}
-
-.pageValorant .tile:hover {
-  border-color: rgba(255, 70, 85, 0.55);
-}
-
-.pageValorant .comparisonTotalRow {
-  border-top-color: rgba(255, 70, 85, 0.42);
-  color: #ff6b78;
-}
-
-.pageValorant .chip:hover {
-  background: rgba(255, 70, 85, 0.12);
-  border-color: rgba(255, 70, 85, 0.62);
-}
-
-.pageValorant .ctaSection {
-  border-color: rgba(255, 70, 85, 0.35);
-  background:
-    radial-gradient(ellipse at 80% 0%, rgba(255, 70, 85, 0.18), transparent 60%),
-    radial-gradient(ellipse at 15% 100%, rgba(94, 234, 212, 0.08), transparent 55%),
-    rgba(11, 17, 26, 0.72);
-}
-
-.pageValorant .readMoreLine {
-  background: linear-gradient(90deg, transparent, rgba(255, 70, 85, 0.52), transparent);
-}
-
-.pageValorant .readMoreDiamond {
-  background: #ff4655;
-  box-shadow: 0 0 12px rgba(255, 70, 85, 0.9);
-}
-
-.pageValorant .readMoreBtn {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 70, 85, 0.24) 0%,
-    rgba(30, 41, 59, 0.68) 54%,
-    rgba(13, 19, 29, 0.94) 100%
-  );
-  border-color: rgba(255, 70, 85, 0.52);
-  box-shadow:
-    0 20px 44px -12px rgba(255, 70, 85, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.pageValorant .readMoreBtn:hover {
-  border-color: rgba(255, 70, 85, 0.85);
-  box-shadow:
-    0 24px 50px -12px rgba(255, 70, 85, 0.48),
-    inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-
-.pageValorant .readMoreGlow {
-  background: radial-gradient(circle, rgba(255, 70, 85, 0.38), transparent 70%);
-}
-
-.pageValorant .readMoreBadge {
-  color: #ff6b78;
-  background: radial-gradient(
-    circle at 30% 25%,
-    rgba(255, 70, 85, 0.3),
-    rgba(255, 255, 255, 0.04)
-  );
-  border-color: rgba(255, 70, 85, 0.48);
-  box-shadow:
-    0 8px 18px -6px rgba(255, 70, 85, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.pageValorant .readMoreSub {
-  color: #ff949d;
-}
-
-.pageValorant .readMoreArrow {
-  color: #ffffff;
-  background: linear-gradient(135deg, #ff4655, #d92638);
-  box-shadow:
-    0 8px 18px -4px rgba(255, 70, 85, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.pageValorant .readLessBtn {
-  color: #ff7a85;
-  background: rgba(255, 70, 85, 0.1);
-  border-color: rgba(255, 70, 85, 0.38);
-}
-
-.pageValorant .readLessBtn:hover {
-  background: rgba(255, 70, 85, 0.18);
-  border-color: rgba(255, 70, 85, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* ---------- Mobile Compact Layout (keeps 100% of SEO copy, headings & links) ---------- */

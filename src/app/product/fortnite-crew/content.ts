@@ -21,6 +21,7 @@ export interface CrewBenefitBlock {
   id: string;
   kicker: string;
   title: string;
+  cardTitle?: string;
   tag: string;
   p1: string;
   p2: string;

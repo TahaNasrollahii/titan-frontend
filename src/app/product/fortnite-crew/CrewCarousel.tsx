@@ -120,7 +120,7 @@ export function CrewCarousel({
                   </div>
                   <div className={styles.hcBottom}>
                     <div className={styles.hcTag}>{b.tag}</div>
-                    <div className={styles.hcTitle}>{b.title}</div>
+                    <div className={styles.hcTitle}>{b.cardTitle || b.title}</div>
                     {front && (
                       <div className={styles.hcMore} style={{ color: b.ink }}>
                         مشاهده توضیحات ↓
