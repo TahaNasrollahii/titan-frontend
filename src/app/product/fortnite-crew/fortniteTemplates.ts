@@ -1,4 +1,4 @@
-import { faNumber } from '@/lib/format';
+import { faNumber, mediaUrl } from '@/lib/format';
 import type { Product, ProductVariant } from '@/lib/api/types';
 import {
   CREW_ACTIVATION_CONTENT,
@@ -701,6 +701,8 @@ export const FORTNITE_BATTLE_PASS_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(255,160,70,.35)',
       ink: '#ffb866',
       icon: 'medal',
+      image: '/images/battle-pass/rewards-gift.webp',
+      imageAlt: 'آیکون جعبه هدیه بیش از ۱۰۰ جایزه پریمیوم در بتل‌پس فورتنایت',
     },
     {
       id: 'b-1',
@@ -717,6 +719,8 @@ export const FORTNITE_BATTLE_PASS_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(120,180,255,.35)',
       ink: '#9fc6ff',
       icon: 'coin',
+      image: '/images/battle-pass/vbucks-return.webp',
+      imageAlt: 'آیکون بازگشت تا ۱٬۵۰۰ وی‌باکس در بتل‌پس فورتنایت',
     },
     {
       id: 'b-2',
@@ -733,6 +737,8 @@ export const FORTNITE_BATTLE_PASS_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(242,184,75,.35)',
       ink: '#f2b84b',
       icon: 'gift',
+      image: 'https://35tmectztpibboo6.public.blob.vercel-storage.com/products/Neon_Crystal_Ninja_Warrior.webp',
+      imageAlt: 'باز شدن فوری اسکین اول بتل‌پس فورتنایت',
     },
     {
       id: 'b-3',
@@ -765,6 +771,8 @@ export const FORTNITE_BATTLE_PASS_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(90,220,170,.3)',
       ink: '#7be0c3',
       icon: 'bolt',
+      image: '/images/battle-pass/xp-levelup.webp',
+      imageAlt: 'آیکون کسب XP و لول‌آپ در بتل‌پس فورتنایت',
     },
     {
       id: 'b-5',
@@ -781,6 +789,8 @@ export const FORTNITE_BATTLE_PASS_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(80,200,255,.3)',
       ink: '#78d4ff',
       icon: 'cube',
+      image: '/images/battle-pass/lego-style.webp',
+      imageAlt: 'آیکون استایل لگو (LEGO Style) در بتل‌پس فورتنایت',
     },
   ],
   activation: {
@@ -1677,7 +1687,20 @@ export function getFortniteProductTemplate(
   const found = ALL_FORTNITE_TEMPLATES.find((t) =>
     t.slugs.includes(targetSlug)
   );
-  if (found) return found;
+  if (found) {
+    if (targetSlug === 'fortnite-battle-pass' && product?.image) {
+      const mainProductImage = mediaUrl(product.image);
+      if (mainProductImage) {
+        return {
+          ...found,
+          benefitBlocks: found.benefitBlocks.map((block) =>
+            block.id === 'b-2' ? { ...block, image: mainProductImage } : block
+          ),
+        };
+      }
+    }
+    return found;
+  }
   if (product) return buildDynamicFortniteTemplate(product);
   return FORTNITE_CREW_TEMPLATE;
 }
