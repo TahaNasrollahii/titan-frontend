@@ -9,10 +9,16 @@ import styles from './crew.module.css';
 interface CrewCarouselProps {
   items: CrewBenefitBlock[];
   hint: string;
+  accentColor?: string;
   onActiveCardClick?: (id: string) => void;
 }
 
-export function CrewCarousel({ items, hint, onActiveCardClick }: CrewCarouselProps) {
+export function CrewCarousel({
+  items,
+  hint,
+  accentColor = '#f2b84b',
+  onActiveCardClick,
+}: CrewCarouselProps) {
   const [cur, setCur] = useState(0);
   const startXRef = useRef<number | null>(null);
   const movedRef = useRef(false);
@@ -88,7 +94,7 @@ export function CrewCarousel({ items, hint, onActiveCardClick }: CrewCarouselPro
                   className={styles.hcInner}
                   style={{
                     background: b.grad,
-                    border: `1px solid ${front ? 'rgba(242,184,75,.55)' : 'rgba(255,255,255,.12)'}`,
+                    border: `1px solid ${front ? `${accentColor}99` : 'rgba(255,255,255,.12)'}`,
                   }}
                 >
                   <div className={styles.hcTop}>
@@ -165,7 +171,7 @@ export function CrewCarousel({ items, hint, onActiveCardClick }: CrewCarouselPro
                   className={styles.dotBar}
                   style={{
                     width: active ? '28px' : '8px',
-                    background: active ? '#f2b84b' : 'rgba(255,255,255,.25)',
+                    background: active ? accentColor : 'rgba(255,255,255,.25)',
                   }}
                 />
               </button>

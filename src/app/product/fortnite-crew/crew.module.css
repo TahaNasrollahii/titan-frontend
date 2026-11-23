@@ -1316,6 +1316,364 @@
   border-color: rgba(242, 184, 75, 0.6);
 }
 
+/* ---------- Interactive Package Guide Bento Grid (Multi-Option Products like Valorant Points) ---------- */
+.packageSection {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.packageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.packageCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 26px 24px;
+  border-radius: 26px;
+  text-align: right;
+  font-family: inherit;
+  color: #f4eaec;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 70, 85, 0.14), transparent 58%),
+    linear-gradient(160deg, rgba(19, 28, 42, 0.88) 0%, rgba(12, 16, 26, 0.94) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow:
+    0 22px 44px -18px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.packageCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 70, 85, 0.58);
+  box-shadow:
+    0 28px 54px -16px rgba(255, 70, 85, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.packageCardActive {
+  border-color: #ff4655;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 70, 85, 0.26), transparent 62%),
+    linear-gradient(160deg, rgba(36, 18, 29, 0.94) 0%, rgba(14, 19, 31, 0.96) 100%);
+  box-shadow:
+    0 26px 52px -14px rgba(255, 70, 85, 0.32),
+    0 0 0 1px rgba(255, 70, 85, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.packageCardPopular {
+  border-color: rgba(255, 70, 85, 0.42);
+}
+
+.packageTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.packageAmount {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+.packageBadge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 999px;
+  color: #ff8c96;
+  background: rgba(255, 70, 85, 0.14);
+  border: 1px solid rgba(255, 70, 85, 0.36);
+  white-space: nowrap;
+}
+
+.packageCardTitle {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #f6eaed;
+}
+
+.packageCardDesc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.85;
+  color: #c5ccd8;
+}
+
+.packageFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.packagePrice {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #ff6b78;
+}
+
+.packageAction {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7ee8fa;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ---------- Semantic SEO Topic Pills ---------- */
+.seoTopicsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.seoTopicsLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a9b2c1;
+}
+
+.seoTopicsList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.seoTopicPill {
+  font-size: 12.5px;
+  color: #d6dde8;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- Valorant Tactical Crimson Theme (.pageValorant) ---------- */
+.pageValorant {
+  --accent: #ff4655;
+  color: #eef2f7;
+}
+
+.pageValorant a {
+  color: #ff6b78;
+}
+
+.pageValorant a:hover {
+  color: #ff949d;
+}
+
+.pageValorant .glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 70, 85, 0.3),
+    rgba(15, 25, 35, 0.45) 48%,
+    transparent 72%
+  );
+}
+
+.pageValorant .navBtn:hover {
+  background: rgba(255, 70, 85, 0.14) !important;
+  border-color: rgba(255, 70, 85, 0.65) !important;
+}
+
+.pageValorant .t1 {
+  color: #ff6b78;
+  border-color: rgba(255, 70, 85, 0.45);
+  background: rgba(255, 70, 85, 0.08);
+}
+
+.pageValorant .t3,
+.pageValorant .bodyP,
+.pageValorant .stepText,
+.pageValorant .tileSub,
+.pageValorant .guideNote,
+.pageValorant .faqAnswer,
+.pageValorant .ctaSub {
+  color: #c5ccd8;
+}
+
+.pageValorant .carouselHint,
+.pageValorant .sectionLead,
+.pageValorant .tileLabel,
+.pageValorant .comparisonTableHead,
+.pageValorant .faqSub {
+  color: #93a0b4;
+}
+
+.pageValorant .factChip {
+  color: #e2e8f0;
+  background: rgba(15, 25, 35, 0.55);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.pageValorant .btn,
+.pageValorant .btnCta {
+  background: linear-gradient(135deg, #ff4655 0%, #e02e3d 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 28px -8px rgba(255, 70, 85, 0.45);
+}
+
+.pageValorant .btn:hover,
+.pageValorant .btnCta:hover {
+  color: #ffffff;
+  box-shadow: 0 16px 34px -6px rgba(255, 70, 85, 0.6);
+}
+
+.pageValorant .kicker,
+.pageValorant .benefitKicker,
+.pageValorant .tileValueAccent,
+.pageValorant .plus {
+  color: #ff6b78;
+}
+
+.pageValorant .lnk {
+  color: #ff6b78;
+}
+
+.pageValorant .lnk:hover {
+  color: #ff949d;
+}
+
+.pageValorant .lnkSecondary {
+  color: #9fb0c7;
+}
+
+.pageValorant .lnkSecondary:hover {
+  color: #d6e1f0;
+}
+
+.pageValorant .stepsLine {
+  background: linear-gradient(to left, #ff4655, rgba(94, 234, 212, 0.18));
+}
+
+.pageValorant .stepNum {
+  background: #141e2b;
+  border-color: #ff4655;
+  color: #ff6b78;
+}
+
+.pageValorant .tile:hover {
+  border-color: rgba(255, 70, 85, 0.55);
+}
+
+.pageValorant .comparisonTotalRow {
+  border-top-color: rgba(255, 70, 85, 0.42);
+  color: #ff6b78;
+}
+
+.pageValorant .chip:hover {
+  background: rgba(255, 70, 85, 0.12);
+  border-color: rgba(255, 70, 85, 0.62);
+}
+
+.pageValorant .ctaSection {
+  border-color: rgba(255, 70, 85, 0.35);
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(255, 70, 85, 0.18), transparent 60%),
+    radial-gradient(ellipse at 15% 100%, rgba(94, 234, 212, 0.08), transparent 55%),
+    rgba(11, 17, 26, 0.72);
+}
+
+.pageValorant .readMoreLine {
+  background: linear-gradient(90deg, transparent, rgba(255, 70, 85, 0.52), transparent);
+}
+
+.pageValorant .readMoreDiamond {
+  background: #ff4655;
+  box-shadow: 0 0 12px rgba(255, 70, 85, 0.9);
+}
+
+.pageValorant .readMoreBtn {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 70, 85, 0.24) 0%,
+    rgba(30, 41, 59, 0.68) 54%,
+    rgba(13, 19, 29, 0.94) 100%
+  );
+  border-color: rgba(255, 70, 85, 0.52);
+  box-shadow:
+    0 20px 44px -12px rgba(255, 70, 85, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.pageValorant .readMoreBtn:hover {
+  border-color: rgba(255, 70, 85, 0.85);
+  box-shadow:
+    0 24px 50px -12px rgba(255, 70, 85, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.pageValorant .readMoreGlow {
+  background: radial-gradient(circle, rgba(255, 70, 85, 0.38), transparent 70%);
+}
+
+.pageValorant .readMoreBadge {
+  color: #ff6b78;
+  background: radial-gradient(
+    circle at 30% 25%,
+    rgba(255, 70, 85, 0.3),
+    rgba(255, 255, 255, 0.04)
+  );
+  border-color: rgba(255, 70, 85, 0.48);
+  box-shadow:
+    0 8px 18px -6px rgba(255, 70, 85, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.pageValorant .readMoreSub {
+  color: #ff949d;
+}
+
+.pageValorant .readMoreArrow {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff4655, #d92638);
+  box-shadow:
+    0 8px 18px -4px rgba(255, 70, 85, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.pageValorant .readLessBtn {
+  color: #ff7a85;
+  background: rgba(255, 70, 85, 0.1);
+  border-color: rgba(255, 70, 85, 0.38);
+}
+
+.pageValorant .readLessBtn:hover {
+  background: rgba(255, 70, 85, 0.18);
+  border-color: rgba(255, 70, 85, 0.65);
+}
+
 /* ---------- Mobile Compact Layout (keeps 100% of SEO copy, headings & links) ---------- */
 @media (max-width: 768px) {
   .page {
@@ -1675,6 +2033,53 @@
 
   .readLessWrap {
     margin-top: -12px;
+  }
+
+  .packageSection {
+    gap: 14px;
+  }
+
+  .packageGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .packageCard {
+    padding: 16px;
+    border-radius: 18px;
+    gap: 10px;
+  }
+
+  .packageAmount {
+    font-size: 19px;
+  }
+
+  .packageCardTitle {
+    font-size: 14.5px;
+  }
+
+  .packageCardDesc {
+    font-size: 12.5px;
+    line-height: 1.75;
+  }
+
+  .packageFooter {
+    padding-top: 10px;
+  }
+
+  .packagePrice {
+    font-size: 15.5px;
+  }
+
+  .seoTopicsWrap {
+    padding: 16px;
+    border-radius: 18px;
+    gap: 10px;
+  }
+
+  .seoTopicPill {
+    font-size: 11.5px;
+    padding: 4px 10px;
   }
 }
 

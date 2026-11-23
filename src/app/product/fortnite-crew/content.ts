@@ -1,7 +1,21 @@
 import { faNumber } from '@/lib/format';
 import type { Product } from '@/lib/api/types';
 
-export type BenefitIconKey = 'gift' | 'coin' | 'medal' | 'sun' | 'cube' | 'note' | 'bolt';
+export type BenefitIconKey =
+  | 'gift'
+  | 'coin'
+  | 'medal'
+  | 'sun'
+  | 'cube'
+  | 'note'
+  | 'bolt'
+  | 'vp-emblem'
+  | 'vp-skins'
+  | 'vp-battlepass'
+  | 'vp-nightmarket'
+  | 'vp-melee'
+  | 'vp-packages'
+  | 'vp-region';
 
 export interface CrewBenefitBlock {
   id: string;

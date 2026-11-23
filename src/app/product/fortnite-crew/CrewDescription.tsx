@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { faNumber } from '@/lib/format';
 import type { Product, ProductVariant } from '@/lib/api/types';
 import { CREW_ACTIVATION_INFO } from './content';
 import {
@@ -17,12 +18,14 @@ interface CrewDescriptionProps {
   product?: Product | null;
   selectedVariant?: ProductVariant | null;
   onAddToCart?: () => void;
+  onSelectVariant?: (variantId: number) => void;
 }
 
 export function CrewDescription({
   product,
   selectedVariant,
   onAddToCart,
+  onSelectVariant,
 }: CrewDescriptionProps) {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
   const currentSlug = product?.slug || 'fortnite-crew';
@@ -57,11 +60,16 @@ export function CrewDescription({
     credentialType: product?.credentialType ?? ('email_password' as const),
   };
 
+  const isValorant = template.theme === 'valorant';
+  const accentColor = isValorant ? '#ff4655' : '#f2b84b';
+
   return (
     <div
       id="crew-page-root"
       dir="rtl"
-      className={`${styles.page} ${!expanded ? styles.pageCollapsed : ''}`}
+      className={`${styles.page}${isValorant ? ` ${styles.pageValorant}` : ''} ${
+        !expanded ? styles.pageCollapsed : ''
+      }`}
     >
       <CrewRevealObserver
         rootId="crew-page-root"
@@ -75,6 +83,7 @@ export function CrewDescription({
           key={currentSlug}
           items={template.benefitBlocks}
           hint={template.hero.carouselHint}
+          accentColor={accentColor}
           onActiveCardClick={handleActiveCardClick}
         />
 
@@ -254,7 +263,67 @@ export function CrewDescription({
           })}
         </section>
 
-        {/* 4. ACTIVATION STEPS */}
+        {/* 4. INTERACTIVE PACKAGE GUIDE (when defined, e.g. Valorant Points) */}
+        {template.packageGuide && (
+          <section id="packages" className={styles.packageSection} data-rv="rv">
+            <div className={styles.sectionHeader}>
+              <span className={styles.kicker}>{template.packageGuide.kicker}</span>
+              <h2 className={styles.h2_38_15}>{template.packageGuide.title}</h2>
+              <p className={styles.sectionLead}>{template.packageGuide.subtitle}</p>
+            </div>
+
+            <div className={styles.packageGrid}>
+              {template.packageGuide.items.map((pkg) => {
+                const matchedVariant = product?.variants?.find((v) =>
+                  v.label.includes(pkg.matchKey)
+                );
+                const isSelected = Boolean(
+                  matchedVariant && selectedVariant?.id === matchedVariant.id
+                );
+                const livePrice = matchedVariant?.price ?? pkg.fallbackPriceToman;
+
+                return (
+                  <button
+                    key={pkg.matchKey}
+                    type="button"
+                    className={`${styles.packageCard}${
+                      isSelected ? ` ${styles.packageCardActive}` : ''
+                    }${pkg.popular ? ` ${styles.packageCardPopular}` : ''}`}
+                    onClick={() => {
+                      if (matchedVariant && onSelectVariant) {
+                        onSelectVariant(matchedVariant.id);
+                      }
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    <div>
+                      <div className={styles.packageTopRow}>
+                        <span className={styles.packageAmount}>{pkg.amountLabel}</span>
+                        <span className={styles.packageBadge}>{pkg.badge}</span>
+                      </div>
+                      <h3 className={styles.packageCardTitle} style={{ marginTop: 12 }}>
+                        {pkg.title}
+                      </h3>
+                      <p className={styles.packageCardDesc} style={{ marginTop: 8 }}>
+                        {pkg.description}
+                      </p>
+                    </div>
+                    <div className={styles.packageFooter}>
+                      <span className={styles.packagePrice}>
+                        {faNumber(livePrice).replace(/,/g, '٬')} تومان
+                      </span>
+                      <span className={styles.packageAction}>
+                        {isSelected ? 'بسته انتخاب‌شده ✓' : 'انتخاب این بسته ↑'}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* 4b. ACTIVATION STEPS */}
         <section id="steps" className={styles.stepsSection}>
           <div className={styles.sectionHeader} data-rv="rv">
             <span className={styles.kicker}>{template.activation.kicker}</span>
@@ -382,7 +451,7 @@ export function CrewDescription({
         </section>
 
         {/* 6. COMPARISON */}
-        <section className={styles.comparisonSection}>
+        <section id="vp-comparison" className={styles.comparisonSection}>
           <div className={styles.comparisonTextCol} data-rv="rv">
             <span className={styles.kicker}>{template.comparison.kicker}</span>
             <h2 className={styles.h2_36_16}>{template.comparison.title}</h2>
@@ -499,6 +568,22 @@ export function CrewDescription({
             ))}
           </div>
         </section>
+
+        {/* 9b. SEMANTIC SEO TOPICS */}
+        {template.seoTopics && template.seoTopics.length > 0 && (
+          <div className={styles.seoTopicsWrap} data-rv="rv">
+            <span className={styles.seoTopicsLabel}>
+              عبارات و جستجوهای مرتبط با {product?.title || template.hero.title}:
+            </span>
+            <ul className={styles.seoTopicsList} aria-label="کلمات کلیدی مرتبط">
+              {template.seoTopics.map((topic) => (
+                <li key={topic} className={styles.seoTopicPill}>
+                  {topic}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* 10. FINAL CTA */}
         <section className={styles.ctaSection} data-rv="rv">

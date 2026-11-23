@@ -19,7 +19,7 @@ export function GET() {
   - دسترسی به رویدادهای زنده، بازی‌های منتخب، اعتماد الکترونیکی و بنرهای معرفی
 - **فروشگاه آیتم‌ها و پول بازی‌ها:** ${SITE_URL}/store
   - خرید ویباکس فورتنایت (Fortnite V-Bucks)، استارتر پک فورتنایت (Fortnite Starter Pack) و باندل فاینال رکونینگ (Fortnite Final Reckoning Pack)
-  - خرید ولورانت پوینت (Valorant Points / VP)
+  - خرید ولورانت پوینت (Valorant Points / VP) در بسته‌های ۳۷۵ تا ۸٬۹۰۰ پوینت برای بتل‌پس و اسکین: ${SITE_URL}/product/valorant-points
   - خرید سی‌پی کالاف دیوتی موبایل (Call of Duty Mobile CP)
   - خرید جم کلش آف کلنز (Clash of Clans Gems) و بتل پس / گلد پس کلش آف کلنز (Clash of Clans Gold Pass)
   - اکانت‌های پرمیوم و اشتراک‌ها (Spotify, Telegram Premium)

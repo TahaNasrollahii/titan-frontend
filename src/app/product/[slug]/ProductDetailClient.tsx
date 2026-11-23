@@ -925,6 +925,7 @@ export default function ProductPage({ initialData, initialRelated, initialReview
               product={data}
               selectedVariant={variant}
               onAddToCart={handleAddToCart}
+              onSelectVariant={setVariantId}
             />
           ) : (
             <>
