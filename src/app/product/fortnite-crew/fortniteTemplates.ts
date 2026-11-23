@@ -1028,6 +1028,8 @@ export const FORTNITE_STARTER_PACK_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(120,180,255,.35)',
       ink: '#9fc6ff',
       icon: 'coin',
+      image: '/images/starter-pack/vbucks.webp',
+      imageAlt: 'آیکون ۶۰۰ وی‌باکس در استارتر پک فورتنایت',
     },
     {
       id: 'b-1',
@@ -1044,6 +1046,8 @@ export const FORTNITE_STARTER_PACK_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(242,184,75,.35)',
       ink: '#f2b84b',
       icon: 'gift',
+      image: '/images/starter-pack/outfit.webp',
+      imageAlt: 'اسکین اختصاصی استارتر پک فورتنایت',
     },
     {
       id: 'b-2',
@@ -1060,6 +1064,8 @@ export const FORTNITE_STARTER_PACK_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(255,160,70,.35)',
       ink: '#ffb866',
       icon: 'cube',
+      image: '/images/starter-pack/lego-style.webp',
+      imageAlt: 'نسخه استایل لگو (LEGO Style) اسکین استارتر پک فورتنایت',
     },
     {
       id: 'b-3',
@@ -1076,6 +1082,8 @@ export const FORTNITE_STARTER_PACK_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(180,140,255,.35)',
       ink: '#c9a7ff',
       icon: 'medal',
+      image: '/images/starter-pack/back-bling.webp',
+      imageAlt: 'بک‌بلینگ اختصاصی استارتر پک فورتنایت',
     },
     {
       id: 'b-4',
@@ -1092,6 +1100,8 @@ export const FORTNITE_STARTER_PACK_TEMPLATE: FortniteProductTemplate = {
       glow: 'rgba(90,220,170,.3)',
       ink: '#7be0c3',
       icon: 'bolt',
+      image: '/images/starter-pack/pickaxe.webp',
+      imageAlt: 'پیک‌اکس اختصاصی استارتر پک فورتنایت',
     },
     {
       id: 'b-5',
@@ -1643,6 +1653,11 @@ export function buildDynamicFortniteTemplate(
   const title = product.title || 'محصول فورتنایت';
   return {
     ...FORTNITE_STARTER_PACK_TEMPLATE,
+    benefitBlocks: FORTNITE_STARTER_PACK_TEMPLATE.benefitBlocks.map((block) =>
+      block.id === 'b-0'
+        ? block
+        : { ...block, image: undefined, imageAlt: undefined }
+    ),
     slugs: [product.slug],
     defaultPriceToman: product.price || 589000,
     defaultOriginalPriceToman:
