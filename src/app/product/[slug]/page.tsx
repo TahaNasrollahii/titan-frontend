@@ -20,6 +20,7 @@ import { IS_STAGING_ENV, SITE_URL, SITE_NAME } from '@/lib/siteConfig';
 import {
   API_URL,
   DEFAULT_CLASH_PRODUCT_DETAIL,
+  DEFAULT_COD_POINTS_PRODUCT_DETAIL,
   DEFAULT_FORTNITE_CREW_PRODUCT_DETAIL,
   DEFAULT_VALORANT_POINTS_PRODUCT_DETAIL,
   LEGACY_VALORANT_POINT_SLUGS,
@@ -52,6 +53,7 @@ export async function generateStaticParams() {
       'fortnite-starter-pack',
       'fortnite-final-reckoning-pack',
       'valorant-points',
+      'cod-points',
     ]);
     for (const p of results) {
       if (p?.slug && !LEGACY_VALORANT_POINT_SLUGS.has(p.slug)) {
@@ -96,6 +98,9 @@ async function getProduct(slug: string): Promise<Product | null> {
   }
   if (!prod && slug === 'valorant-points') {
     return enrichProductSeo(DEFAULT_VALORANT_POINTS_PRODUCT_DETAIL);
+  }
+  if (!prod && slug === 'cod-points') {
+    return enrichProductSeo(DEFAULT_COD_POINTS_PRODUCT_DETAIL);
   }
   return prod ? enrichProductSeo(prod) : null;
 }

@@ -246,10 +246,16 @@ export default async function StoreCategoryPage({
           {game.slug === 'call-of-duty' && (
             <>
               <Link href="/product/cod-points" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
-                خرید سی‌پی کالاف دیوتی موبایل
+                خرید سی‌پی کالاف دیوتی موبایل (COD Points / CP)
               </Link>
               <Link href="/codm-store" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
-                وب‌استور کالاف دیوتی موبایل
+                پیشنهادات زنده وب‌استور کالاف دیوتی موبایل
+              </Link>
+              <Link href="/guides/cod-mobile-cp" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                آموزش خرید سی‌پی کالاف دیوتی موبایل
+              </Link>
+              <Link href="/guides/cod-mobile-activision" style={{ color: '#ff8a80', textDecoration: 'underline' }}>
+                آموزش اتصال کالاف موبایل به اکتیویژن
               </Link>
             </>
           )}
